@@ -1,45 +1,36 @@
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
+import { join } from 'node:path';
+import { isPrivilegedKey, mergeEnvSources } from './keep-awake-utils.mjs';
 
-const ENV_FILE = '.env';
+const ENV_FILES = ['.env', '.env.local'];
 const WORKFLOW = 'keep-awake.yml';
+const LOCAL_GH = join(
+  process.cwd(),
+  '.tools',
+  'gh',
+  'bin',
+  process.platform === 'win32' ? 'gh.exe' : 'gh',
+);
+
+let ghCommand = 'gh';
+try {
+  await access(LOCAL_GH);
+  ghCommand = LOCAL_GH;
+} catch {
+  // Use a globally installed GitHub CLI when the portable copy is absent.
+}
 
 function fail(message) {
   console.error(`Keep-alive setup failed: ${message}`);
   process.exit(1);
 }
 
-function parseEnv(source) {
-  return Object.fromEntries(
-    source
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter((line) => line && !line.startsWith('#') && line.includes('='))
-      .map((line) => {
-        const separator = line.indexOf('=');
-        const key = line.slice(0, separator).trim();
-        const value = line.slice(separator + 1).trim().replace(/^(['"])(.*)\1$/, '$2');
-        return [key, value];
-      })
-  );
-}
-
 function runGh(args, { input, timeout = 30_000 } = {}) {
-  const result = spawnSync('gh', args, { encoding: 'utf8', input, timeout });
+  const result = spawnSync(ghCommand, args, { encoding: 'utf8', input, timeout });
   if (result.error) fail(`cannot run gh: ${result.error.message}`);
   if (result.status !== 0) fail(result.stderr.trim() || `gh ${args[0]} failed`);
   return result.stdout.trim();
-}
-
-function isPrivilegedKey(key) {
-  if (key.startsWith('sb_secret_')) return true;
-  const parts = key.split('.');
-  if (parts.length !== 3) return false;
-  try {
-    return JSON.parse(Buffer.from(parts[1], 'base64url').toString()).role === 'service_role';
-  } catch {
-    return false;
-  }
 }
 
 async function findNewRun(repo, previousRunIds) {
@@ -56,14 +47,19 @@ async function findNewRun(repo, previousRunIds) {
   fail('GitHub did not create the manual workflow run');
 }
 
-let envSource;
-try {
-  envSource = await readFile(ENV_FILE, 'utf8');
-} catch {
-  fail(`${ENV_FILE} is missing`);
+const envSources = [];
+for (const file of ENV_FILES) {
+  try {
+    envSources.push(await readFile(file, 'utf8'));
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
 }
 
-const env = parseEnv(envSource);
+if (envSources.length === 0) fail(`${ENV_FILES.join(' or ')} is missing`);
+
+// Vite loads .env first and lets .env.local override matching values.
+const env = mergeEnvSources(envSources);
 const supabaseUrl = env.VITE_SUPABASE_URL?.replace(/\/$/, '');
 const publicKey = env.VITE_SUPABASE_ANON_KEY;
 

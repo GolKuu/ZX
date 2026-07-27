@@ -5,8 +5,10 @@ dist-ssr
 .env
 .env.local
 .DS_Store
+desktop.ini
 *.log
 .vercel
+.tools
 supabase/.temp
 supabase/.branches
 *.tsbuildinfo
