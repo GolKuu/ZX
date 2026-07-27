@@ -1,0 +1,83 @@
+.fight-page {
+  min-height: 100vh;
+  padding: 18px clamp(14px, 3vw, 40px) 28px;
+  background: #241d3d;
+}
+
+.route-loading {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  color: white;
+  background: #241d3d;
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.fight-page__heading {
+  display: flex;
+  width: min(100%, 1180px);
+  min-height: 54px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto 14px;
+  color: white;
+}
+
+.fight-page__heading > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fight-page__heading p {
+  margin: 0;
+  color: #d8d1ef;
+  font-size: 0.9rem;
+}
+
+.game-canvas {
+  position: relative;
+  width: min(100%, 1180px, calc((100vh - 126px) * 16 / 9));
+  aspect-ratio: 16 / 9;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 5px solid white;
+  border-radius: 26px;
+  background: #8bd8ff;
+  box-shadow: 0 18px 50px #00000057;
+}
+
+.game-canvas__surface,
+.game-canvas__surface canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.game-canvas__surface canvas {
+  display: block;
+}
+
+.game-canvas__loading {
+  position: absolute;
+  z-index: 2;
+  inset: 50% auto auto 50%;
+  margin: 0;
+  padding: 12px 18px;
+  border-radius: 14px;
+  color: white;
+  background: #30264fd9;
+  font-weight: 900;
+  transform: translate(-50%, -50%);
+}
+
+@media (max-width: 700px) {
+  .fight-page__heading p {
+    display: none;
+  }
+
+  .game-canvas {
+    border-width: 3px;
+    border-radius: 16px;
+  }
+}
