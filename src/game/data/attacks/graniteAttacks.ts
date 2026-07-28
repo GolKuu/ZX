@@ -11,9 +11,10 @@ export function createGraniteAttacks(): CharacterAttackSet {
     startup: 6, recovery: 10, damage: 7, action: 'LIGHT_ATTACK',
     category: 'light', reach: 70, cancelInto: ['light', 'special'],
   });
-  const light2 = hit('light-2', 'Каменное плечо', {
+  const light2 = hit('light-2', 'Каменный лоу-кик', {
     startup: 7, recovery: 12, damage: 8, action: 'LIGHT_ATTACK',
     category: 'light', reach: 78, cancelInto: ['light', 'special'],
+    motion: 'front-kick', visualShape: 'arc',
   });
   const light3 = hit('light-3', 'Клин', {
     startup: 9, active: 4, recovery: 17, damage: 11, action: 'LIGHT_ATTACK',
@@ -38,6 +39,7 @@ export function createGraniteAttacks(): CharacterAttackSet {
     low: hit('low-light', 'Сланцевый подсек', {
       startup: 9, active: 4, recovery: 17, damage: 9, action: 'LIGHT_ATTACK',
       category: 'light', level: 'low', height: 26, reach: 82, knockbackX: 260,
+      motion: 'sweep-kick', visualShape: 'ground',
     }),
     lowHeavy: hit('low-heavy', 'Разлом снизу', {
       startup: 15, active: 6, recovery: 29, damage: 18, action: 'HEAVY_ATTACK',
@@ -52,6 +54,7 @@ export function createGraniteAttacks(): CharacterAttackSet {
       startup: 13, active: 7, recovery: 27, damage: 18, action: 'AIR_HEAVY',
       category: 'heavy', level: 'air', height: 68, reach: 94,
       knockbackY: 320, knockdown: true, hitStop: 8,
+      motion: 'axe-kick', visualShape: 'arc',
     }),
     ...createGraniteContext(),
   };

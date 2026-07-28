@@ -2,6 +2,7 @@ import type { PlayerId, PlayerInputFrame, SimulationSnapshot } from '../core/typ
 import type { AttackContact } from './AttackSystem';
 import { BlockSystem } from './BlockSystem';
 import { DamageSystem } from './DamageSystem';
+import { matchupBonuses } from '../data/forceMatchups';
 
 export class CombatContactResolver {
   private readonly damage = new DamageSystem();
@@ -16,7 +17,13 @@ export class CombatContactResolver {
   ) {
     const attacker = state.fighters[attackerId];
     const defender = state.fighters[defenderId];
-    const block = blocks.tryBlock(defender, defenderInput, contact.definition);
+    const bonuses = matchupBonuses(attacker.characterId, defender.characterId);
+    const block = blocks.tryBlock(
+      defender,
+      defenderInput,
+      contact.definition,
+      bonuses.blockDamageMultiplier,
+    );
     const result = this.damage.apply(
       attacker,
       defender,

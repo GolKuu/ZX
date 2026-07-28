@@ -7,6 +7,7 @@ import type { ComboSnapshot, FighterSnapshot } from '../core/types';
 import { balanceConfig } from '../config/balanceConfig';
 import type { BlockResult } from './BlockSystem';
 import { CharacterPassiveSystem } from './CharacterPassiveSystem';
+import { matchupBonuses } from '../data/forceMatchups';
 
 export type DamageResult = { damage: number; block: BlockResult };
 
@@ -25,6 +26,8 @@ export class DamageSystem {
     block: BlockResult,
   ): DamageResult {
     const blocked = block.blocked;
+    const attackerBonuses = matchupBonuses(attacker.characterId, defender.characterId);
+    const defenderBonuses = matchupBonuses(defender.characterId, attacker.characterId);
     const armoredReaction = !blocked && this.passive.absorbsReaction(defender, definition);
     if (definition.sideSwitch && !blocked) this.switchSides(attacker, defender);
     const direction = attacker.x <= defender.x ? 1 : -1;
@@ -34,14 +37,18 @@ export class DamageSystem {
         : blocked
           ? definition.chipDamage
           : this.combos.scaledDamage(combo, definition);
+    const matchupDamage = baseDamage * attackerBonuses.damageMultiplier;
     const rawDamage = blocked
-      ? baseDamage
-      : this.passive.incomingDamage(defender, definition, baseDamage);
+      ? matchupDamage
+      : this.passive.incomingDamage(defender, definition, matchupDamage);
     const damage = this.health.damage(defender, rawDamage);
 
-    this.energy.gain(attacker, definition.energyGain);
+    this.energy.gain(attacker, definition.energyGain * attackerBonuses.energyGainMultiplier);
     if (!blocked) this.passive.recordHit(attacker, definition);
-    if (damage > 0) this.energy.gain(defender, Math.max(1, Math.round(damage * 0.35)));
+    if (damage > 0) {
+      const defenderEnergy = Math.max(1, Math.round(damage * 0.35));
+      this.energy.gain(defender, defenderEnergy * defenderBonuses.energyGainMultiplier);
+    }
     const pushScale = block.kind === 'perfect' ? 0 : block.kind === 'precise' ? 0.14 :
       blocked ? 0.28 : 1;
     defender.velocityX = definition.knockbackX * direction * pushScale;

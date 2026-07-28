@@ -36,6 +36,7 @@ export class BlockSystem {
     defender: FighterSnapshot,
     input: PlayerInputFrame,
     attack: AttackDefinition,
+    blockDamageMultiplier = 1,
   ): BlockResult {
     if (attack.hitLevel === 'throw') return NO_BLOCK;
     if (!input.held.includes('BLOCK')) {
@@ -62,7 +63,7 @@ export class BlockSystem {
           : 1;
     defender.blockMeter = Math.max(
       0,
-      defender.blockMeter - attack.blockDamage * gaugeMultiplier,
+      defender.blockMeter - attack.blockDamage * gaugeMultiplier * blockDamageMultiplier,
     );
     if (defender.blockMeter > 0 || kind === 'perfect') {
       this.recordSuccess(defender, kind);

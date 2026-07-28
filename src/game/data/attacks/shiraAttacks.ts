@@ -11,9 +11,10 @@ export function createShiraAttacks(): CharacterAttackSet {
     startup: 3, recovery: 6, damage: 4, action: 'LIGHT_ATTACK',
     category: 'light', reach: 55, cancelInto: ['light', 'special'],
   });
-  const light2 = hit('light-2', 'Крест-накрест', {
+  const light2 = hit('light-2', 'Ножничный сайд-кик', {
     startup: 4, recovery: 7, damage: 5, action: 'LIGHT_ATTACK',
     category: 'light', reach: 61, cancelInto: ['light', 'special'],
+    motion: 'roundhouse-kick', visualShape: 'arc',
   });
   const light3 = hit('light-3', 'Срез ленты', {
     startup: 5, active: 4, recovery: 10, damage: 7, action: 'LIGHT_ATTACK',
@@ -38,6 +39,7 @@ export function createShiraAttacks(): CharacterAttackSet {
     low: hit('low-light', 'Подрез нити', {
       startup: 5, active: 4, recovery: 10, damage: 6, action: 'LIGHT_ATTACK',
       category: 'light', level: 'low', height: 24, reach: 64, knockbackX: 220,
+      motion: 'sweep-kick', visualShape: 'ground',
     }),
     lowHeavy: hit('low-heavy', 'Раскрытые лезвия', {
       startup: 9, active: 5, recovery: 18, damage: 12, action: 'HEAVY_ATTACK',
@@ -52,6 +54,7 @@ export function createShiraAttacks(): CharacterAttackSet {
       startup: 8, active: 7, recovery: 18, damage: 13, action: 'AIR_HEAVY',
       category: 'heavy', level: 'air', height: 62, reach: 76,
       knockbackY: 280, knockdown: true,
+      motion: 'axe-kick', visualShape: 'arc',
     }),
     ...createShiraContext(),
   };
@@ -70,6 +73,7 @@ function createShiraContext() {
     dashLight: hit('light-dash', 'Стежок на ходу', {
       startup: 3, active: 5, recovery: 15, damage: 9, action: 'DASH_LIGHT',
       category: 'light', reach: 84, knockbackX: 330,
+      motion: 'front-kick', visualShape: 'line',
     }),
     forwardHeavy: hit('heavy-forward', 'Длинный крой', {
       startup: 10, active: 5, recovery: 20, damage: 15, action: 'DIRECTIONAL_HEAVY',

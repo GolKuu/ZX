@@ -2,6 +2,18 @@ import type { CombatAction } from '../core/types';
 
 export type HitLevel = 'mid' | 'low' | 'overhead' | 'air' | 'throw';
 export type AttackCategory = 'light' | 'heavy' | 'special' | 'throw' | 'super';
+export type AttackMotion =
+  | 'punch'
+  | 'front-kick'
+  | 'roundhouse-kick'
+  | 'sweep-kick'
+  | 'axe-kick'
+  | 'slam'
+  | 'slash'
+  | 'thrust'
+  | 'burst'
+  | 'throw';
+export type AttackVisualShape = 'arc' | 'line' | 'burst' | 'ground' | 'projectile';
 
 export type HitboxDefinition = {
   startFrame: number;
@@ -47,6 +59,8 @@ export type AttackDefinition = {
   reversalType: 'none' | 'invincible' | 'armor';
   comboEscapeWindows: readonly { startFrame: number; endFrame: number }[];
   animationId: string;
+  motion: AttackMotion;
+  visualShape: AttackVisualShape;
   effectId: string;
   soundId: string;
   category: AttackCategory;

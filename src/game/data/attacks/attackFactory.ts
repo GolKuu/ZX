@@ -1,6 +1,8 @@
 import type {
   AttackCategory,
   AttackDefinition,
+  AttackMotion,
+  AttackVisualShape,
   HitLevel,
 } from '../../combat/AttackDefinition';
 import type { CombatAction } from '../../core/types';
@@ -29,6 +31,8 @@ type AttackOptions = {
   movementSpeed?: number;
   armor?: boolean;
   verticalLift?: number;
+  motion?: AttackMotion;
+  visualShape?: AttackVisualShape;
 };
 
 export function makeAttack(
@@ -99,6 +103,8 @@ export function makeAttack(
         : 'none',
     comboEscapeWindows: [{ startFrame: activeStart, endFrame: cancelStart + 2 }],
     animationId: `${slot}-animation`,
+    motion: options.motion ?? defaultMotion(options.category, options.level),
+    visualShape: options.visualShape ?? defaultVisualShape(options.category, options.level),
     effectId: `${slot}-impact`,
     soundId: `${slot}-sound`,
     category: options.category,
@@ -111,4 +117,18 @@ export function makeAttack(
     hitStopFrames: options.hitStop ?? (options.category === 'heavy' ? 5 : 3),
     visualReach: (options.reach ?? 74) + 24,
   };
+}
+
+function defaultMotion(category: AttackCategory, level?: HitLevel): AttackMotion {
+  if (category === 'throw') return 'throw';
+  if (category === 'special' || category === 'super') return 'burst';
+  if (level === 'low') return 'sweep-kick';
+  if (level === 'air') return 'front-kick';
+  return category === 'heavy' ? 'slam' : 'punch';
+}
+
+function defaultVisualShape(category: AttackCategory, level?: HitLevel): AttackVisualShape {
+  if (level === 'low') return 'ground';
+  if (category === 'special' || category === 'super') return 'burst';
+  return category === 'heavy' ? 'arc' : 'line';
 }
