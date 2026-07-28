@@ -2,14 +2,23 @@ import { balanceConfig, TICKS_PER_SECOND } from '../config/balanceConfig';
 import type { FighterSnapshot, PlayerId, SimulationSnapshot } from './types';
 import { getCharacter } from '../data/characters/circleFighters';
 
+export type FighterModifier = {
+  maxHealthMultiplier?: number;
+  startingEnergy?: number;
+};
+
 export function createFighter(
   id: PlayerId,
   x: number,
   characterId = id === 'player1' ? 'granite' : 'shira',
+  modifier: FighterModifier = {},
 ): FighterSnapshot {
   const character = getCharacter(characterId);
   const isGranite = character.id === 'granite';
   const resource = character.uniqueResource;
+  const maxHealth = Math.round(
+    character.stats.maxHealth * (modifier.maxHealthMultiplier ?? 1),
+  );
   return {
     id,
     characterId,
@@ -18,9 +27,9 @@ export function createFighter(
     velocityX: 0,
     velocityY: 0,
     facing: id === 'player1' ? 1 : -1,
-    health: character.stats.maxHealth,
-    maxHealth: character.stats.maxHealth,
-    energy: 0,
+    health: maxHealth,
+    maxHealth,
+    energy: Math.min(balanceConfig.maxEnergy, modifier.startingEnergy ?? 0),
     maxEnergy: balanceConfig.maxEnergy,
     blockMeter: balanceConfig.maxBlockMeter,
     maxBlockMeter: balanceConfig.maxBlockMeter,
@@ -53,6 +62,7 @@ export function createFighter(
 
 export function createInitialState(
   characters: Record<PlayerId, string> = { player1: 'granite', player2: 'shira' },
+  modifiers: Partial<Record<PlayerId, FighterModifier>> = {},
 ): SimulationSnapshot {
   return {
     tick: 0,
@@ -66,8 +76,8 @@ export function createInitialState(
     wins: { player1: 0, player2: 0 },
     roundTicksRemaining: balanceConfig.roundSeconds * TICKS_PER_SECOND,
     fighters: {
-      player1: createFighter('player1', 250, characters.player1),
-      player2: createFighter('player2', 710, characters.player2),
+      player1: createFighter('player1', 250, characters.player1, modifiers.player1),
+      player2: createFighter('player2', 710, characters.player2, modifiers.player2),
     },
     combos: {
       player1: createCombo(),

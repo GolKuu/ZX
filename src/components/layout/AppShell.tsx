@@ -22,7 +22,7 @@ export function AppShell({
           <Link href="/character-viewer">Персонажи</Link>
           <Link href="/arena-viewer">Арены</Link>
           <Link href="/effects-gallery">Эффекты</Link>
-          <Link href="/controls">Управление</Link>
+          <Link href="/settings">Настройки</Link>
           <Link href="/profile">Профиль</Link>
         </nav>
         <FullscreenButton compact />

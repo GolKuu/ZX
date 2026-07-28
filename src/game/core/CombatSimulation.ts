@@ -11,7 +11,11 @@ import { RoundManager } from './RoundManager';
 import { CombatInputPipeline } from './CombatInputPipeline';
 import { ArenaTrapSystem } from '../combat/ArenaTrapSystem';
 import { CombatContactResolver } from '../combat/CombatContactResolver';
-import { createFighter, createInitialState } from './SimulationStateFactory';
+import {
+  createFighter,
+  createInitialState,
+  type FighterModifier,
+} from './SimulationStateFactory';
 import type {
   InputFrame,
   PlayerId,
@@ -23,6 +27,7 @@ const DEFAULT_CHARACTERS = { player1: 'granite', player2: 'shira' };
 
 export type CombatSimulationOptions = {
   deferRoundResolution?: boolean;
+  fighterModifiers?: Partial<Record<PlayerId, FighterModifier>>;
 };
 
 export class CombatSimulation {
@@ -43,7 +48,7 @@ export class CombatSimulation {
     private readonly characters: Record<PlayerId, string> = DEFAULT_CHARACTERS,
     private readonly options: CombatSimulationOptions = {},
   ) {
-    this.state = createInitialState(characters);
+    this.state = createInitialState(characters, options.fighterModifiers);
     this.attacks = new AttackSystem();
   }
   step(input: InputFrame, stepSeconds: number) {
@@ -104,7 +109,7 @@ export class CombatSimulation {
   }
 
   rematch() {
-    this.state = createInitialState(this.characters);
+    this.state = createInitialState(this.characters, this.options.fighterModifiers);
     this.inputs.reset();
   }
 
@@ -149,8 +154,18 @@ export class CombatSimulation {
   private startNextRound() {
     this.round.resetRound(this.state);
     this.state.fighters = {
-      player1: createFighter('player1', 250, this.characters.player1),
-      player2: createFighter('player2', 710, this.characters.player2),
+      player1: createFighter(
+        'player1',
+        250,
+        this.characters.player1,
+        this.options.fighterModifiers?.player1,
+      ),
+      player2: createFighter(
+        'player2',
+        710,
+        this.characters.player2,
+        this.options.fighterModifiers?.player2,
+      ),
     };
     PLAYERS.forEach((id) => this.combos.reset(this.state.combos[id]));
     this.inputs.reset();

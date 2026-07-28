@@ -4,6 +4,7 @@ import type { LocalTeamBattleConfig } from '../../stores/teamBattleStore';
 import { useGameBridge } from '../../app/gameBridgeContext';
 import { createTeamGameConfig } from '../config/teamGameConfig';
 import { GameEvents } from './GameEvents';
+import { FullscreenButton } from '../../components/layout/FullscreenButton';
 
 export function TeamGameCanvas({
   config,
@@ -48,6 +49,7 @@ export function TeamGameCanvas({
 
   return (
     <section className="game-canvas" aria-label="Командная арена Circle Clash">
+      <div className="fight-toolbar"><FullscreenButton compact /></div>
       {!ready && <p className="game-canvas__loading">Готовим командный бой…</p>}
       <div ref={parentRef} className="game-canvas__surface" />
     </section>

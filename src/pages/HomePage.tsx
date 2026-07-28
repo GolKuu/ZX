@@ -40,6 +40,7 @@ const menuItems = [
   { title: 'Effects Gallery', description: 'Атаки, защита и частицы', icon: '✹', href: '/effects-gallery' },
   { title: 'Visual Style Guide', description: 'Анимации, палитры и приёмы', icon: '✦', href: '/visual-style-guide' },
   { title: 'Управление', description: 'Клавиши обоих игроков', icon: '⌨', href: '/controls' },
+  { title: 'Настройки', description: 'Экран, арена, тряска и частицы', icon: '⚙', href: '/settings' },
   { title: 'Профиль', description: 'Аккаунт и будущая статистика', icon: '☺', href: '/profile' },
 ] as const;
 

@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { applyLocalAccessibility, syncCurrentSettings } from '../../lib/settingsSync';
 import { settingsStore, type GameSettings } from '../../stores/settingsStore';
+import { arenaCatalog } from '../../game/data/arenas/arenaCatalog';
 
 export function SyncedSettingsForm({ userId }: { userId?: string }) {
   const [settings, setSettings] = useState(() => settingsStore.load());
@@ -66,6 +67,15 @@ export function SyncedSettingsForm({ userId }: { userId?: string }) {
             <option value={1}>Лёгкая</option>
             <option value={2}>Средняя</option>
             <option value={3}>Сильная</option>
+          </select>
+        </label>
+        <label>Арена
+          <select value={settings.arenaId} onChange={(event) => patch(setSettings, {
+            arenaId: event.target.value as GameSettings['arenaId'],
+          })}>
+            {arenaCatalog.map((arena) => (
+              <option value={arena.id} key={arena.id}>{arena.name}</option>
+            ))}
           </select>
         </label>
         <label>Масштаб интерфейса: {Math.round(settings.uiScale * 100)}%

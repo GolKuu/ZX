@@ -6,12 +6,14 @@ import type {
   PlayerInputAssignment,
 } from '../game/input/InputProfile';
 import { findKeyboardConflicts, validateAssignments } from '../game/input/inputValidation';
+import type { AiDifficulty } from '../game/ai/AiDifficulty';
 
 export type LocalPvpMatchConfig = {
   assignments: Record<PlayerId, PlayerInputAssignment>;
   characters: Record<PlayerId, string>;
   ready: Record<PlayerId, boolean>;
   aiPlayerId?: PlayerId;
+  aiDifficulty?: AiDifficulty;
 };
 
 let activeMatch: LocalPvpMatchConfig | null = null;

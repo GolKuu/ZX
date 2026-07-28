@@ -4,6 +4,7 @@ import type { OnlineMatchClient } from '../network/OnlineMatchClient';
 import { useGameBridge } from '../../app/gameBridgeContext';
 import { createOnlineGameConfig } from '../config/onlineGameConfig';
 import { GameEvents } from './GameEvents';
+import { FullscreenButton } from '../../components/layout/FullscreenButton';
 
 type OnlineGameCanvasProps = {
   client: OnlineMatchClient;
@@ -49,6 +50,7 @@ export function OnlineGameCanvas(props: OnlineGameCanvasProps) {
 
   return (
     <section className="game-canvas" aria-label="Онлайн-арена Circle Clash">
+      <div className="fight-toolbar"><FullscreenButton compact /></div>
       {!isReady && <p className="game-canvas__loading">Подключаем арену…</p>}
       <div ref={parentRef} className="game-canvas__surface" />
     </section>
