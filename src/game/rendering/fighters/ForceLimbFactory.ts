@@ -18,8 +18,6 @@ export function createForceArm(
   const upper = scene.add
     .polygon(0, 23, mirror([-9, -17, 10, -15, 13, 24, -10, 29], direction), color, alpha)
     .setStrokeStyle(getModelStrokeWidth(4, 'limb'), outline);
-  const upperHighlight = scene.add
-    .rectangle(direction * 2, 24, 18, 12, MODEL_HIGHLIGHT, 0.18);
   const pieces: Phaser.GameObjects.GameObject[] = [upper, joint];
   const handX = direction * 4;
   if (style === 'cannon') {
