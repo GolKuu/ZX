@@ -97,7 +97,7 @@ export class MatchRoom {
   tick() {
     this.wallTick += 1;
     this.connections.checkDeadline();
-    if (this.status === 'playing' && this.match) {
+    if ((this.status === 'playing' || this.status === 'disconnected') && this.match) {
       this.match.step(this.inputTimelines);
       if (this.match.snapshot.matchWinner) {
         this.status = 'finished';
