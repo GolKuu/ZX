@@ -72,6 +72,22 @@ values
   ('ten-fights', 'Опытный боец', 'Завершить 10 матчей', '⭐')
 on conflict (id) do nothing;
 
+-- Backfill accounts that existed before this migration. An id-based nickname
+-- is intentionally used here so duplicated or missing Auth metadata cannot
+-- block the migration.
+insert into public.profiles (id, nickname, created_at)
+select id, 'Игрок-' || left(id::text, 8), created_at
+from auth.users
+on conflict (id) do nothing;
+
+insert into public.player_settings (user_id)
+select id from auth.users
+on conflict (user_id) do nothing;
+
+insert into public.player_statistics (user_id)
+select id from auth.users
+on conflict (user_id) do nothing;
+
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql

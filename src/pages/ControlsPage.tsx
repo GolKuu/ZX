@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useAuth } from '../app/authContext';
+import { useOptionalAuth } from '../app/authContext';
 import { KeyBindingEditor } from '../components/controls/KeyBindingEditor';
 import { CombinationGuide } from '../components/controls/CombinationGuide';
 import { ControlGuide } from '../components/controls/ControlGuide';
@@ -16,7 +16,7 @@ import { syncCurrentSettings } from '../lib/settingsSync';
 const storage = new ControlStorage();
 
 export function ControlsPage() {
-  const { user } = useAuth();
+  const user = useOptionalAuth()?.user ?? null;
   const [profiles, setProfiles] = useState(() => storage.load());
   const [showCombatHints, setShowCombatHints] = useState(
     () => settingsStore.load().showCombatHints,
