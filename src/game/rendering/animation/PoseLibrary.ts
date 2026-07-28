@@ -113,6 +113,26 @@ function applyAttack(
     if (frame.state.includes('air')) pose.y -= 9;
     return;
   }
+  // Specific handling for punch-like motions to emulate jab/hook/uppercut dynamics
+  if (frame.motion === 'punch') {
+    // lighter startup for jab, stronger snap for heavy
+    const punchDrive = drive * (heavy ? 1.1 : 0.85);
+    pose.torso += punchDrive * 0.15; // torso twist
+    pose.frontArm = punchDrive * (kind === 'shira' ? -0.9 : -1.6) * reach;
+    pose.backArm = -punchDrive * (kind === 'shira' ? 0.3 : 0.8);
+    pose.rotation += punchDrive * 0.06;
+    // more hip/leg brace for a committed punch
+    pose.frontLeg = -punchDrive * 0.6;
+    pose.scaleX = frame.phase === 'active' ? 1.18 : 1.0;
+    if (frame.phase === 'active') {
+      pose.frontArm -= heavy ? 0.9 : 0.5; // snap forward
+      pose.backArm += heavy ? 0.5 : 0.28;
+    }
+    if (frame.state.includes('special') || frame.state === 'super') {
+      pose.frontArm -= 0.6;
+    }
+    return;
+  }
   pose.x = drive * (heavy ? 11 : 7) * reach;
   pose.rotation = drive * (heavy ? 0.18 : 0.12);
   // stronger, more realistic arm extension during strikes

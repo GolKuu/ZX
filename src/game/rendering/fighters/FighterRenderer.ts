@@ -10,6 +10,7 @@ import { AttackVisualRenderer } from '../effects/AttackVisualRenderer';
 import { DefenseEffectRenderer } from '../effects/DefenseEffectRenderer';
 import { MotionTrailRenderer } from '../effects/MotionTrailRenderer';
 import { createCharacterBody } from './CharacterBodyFactory';
+import { TORSO_OFFSETS } from './torsoOffsets';
 import { findCharacterAttack } from '../../data/attacks/characterAttacks';
 import { RIG_RESTING_BOTTOM } from '../animation/RigTypes';
 
@@ -24,6 +25,7 @@ export class FighterRenderer {
   private readonly trail: MotionTrailRenderer;
   private sprite?: Phaser.GameObjects.Image;
   readonly characterId: string;
+  private torsoOffset = { x: 0, y: 0, scale: 0.5 };
   private animationTick = 0;
   private state: AnimationStateId = 'idle';
 
@@ -46,6 +48,7 @@ export class FighterRenderer {
 
     // if a Phaser texture already exists for this character, create sprite art
     const key = `character-art-${character.id}`;
+    this.torsoOffset = TORSO_OFFSETS[character.id] ?? this.torsoOffset;
     if (this.useDomArt && scene.textures.exists(key)) this.applySpriteTexture(key);
   }
 
@@ -77,8 +80,9 @@ export class FighterRenderer {
     this.attackVisual.sync(snapshot);
     // if we have a sprite, keep it aligned
     if (this.sprite) {
-      this.sprite.setPosition(snapshot.x, snapshot.y - 38);
+      this.sprite.setPosition(snapshot.x + this.torsoOffset.x, snapshot.y - 38 + this.torsoOffset.y);
       this.sprite.setFlipX(snapshot.facing === -1);
+      this.sprite.setScale(this.torsoOffset.scale * (snapshot.facing === 1 ? 1 : 1));
     }
   }
 
@@ -96,7 +100,7 @@ export class FighterRenderer {
     const scene = this.container.scene;
     // create torso sprite; we'll keep arms/legs procedural
     this.sprite = scene.add.image(0, -10, key).setOrigin(0.5, 0.44).setDepth(4);
-    this.sprite.setScale(0.5); // initial scale; tuned at runtime
+    this.sprite.setScale(this.torsoOffset.scale);
     // hide only the procedural torso if API available
     try {
       this.rig.setTorsoVisible?.(false as any);

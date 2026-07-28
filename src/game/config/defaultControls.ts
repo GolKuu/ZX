@@ -17,7 +17,7 @@ export const defaultKeyboardProfiles: KeyboardProfiles = {
     bindings: {
       MOVE_LEFT: 'KeyA',
       MOVE_RIGHT: 'KeyD',
-      JUMP: 'KeyH',
+      JUMP: 'KeyW',
       LIGHT_ATTACK: 'KeyJ',
       HEAVY_ATTACK: 'KeyK',
       SPECIAL_ATTACK: 'KeyL',
