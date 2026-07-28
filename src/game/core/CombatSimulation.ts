@@ -20,6 +20,11 @@ import type {
 
 const PLAYERS: readonly PlayerId[] = ['player1', 'player2'];
 const DEFAULT_CHARACTERS = { player1: 'granite', player2: 'shira' };
+
+export type CombatSimulationOptions = {
+  deferRoundResolution?: boolean;
+};
+
 export class CombatSimulation {
   private state: SimulationSnapshot;
   private readonly attacks: AttackSystem;
@@ -34,7 +39,10 @@ export class CombatSimulation {
   private readonly traps = new ArenaTrapSystem();
   private readonly contacts = new CombatContactResolver();
 
-  constructor(private readonly characters: Record<PlayerId, string> = DEFAULT_CHARACTERS) {
+  constructor(
+    private readonly characters: Record<PlayerId, string> = DEFAULT_CHARACTERS,
+    private readonly options: CombatSimulationOptions = {},
+  ) {
     this.state = createInitialState(characters);
     this.attacks = new AttackSystem();
   }
@@ -87,7 +95,7 @@ export class CombatSimulation {
     this.collisions.separateFighters(this.state.fighters.player1, this.state.fighters.player2);
     this.updateFacing();
     this.round.tickClock(this.state);
-    this.finishRoundIfNeeded();
+    if (!this.options.deferRoundResolution) this.finishRoundIfNeeded();
     this.state.tick += 1;
   }
 
@@ -111,6 +119,10 @@ export class CombatSimulation {
   restore(snapshot: SimulationSnapshot) {
     this.state = cloneSnapshot(snapshot);
     this.inputs.reset();
+  }
+
+  updateState(update: (state: SimulationSnapshot) => void) {
+    update(this.state);
   }
 
   private advanceNonActiveRound() {

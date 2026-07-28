@@ -1,7 +1,6 @@
 import type { WebSocket } from 'ws';
 import type { PlayerId } from '../../../src/game/core/types.js';
 import {
-  NETWORK_PROTOCOL_VERSION,
   SNAPSHOT_INTERVAL_TICKS,
   type ClientControlMessage,
   type OnlineRoomStatus,
@@ -9,8 +8,9 @@ import {
 import { AuthoritativeMatch } from '../simulation/AuthoritativeMatch.js';
 import { PlayerInputTimeline } from '../simulation/PlayerInputTimeline.js';
 import { RoomCommands } from './RoomCommands.js';
+import { RoomConnections } from './RoomConnections.js';
 import { RoomOutput } from './RoomOutput.js';
-import { roomView, sendMessage, type RoomOptions, type RoomPlayer } from './RoomTypes.js';
+import { roomView, type RoomOptions, type RoomPlayer } from './RoomTypes.js';
 
 const PLAYER_IDS: readonly PlayerId[] = ['player1', 'player2'];
 
@@ -21,6 +21,7 @@ export class MatchRoom {
   private readonly clock;
   private readonly output;
   private readonly commands;
+  private readonly connections;
   private status: OnlineRoomStatus = 'waiting';
   private match: AuthoritativeMatch | null = null;
   private wallTick = 0;
@@ -47,6 +48,16 @@ export class MatchRoom {
       output: this.output,
       now: () => this.clock.now(),
     });
+    this.connections = new RoomConnections({
+      reconnectGraceMs: options.reconnectGraceMs,
+      now: () => this.clock.now(),
+      status: () => this.status,
+      setStatus: (status) => { this.status = status; },
+      view: () => this.view,
+      match: () => this.match,
+      players: () => this.players,
+      output: this.output,
+    });
   }
 
   addPlayer(playerId: PlayerId, token: string) {
@@ -72,41 +83,11 @@ export class MatchRoom {
   }
 
   connect(playerId: PlayerId, socket: WebSocket) {
-    const player = this.requiredPlayer(playerId);
-    player.socket?.close(4001, 'Reconnected elsewhere');
-    Object.assign(player, {
-      socket,
-      connected: true,
-      disconnectedAt: null,
-    });
-    if (this.status === 'disconnected' && this.everyPlayer((item) => item.connected)) {
-      this.status = this.match?.snapshot.matchWinner ? 'finished' : 'playing';
-      this.match?.setPaused(false);
-    }
-    sendMessage(socket, {
-      type: 'connected',
-      protocolVersion: NETWORK_PROTOCOL_VERSION,
-      playerId,
-      room: this.view,
-    });
-    this.output.broadcastRoom();
-    this.output.snapshotTo(socket);
+    this.connections.connect(playerId, socket);
   }
 
   disconnect(playerId: PlayerId, socket: WebSocket) {
-    const player = this.requiredPlayer(playerId);
-    if (player.socket !== socket) return;
-    Object.assign(player, {
-      socket: null,
-      connected: false,
-      pendingPingAt: null,
-      disconnectedAt: this.clock.now(),
-    });
-    if (this.status === 'playing') {
-      this.status = 'disconnected';
-      this.match?.setPaused(true);
-    }
-    this.output.broadcastRoom();
+    this.connections.disconnect(playerId, socket);
   }
 
   handle(playerId: PlayerId, message: ClientControlMessage) {
@@ -115,7 +96,7 @@ export class MatchRoom {
 
   tick() {
     this.wallTick += 1;
-    this.checkReconnectDeadline();
+    this.connections.checkDeadline();
     if (this.status === 'playing' && this.match) {
       this.match.step(this.inputTimelines);
       if (this.match.snapshot.matchWinner) {
@@ -155,26 +136,6 @@ export class MatchRoom {
     });
     this.status = 'playing';
     this.output.broadcastSnapshot();
-  }
-
-  private checkReconnectDeadline() {
-    if (this.status !== 'disconnected' || !this.match) return;
-    const disconnected = PLAYER_IDS.find((id) => !this.players[id]?.connected);
-    if (!disconnected) return;
-    const since = this.players[disconnected]?.disconnectedAt ?? this.clock.now();
-    if (this.clock.now() - since < this.options.reconnectGraceMs) return;
-    const winner: PlayerId = disconnected === 'player1' ? 'player2' : 'player1';
-    this.match.forfeit(winner);
-    this.status = 'finished';
-    this.output.broadcastSnapshot();
-    this.output.broadcastRoom();
-  }
-
-  private everyPlayer(predicate: (player: RoomPlayer) => boolean) {
-    return PLAYER_IDS.every((id) => {
-      const player = this.players[id];
-      return player ? predicate(player) : false;
-    });
   }
 
   private get inputTimelines() {

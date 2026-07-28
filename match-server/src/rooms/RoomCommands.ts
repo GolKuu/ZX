@@ -7,7 +7,7 @@ import type {
 import type { AuthoritativeMatch } from '../simulation/AuthoritativeMatch.js';
 import type { PlayerInputTimeline } from '../simulation/PlayerInputTimeline.js';
 import type { RoomOutput } from './RoomOutput.js';
-import type { RoomPlayer } from './RoomTypes.js';
+import { sendMessage, type RoomPlayer } from './RoomTypes.js';
 
 const PLAYER_IDS: readonly PlayerId[] = ['player1', 'player2'];
 
@@ -32,12 +32,11 @@ export class RoomCommands {
     else if (message.type === 'rematch') this.setRematch(player, message.ready);
     else if (message.type === 'input') this.receiveInput(player, message.payload);
     else if (message.type === 'ping') {
-      this.host.output.error(player, 'PONG_COMPAT', String(message.clientTime));
-      player.socket?.send(JSON.stringify({
+      sendMessage(player.socket, {
         type: 'pong',
         clientTime: message.clientTime,
         serverTime: this.host.now(),
-      }));
+      });
     } else if (message.type === 'leave') {
       player.socket?.close(1000, 'Player left');
     }
