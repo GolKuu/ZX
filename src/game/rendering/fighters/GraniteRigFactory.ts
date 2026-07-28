@@ -2,8 +2,11 @@ import Phaser from 'phaser';
 import type { CharacterDefinition } from '../../data/characters/circleFighters';
 import { ProceduralRig } from '../animation/ProceduralRig';
 import type { RigParts } from '../animation/RigTypes';
-
-const OUTLINE = 0x252b38;
+import {
+  GRANITE_CORE_GLOW,
+  MODEL_HIGHLIGHT,
+  MODEL_OUTLINE,
+} from './modelStyle';
 
 export function createGraniteRig(scene: Phaser.Scene, character: CharacterDefinition) {
   const backLeg = stoneLeg(scene, -24, 27, character.shadowColor);
@@ -27,16 +30,19 @@ function stoneArm(
   color: number,
   front = false,
 ) {
-  const shoulder = scene.add.circle(0, 0, 18, color).setStrokeStyle(5, OUTLINE, 1);
+  const shoulder = scene.add.circle(0, 0, front ? 20 : 18, color)
+    .setStrokeStyle(5, MODEL_OUTLINE, 1);
+  const jointRing = scene.add.circle(0, 0, front ? 10 : 9, characterShade(color), 0.55)
+    .setStrokeStyle(3, MODEL_OUTLINE, 0.8);
   const slab = scene.add
     .polygon(0, 27, mirror([-13, -14, 14, -11, 22, 24, 8, 43, -16, 34], direction), color)
-    .setStrokeStyle(5, OUTLINE, 1);
+    .setStrokeStyle(5, MODEL_OUTLINE, 1);
   const fist = scene.add
-    .polygon(direction * 6, 61, mirror([-17, -15, 15, -13, 23, 7, 8, 20, -19, 12], direction), color)
-    .setStrokeStyle(5, OUTLINE, 1);
+    .polygon(direction * 7, 62, mirror([-19, -16, 17, -14, 25, 7, 9, 22, -21, 13], direction), color)
+    .setStrokeStyle(6, MODEL_OUTLINE, 1);
   const shine = scene.add
-    .polygon(direction * 5, 24, mirror([-4, -9, 6, -7, 10, 13, 1, 18, -5, 8], direction), 0xc4ced8, front ? 0.5 : 0.2);
-  return scene.add.container(x, y, [shoulder, slab, fist, shine]);
+    .polygon(direction * 5, 24, mirror([-4, -9, 6, -7, 10, 13, 1, 18, -5, 8], direction), MODEL_HIGHLIGHT, front ? 0.32 : 0.12);
+  return scene.add.container(x, y, [shoulder, jointRing, slab, fist, shine]);
 }
 
 function stoneLeg(
@@ -46,40 +52,50 @@ function stoneLeg(
   color: number,
   front = false,
 ) {
-  const hip = scene.add.circle(0, 0, 16, color).setStrokeStyle(5, OUTLINE, 1);
+  const hip = scene.add.circle(0, 0, 16, color).setStrokeStyle(5, MODEL_OUTLINE, 1);
   const pillar = scene.add
     .polygon(0, 27, [-14, -16, 14, -14, 17, 27, -12, 30], color)
-    .setStrokeStyle(5, OUTLINE, 1);
+    .setStrokeStyle(5, MODEL_OUTLINE, 1);
   const foot = scene.add
-    .polygon(5, 57, [-17, -11, 15, -10, 25, 6, 15, 15, -20, 11], color)
-    .setStrokeStyle(5, OUTLINE, 1);
-  const shine = scene.add.rectangle(-5, 25, 7, 24, 0xc4ced8, front ? 0.42 : 0.16);
+    .polygon(4, 57, [-19, -11, 17, -10, 28, 6, 17, 15, -23, 12], color)
+    .setStrokeStyle(5, MODEL_OUTLINE, 1);
+  const shine = scene.add.rectangle(-5, 25, 7, 24, MODEL_HIGHLIGHT, front ? 0.3 : 0.1);
   return scene.add.container(x, y, [hip, pillar, foot, shine]);
 }
 
 function createTorso(scene: Phaser.Scene, character: CharacterDefinition) {
   const body = scene.add
     .polygon(0, 0, [-52, -29, -34, -45, 31, -45, 53, -27, 51, 19, 32, 43, -33, 43, -53, 17], character.color)
-    .setStrokeStyle(6, OUTLINE, 1);
+    .setStrokeStyle(7, MODEL_OUTLINE, 1);
+  const shoulderRock = scene.add
+    .polygon(-42, -36, [-18, -7, -5, -20, 14, -16, 22, 3, 6, 17, -16, 13], character.shadowColor)
+    .setStrokeStyle(5, MODEL_OUTLINE, 1);
   const lowerPlate = scene.add
     .polygon(0, 13, [-43, -11, 42, -12, 36, 29, 22, 38, -27, 38, -42, 25], character.shadowColor, 0.42);
   const core = scene.add
-    .polygon(7, 1, [-10, -15, 9, -18, 18, 1, 5, 20, -14, 10], character.accentColor)
-    .setStrokeStyle(3, 0xffe2a2, 0.9);
-  return scene.add.container(0, -10, [body, lowerPlate, core]);
+    .polygon(5, 0, [-17, -22, 14, -22, 23, 2, 8, 25, -19, 13], GRANITE_CORE_GLOW)
+    .setStrokeStyle(4, 0xffefb0, 1);
+  const crack = scene.add.graphics().lineStyle(5, MODEL_HIGHLIGHT, 0.92)
+    .beginPath().moveTo(2, -18).lineTo(-5, -3).lineTo(5, 6).lineTo(0, 20).strokePath();
+  return scene.add.container(0, -10, [body, shoulderRock, lowerPlate, core, crack]);
 }
 
 function createHead(scene: Phaser.Scene, character: CharacterDefinition) {
   const head = scene.add
-    .polygon(0, 0, [-29, -17, -9, -29, 26, -22, 31, 8, 14, 23, -23, 20, -32, 1], character.color)
-    .setStrokeStyle(5, OUTLINE, 1);
+    .polygon(0, 0, [-34, -16, -12, -31, 29, -25, 36, 7, 17, 25, -27, 22, -37, 1], character.color)
+    .setStrokeStyle(6, MODEL_OUTLINE, 1);
   const facePlate = scene.add
-    .polygon(1, 1, [-23, -8, -4, -13, 24, -7, 19, 9, -19, 9], character.shadowColor);
-  const leftEye = scene.add.ellipse(-9, 0, 7, 9, 0xffefc1);
-  const rightEye = scene.add.ellipse(11, 0, 7, 9, 0xffefc1);
-  return scene.add.container(0, -52, [head, facePlate, leftEye, rightEye]);
+    .polygon(1, 1, [-28, -9, -5, -15, 29, -8, 22, 11, -23, 10], MODEL_OUTLINE);
+  const leftEye = scene.add.ellipse(-11, 0, 8, 11, 0xffefae);
+  const rightEye = scene.add.ellipse(13, 0, 8, 11, 0xffefae);
+  const eyeGlint = scene.add.circle(-13, -3, 2, MODEL_HIGHLIGHT);
+  return scene.add.container(0, -55, [head, facePlate, leftEye, rightEye, eyeGlint]);
 }
 
 function mirror(points: number[], direction: -1 | 1) {
   return points.map((point, index) => index % 2 === 0 ? point * direction : point);
+}
+
+function characterShade(color: number) {
+  return Phaser.Display.Color.IntegerToColor(color).darken(24).color;
 }
