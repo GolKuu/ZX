@@ -63,7 +63,7 @@ export function TeamModesPage() {
         <button
           type="button"
           className="menu-option menu-option--primary"
-          onClick={() => navigate('/online')}
+          onClick={() => navigate('/online-team')}
         >
           <span className="menu-option__icon" aria-hidden="true">◎</span>
           <span className="menu-option__copy">

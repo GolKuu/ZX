@@ -12,6 +12,17 @@ export async function joinPrivateRoom(roomCode: string) {
   });
 }
 
+export async function createTeamPrivateRoom() {
+  return roomRequest('/team-rooms', { method: 'POST', body: '{}' });
+}
+
+export async function joinTeamPrivateRoom(roomCode: string) {
+  return roomRequest(`/team-rooms/${encodeURIComponent(roomCode)}/join`, {
+    method: 'POST',
+    body: '{}',
+  });
+}
+
 async function roomRequest(path: string, init: RequestInit): Promise<RoomCredentials> {
   let response: Response;
   try {
