@@ -47,6 +47,20 @@ export class InputManager {
     return this.buffer.snapshot();
   }
 
+  // Programmatic input helpers for external controllers (mobile UI)
+  pressAction(playerId: PlayerId, action: CombatAction) {
+    // forward to internal buffer
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore access buffer internals via exposed API
+    this.buffer.press(playerId, action as any);
+  }
+
+  releaseAction(playerId: PlayerId, action: CombatAction) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    this.buffer.release(playerId, action as any);
+  }
+
   consumeGlobalPress(action: GameAction) {
     const first = this.buffer.consumePressed('player1', action);
     const second = this.buffer.consumePressed('player2', action);

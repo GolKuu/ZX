@@ -11,6 +11,7 @@ export const GameEvents = {
   switchToKeyboardRequested: 'game:switch-to-keyboard-requested',
   rematchRequested: 'game:rematch-requested',
   matchEnded: 'game:match-ended',
+  mobileAction: 'game:mobile-action',
 } as const;
 
 export type GameEventPayloads = {
@@ -27,6 +28,7 @@ export type GameEventPayloads = {
     winner: PlayerId;
     wins: Record<PlayerId, number>;
   };
+  [GameEvents.mobileAction]: { playerId: PlayerId; action: string; pressed: boolean };
 };
 
 export type GameEventName = keyof GameEventPayloads;
