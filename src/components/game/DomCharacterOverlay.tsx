@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { useGameBridge } from '../../app/gameBridgeContext';
 import { GameEvents } from '../../game/bridge/GameEvents';
 import { CharacterArt } from '../characters/CharacterArt';
+import CharacterTorsoArt from '../characters/CharacterTorsoArt';
 import { getCharacter, circleFighters } from '../../game/data/characters/circleFighters';
 
 export function DomCharacterOverlay({ parentRef }: { parentRef: React.RefObject<HTMLElement> }) {
@@ -51,7 +52,8 @@ export function DomCharacterOverlay({ parentRef }: { parentRef: React.RefObject<
       div.style.height = '360px';
       document.body.appendChild(div);
       const root = ReactDOM.createRoot(div);
-      root.render(React.createElement(CharacterArt, { characterId: id, state: 'idle' }));
+      // render torso-only for the torso texture
+      root.render(React.createElement(CharacterTorsoArt, { characterId: id, state: 'idle' }));
       // give the browser a tick to render
       setTimeout(() => {
         const svg = div.querySelector('svg');

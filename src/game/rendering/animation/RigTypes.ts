@@ -38,6 +38,7 @@ export type CharacterRig = {
   root: Phaser.GameObjects.Container;
   sync: (frame: RigFrame) => void;
   setAlpha: (alpha: number) => void;
+  setTorsoVisible?: (visible: boolean) => void;
 };
 
 export const RIG_RESTING_BOTTOM = 99;

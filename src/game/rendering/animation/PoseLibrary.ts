@@ -115,17 +115,20 @@ function applyAttack(
   }
   pose.x = drive * (heavy ? 11 : 7) * reach;
   pose.rotation = drive * (heavy ? 0.18 : 0.12);
-  pose.frontArm = drive * (kind === 'shira' ? -0.3 : -1.45) * reach;
-  pose.backArm = -drive * (kind === 'shira' ? 0.2 : 0.72);
-  pose.frontLeg = -drive * 0.28;
+  // stronger, more realistic arm extension during strikes
+  pose.frontArm = drive * (kind === 'shira' ? -0.6 : -1.9) * reach;
+  pose.backArm = -drive * (kind === 'shira' ? 0.36 : 0.95);
+  // legs brace the body more for real punches
+  pose.frontLeg = -drive * 0.5;
   pose.scaleX = frame.phase === 'active' ? 1.16 : 0.96;
   pose.scaleY = frame.phase === 'active' ? 0.87 : 1.05;
   if (low) applyCrouch(pose);
   if (frame.state.includes('air')) applyJump(pose, kind);
   if (frame.state.includes('special') || frame.state === 'super') {
-    pose.frontArm -= kind === 'shira' ? 0.34 : 0.42;
-    pose.backArm += kind === 'shira' ? 0.22 : 0.5;
-    pose.scaleX += 0.08;
+    // active snap for special attacks
+    pose.frontArm -= kind === 'shira' ? 0.8 : 1.0;
+    pose.backArm += kind === 'shira' ? 0.4 : 0.7;
+    pose.scaleX += 0.12;
   }
 }
 
@@ -136,8 +139,9 @@ function applyKick(
   heavy: boolean,
 ) {
   pose.x = drive * (heavy ? 13 : 9);
-  pose.frontArm = -0.82;
-  pose.backArm = 0.72;
+  // counterbalance arms more during kicks
+  pose.frontArm = -1.2;
+  pose.backArm = 1.0;
   pose.backLeg = drive < 0 ? 0.42 : -0.22;
   pose.scaleX = drive > 0 ? 1.2 : 0.94;
   pose.scaleY = drive > 0 ? 0.84 : 1.06;
@@ -145,9 +149,10 @@ function applyKick(
     pose.frontLeg = drive * -1.28;
     pose.rotation = drive * -0.08;
   } else if (motion === 'roundhouse-kick') {
-    pose.frontLeg = drive * -1.82;
-    pose.backLeg = 0.48;
-    pose.rotation = drive * 0.32;
+    // roundhouse: more pronounced hip rotation and extended striking leg
+    pose.frontLeg = drive * -2.2;
+    pose.backLeg = 0.62;
+    pose.rotation = drive * 0.44;
   } else if (motion === 'sweep-kick') {
     pose.frontLeg = drive * 1.42;
     pose.backLeg = -0.76;

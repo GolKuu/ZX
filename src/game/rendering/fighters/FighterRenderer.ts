@@ -93,12 +93,15 @@ export class FighterRenderer {
 
   applySpriteTexture(key: string) {
     if (this.sprite) return;
-    // create sprite aligned with container
     const scene = this.container.scene;
-    this.sprite = scene.add.image(0, 0, key).setOrigin(0.5, 0.5).setDepth(3);
-    // position will be updated in sync loop
-    this.sprite.setPosition(this.container.x, this.container.y);
-    // hide procedural rig visuals (container) if any
-    this.facingContainer.setVisible(false);
+    // create torso sprite; we'll keep arms/legs procedural
+    this.sprite = scene.add.image(0, -10, key).setOrigin(0.5, 0.44).setDepth(4);
+    this.sprite.setScale(0.5); // initial scale; tuned at runtime
+    // hide only the procedural torso if API available
+    try {
+      this.rig.setTorsoVisible?.(false as any);
+    } catch (e) {
+      this.facingContainer.setVisible(false);
+    }
   }
 }

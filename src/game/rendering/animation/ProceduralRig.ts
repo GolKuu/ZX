@@ -31,6 +31,10 @@ export class ProceduralRig implements CharacterRig {
     }, kind, characterId);
   }
 
+  setTorsoVisible(visible: boolean) {
+    this.parts.torso.setVisible(visible);
+  }
+
   sync(frame: RigFrame) {
     if (frame.stopped) return;
     const target = poseFor(frame, this.kind, this.characterId);
