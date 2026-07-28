@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { TICKS_PER_SECOND } from '../../config/balanceConfig';
 import type { ComboSnapshot, SimulationSnapshot } from '../../core/types';
 import { createSuperIndicator, drawFighterBars, drawRoundWins } from './HudBars';
+import { DefenseTrainingHud } from './DefenseTrainingHud';
 
 export class FightHud {
   private readonly graphics: Phaser.GameObjects.Graphics;
@@ -13,6 +14,7 @@ export class FightHud {
   private readonly superOne: Phaser.GameObjects.Text;
   private readonly superTwo: Phaser.GameObjects.Text;
   private readonly gaugeLabels: Phaser.GameObjects.Text[];
+  private readonly defenseTraining: DefenseTrainingHud;
 
   constructor(scene: Phaser.Scene, private readonly showCombatHints = true) {
     this.graphics = scene.add.graphics().setDepth(20);
@@ -34,6 +36,7 @@ export class FightHud {
     this.comboTwo = this.makeComboText(scene, 918, 122, 1);
     this.superOne = createSuperIndicator(scene, 42, 0);
     this.superTwo = createSuperIndicator(scene, 918, 1);
+    this.defenseTraining = new DefenseTrainingHud(scene, showCombatHints);
     this.gaugeLabels = [
       this.makeGaugeLabel(scene, 44, 30, 'HP', 0),
       this.makeGaugeLabel(scene, 44, 55, 'ENERGY', 0),
@@ -53,6 +56,7 @@ export class FightHud {
     this.round.setText(`Раунд ${snapshot.roundNumber}`);
     this.updateCombo(this.comboOne, snapshot.combos.player1);
     this.updateCombo(this.comboTwo, snapshot.combos.player2);
+    this.defenseTraining.update(snapshot);
     this.superOne.setVisible(
       this.showCombatHints &&
       snapshot.fighters.player1.energy >= snapshot.fighters.player1.maxEnergy,
@@ -62,8 +66,7 @@ export class FightHud {
       snapshot.fighters.player2.energy >= snapshot.fighters.player2.maxEnergy,
     );
 
-    const label =
-      countdownLabel ||
+    const label = countdownLabel ||
       (snapshot.matchWinner
         ? `${snapshot.matchWinner === 'player1' ? 'Player 1' : 'Player 2'} победил!`
         : snapshot.roundPhase === 'ROUND_OVER'
@@ -85,6 +88,7 @@ export class FightHud {
     this.comboTwo.destroy();
     this.superOne.destroy();
     this.superTwo.destroy();
+    this.defenseTraining.destroy();
     this.gaugeLabels.forEach((label) => label.destroy());
   }
 
@@ -94,13 +98,7 @@ export class FightHud {
       .setVisible(combo.hits >= 2);
   }
 
-  private makeText(
-    scene: Phaser.Scene,
-    x: number,
-    y: number,
-    value: string,
-    fontSize: string,
-  ) {
+  private makeText(scene: Phaser.Scene, x: number, y: number, value: string, fontSize: string) {
     return scene.add
       .text(x, y, value, {
         fontFamily: 'Arial',
@@ -145,5 +143,4 @@ export class FightHud {
       .setOrigin(originX, 0)
       .setDepth(22);
   }
-
 }

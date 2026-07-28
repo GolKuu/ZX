@@ -1,19 +1,17 @@
-import { DevelopmentNotice } from '../components/game/DevelopmentNotice';
 import { CombinationGuide } from '../components/controls/CombinationGuide';
 import { AppShell } from '../components/layout/AppShell';
 import { PageHeader } from '../components/layout/PageHeader';
+import { DefenseTrainingGuide } from '../components/training/DefenseTrainingGuide';
 
 export function TrainingPage() {
   return (
     <AppShell compact>
       <PageHeader
-        eyebrow="Будущий режим"
+        eyebrow="Защитная тренировка"
         title="Тренировка"
-        description="Безопасная площадка для изучения управления и кадровых данных."
+        description="Окна блока, Combo Escape и защитные ресурсы без скрытых правил."
       />
-      <DevelopmentNotice>
-        Режим появится после стабилизации базового локального боя.
-      </DevelopmentNotice>
+      <DefenseTrainingGuide />
       <CombinationGuide />
     </AppShell>
   );

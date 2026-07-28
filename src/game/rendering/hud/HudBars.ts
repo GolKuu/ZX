@@ -22,6 +22,25 @@ export function drawFighterBars(
     0x9f8cff,
     mirrored,
   );
+  drawDefenseSegments(graphics, fighter, x, mirrored);
+}
+
+function drawDefenseSegments(
+  graphics: Phaser.GameObjects.Graphics,
+  fighter: FighterSnapshot,
+  x: number,
+  mirrored: boolean,
+) {
+  for (let index = 0; index < fighter.defense.maxSegments; index += 1) {
+    const offset = index * 18;
+    const segmentX = mirrored ? x + BAR_WIDTH - 11 - offset : x + 11 + offset;
+    const filled = index < fighter.defense.segments;
+    graphics
+      .fillStyle(filled ? 0x7557ff : 0xffffff, filled ? 1 : 0.42)
+      .fillCircle(segmentX, 89, 6)
+      .lineStyle(2, 0x30264f, 0.7)
+      .strokeCircle(segmentX, 89, 6);
+  }
 }
 
 export function drawRoundWins(
@@ -62,7 +81,7 @@ export function createSuperIndicator(
   originX: number,
 ) {
   return scene.add
-    .text(x, 88, 'SUPER READY', {
+    .text(x, 100, 'SUPER READY', {
       fontFamily: 'Arial',
       fontSize: '11px',
       fontStyle: 'bold',

@@ -79,7 +79,16 @@ describe('simplified input', () => {
     state.fighters.player1.mode = 'hitstun';
     state.fighters.player1.modeTicksRemaining = 5;
     state.fighters.player1.energy = 100;
-    state.combos.player2 = { hits: 2, damage: 12, targetId: 'player1', remainingTicks: 30 };
+    state.combos.player2 = {
+      hits: 2,
+      damage: 12,
+      targetId: 'player1',
+      remainingTicks: 30,
+      escapeWindowStartsInTicks: null,
+      escapeWindowTicksRemaining: 0,
+      breakWindowTicksRemaining: 10,
+      breakAllowed: true,
+    };
 
     const result = resolver.resolve({
       player1: player(['DEFENSE', 'SPECIAL_ATTACK'], ['DEFENSE', 'SPECIAL_ATTACK']),

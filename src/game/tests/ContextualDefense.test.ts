@@ -20,7 +20,7 @@ describe('contextual defense', () => {
       fighter,
       input,
       getCharacterAttacks('pulse').lightChain[0],
-    )).toBe(true);
+    )).toMatchObject({ blocked: true, kind: 'perfect' });
     expect(fighter.blockMeter).toBe(fighter.maxBlockMeter);
   });
 
@@ -35,6 +35,10 @@ describe('contextual defense', () => {
       damage: 15,
       targetId: 'player1',
       remainingTicks: 30,
+      escapeWindowStartsInTicks: null,
+      escapeWindowTicksRemaining: 0,
+      breakWindowTicksRemaining: 10,
+      breakAllowed: true,
     };
     simulation.restore(snapshot);
 
@@ -48,7 +52,8 @@ describe('contextual defense', () => {
     const result = simulation.getSnapshot();
     expect(result.fighters.player1.mode).not.toBe('hitstun');
     expect(result.fighters.player1.attack).toBeNull();
-    expect(result.fighters.player1.blockMeter).toBeCloseTo(50.18, 4);
+    expect(result.fighters.player1.defense.segments).toBe(1);
+    expect(result.fighters.player1.defense.effect).toBe('combo-break');
     expect(result.combos.player2.hits).toBe(0);
   });
 
@@ -63,6 +68,10 @@ describe('contextual defense', () => {
       damage: 15,
       targetId: 'player1',
       remainingTicks: 30,
+      escapeWindowStartsInTicks: null,
+      escapeWindowTicksRemaining: 3,
+      breakWindowTicksRemaining: 8,
+      breakAllowed: true,
     };
     simulation.restore(snapshot);
     const input = emptyInputFrame();
@@ -75,7 +84,12 @@ describe('contextual defense', () => {
     simulation.step(input, FIXED_STEP_SECONDS);
     const result = simulation.getSnapshot();
     expect(result.fighters.player1.mode).not.toBe('hitstun');
-    expect(result.fighters.player1.energy).toBe(50);
+    expect(result.fighters.player1.energy).toBe(100);
+    expect(result.fighters.player1.defense.segments).toBe(2);
+    expect(result.fighters.player1.defense.effect).toBe('combo-escape');
+    expect(Math.abs(
+      result.fighters.player1.x - result.fighters.player2.x,
+    )).toBe(210);
     expect(result.combos.player2.hits).toBe(0);
   });
 

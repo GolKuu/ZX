@@ -1,0 +1,75 @@
+.defense-training-guide {
+  display: grid;
+  gap: 20px;
+}
+
+.defense-training-guide > div:first-child {
+  max-width: 720px;
+}
+
+.defense-timing-grid,
+.defense-window-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.defense-timing-card,
+.defense-window-grid article {
+  padding: 18px;
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  background: #ffffffd9;
+}
+
+.defense-timing-card span,
+.defense-window-grid strong,
+.defense-window-grid span {
+  display: block;
+}
+
+.defense-timing-card span {
+  width: fit-content;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: white;
+  background: var(--muted);
+  font-weight: 900;
+}
+
+.defense-timing-card p {
+  margin: 12px 0 0;
+}
+
+.defense-timing-card--early span {
+  color: var(--ink);
+  background: var(--yellow);
+}
+
+.defense-timing-card--success span {
+  background: #148675;
+}
+
+.defense-timing-card--late span {
+  background: #bd3550;
+}
+
+.defense-window-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.defense-window-grid article {
+  display: grid;
+  gap: 6px;
+}
+
+.defense-window-grid span {
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .defense-timing-grid,
+  .defense-window-grid {
+    grid-template-columns: 1fr;
+  }
+}

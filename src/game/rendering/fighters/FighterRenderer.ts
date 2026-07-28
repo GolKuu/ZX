@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { CharacterDefinition } from '../../data/characters/circleFighters';
 import type { FighterSnapshot, PlayerId } from '../../core/types';
 import { AttackVisualRenderer } from '../effects/AttackVisualRenderer';
+import { DefenseEffectRenderer } from '../effects/DefenseEffectRenderer';
 import { createCharacterBody } from './CharacterBodyFactory';
 
 export class FighterRenderer {
@@ -10,6 +11,7 @@ export class FighterRenderer {
   private readonly body: Phaser.GameObjects.Shape;
   private readonly bodyContainer: Phaser.GameObjects.Container;
   private readonly attackVisual: AttackVisualRenderer;
+  private readonly defenseVisual: DefenseEffectRenderer;
 
   constructor(scene: Phaser.Scene, ownerId: PlayerId, character: CharacterDefinition) {
     this.shadow = scene.add.ellipse(0, 34, 92, 22, 0x2f2555, 0.25);
@@ -19,8 +21,13 @@ export class FighterRenderer {
       this.shadow,
       ...appearance.children,
     ]);
+    this.defenseVisual = new DefenseEffectRenderer(scene);
     this.attackVisual = new AttackVisualRenderer(scene, ownerId, character.accentColor);
-    this.container = scene.add.container(0, 0, [this.bodyContainer, this.attackVisual.graphics]);
+    this.container = scene.add.container(0, 0, [
+      this.defenseVisual.graphics,
+      this.bodyContainer,
+      this.attackVisual.graphics,
+    ]);
   }
 
   sync(snapshot: FighterSnapshot) {
@@ -37,6 +44,7 @@ export class FighterRenderer {
     const stunned = snapshot.mode === 'hitstun' || snapshot.mode === 'blockstun';
     this.body.setAlpha(stunned ? 0.55 : snapshot.mode === 'wakeup' ? 0.75 : 1);
     this.shadow.setScale(snapshot.grounded ? 1 : 0.7);
+    this.defenseVisual.sync(snapshot);
     this.attackVisual.sync(snapshot);
   }
 
