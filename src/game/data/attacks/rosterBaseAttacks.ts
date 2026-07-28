@@ -1,7 +1,7 @@
 import type { CharacterAttackSet } from '../../combat/AttackDefinition';
 import type { CharacterDefinition, CombatStyle } from '../characters/circleFighters';
 import { makeAttack } from './attackFactory';
-import { createPrototypeActions } from './rosterPrototypeActions';
+import { createRosterActions } from './rosterActions';
 
 const tuning: Record<CombatStyle, { startup: number; damage: number; reach: number }> = {
   heavy: { startup: 2, damage: 2, reach: 6 },
@@ -103,6 +103,6 @@ export function createRosterBaseAttacks(character: CharacterDefinition): Charact
       startup: 9, active: 7, recovery: 29, damage: 21, action: 'DASH_HEAVY',
       category: 'heavy', reach: 128, motion: 'slam', visualShape: 'burst', knockdown: true,
     }),
-    ...createPrototypeActions(character, hit),
+    ...createRosterActions(character, hit),
   };
 }

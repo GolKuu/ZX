@@ -1,5 +1,6 @@
 import type { CharacterAttackSet } from '../../combat/AttackDefinition';
 import { makeAttack } from './attackFactory';
+import { signatureSpecial } from './signatureSpecials';
 
 const id = 'granite';
 type NamedAttackOptions = Omit<Parameters<typeof makeAttack>[2], 'name'>;
@@ -92,11 +93,10 @@ function createGraniteContext() {
 }
 
 function createGranitePowers() {
+  const { name, ...signature } = signatureSpecial(id);
   return {
-    special: hit('special-neutral', 'Эхо земли', {
-      startup: 18, active: 8, recovery: 34, damage: 22, action: 'SPECIAL_ATTACK',
-      category: 'special', level: 'low', reach: 142, height: 32,
-      knockbackX: 430, knockdown: true, hitStop: 9,
+    special: hit('special-neutral', name, {
+      ...signature, action: 'SPECIAL_ATTACK', category: 'special', hitStop: 9,
     }),
     forwardSpecial: hit('special-forward', 'Живой валун', {
       startup: 13, active: 9, recovery: 32, damage: 21, action: 'DIRECTIONAL_SPECIAL',

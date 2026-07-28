@@ -1,5 +1,6 @@
 import type { CharacterAttackSet } from '../../combat/AttackDefinition';
 import { makeAttack } from './attackFactory';
+import { signatureSpecial } from './signatureSpecials';
 
 const id = 'shira';
 type NamedAttackOptions = Omit<Parameters<typeof makeAttack>[2], 'name'>;
@@ -93,10 +94,10 @@ function createShiraContext() {
 }
 
 function createShiraPowers() {
+  const { name, ...signature } = signatureSpecial(id);
   return {
-    special: hit('special-neutral', 'Вертушка лезвий', {
-      startup: 7, active: 9, recovery: 18, damage: 15, action: 'SPECIAL_ATTACK',
-      category: 'special', reach: 86, knockbackX: 350,
+    special: hit('special-neutral', name, {
+      ...signature, action: 'SPECIAL_ATTACK', category: 'special',
     }),
     forwardSpecial: hit('special-forward', 'Ножничный рывок', {
       startup: 5, active: 8, recovery: 24, damage: 17, action: 'DIRECTIONAL_SPECIAL',

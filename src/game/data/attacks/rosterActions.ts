@@ -1,6 +1,7 @@
 import type { AttackDefinition } from '../../combat/AttackDefinition';
 import type { CharacterDefinition } from '../characters/circleFighters';
 import type { makeAttack } from './attackFactory';
+import { signatureSpecial } from './signatureSpecials';
 
 type RosterHit = (
   slot: string,
@@ -8,12 +9,12 @@ type RosterHit = (
   options: Omit<Parameters<typeof makeAttack>[2], 'name'>,
 ) => AttackDefinition;
 
-export function createPrototypeActions(character: CharacterDefinition, hit: RosterHit) {
+export function createRosterActions(character: CharacterDefinition, hit: RosterHit) {
   const force = character.force;
+  const { name, ...signature } = signatureSpecial(character.id);
   return {
-    special: hit('special-neutral', `Импульс: ${force}`, {
-      startup: 14, active: 7, recovery: 28, damage: 18, action: 'SPECIAL_ATTACK',
-      category: 'special', reach: 120, motion: 'burst', visualShape: 'burst',
+    special: hit('special-neutral', name, {
+      ...signature, action: 'SPECIAL_ATTACK', category: 'special',
     }),
     forwardSpecial: hit('special-forward', `Порыв: ${force}`, {
       startup: 12, active: 8, recovery: 28, damage: 19, action: 'DIRECTIONAL_SPECIAL',
