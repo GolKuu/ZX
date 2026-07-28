@@ -7,6 +7,7 @@ import { HomePage } from '../pages/HomePage';
 import { LocalPvpPage } from '../pages/LocalPvpPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { ProfilePage } from '../pages/ProfilePage';
+import { PublicPlayerPage } from '../pages/PublicPlayerPage';
 import { TrainingPage } from '../pages/TrainingPage';
 import { VisualStyleGuidePage } from '../pages/VisualStyleGuidePage';
 
@@ -33,6 +34,7 @@ export function AppRouter() {
       <Route path="/visual-style-guide" component={VisualStyleGuidePage} />
       <Route path="/controls" component={ControlsPage} />
       <Route path="/profile" component={ProfilePage} />
+      <Route path="/players/:playerId" component={PublicPlayerPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFoundPage} />
     </Switch>

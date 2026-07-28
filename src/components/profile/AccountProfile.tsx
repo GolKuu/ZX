@@ -1,4 +1,5 @@
 import type { User } from '@supabase/supabase-js';
+import { Link } from 'wouter';
 import { AchievementList } from './AchievementList';
 import { ProfileEditor } from './ProfileEditor';
 import { SecurityPanel } from './SecurityPanel';
@@ -14,6 +15,11 @@ export function AccountProfile({ user }: { user: User }) {
 
   return (
     <div className="account-grid">
+      <div className="account-toolbar">
+        <Link className="button button--secondary" href={`/players/${user.id}`}>
+          Открыть публичную карточку
+        </Link>
+      </div>
       <ProfileEditor profile={data.profile} onSaved={reload} />
       <StatisticsCard statistics={data.statistics} />
       <AchievementList achievements={data.achievements} />

@@ -19,6 +19,22 @@
   grid-column: 1 / -1;
 }
 
+.account-toolbar {
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+}
+
+.public-player-card {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.public-player-card h1 {
+  margin-bottom: 12px;
+}
+
 .account-panel h2,
 .account-panel p,
 .account-panel dl {
@@ -182,7 +198,8 @@
   }
 
   .profile-heading,
-  .security-actions {
+  .security-actions,
+  .public-player-card {
     align-items: flex-start;
     flex-direction: column;
   }
