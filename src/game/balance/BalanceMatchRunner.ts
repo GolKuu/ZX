@@ -98,7 +98,11 @@ function actorSeed(options: MatchOptions, playerId: PlayerId) {
   const character = playerId === 'player1'
     ? options.player1Character
     : options.player2Character;
-  const mirrorSlot = options.player1Character === options.player2Character ? playerId : 'actor';
+  const mirror = options.player1Character === options.player2Character;
+  const swappedSlot = options.matchIndex % 2 === 1
+    ? playerId === 'player1' ? 'player2' : 'player1'
+    : playerId;
+  const mirrorSlot = mirror ? swappedSlot : 'actor';
   return deriveSeed(options.seed, character, mirrorSlot);
 }
 

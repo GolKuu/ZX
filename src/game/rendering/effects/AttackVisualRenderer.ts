@@ -4,9 +4,11 @@ import { findCharacterAttack } from '../../data/attacks/characterAttacks';
 import type { FighterSnapshot, PlayerId } from '../../core/types';
 import type { AttackVisualShape } from '../../combat/AttackDefinition';
 import { drawPowerAccent } from './AttackPowerAccents';
+import { CHARACTER_MOTION } from '../animation/CharacterMotionProfiles';
 
 export class AttackVisualRenderer {
   readonly graphics: Phaser.GameObjects.Graphics;
+  private lingerFrames = 0;
 
   constructor(
     scene: Phaser.Scene,
@@ -18,16 +20,24 @@ export class AttackVisualRenderer {
 
   sync(snapshot: FighterSnapshot) {
     const attack = ownsAttackVisual(this.ownerId, snapshot) ? snapshot.attack : null;
-    this.graphics.clear();
     if (!attack) {
-      this.graphics.setVisible(false);
+      if (this.lingerFrames > 0) {
+        this.lingerFrames -= 1;
+        this.graphics
+          .setVisible(true)
+          .setAlpha(this.lingerFrames / CHARACTER_MOTION[this.character.id].lingerFrames * .18);
+      } else {
+        this.graphics.clear().setVisible(false);
+      }
       return;
     }
+    this.graphics.clear();
     const definition = findCharacterAttack(snapshot.characterId, attack.id);
     const hitbox = definition?.hitboxes[0];
     if (!definition || !hitbox) return;
     const alpha = attack.phase === 'active' ? 0.88 : attack.phase === 'startup' ? 0.28 : 0.13;
     this.graphics.setVisible(true).setAlpha(alpha).setScale(snapshot.facing, 1);
+    this.lingerFrames = CHARACTER_MOTION[this.character.id].lingerFrames;
     const x = hitbox.offsetX;
     const y = hitbox.offsetY + 38;
     this.drawShape(
@@ -39,17 +49,15 @@ export class AttackVisualRenderer {
       attack.phase === 'active',
       attack.frame,
     );
-    if (definition.category === 'special' || definition.category === 'super') {
-      drawPowerAccent(
-        this.graphics,
-        this.character,
-        x,
-        y,
-        hitbox.width,
-        hitbox.height,
-        attack.frame,
-      );
-    }
+    drawPowerAccent(
+      this.graphics,
+      this.character,
+      x,
+      y,
+      hitbox.width,
+      hitbox.height,
+      attack.frame,
+    );
   }
 
   private drawShape(

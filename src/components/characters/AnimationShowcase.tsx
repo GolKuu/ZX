@@ -22,7 +22,7 @@ export function AnimationShowcase({
         const index = SHOWCASE_ANIMATION_STATES.indexOf(current);
         return SHOWCASE_ANIMATION_STATES[(index + 1) % SHOWCASE_ANIMATION_STATES.length];
       });
-    }, 1_850);
+    }, 3_100);
     return () => window.clearInterval(timer);
   }, [playing]);
 

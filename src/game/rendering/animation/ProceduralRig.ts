@@ -8,6 +8,7 @@ import {
 } from './RigTypes';
 import { poseFor } from './PoseLibrary';
 import type { CharacterId } from '../../data/characters/circleFighters';
+import { CHARACTER_MOTION } from './CharacterMotionProfiles';
 
 export class ProceduralRig implements CharacterRig {
   readonly root: Phaser.GameObjects.Container;
@@ -33,7 +34,11 @@ export class ProceduralRig implements CharacterRig {
   sync(frame: RigFrame) {
     if (frame.stopped) return;
     const target = poseFor(frame, this.kind, this.characterId);
-    this.current = blendPose(this.current, target);
+    this.current = blendPose(
+      this.current,
+      target,
+      CHARACTER_MOTION[this.characterId].blend,
+    );
     const pose = this.current;
     this.root
       .setPosition(pose.x, groundedRootOffsetY(pose.y, pose.scaleY))
@@ -58,19 +63,19 @@ export function groundedRootOffsetY(poseY: number, scaleY: number) {
   return poseY + RIG_RESTING_BOTTOM * (1 - scaleY);
 }
 
-function blendPose(current: RigPose, target: RigPose): RigPose {
+function blendPose(current: RigPose, target: RigPose, speed: number): RigPose {
   return {
-    x: blend(current.x, target.x, 0.32),
-    y: blend(current.y, target.y, 0.3),
-    rotation: blend(current.rotation, target.rotation, 0.28),
-    scaleX: blend(current.scaleX, target.scaleX, 0.38),
-    scaleY: blend(current.scaleY, target.scaleY, 0.38),
-    head: blend(current.head, target.head, 0.18),
-    torso: blend(current.torso, target.torso, 0.3),
-    frontArm: blend(current.frontArm, target.frontArm, 0.35),
-    backArm: blend(current.backArm, target.backArm, 0.24),
-    frontLeg: blend(current.frontLeg, target.frontLeg, 0.32),
-    backLeg: blend(current.backLeg, target.backLeg, 0.22),
+    x: blend(current.x, target.x, speed),
+    y: blend(current.y, target.y, speed * .92),
+    rotation: blend(current.rotation, target.rotation, speed * .86),
+    scaleX: blend(current.scaleX, target.scaleX, speed * 1.12),
+    scaleY: blend(current.scaleY, target.scaleY, speed * 1.12),
+    head: blend(current.head, target.head, speed * .62),
+    torso: blend(current.torso, target.torso, speed * .94),
+    frontArm: blend(current.frontArm, target.frontArm, speed * 1.08),
+    backArm: blend(current.backArm, target.backArm, speed * .76),
+    frontLeg: blend(current.frontLeg, target.frontLeg, speed),
+    backLeg: blend(current.backLeg, target.backLeg, speed * .7),
   };
 }
 

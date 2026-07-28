@@ -78,14 +78,20 @@ export class PairAggregator {
   ) {}
 
   add(replay: BalanceReplay) {
-    const aIsPlayerOne = replay.player1Character === this.characterA;
+    const mirror = this.characterA === this.characterB;
+    const aIsPlayerOne = mirror
+      ? replay.matchIndex % 2 === 0
+      : replay.player1Character === this.characterA;
     if (aIsPlayerOne) this.sideOneMatches += 1;
     else this.sideTwoMatches += 1;
     const winnerCharacter = replay.winner === 'player1'
       ? replay.player1Character
       : replay.player2Character;
-    if (this.characterA === this.characterB) {
-      if (replay.winner === 'player1') this.winsA += 1;
+    if (mirror) {
+      if (
+        (aIsPlayerOne && replay.winner === 'player1') ||
+        (!aIsPlayerOne && replay.winner === 'player2')
+      ) this.winsA += 1;
       else this.winsB += 1;
     } else if (winnerCharacter === this.characterA) {
       this.winsA += 1;
@@ -122,11 +128,6 @@ export class PairAggregator {
   }
 
   private addReplayMetrics(replay: BalanceReplay, aIsPlayerOne: boolean) {
-    if (this.characterA === this.characterB) {
-      addMetrics(this.metricsA, replay.metrics.player1);
-      addMetrics(this.metricsB, replay.metrics.player2);
-      return;
-    }
     const aPlayer: PlayerId = aIsPlayerOne ? 'player1' : 'player2';
     const bPlayer: PlayerId = aIsPlayerOne ? 'player2' : 'player1';
     addMetrics(this.metricsA, replay.metrics[aPlayer]);

@@ -30,7 +30,7 @@ export class FighterRenderer {
     this.facingContainer = scene.add.container(0, 38 - RIG_RESTING_BOTTOM, [this.rig.root]);
     this.defenseVisual = new DefenseEffectRenderer(scene);
     this.attackVisual = new AttackVisualRenderer(scene, ownerId, character);
-    this.trail = new MotionTrailRenderer(scene, character.accentColor, character.visualKind);
+    this.trail = new MotionTrailRenderer(scene, character);
     this.container = scene.add.container(0, 0, [
       this.trail.graphics,
       this.shadow,

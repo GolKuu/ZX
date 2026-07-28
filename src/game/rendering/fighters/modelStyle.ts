@@ -1,5 +1,5 @@
-export const MODEL_OUTLINE = 0x292441;
-export const MODEL_OUTLINE_CSS = '#292441';
-export const MODEL_HIGHLIGHT = 0xfffbf3;
-export const MODEL_EYE_GLOW = 0xeafff8;
-export const GRANITE_CORE_GLOW = 0xffd56a;
+export const MODEL_OUTLINE = 0x201a36;
+export const MODEL_OUTLINE_CSS = '#201a36';
+export const MODEL_HIGHLIGHT = 0xfff8e8;
+export const MODEL_EYE_GLOW = 0xcffff7;
+export const GRANITE_CORE_GLOW = 0xffc857;

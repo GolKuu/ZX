@@ -7,7 +7,7 @@
   fill: #25213a;
   opacity: 0.18;
   transform-origin: center;
-  transition: transform 220ms ease;
+  transition: transform 420ms ease;
 }
 
 .character-art .art-rig,
@@ -16,7 +16,36 @@
 .character-art .art-head {
   transform-box: fill-box;
   transform-origin: top center;
-  transition: transform 240ms cubic-bezier(.2, .8, .2, 1);
+  transition: transform 520ms cubic-bezier(.18, .78, .18, 1);
+}
+
+.character-art .skin-line {
+  fill: none;
+  stroke: #fffaf3;
+  stroke-width: 5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.character-art[data-state="idle"] .art-rig {
+  animation: skin-idle 3.6s ease-in-out infinite;
+}
+
+.character-art--granite[data-state="idle"] .art-rig,
+.character-art--sylvan[data-state="idle"] .art-rig {
+  animation-duration: 5.2s;
+}
+
+.character-art--volt[data-state="idle"] .art-rig,
+.character-art--fenr[data-state="idle"] .art-rig,
+.character-art--shira[data-state="idle"] .art-rig {
+  animation-duration: 2.4s;
+}
+
+.character-art--marina[data-state="idle"] .art-rig,
+.character-art--zephyr[data-state="idle"] .art-rig,
+.character-art--pyron[data-state="idle"] .art-rig {
+  animation-name: skin-float;
 }
 
 .character-art[data-state="walk"] .art-leg--front {
@@ -88,4 +117,16 @@
 
 .character-art[data-state="victory"] .art-rig {
   transform: translateY(-8px) scale(1.05);
+}
+
+@keyframes skin-idle {
+  0%,
+  100% { transform: translateY(0) scale(1); }
+  48% { transform: translateY(-5px) scale(1.015, .985); }
+}
+
+@keyframes skin-float {
+  0%,
+  100% { transform: translateY(2px) rotate(-1deg); }
+  50% { transform: translateY(-9px) rotate(1deg); }
 }

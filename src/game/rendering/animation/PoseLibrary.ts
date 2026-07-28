@@ -2,6 +2,7 @@ import type { AnimationStateId } from './AnimationCatalog';
 import type { RigFrame, RigPose } from './RigTypes';
 import { applyReactionPose } from './PoseReactions';
 import type { CharacterId } from '../../data/characters/circleFighters';
+import { CHARACTER_MOTION } from './CharacterMotionProfiles';
 
 const BASE: RigPose = {
   x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1,
@@ -14,9 +15,10 @@ export function poseFor(
   kind: 'granite' | 'shira',
   characterId: CharacterId,
 ): RigPose {
-  const time = frame.tick / 7;
+  const motion = CHARACTER_MOTION[characterId];
+  const time = frame.tick / motion.cadence;
   const pose = { ...BASE };
-  pose.y = -Math.abs(Math.sin(time * 0.7)) * (kind === 'granite' ? 1.2 : 2);
+  pose.y = -Math.abs(Math.sin(time * 0.7)) * motion.bounce;
   pose.head = Math.sin(time * 0.55) * 0.025;
   if (applyReactionPose(pose, frame.state, time, characterId)) return pose;
   if (frame.state === 'walk') applyWalk(pose, time, kind);
@@ -26,7 +28,7 @@ export function poseFor(
   else if (frame.state === 'landing') applyLanding(pose);
   else if (frame.state === 'crouch') applyCrouch(pose);
   else if (isDefense(frame.state)) applyDefense(pose, frame.state);
-  else if (isAttack(frame.state)) applyAttack(pose, frame, kind);
+  else if (isAttack(frame.state)) applyAttack(pose, frame, kind, motion.reach);
   return pose;
 }
 
@@ -96,7 +98,12 @@ function applyDefense(pose: RigPose, state: AnimationStateId) {
   if (state === 'combo-escape') pose.x = -14;
 }
 
-function applyAttack(pose: RigPose, frame: RigFrame, kind: 'granite' | 'shira') {
+function applyAttack(
+  pose: RigPose,
+  frame: RigFrame,
+  kind: 'granite' | 'shira',
+  reach: number,
+) {
   const drive = frame.phase === 'startup' ? -0.4 : frame.phase === 'active' ? 1 : 0.28;
   const heavy = frame.state.includes('heavy') || frame.state === 'super';
   const low = frame.state.includes('low');
@@ -106,9 +113,9 @@ function applyAttack(pose: RigPose, frame: RigFrame, kind: 'granite' | 'shira') 
     if (frame.state.includes('air')) pose.y -= 9;
     return;
   }
-  pose.x = drive * (heavy ? 11 : 7);
+  pose.x = drive * (heavy ? 11 : 7) * reach;
   pose.rotation = drive * (heavy ? 0.18 : 0.12);
-  pose.frontArm = drive * (kind === 'shira' ? -0.3 : -1.45);
+  pose.frontArm = drive * (kind === 'shira' ? -0.3 : -1.45) * reach;
   pose.backArm = -drive * (kind === 'shira' ? 0.2 : 0.72);
   pose.frontLeg = -drive * 0.28;
   pose.scaleX = frame.phase === 'active' ? 1.16 : 0.96;
