@@ -1,6 +1,6 @@
 import { defaultGamepadProfile } from '../config/defaultControls';
 import { InputBuffer } from '../core/InputBuffer';
-import type { GameAction, InputFrame, PlayerId } from '../core/types';
+import type { GameAction, InputFrame, PlayerId, CombatAction } from '../core/types';
 import { GamepadProvider } from './GamepadProvider';
 import { KeyboardProvider } from './KeyboardProvider';
 import type { KeyboardProfiles, PlayerInputAssignment } from './InputProfile';

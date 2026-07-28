@@ -4,6 +4,7 @@ import { useGameBridge } from '../../app/gameBridgeContext';
 import { createGameConfig } from '../config/gameConfig';
 import { GameEvents } from './GameEvents';
 import type { LocalPvpMatchConfig } from '../../stores/localPvpStore';
+import MobileControls from '../../components/controls/MobileControls';
 
 export function GameCanvas({
   matchConfig,
@@ -20,8 +21,10 @@ export function GameCanvas({
   const [isReady, setIsReady] = useState(false);
   const [startupError, setStartupError] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    setIsMobile(Boolean((navigator.maxTouchPoints && navigator.maxTouchPoints > 0) || 'ontouchstart' in window));
     const parent = parentRef.current;
     if (!parent || gameRef.current) return;
 
@@ -105,6 +108,7 @@ export function GameCanvas({
         </div>
       )}
       <div ref={parentRef} className="game-canvas__surface" />
+      {isMobile && <MobileControls />}
     </section>
   );
 }

@@ -180,3 +180,34 @@ kbd {
     grid-template-columns: 1fr;
   }
 }
+
+/* Mobile on-screen controls */
+.mobile-controls {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: auto;
+}
+.mobile-controls__row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.mobile-btn {
+  min-width: 56px;
+  min-height: 56px;
+  border-radius: 14px;
+  border: 3px solid var(--ink);
+  background: rgba(255,255,255,0.92);
+  font-weight: 900;
+  font-size: 16px;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.12);
+}
+.mobile-btn--action {
+  padding: 8px 12px;
+  min-width: 84px;
+}
