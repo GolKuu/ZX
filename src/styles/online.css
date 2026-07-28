@@ -1,0 +1,180 @@
+.online-start {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.online-start .setup-error {
+  grid-column: 1 / -1;
+}
+
+.online-join {
+  align-content: center;
+}
+
+.online-join input,
+.invite-card input {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 2px solid var(--line);
+  border-radius: 13px;
+  color: var(--ink);
+  background: white;
+  font: inherit;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.online-room {
+  display: grid;
+  gap: 18px;
+}
+
+.online-room__topline,
+.online-ready,
+.invite-card,
+.invite-card__actions,
+.online-players {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.online-room__topline,
+.invite-card,
+.online-ready {
+  justify-content: space-between;
+}
+
+.network-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: var(--ink);
+  background: #f0ecf8;
+  font-weight: 900;
+}
+
+.network-badge > span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #9a8ba9;
+}
+
+.network-badge--connected > span {
+  background: #37b69a;
+}
+
+.network-badge--reconnecting > span,
+.network-badge--connecting > span {
+  background: #e9a84a;
+}
+
+.network-badge--disconnected > span {
+  background: #c6455d;
+}
+
+.invite-card,
+.online-ready {
+  padding: 20px;
+  border: 2px solid var(--line);
+  border-radius: 20px;
+  background: #fffdfc;
+}
+
+.room-code {
+  display: block;
+  margin: 4px 0;
+  color: var(--purple-dark);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  letter-spacing: 0.14em;
+}
+
+.invite-card__actions {
+  min-width: min(100%, 460px);
+}
+
+.invite-card__actions input {
+  text-transform: none;
+}
+
+.online-players {
+  justify-content: center;
+}
+
+.online-player {
+  display: flex;
+  min-width: min(40%, 330px);
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  background: #f9f6ff;
+}
+
+.online-player--ready {
+  border-color: var(--mint);
+  background: #eafffb;
+}
+
+.online-player div {
+  display: grid;
+  gap: 3px;
+}
+
+.online-player span,
+.online-player small {
+  color: var(--muted);
+}
+
+.online-versus {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 16px;
+  color: white;
+  background: var(--purple-dark);
+  font-weight: 950;
+}
+
+.online-fight__network {
+  position: absolute;
+  z-index: 30;
+  top: 12px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateX(-50%);
+}
+
+.online-fight__network > span:last-child {
+  color: white;
+  text-shadow: 0 1px 4px #292441;
+  font-weight: 900;
+}
+
+@media (max-width: 760px) {
+  .online-start {
+    grid-template-columns: 1fr;
+  }
+
+  .invite-card,
+  .online-ready,
+  .invite-card__actions,
+  .online-players {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .online-player {
+    width: 100%;
+    min-width: 0;
+  }
+}

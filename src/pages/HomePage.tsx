@@ -10,7 +10,12 @@ const menuItems = [
     href: '/local-pvp',
     primary: true,
   },
-  { title: 'Онлайн-бой', description: 'Соперники со всего мира', icon: '◎' },
+  {
+    title: 'Онлайн-бой',
+    description: 'Приватная комната по ссылке',
+    icon: '◎',
+    href: '/online',
+  },
   { title: 'Игрок против компьютера', description: 'Бой с умным ботом', icon: '◆' },
   { title: 'Кооператив', description: 'Сражайтесь в одной команде', icon: '♣' },
   { title: 'Тренировка', description: 'Отработка приёмов и таймингов', icon: '◉' },

@@ -6,6 +6,7 @@
 @import './styles/game.css';
 @import './styles/controls.css';
 @import './styles/local-pvp.css';
+@import './styles/online.css';
 @import './styles/character-picker.css';
 @import './styles/character-details.css';
 @import './styles/bindings.css';

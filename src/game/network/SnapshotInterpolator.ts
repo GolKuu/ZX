@@ -19,7 +19,7 @@ export class SnapshotInterpolator {
   }
 
   sample(now = performance.now()) {
-    const latest = this.snapshots.at(-1);
+    const latest = this.snapshots[this.snapshots.length - 1];
     if (!latest) return null;
     const elapsedTicks = (now - latest.receivedAt) / 1_000 * TICKS_PER_SECOND;
     const targetTick = latest.snapshot.tick + elapsedTicks - INTERPOLATION_DELAY_TICKS;

@@ -6,6 +6,7 @@ import { ControlsPage } from '../pages/ControlsPage';
 import { HomePage } from '../pages/HomePage';
 import { LocalPvpPage } from '../pages/LocalPvpPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
+import { OnlineLobbyPage } from '../pages/OnlineLobbyPage';
 import { ProfilePage } from '../pages/ProfilePage';
 import { PublicPlayerPage } from '../pages/PublicPlayerPage';
 import { TrainingPage } from '../pages/TrainingPage';
@@ -13,6 +14,11 @@ import { VisualStyleGuidePage } from '../pages/VisualStyleGuidePage';
 
 const FightPage = lazy(() =>
   import('../pages/FightPage').then((module) => ({ default: module.FightPage })),
+);
+const OnlineFightPage = lazy(() =>
+  import('../pages/OnlineFightPage').then((module) => ({
+    default: module.OnlineFightPage,
+  })),
 );
 
 function FightRoute() {
@@ -23,12 +29,23 @@ function FightRoute() {
   );
 }
 
+function OnlineFightRoute() {
+  return (
+    <Suspense fallback={<main className="route-loading">Подключаем онлайн-арену…</main>}>
+      <OnlineFightPage />
+    </Suspense>
+  );
+}
+
 export function AppRouter() {
   return (
     <Switch>
       <Route path="/" component={HomePage} />
       <Route path="/local-pvp" component={LocalPvpPage} />
       <Route path="/fight" component={FightRoute} />
+      <Route path="/online-fight/:roomCode" component={OnlineFightRoute} />
+      <Route path="/online/:roomCode" component={OnlineLobbyPage} />
+      <Route path="/online" component={OnlineLobbyPage} />
       <Route path="/training" component={TrainingPage} />
       <Route path="/characters" component={CharactersPage} />
       <Route path="/visual-style-guide" component={VisualStyleGuidePage} />
