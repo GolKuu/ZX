@@ -15,9 +15,9 @@ export function poseFor(frame: RigFrame, kind: 'granite' | 'shira'): RigPose {
   pose.head = Math.sin(time * 0.55) * 0.025;
   if (applyReactionPose(pose, frame.state, time, kind)) return pose;
   if (frame.state === 'walk') applyWalk(pose, time, kind);
-  else if (frame.state.startsWith('dash')) applyDash(pose, frame.state);
-  else if (frame.state === 'jump-fall') applyFall(pose);
-  else if (frame.state.startsWith('jump')) applyJump(pose);
+  else if (frame.state.startsWith('dash')) applyDash(pose, frame.state, kind);
+  else if (frame.state === 'jump-fall') applyFall(pose, kind);
+  else if (frame.state.startsWith('jump')) applyJump(pose, kind);
   else if (frame.state === 'landing') applyLanding(pose);
   else if (frame.state === 'crouch') applyCrouch(pose);
   else if (isDefense(frame.state)) applyDefense(pose, frame.state);
@@ -29,37 +29,37 @@ function applyWalk(pose: RigPose, time: number, kind: 'granite' | 'shira') {
   const stride = Math.sin(time * (kind === 'granite' ? 1.2 : 1.8));
   pose.frontLeg = stride * 0.55;
   pose.backLeg = -stride * 0.55;
-  pose.frontArm = -stride * 0.42;
-  pose.backArm = stride * 0.42;
+  pose.frontArm = -stride * (kind === 'shira' ? 0.18 : 0.42);
+  pose.backArm = stride * (kind === 'shira' ? 0.18 : 0.42);
   pose.y += Math.abs(stride) * 2;
   pose.rotation = stride * 0.025;
 }
 
-function applyDash(pose: RigPose, state: AnimationStateId) {
+function applyDash(pose: RigPose, state: AnimationStateId, kind: 'granite' | 'shira') {
   pose.rotation = state === 'dash-whiff' ? -0.18 : 0.24;
   pose.scaleX = state === 'dash-whiff' ? 0.92 : 1.16;
   pose.scaleY = state === 'dash-whiff' ? 1.08 : 0.84;
-  pose.frontArm = -1.05;
-  pose.backArm = 0.82;
+  pose.frontArm = kind === 'shira' ? -0.32 : -1.05;
+  pose.backArm = kind === 'shira' ? 0.24 : 0.82;
   pose.frontLeg = -0.58;
   pose.backLeg = 0.72;
 }
 
-function applyJump(pose: RigPose) {
+function applyJump(pose: RigPose, kind: 'granite' | 'shira') {
   pose.scaleX = 0.88;
   pose.scaleY = 1.14;
   pose.frontLeg = -0.45;
   pose.backLeg = 0.35;
-  pose.frontArm = -0.72;
-  pose.backArm = 0.6;
+  pose.frontArm = kind === 'shira' ? -0.24 : -0.72;
+  pose.backArm = kind === 'shira' ? 0.2 : 0.6;
 }
 
-function applyFall(pose: RigPose) {
+function applyFall(pose: RigPose, kind: 'granite' | 'shira') {
   pose.rotation = 0.08;
   pose.frontLeg = 0.72;
   pose.backLeg = -0.42;
-  pose.frontArm = 0.55;
-  pose.backArm = -0.48;
+  pose.frontArm = kind === 'shira' ? 0.18 : 0.55;
+  pose.backArm = kind === 'shira' ? -0.16 : -0.48;
 }
 
 function applyLanding(pose: RigPose) {
@@ -97,16 +97,16 @@ function applyAttack(pose: RigPose, frame: RigFrame, kind: 'granite' | 'shira') 
   const low = frame.state.includes('low');
   pose.x = drive * (heavy ? 11 : 7);
   pose.rotation = drive * (heavy ? 0.18 : 0.12);
-  pose.frontArm = drive * (kind === 'shira' ? -1.55 : -1.22);
-  pose.backArm = -drive * 0.72;
+  pose.frontArm = drive * (kind === 'shira' ? -0.3 : -1.45);
+  pose.backArm = -drive * (kind === 'shira' ? 0.2 : 0.72);
   pose.frontLeg = -drive * 0.28;
   pose.scaleX = frame.phase === 'active' ? 1.16 : 0.96;
   pose.scaleY = frame.phase === 'active' ? 0.87 : 1.05;
   if (low) applyCrouch(pose);
-  if (frame.state.includes('air')) applyJump(pose);
+  if (frame.state.includes('air')) applyJump(pose, kind);
   if (frame.state.includes('special') || frame.state === 'super') {
-    pose.frontArm -= 0.5;
-    pose.backArm += 0.5;
+    pose.frontArm -= kind === 'shira' ? 0.34 : 0.42;
+    pose.backArm += kind === 'shira' ? 0.22 : 0.5;
     pose.scaleX += 0.08;
   }
 }
