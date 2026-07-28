@@ -3,7 +3,10 @@ import type { LocalPvpMatchConfig } from '../../../stores/localPvpStore';
 import { GameEvents } from '../../bridge/GameEvents';
 import type { ReactGameBridge } from '../../bridge/ReactGameBridge';
 import { FIXED_STEP_SECONDS } from '../../config/balanceConfig';
-import { CombatSimulation } from '../../core/CombatSimulation';
+import {
+  CombatSimulation,
+  type CombatSimulationOptions,
+} from '../../core/CombatSimulation';
 import { FixedStepLoop } from '../../core/FixedStepLoop';
 import type { PlayerId } from '../../core/types';
 import { circleFighters } from '../../data/characters/circleFighters';
@@ -19,11 +22,17 @@ import { VictoryCutsceneRenderer } from '../victory/VictoryCutsceneRenderer';
 import { VICTORY_CUTSCENE_MS } from '../victory/victoryScenes';
 import { SoloAiController } from '../../ai/SoloAiController';
 import { CartoonParticlePool } from '../effects/CartoonParticlePool';
+import { AI_TUNING } from '../../ai/AiDifficulty';
 
 export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpMatchConfig) {
   return class FightScene extends Phaser.Scene {
-    private readonly simulation = new CombatSimulation(matchConfig.characters);
-    private readonly ai = matchConfig.aiPlayerId ? new SoloAiController() : null;
+    private readonly simulation = new CombatSimulation(
+      matchConfig.characters,
+      simulationOptions(matchConfig),
+    );
+    private readonly ai = matchConfig.aiPlayerId
+      ? new SoloAiController(matchConfig.aiDifficulty)
+      : null;
     private readonly loop = new FixedStepLoop();
     private readonly inputManager = new InputManager(matchConfig.assignments, {
       onDeviceDisconnected: (playerId, label) => this.handleDisconnect(playerId, label),
@@ -187,4 +196,11 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
     }
 
   };
+}
+
+function simulationOptions(config: LocalPvpMatchConfig): CombatSimulationOptions {
+  if (!config.aiPlayerId) return {};
+  const modifier = AI_TUNING[config.aiDifficulty ?? 'EASY'].fighterModifier;
+  if (!modifier) return {};
+  return { fighterModifiers: { [config.aiPlayerId]: modifier } };
 }
