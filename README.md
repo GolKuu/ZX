@@ -28,6 +28,8 @@ React отвечает за сайт и маршруты, Phaser — за аре
 
 - Архитектура: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - План развития: [`docs/ROADMAP.md`](docs/ROADMAP.md)
+- Balance Simulator: [`docs/BALANCE_SIMULATOR.md`](docs/BALANCE_SIMULATOR.md)
+- Deployment и эксплуатация: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
 
 Ниже сохранены исходные инструкции учебного шаблона по настройке окружения и Supabase.
 

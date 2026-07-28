@@ -20,6 +20,7 @@
     "test:watch": "vitest",
     "balance": "tsx scripts/run-balance-simulator.ts",
     "balance:smoke": "tsx scripts/run-balance-simulator.ts --matches 2 --characters granite,shira --allow-small-run --output artifacts/balance-smoke",
+    "balance:replay": "tsx scripts/replay-balance-match.ts",
     "match:dev": "npm --prefix match-server run dev",
     "match:build": "npm --prefix match-server run build",
     "match:test": "npm --prefix match-server test",

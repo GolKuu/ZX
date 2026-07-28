@@ -18,3 +18,8 @@ npm run dev
 npm test
 npm run build
 ```
+
+Production endpoints: `/health`, `/ready`, `/status`. Сервер использует
+структурированные JSON-логи, rate limiting для create/join и сообщений WebSocket,
+а также единый JSON-формат непредвиденных ошибок. Полная инструкция:
+[`../docs/DEPLOYMENT.md`](../docs/DEPLOYMENT.md).
