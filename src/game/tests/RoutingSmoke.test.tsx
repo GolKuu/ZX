@@ -16,6 +16,7 @@ const routes = [
   ['/', 'Выбери режим'],
   ['/local-pvp', 'Подготовка LOCAL_PVP'],
   ['/fight', 'Готовим арену…'],
+  ['/online', 'Приватная комната'],
   ['/training', 'Точный блок'],
   ['/characters', 'Персонажи'],
   ['/controls', 'Управление'],
@@ -54,7 +55,7 @@ describe('application routes', () => {
 
     await act(async () => location.navigate('/'));
     expect(host.textContent).toContain('Выбери режим');
-    expect(host.querySelectorAll('button:disabled')).toHaveLength(4);
+    expect(host.querySelectorAll('button:disabled')).toHaveLength(3);
     expect(consoleError).not.toHaveBeenCalled();
     await act(async () => root.unmount());
   });

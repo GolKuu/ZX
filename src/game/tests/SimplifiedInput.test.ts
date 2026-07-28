@@ -9,10 +9,11 @@ import { ControlStorage } from '../input/ControlStorage';
 describe('simplified input', () => {
   beforeEach(() => localStorage.clear());
 
-  it('exposes only eight assignable actions', () => {
+  it('exposes the complete assignable action list', () => {
     expect(GAME_ACTIONS).toEqual([
       'MOVE_LEFT', 'MOVE_RIGHT', 'JUMP', 'LIGHT_ATTACK',
-      'HEAVY_ATTACK', 'SPECIAL_ATTACK', 'DEFENSE', 'PAUSE',
+      'HEAVY_ATTACK', 'SPECIAL_ATTACK', 'DEFENSE',
+      'ASSIST', 'TAG_SWITCH', 'BURST_ASSIST', 'PAUSE',
     ]);
   });
 

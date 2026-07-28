@@ -89,7 +89,7 @@ export class RoomManager {
   }
 
   private uniqueCode() {
-    let code = '';
+    let code: string;
     do {
       const bytes = randomBytes(ROOM_CODE_LENGTH);
       code = [...bytes]

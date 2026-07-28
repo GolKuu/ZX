@@ -1,6 +1,6 @@
 import type { PlayerId, SimulationSnapshot } from '../core/types';
 
-export const NETWORK_PROTOCOL_VERSION = 1;
+export const NETWORK_PROTOCOL_VERSION = 2;
 export const DEFAULT_INPUT_DELAY_TICKS = 3;
 export const SNAPSHOT_INTERVAL_TICKS = 3;
 export const INTERPOLATION_DELAY_TICKS = 6;

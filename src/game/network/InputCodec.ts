@@ -1,4 +1,5 @@
 import type { CombatAction, PlayerInputFrame } from '../core/types';
+import { TEAM_ACTIONS, type TeamAction } from '../team/TeamTypes';
 import type { GameplayInputPacket } from './protocol';
 
 export const ONLINE_ACTION_BITS = {
@@ -34,6 +35,12 @@ export function encodePlayerInput(input: PlayerInputFrame): RawNetworkInput {
     0,
   );
   return { actionBitmask, direction };
+}
+
+export function teamActionsForBitmask(actionBitmask: number): TeamAction[] {
+  return TEAM_ACTIONS.filter(
+    (action) => (actionBitmask & ONLINE_ACTION_BITS[action]) !== 0,
+  );
 }
 
 export function decodeNetworkInput(

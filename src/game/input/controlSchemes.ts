@@ -22,12 +22,14 @@ const classicBindings = {
 const oneHandedBindings = {
   player1: {
     MOVE_LEFT: 'KeyA', MOVE_RIGHT: 'KeyD', JUMP: 'KeyW', LIGHT_ATTACK: 'KeyF',
-    HEAVY_ATTACK: 'KeyG', SPECIAL_ATTACK: 'KeyR', DEFENSE: 'KeyS', PAUSE: 'KeyQ',
+    HEAVY_ATTACK: 'KeyG', SPECIAL_ATTACK: 'KeyR', DEFENSE: 'KeyS',
+    ASSIST: 'KeyZ', TAG_SWITCH: 'KeyX', BURST_ASSIST: 'KeyC', PAUSE: 'KeyQ',
   },
   player2: {
     MOVE_LEFT: 'Numpad4', MOVE_RIGHT: 'Numpad6', JUMP: 'Numpad8',
     LIGHT_ATTACK: 'Numpad1', HEAVY_ATTACK: 'Numpad2', SPECIAL_ATTACK: 'Numpad5',
-    DEFENSE: 'Numpad0', PAUSE: 'NumpadEnter',
+    DEFENSE: 'Numpad0', ASSIST: 'Numpad7', TAG_SWITCH: 'Numpad9',
+    BURST_ASSIST: 'NumpadDecimal', PAUSE: 'NumpadEnter',
   },
 } as const;
 
