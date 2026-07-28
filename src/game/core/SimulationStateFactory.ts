@@ -1,11 +1,14 @@
 import { balanceConfig, TICKS_PER_SECOND } from '../config/balanceConfig';
 import type { FighterSnapshot, PlayerId, SimulationSnapshot } from './types';
+import { getCharacter } from '../data/characters/circleFighters';
 
 export function createFighter(
   id: PlayerId,
   x: number,
-  characterId = id === 'player1' ? 'comet' : 'pulse',
+  characterId = id === 'player1' ? 'granite' : 'shira',
 ): FighterSnapshot {
+  const character = getCharacter(characterId);
+  const isGranite = character.id === 'granite';
   return {
     id,
     characterId,
@@ -14,8 +17,8 @@ export function createFighter(
     velocityX: 0,
     velocityY: 0,
     facing: id === 'player1' ? 1 : -1,
-    health: balanceConfig.maxHealth,
-    maxHealth: balanceConfig.maxHealth,
+    health: character.stats.maxHealth,
+    maxHealth: character.stats.maxHealth,
     energy: 0,
     maxEnergy: balanceConfig.maxEnergy,
     blockMeter: balanceConfig.maxBlockMeter,
@@ -38,14 +41,21 @@ export function createFighter(
     lastMoveTapAction: null,
     lastMoveTapTick: -1_000,
     grounded: true,
+    passiveValue: isGranite ? 100 : 0,
+    maxPassiveValue: 100,
+    armorPlates: isGranite ? 3 : 0,
+    maxArmorPlates: isGranite ? 3 : 0,
+    vulnerableTicksRemaining: 0,
+    landedTicksRemaining: 0,
   };
 }
 
 export function createInitialState(
-  characters: Record<PlayerId, string> = { player1: 'comet', player2: 'pulse' },
+  characters: Record<PlayerId, string> = { player1: 'granite', player2: 'shira' },
 ): SimulationSnapshot {
   return {
     tick: 0,
+    hitStopTicks: 0,
     paused: false,
     roundNumber: 1,
     roundPhase: 'COUNTDOWN',
@@ -62,6 +72,11 @@ export function createInitialState(
       player1: createCombo(),
       player2: createCombo(),
     },
+    traps: [
+      { id: 'ribbon-left', x: 130, active: true, cuttable: true },
+      { id: 'stone-center', x: 480, active: true, cuttable: false },
+      { id: 'ribbon-right', x: 830, active: true, cuttable: true },
+    ],
   };
 }
 

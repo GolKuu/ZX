@@ -22,5 +22,6 @@ export function cloneSnapshot(snapshot: SimulationSnapshot): SimulationSnapshot 
       player1: { ...snapshot.combos.player1 },
       player2: { ...snapshot.combos.player2 },
     },
+    traps: snapshot.traps.map((trap) => ({ ...trap })),
   };
 }

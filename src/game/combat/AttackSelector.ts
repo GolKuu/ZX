@@ -10,13 +10,16 @@ export class AttackSelector {
     if (input.pressed.includes('AIR_SPECIAL')) return set.airSpecial;
     if (input.pressed.includes('DIRECTIONAL_SPECIAL')) return set.forwardSpecial;
     if (input.pressed.includes('RETREAT_SPECIAL')) return set.retreatSpecial;
-    if (input.pressed.includes('SPECIAL_ATTACK')) return set.special;
+    if (input.pressed.includes('SPECIAL_ATTACK')) {
+      return fighter.passiveValue >= fighter.maxPassiveValue ? set.enhancedSpecial : set.special;
+    }
     if (input.pressed.includes('GRAB')) return this.selectThrow(set, fighter, input);
     if (input.pressed.includes('DASH_HEAVY')) return set.dashHeavy;
     if (input.pressed.includes('AIR_HEAVY')) return set.airHeavy;
     if (input.pressed.includes('DIRECTIONAL_HEAVY')) return set.forwardHeavy;
     if (input.pressed.includes('RETREAT_HEAVY')) return set.retreatHeavy;
     if (input.pressed.includes('HEAVY_ATTACK')) {
+      if (fighter.grounded && input.held.includes('CROUCH')) return set.lowHeavy;
       return this.nextInChain(set.heavy, fighter);
     }
     if (input.pressed.includes('DASH_LIGHT')) return set.dashLight;
@@ -56,10 +59,10 @@ export class AttackSelector {
 
   private all(set: CharacterAttackSet) {
     return [
-      ...set.lightChain, ...set.heavy, set.low, set.air, set.airHeavy,
+      ...set.lightChain, ...set.heavy, set.low, set.lowHeavy, set.air, set.airHeavy,
       set.forwardLight, set.retreatLight, set.dashLight,
       set.forwardHeavy, set.retreatHeavy, set.dashHeavy,
-      set.special, set.forwardSpecial, set.retreatSpecial, set.airSpecial,
+      set.special, set.forwardSpecial, set.retreatSpecial, set.airSpecial, set.enhancedSpecial,
       set.grab, set.forwardThrow, set.backThrow, set.reversal, set.superAttack,
     ];
   }

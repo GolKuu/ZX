@@ -7,6 +7,8 @@ import type { CombatAction } from '../../core/types';
 import { balanceConfig } from '../../config/balanceConfig';
 
 type AttackOptions = {
+  name: string;
+  description?: string;
   startup: number;
   active?: number;
   recovery: number;
@@ -23,6 +25,9 @@ type AttackOptions = {
   sideSwitch?: boolean;
   energyCost?: number;
   cancelInto?: readonly AttackCategory[];
+  hitStop?: number;
+  movementSpeed?: number;
+  armor?: boolean;
 };
 
 export function makeAttack(
@@ -36,6 +41,8 @@ export function makeAttack(
   const cancelInto = options.cancelInto ?? [];
   return {
     id: `${characterId}-${slot}`,
+    name: options.name,
+    description: options.description ?? '',
     startupFrames: options.startup,
     activeFrames: active,
     recoveryFrames: options.recovery,
@@ -62,7 +69,11 @@ export function makeAttack(
     ],
     movementTimeline:
       options.category === 'heavy' || options.category === 'throw'
-        ? [{ frame: Math.max(0, options.startup - 2), velocityX: 145, velocityY: 0 }]
+        ? [{
+            frame: Math.max(0, options.startup - 2),
+            velocityX: options.movementSpeed ?? 145,
+            velocityY: 0,
+          }]
         : [],
     cancelWindows:
       cancelInto.length > 0
@@ -78,7 +89,11 @@ export function makeAttack(
       options.category === 'light' || options.category === 'heavy'
         ? balanceConfig.autoComboDamageScale
         : 0.82,
-    reversalType: options.category === 'super' ? 'invincible' : 'none',
+    reversalType: options.category === 'super'
+      ? 'invincible'
+      : options.armor
+        ? 'armor'
+        : 'none',
     comboEscapeWindows: [{ startFrame: activeStart, endFrame: cancelStart + 2 }],
     animationId: `${slot}-animation`,
     effectId: `${slot}-impact`,
@@ -90,5 +105,7 @@ export function makeAttack(
     sideSwitch: options.sideSwitch ?? false,
     energyGain: Math.max(4, Math.round(options.damage * 0.8)),
     energyCost: options.energyCost ?? 0,
+    hitStopFrames: options.hitStop ?? (options.category === 'heavy' ? 5 : 3),
+    visualReach: (options.reach ?? 74) + 24,
   };
 }

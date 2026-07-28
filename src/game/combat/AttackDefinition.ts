@@ -27,6 +27,8 @@ export type CancelWindow = {
 
 export type AttackDefinition = {
   id: string;
+  name: string;
+  description: string;
   startupFrames: number;
   activeFrames: number;
   recoveryFrames: number;
@@ -54,6 +56,8 @@ export type AttackDefinition = {
   sideSwitch: boolean;
   energyGain: number;
   energyCost: number;
+  hitStopFrames: number;
+  visualReach: number;
 };
 
 export type CharacterAttackSet = {
@@ -61,10 +65,10 @@ export type CharacterAttackSet = {
     AttackDefinition,
     AttackDefinition,
     AttackDefinition,
-    AttackDefinition,
   ];
   heavy: readonly [AttackDefinition, AttackDefinition, AttackDefinition];
   low: AttackDefinition;
+  lowHeavy: AttackDefinition;
   air: AttackDefinition;
   airHeavy: AttackDefinition;
   forwardLight: AttackDefinition;
@@ -77,6 +81,7 @@ export type CharacterAttackSet = {
   forwardSpecial: AttackDefinition;
   retreatSpecial: AttackDefinition;
   airSpecial: AttackDefinition;
+  enhancedSpecial: AttackDefinition;
   grab: AttackDefinition;
   forwardThrow: AttackDefinition;
   backThrow: AttackDefinition;

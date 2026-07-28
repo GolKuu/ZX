@@ -2,6 +2,7 @@ import { balanceConfig } from '../config/balanceConfig';
 import { CollisionSystem } from './CollisionSystem';
 import { FighterStateMachine } from './FighterStateMachine';
 import type { FighterSnapshot, PlayerInputFrame } from './types';
+import { getCharacter } from '../data/characters/circleFighters';
 
 export class MovementSystem {
   private readonly collisions = new CollisionSystem();
@@ -13,6 +14,8 @@ export class MovementSystem {
     stepSeconds: number,
     tick: number,
   ) {
+    const stats = getCharacter(fighter.characterId).stats;
+    const wasGrounded = fighter.grounded;
     const locked = this.fighterStates.isControlLocked(fighter) || fighter.mode === 'knockout';
     if (!locked) this.detectDash(fighter, input, tick);
     const direction =
@@ -20,22 +23,25 @@ export class MovementSystem {
     const crouching = input.held.includes('CROUCH') && fighter.grounded && !locked;
 
     if (fighter.dashTicksRemaining > 0 && !locked) {
-      fighter.velocityX = fighter.dashDirection * balanceConfig.dashSpeed;
+      fighter.velocityX = fighter.dashDirection * stats.dashSpeed;
       fighter.dashTicksRemaining -= 1;
       fighter.mode = 'dashing';
+      if (fighter.dashTicksRemaining === 0 && fighter.characterId === 'shira') {
+        fighter.vulnerableTicksRemaining = 12;
+      }
     } else if (!locked && fighter.mode !== 'blocking') {
       const speed = crouching
         ? balanceConfig.crouchSpeed
         : fighter.grounded
-          ? balanceConfig.walkSpeed
-          : balanceConfig.airMoveSpeed;
+          ? stats.walkSpeed
+          : stats.airMoveSpeed;
       fighter.velocityX = direction * speed;
     } else if (fighter.mode !== 'attackStartup' && fighter.mode !== 'attackActive') {
       fighter.velocityX *= fighter.grounded ? 0.82 : 0.97;
     }
 
     if (!locked && input.pressed.includes('JUMP') && fighter.grounded) {
-      fighter.velocityY = -balanceConfig.jumpSpeed;
+      fighter.velocityY = -stats.jumpSpeed;
       fighter.grounded = false;
       fighter.mode = 'jumping';
     } else if (
@@ -51,12 +57,13 @@ export class MovementSystem {
     fighter.x += fighter.velocityX * stepSeconds;
     fighter.y += fighter.velocityY * stepSeconds;
     this.collisions.resolveArena(fighter);
+    if (!wasGrounded && fighter.grounded) fighter.landedTicksRemaining = 6;
   }
 
   private detectDash(fighter: FighterSnapshot, input: PlayerInputFrame, tick: number) {
     if (input.pressed.includes('DASH_LEFT') || input.pressed.includes('DASH_RIGHT')) {
       fighter.dashDirection = input.pressed.includes('DASH_LEFT') ? -1 : 1;
-      fighter.dashTicksRemaining = balanceConfig.dashDurationTicks;
+      fighter.dashTicksRemaining = getCharacter(fighter.characterId).stats.dashTicks;
       return;
     }
     const action = input.pressed.find(
@@ -71,7 +78,7 @@ export class MovementSystem {
     fighter.lastMoveTapTick = tick;
     if (isDoubleTap) {
       fighter.dashDirection = action === 'MOVE_LEFT' ? -1 : 1;
-      fighter.dashTicksRemaining = balanceConfig.dashDurationTicks;
+      fighter.dashTicksRemaining = getCharacter(fighter.characterId).stats.dashTicks;
     }
   }
 }

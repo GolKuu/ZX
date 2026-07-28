@@ -6,6 +6,7 @@ import type { AttackDefinition } from './AttackDefinition';
 import type { ComboSnapshot, FighterSnapshot } from '../core/types';
 import { balanceConfig } from '../config/balanceConfig';
 import type { BlockResult } from './BlockSystem';
+import { CharacterPassiveSystem } from './CharacterPassiveSystem';
 
 export type DamageResult = { damage: number; block: BlockResult };
 
@@ -14,6 +15,7 @@ export class DamageSystem {
   private readonly energy = new EnergyComponent();
   private readonly health = new HealthComponent();
   private readonly states = new FighterStateMachine();
+  private readonly passive = new CharacterPassiveSystem();
 
   apply(
     attacker: FighterSnapshot,
@@ -25,15 +27,19 @@ export class DamageSystem {
     const blocked = block.blocked;
     if (definition.sideSwitch && !blocked) this.switchSides(attacker, defender);
     const direction = attacker.x <= defender.x ? 1 : -1;
-    const rawDamage =
+    const baseDamage =
       block.kind === 'perfect'
         ? 0
         : blocked
           ? definition.chipDamage
           : this.combos.scaledDamage(combo, definition);
+    const rawDamage = blocked
+      ? baseDamage
+      : this.passive.incomingDamage(defender, definition, baseDamage);
     const damage = this.health.damage(defender, rawDamage);
 
     this.energy.gain(attacker, definition.energyGain);
+    if (!blocked) this.passive.recordHit(attacker, definition);
     if (damage > 0) this.energy.gain(defender, Math.max(1, Math.round(damage * 0.35)));
     const pushScale = block.kind === 'perfect' ? 0 : block.kind === 'precise' ? 0.14 :
       blocked ? 0.28 : 1;
@@ -52,6 +58,8 @@ export class DamageSystem {
           attacker.attack.frame - balanceConfig.perfectBlockAdvantageFrames,
         );
       }
+    } else if (!blocked && this.passive.absorbsReaction(defender, definition)) {
+      defender.modeTicksRemaining = 0;
     } else if (block.kind === 'precise') {
       this.states.enterBlockstun(
         defender,

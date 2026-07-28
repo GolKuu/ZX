@@ -108,6 +108,12 @@ export type FighterSnapshot = {
   lastMoveTapAction: 'MOVE_LEFT' | 'MOVE_RIGHT' | null;
   lastMoveTapTick: number;
   grounded: boolean;
+  passiveValue: number;
+  maxPassiveValue: number;
+  armorPlates: number;
+  maxArmorPlates: number;
+  vulnerableTicksRemaining: number;
+  landedTicksRemaining: number;
 };
 
 export type ComboSnapshot = {
@@ -131,8 +137,16 @@ export type InputFrame = Record<PlayerId, PlayerInputFrame>;
 
 export type RoundPhase = 'COUNTDOWN' | 'ACTIVE' | 'ROUND_OVER' | 'MATCH_OVER';
 
+export type ArenaTrapSnapshot = {
+  id: string;
+  x: number;
+  active: boolean;
+  cuttable: boolean;
+};
+
 export type SimulationSnapshot = {
   tick: number;
+  hitStopTicks: number;
   paused: boolean;
   roundNumber: number;
   roundPhase: RoundPhase;
@@ -143,4 +157,5 @@ export type SimulationSnapshot = {
   roundTicksRemaining: number;
   fighters: Record<PlayerId, FighterSnapshot>;
   combos: Record<PlayerId, ComboSnapshot>;
+  traps: ArenaTrapSnapshot[];
 };

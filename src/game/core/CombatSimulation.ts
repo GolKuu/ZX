@@ -10,6 +10,7 @@ import { MatchManager } from './MatchManager';
 import { MovementSystem } from './MovementSystem';
 import { RoundManager } from './RoundManager';
 import { CombatInputPipeline } from './CombatInputPipeline';
+import { ArenaTrapSystem } from '../combat/ArenaTrapSystem';
 import { createFighter, createInitialState } from './SimulationStateFactory';
 import type {
   InputFrame,
@@ -19,7 +20,7 @@ import type {
 } from './types';
 
 const PLAYERS: readonly PlayerId[] = ['player1', 'player2'];
-const DEFAULT_CHARACTERS = { player1: 'comet', player2: 'pulse' };
+const DEFAULT_CHARACTERS = { player1: 'granite', player2: 'shira' };
 export class CombatSimulation {
   private state: SimulationSnapshot;
   private readonly attacks: AttackSystem;
@@ -32,6 +33,7 @@ export class CombatSimulation {
   private readonly match = new MatchManager();
   private readonly round = new RoundManager();
   private readonly inputs = new CombatInputPipeline();
+  private readonly traps = new ArenaTrapSystem();
 
   constructor(private readonly characters: Record<PlayerId, string> = DEFAULT_CHARACTERS) {
     this.state = createInitialState(characters);
@@ -39,6 +41,11 @@ export class CombatSimulation {
   }
   step(input: InputFrame, stepSeconds: number) {
     if (this.state.paused || this.state.roundPhase === 'MATCH_OVER') return;
+    if (this.state.hitStopTicks > 0) {
+      this.state.hitStopTicks -= 1;
+      this.state.tick += 1;
+      return;
+    }
     if (this.advanceNonActiveRound()) return;
 
     const resolvedInput = this.inputs.resolve(input, this.state);
@@ -50,6 +57,13 @@ export class CombatSimulation {
       this.movement.update(this.state.fighters[id], resolvedInput[id], stepSeconds, this.state.tick),
     );
     PLAYERS.forEach((id) => this.blocks.update(this.state.fighters[id], resolvedInput[id]));
+    PLAYERS.forEach((id) =>
+      this.traps.tryCut(
+        this.state.fighters[id],
+        this.attacks.currentDefinition(this.state.fighters[id]),
+        this.state.traps,
+      ),
+    );
 
     const firstHit = this.attacks.findContact(
       this.state.fighters.player1,
@@ -113,13 +127,16 @@ export class CombatSimulation {
     const attacker = this.state.fighters[attackerId];
     const defender = this.state.fighters[defenderId];
     const block = this.blocks.tryBlock(defender, defenderInput, contact.definition);
-    this.damage.apply(
+    const result = this.damage.apply(
       attacker,
       defender,
       contact.definition,
       this.state.combos[attackerId],
       block,
     );
+    if (result.damage > 0 || block.blocked) {
+      this.state.hitStopTicks = Math.max(this.state.hitStopTicks, contact.definition.hitStopFrames);
+    }
   }
 
   private finishRoundIfNeeded() {

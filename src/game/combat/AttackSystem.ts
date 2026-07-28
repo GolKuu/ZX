@@ -4,6 +4,7 @@ import type { FighterSnapshot, PlayerInputFrame } from '../core/types';
 import { AttackSelector } from './AttackSelector';
 import { EnergyComponent } from './EnergyComponent';
 import type { AttackDefinition } from './AttackDefinition';
+import { CharacterPassiveSystem } from './CharacterPassiveSystem';
 
 export type AttackContact = {
   definition: AttackDefinition;
@@ -15,6 +16,7 @@ export class AttackSystem {
   private readonly energy = new EnergyComponent();
   private readonly states = new FighterStateMachine();
   private readonly selector: AttackSelector;
+  private readonly passive = new CharacterPassiveSystem();
 
   constructor() {
     this.selector = new AttackSelector();
@@ -66,6 +68,11 @@ export class AttackSystem {
     runtime.frame += 1;
     const total = definition.startupFrames + definition.activeFrames + definition.recoveryFrames;
     if (runtime.frame < total) return;
+    const finishedDash = fighter.characterId === 'shira' && definition.id.includes('dash');
+    if (finishedDash) {
+      fighter.vulnerableTicksRemaining = runtime.connected ? 0 : 14;
+      fighter.dashTicksRemaining = 0;
+    }
     fighter.attack = null;
     fighter.velocityX = 0;
     if (fighter.mode.startsWith('attack')) {
@@ -106,6 +113,7 @@ export class AttackSystem {
     };
     fighter.guard = null;
     fighter.mode = 'attackStartup';
+    this.passive.spendEnhanced(fighter, definition);
   }
 
   private phaseAt(definition: AttackDefinition, frame: number) {
