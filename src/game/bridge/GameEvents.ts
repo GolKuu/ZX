@@ -31,8 +31,8 @@ export type GameEventPayloads = {
   };
   [GameEvents.mobileAction]: { playerId: PlayerId; action: string; pressed: boolean };
   [GameEvents.domCharacterSync]: {
-    player1: { x: number; y: number; facing: number; state: string };
-    player2: { x: number; y: number; facing: number; state: string };
+    player1: { x: number; y: number; facing: number; state: string; characterId: string };
+    player2: { x: number; y: number; facing: number; state: string; characterId: string };
   };
 };
 

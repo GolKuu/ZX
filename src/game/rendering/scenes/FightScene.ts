@@ -185,12 +185,14 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
           y: snapshot.fighters.player1.y,
           facing: snapshot.fighters.player1.facing,
           state: this.fighterStateName(snapshot.fighters.player1),
+          characterId: snapshot.fighters.player1.characterId,
         },
         player2: {
           x: snapshot.fighters.player2.x,
           y: snapshot.fighters.player2.y,
           facing: snapshot.fighters.player2.facing,
           state: this.fighterStateName(snapshot.fighters.player2),
+          characterId: snapshot.fighters.player2.characterId,
         },
       });
     }

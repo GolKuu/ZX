@@ -45,8 +45,10 @@ export function DomCharacterOverlay({ parentRef }: { parentRef: React.RefObject<
     pointerEvents: 'none' as const,
   });
 
-  const leftChar = getCharacter('caliber');
-  const rightChar = getCharacter('zephyr');
+  const p1Id = pos?.player1?.characterId ?? 'granite';
+  const p2Id = pos?.player2?.characterId ?? 'shira';
+  const leftChar = getCharacter(p1Id);
+  const rightChar = getCharacter(p2Id);
 
   return (
     <div ref={containerRef}>
