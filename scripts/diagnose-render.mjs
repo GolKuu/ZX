@@ -7,7 +7,11 @@ const assetName = (await readdir(new URL('../dist/assets/', import.meta.url)))
 if (!assetName) throw new Error('Built application bundle was not found');
 
 const source = (await readFile(new URL(`../dist/assets/${assetName}`, import.meta.url), 'utf8'))
-  .replaceAll('import.meta.url', `'http://127.0.0.1:5173/assets/${assetName}'`);
+  .replaceAll(
+    'import.meta',
+    `({ url: 'http://127.0.0.1:5173/assets/${assetName}' })`,
+  )
+  .replace(/export\{[^}]+\};?\s*$/, '');
 const errors = [];
 const virtualConsole = new VirtualConsole();
 virtualConsole.on('jsdomError', (error) => errors.push(error));
