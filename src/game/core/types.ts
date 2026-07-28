@@ -43,6 +43,7 @@ export const CONTEXT_ACTIONS = [
   'DIRECTIONAL_SPECIAL',
   'RETREAT_SPECIAL',
   'AIR_SPECIAL',
+  'ENHANCED_SPECIAL',
 ] as const;
 
 export type GameAction = (typeof GAME_ACTIONS)[number];

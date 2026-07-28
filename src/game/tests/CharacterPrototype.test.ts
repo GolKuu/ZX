@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { ArenaTrapSystem } from '../combat/ArenaTrapSystem';
-import { AttackSelector } from '../combat/AttackSelector';
 import { DamageSystem } from '../combat/DamageSystem';
+import { FIXED_STEP_SECONDS } from '../config/balanceConfig';
+import { CombatSimulation } from '../core/CombatSimulation';
 import { createFighter } from '../core/SimulationStateFactory';
-import type { ComboSnapshot, PlayerInputFrame } from '../core/types';
+import type { ComboSnapshot } from '../core/types';
 import { getCharacterAttacks } from '../data/attacks/characterAttacks';
 import { circleFighters } from '../data/characters/circleFighters';
 import { validateHitboxAlignment } from '../diagnostics/HitboxAlignment';
@@ -50,13 +51,21 @@ describe('Granite and Shira prototypes', () => {
     });
     expect(shira.passiveValue).toBeGreaterThan(0);
 
-    shira.passiveValue = shira.maxPassiveValue;
-    const input: PlayerInputFrame = {
-      held: ['HEAVY_ATTACK', 'SPECIAL_ATTACK'],
-      pressed: ['SPECIAL_ATTACK'],
-      released: [],
-    };
-    expect(new AttackSelector().select(shira, input)?.id).toBe('shira-enhanced-special');
+    const simulation = new CombatSimulation({ player1: 'shira', player2: 'granite' });
+    const snapshot = simulation.getSnapshot();
+    snapshot.roundPhase = 'ACTIVE';
+    snapshot.fighters.player1.passiveValue = snapshot.fighters.player1.maxPassiveValue;
+    simulation.restore(snapshot);
+    simulation.step({
+      player1: {
+        held: ['HEAVY_ATTACK', 'SPECIAL_ATTACK'],
+        pressed: ['HEAVY_ATTACK', 'SPECIAL_ATTACK'],
+        released: [],
+      },
+      player2: { held: [], pressed: [], released: [] },
+    }, FIXED_STEP_SECONDS);
+    expect(simulation.getSnapshot().fighters.player1.attack?.id)
+      .toBe('shira-enhanced-special');
   });
 
   it('lets only Shira cut marked arena traps and gain sharpness', () => {
@@ -73,6 +82,23 @@ describe('Granite and Shira prototypes', () => {
     new ArenaTrapSystem().tryCut(fighter, definition, traps);
     expect(traps[0].active).toBe(false);
     expect(fighter.passiveValue).toBe(24);
+  });
+
+  it('keeps 30 seconds of fixed-step simulation inside the CPU budget', () => {
+    const simulation = new CombatSimulation();
+    const snapshot = simulation.getSnapshot();
+    snapshot.roundPhase = 'ACTIVE';
+    simulation.restore(snapshot);
+    const emptyInput = {
+      player1: { held: [], pressed: [], released: [] },
+      player2: { held: [], pressed: [], released: [] },
+    } as const;
+    const startedAt = performance.now();
+    for (let tick = 0; tick < 1_800; tick += 1) {
+      simulation.step(emptyInput, FIXED_STEP_SECONDS);
+    }
+    expect(performance.now() - startedAt).toBeLessThan(1_000);
+    expect(simulation.getSnapshot().tick).toBe(1_800);
   });
 });
 

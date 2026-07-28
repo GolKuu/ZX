@@ -6,17 +6,18 @@ export class AttackSelector {
   select(fighter: FighterSnapshot, input: PlayerInputFrame) {
     const set = getCharacterAttacks(fighter.characterId);
     if (input.pressed.includes('SUPER_ATTACK')) return set.superAttack;
+    if (input.pressed.includes('ENHANCED_SPECIAL')) {
+      const hasResource = fighter.characterId === 'shira'
+        ? fighter.passiveValue >= fighter.maxPassiveValue
+        : fighter.energy >= set.enhancedSpecial.energyCost;
+      return hasResource ? set.enhancedSpecial : set.special;
+    }
     if (input.pressed.includes('MOMENTUM_REVERSAL')) return set.reversal;
     if (input.pressed.includes('AIR_SPECIAL')) return set.airSpecial;
     if (input.pressed.includes('DIRECTIONAL_SPECIAL')) return set.forwardSpecial;
     if (input.pressed.includes('RETREAT_SPECIAL')) return set.retreatSpecial;
     if (input.pressed.includes('SPECIAL_ATTACK')) {
-      const hasEnhancedResource = fighter.characterId === 'shira'
-        ? fighter.passiveValue >= fighter.maxPassiveValue
-        : fighter.energy >= set.enhancedSpecial.energyCost;
-      return input.held.includes('HEAVY_ATTACK') && hasEnhancedResource
-        ? set.enhancedSpecial
-        : set.special;
+      return set.special;
     }
     if (input.pressed.includes('GRAB')) return this.selectThrow(set, fighter, input);
     if (input.pressed.includes('DASH_HEAVY')) return set.dashHeavy;

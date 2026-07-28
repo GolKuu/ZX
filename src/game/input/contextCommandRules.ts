@@ -71,7 +71,8 @@ export function actionForCommand(
     case 'MOMENTUM_REVERSAL': return 'MOMENTUM_REVERSAL';
     case 'GRAB': return 'GRAB';
     case 'AIR_SPECIAL': return 'AIR_SPECIAL';
-    case 'SPECIAL_ATTACK': return 'SPECIAL_ATTACK';
+    case 'SPECIAL_ATTACK':
+      return input.frame.held.includes('HEAVY_ATTACK') ? 'ENHANCED_SPECIAL' : 'SPECIAL_ATTACK';
     case 'DIRECTIONAL_SPECIAL':
       return input.away ? 'RETREAT_SPECIAL' : 'DIRECTIONAL_SPECIAL';
     case 'AIR_HEAVY': return 'AIR_HEAVY';
