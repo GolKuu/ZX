@@ -15,6 +15,7 @@ export type RoomPlayer = {
   ready: boolean;
   characterId: string;
   pingMs: number | null;
+  pendingPingAt: number | null;
   rematchReady: boolean;
   disconnectedAt: number | null;
   input: PlayerInputTimeline;
