@@ -54,6 +54,22 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
       super('FightScene');
     }
 
+    private onCharacterTextureReady = (payload: { characterId: string; dataUrl: string }) => {
+      const key = `character-art-${payload.characterId}`;
+      try {
+        if (!this.textures.exists(key)) this.textures.addBase64(key, payload.dataUrl);
+      } catch (e) {
+        // textures.addBase64 may throw on some runtimes; ignore and continue
+      }
+      // apply to existing fighters if they match
+      if (this.fighterOne && (this.fighterOne as any).characterId === payload.characterId) {
+        (this.fighterOne as any).applySpriteTexture?.(key);
+      }
+      if (this.fighterTwo && (this.fighterTwo as any).characterId === payload.characterId) {
+        (this.fighterTwo as any).applySpriteTexture?.(key);
+      }
+    };
+
     create() {
       const settings = settingsStore.load();
       createArena(this);
@@ -78,6 +94,8 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
         bridge.emit(GameEvents.exitRequested, undefined),
       );
       this.bindBridgeCommands();
+      // listen for textures generated from DOM SVGs
+      this.stopBridgeListeners.push(bridge.on((GameEvents as any).characterTextureReady, this.onCharacterTextureReady));
       this.inputManager.attach();
       this.syncRenderers(0);
 

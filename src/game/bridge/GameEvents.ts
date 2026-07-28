@@ -13,6 +13,7 @@ export const GameEvents = {
   matchEnded: 'game:match-ended',
   mobileAction: 'game:mobile-action',
   domCharacterSync: 'game:dom-character-sync',
+  characterTextureReady: 'game:character-texture-ready',
 } as const;
 
 export type GameEventPayloads = {
@@ -34,6 +35,7 @@ export type GameEventPayloads = {
     player1: { x: number; y: number; facing: number; state: string; characterId: string };
     player2: { x: number; y: number; facing: number; state: string; characterId: string };
   };
+  [GameEvents.characterTextureReady]: { characterId: string; dataUrl: string };
 };
 
 export type GameEventName = keyof GameEventPayloads;

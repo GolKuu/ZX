@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
+import ReactDOM from 'react-dom/client';
 import { useGameBridge } from '../../app/gameBridgeContext';
 import { GameEvents } from '../../game/bridge/GameEvents';
 import { CharacterArt } from '../characters/CharacterArt';
-import { getCharacter } from '../../game/data/characters/circleFighters';
+import { getCharacter, circleFighters } from '../../game/data/characters/circleFighters';
 
 export function DomCharacterOverlay({ parentRef }: { parentRef: React.RefObject<HTMLElement> }) {
   const bridge = useGameBridge();
@@ -34,6 +35,37 @@ export function DomCharacterOverlay({ parentRef }: { parentRef: React.RefObject<
       containerRef.current = null;
     };
   }, [parentRef]);
+
+  // generate Phaser-ready base64 textures from the SVG CharacterArt and notify the game
+  useEffect(() => {
+    const generated = new Set<string>();
+    circleFighters.forEach((c) => {
+      const id = c.id;
+      if (generated.has(id)) return;
+      generated.add(id);
+      // create offscreen container to mount CharacterArt
+      const div = document.createElement('div');
+      div.style.position = 'absolute';
+      div.style.left = '-9999px';
+      div.style.width = '320px';
+      div.style.height = '360px';
+      document.body.appendChild(div);
+      const root = ReactDOM.createRoot(div);
+      root.render(React.createElement(CharacterArt, { characterId: id, state: 'idle' }));
+      // give the browser a tick to render
+      setTimeout(() => {
+        const svg = div.querySelector('svg');
+        if (svg) {
+          const xml = new XMLSerializer().serializeToString(svg);
+          const b64 = window.btoa(unescape(encodeURIComponent(xml)));
+          const dataUrl = `data:image/svg+xml;base64,${b64}`;
+          bridge.emit((GameEvents as any).characterTextureReady, { characterId: id, dataUrl });
+        }
+        root.unmount();
+        if (div.parentElement) div.parentElement.removeChild(div);
+      }, 50);
+    });
+  }, [bridge]);
 
   if (!pos || !containerRef.current) return null;
 

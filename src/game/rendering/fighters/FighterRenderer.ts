@@ -22,10 +22,13 @@ export class FighterRenderer {
   private readonly attackVisual: AttackVisualRenderer;
   private readonly defenseVisual: DefenseEffectRenderer;
   private readonly trail: MotionTrailRenderer;
+  private sprite?: Phaser.GameObjects.Image;
+  readonly characterId: string;
   private animationTick = 0;
   private state: AnimationStateId = 'idle';
 
   constructor(scene: Phaser.Scene, ownerId: PlayerId, character: CharacterDefinition) {
+    this.characterId = character.id;
     this.useDomArt = character.visualModel?.type === 'final-original';
     this.shadow = scene.add.ellipse(0, 38, 96, 20, character.shadowColor, this.useDomArt ? 0.12 : 0.25).setDepth(1);
     this.rig = this.useDomArt ? ({ root: scene.add.container() } as any) : createCharacterBody(scene, character);
@@ -40,6 +43,10 @@ export class FighterRenderer {
       this.facingContainer,
       this.attackVisual.graphics,
     ]).setDepth(2);
+
+    // if a Phaser texture already exists for this character, create sprite art
+    const key = `character-art-${character.id}`;
+    if (this.useDomArt && scene.textures.exists(key)) this.applySpriteTexture(key);
   }
 
   sync(snapshot: FighterSnapshot, context: AnimationContext, stopped = false) {
@@ -68,6 +75,11 @@ export class FighterRenderer {
     this.defenseVisual.sync(snapshot);
     this.trail.sync(snapshot, this.state);
     this.attackVisual.sync(snapshot);
+    // if we have a sprite, keep it aligned
+    if (this.sprite) {
+      this.sprite.setPosition(snapshot.x, snapshot.y - 38);
+      this.sprite.setFlipX(snapshot.facing === -1);
+    }
   }
 
   currentAnimationState() {
@@ -75,6 +87,18 @@ export class FighterRenderer {
   }
 
   destroy() {
+    if (this.sprite) this.sprite.destroy();
     this.container.destroy(true);
+  }
+
+  applySpriteTexture(key: string) {
+    if (this.sprite) return;
+    // create sprite aligned with container
+    const scene = this.container.scene;
+    this.sprite = scene.add.image(0, 0, key).setOrigin(0.5, 0.5).setDepth(3);
+    // position will be updated in sync loop
+    this.sprite.setPosition(this.container.x, this.container.y);
+    // hide procedural rig visuals (container) if any
+    this.facingContainer.setVisible(false);
   }
 }
