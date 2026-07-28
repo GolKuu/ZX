@@ -47,9 +47,17 @@ export type PairSummary = {
   metricsB: FighterMetricAverages;
 };
 
-export type FighterMetricAverages = FighterMetrics & {
+export type FighterMetricAverages = {
   averageDamage: number;
   averageComboLength: number;
+  maxComboLength: number;
+  autoCombosPerMatch: number;
+  blocksPerMatch: number;
+  perfectBlocksPerMatch: number;
+  comboEscapesPerMatch: number;
+  comboBreaksPerMatch: number;
+  momentumReversalsPerMatch: number;
+  specialMovesPerMatch: number;
 };
 
 export type CharacterSummary = {

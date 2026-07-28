@@ -3,9 +3,7 @@ import {
   getCharacter,
   type CharacterId,
 } from '../../game/data/characters/circleFighters';
-import { GraniteCharacterArt } from './GraniteCharacterArt';
-import { ShiraCharacterArt } from './ShiraCharacterArt';
-import { TemporaryCharacterArt } from './TemporaryCharacterArt';
+import { CharacterSkinArt } from './CharacterSkinArt';
 
 export function CharacterArt({
   characterId,
@@ -23,13 +21,7 @@ export function CharacterArt({
       role="img"
       aria-label={`${character.name}: ${state}`}
     >
-      {characterId === 'granite' ? (
-        <GraniteCharacterArt />
-      ) : characterId === 'shira' ? (
-        <ShiraCharacterArt />
-      ) : (
-        <TemporaryCharacterArt character={character} />
-      )}
+      <CharacterSkinArt character={character} />
     </svg>
   );
 }
