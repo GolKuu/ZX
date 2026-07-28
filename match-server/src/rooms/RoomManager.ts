@@ -83,6 +83,7 @@ export class RoomManager {
   private cleanup() {
     this.roomsById.forEach((managed, matchId) => {
       if (this.now() - managed.createdAt <= MAX_ROOM_AGE_MS) return;
+      if (['playing', 'disconnected'].includes(managed.room.view.status)) return;
       this.roomsById.delete(matchId);
       this.roomsByCode.delete(managed.room.roomCode);
     });

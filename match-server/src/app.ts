@@ -1,12 +1,13 @@
 import cors from '@fastify/cors';
 import websocket from '@fastify/websocket';
-import Fastify from 'fastify';
+import Fastify, { LogController } from 'fastify';
 import type { ServerConfig } from './serverConfig.js';
 import { RoomManager } from './rooms/RoomManager.js';
 import { registerRoutes } from './transport/registerRoutes.js';
 
 export async function buildServer(config: ServerConfig) {
   const app = Fastify({
+    logController: new LogController({ disableRequestLogging: true }),
     logger: {
       level: process.env.LOG_LEVEL || 'info',
     },

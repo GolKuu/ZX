@@ -10,9 +10,17 @@ export function RoomInviteCard({
   const [copied, setCopied] = useState(false);
 
   async function copyInvite() {
-    await navigator.clipboard.writeText(inviteUrl);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1_500);
+    try {
+      await navigator.clipboard.writeText(inviteUrl);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1_500);
+    } catch {
+      const input = document.querySelector<HTMLInputElement>(
+        'input[aria-label="Ссылка-приглашение"]',
+      );
+      input?.focus();
+      input?.select();
+    }
   }
 
   return (

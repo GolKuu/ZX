@@ -34,7 +34,8 @@
     border-color 160ms ease;
 }
 
-.menu-option[href]:hover {
+.menu-option[href]:hover,
+button.menu-option:hover {
   border-color: #b9a7ff;
   box-shadow: 0 16px 38px #6349c71f;
   transform: translateY(-4px);

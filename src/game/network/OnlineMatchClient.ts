@@ -5,10 +5,11 @@ import {
   OnlineSocket,
 } from './OnlineSocket';
 import { PredictionEngine } from './PredictionEngine';
-import type {
-  OnlineRoomView,
-  RoomCredentials,
-  ServerMessage,
+import {
+  NETWORK_PROTOCOL_VERSION,
+  type OnlineRoomView,
+  type RoomCredentials,
+  type ServerMessage,
 } from './protocol';
 import { SnapshotInterpolator } from './SnapshotInterpolator';
 
@@ -109,6 +110,15 @@ export class OnlineMatchClient {
   }
 
   private onMessage(message: ServerMessage) {
+    if (
+      message.type === 'connected' &&
+      message.protocolVersion !== NETWORK_PROTOCOL_VERSION
+    ) {
+      this.errorValue = 'Версии сетевого протокола клиента и сервера не совпадают.';
+      this.socket.close();
+      this.emit();
+      return;
+    }
     if (message.type === 'connected' || message.type === 'roomState') {
       this.roomState = message.room;
     } else if (message.type === 'snapshot') {

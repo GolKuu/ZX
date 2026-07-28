@@ -51,9 +51,9 @@ export function OnlineFightPage() {
         state.connectionStatus === 'reconnecting') && (
         <div className="match-overlay" role="alertdialog" aria-modal="true">
           <div>
-            <p className="eyebrow">Матч на паузе</p>
-            <h2>Восстанавливаем соединение</h2>
-            <p>Сервер хранит место игрока 30 секунд. Бой продолжится с подтверждённого состояния.</p>
+            <p className="eyebrow">Временная замена</p>
+            <h2>Отключившегося игрока ведёт ИИ</h2>
+            <p>Сервер продолжает бой и вернёт управление игроку после переподключения.</p>
             <button className="button button--secondary" onClick={exit}>Выйти</button>
           </div>
         </div>

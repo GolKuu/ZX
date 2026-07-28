@@ -4,20 +4,30 @@ import { CharacterArt } from '../components/characters/CharacterArt';
 
 const menuItems = [
   {
-    title: 'Игрок против игрока',
-    description: 'Два игрока, одна клавиатура',
+    title: 'Локальный 2 на 2',
+    description: 'Две команды и смена активного бойца',
     icon: '⚔',
-    href: '/local-pvp',
+    href: '/team-modes',
     primary: true,
   },
   {
-    title: 'Онлайн-бой',
-    description: 'Приватная комната по ссылке',
+    title: 'Онлайн 2 на 2',
+    description: 'Командный бой на авторитетном сервере',
     icon: '◎',
     href: '/online',
   },
-  { title: 'Игрок против компьютера', description: 'Бой с умным ботом', icon: '◆' },
-  { title: 'Кооператив', description: 'Сражайтесь в одной команде', icon: '♣' },
+  {
+    title: 'Два игрока против ИИ',
+    description: 'Два союзника против команды ботов',
+    icon: '◆',
+    href: '/team-modes',
+  },
+  {
+    title: 'Игрок и ИИ против двух',
+    description: 'ИИ управляет союзником и соперниками',
+    icon: '♣',
+    href: '/team-modes',
+  },
   { title: 'Тренировка', description: 'Отработка приёмов и таймингов', icon: '◉' },
   { title: 'Персонажи', description: 'Познакомиться с бойцами', icon: '●', href: '/characters' },
   { title: 'Visual Style Guide', description: 'Анимации, палитры и приёмы', icon: '✦', href: '/visual-style-guide' },

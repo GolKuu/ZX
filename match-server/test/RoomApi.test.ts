@@ -51,4 +51,16 @@ describe('private room API', () => {
     expect(third.statusCode).toBe(409);
     expect(third.json()).toMatchObject({ code: 'ROOM_FULL' });
   });
+
+  it('rate limits room creation by address', async () => {
+    const server = await buildServer(config);
+    servers.push(server);
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      const response = await server.app.inject({ method: 'POST', url: '/rooms' });
+      expect(response.statusCode).toBe(201);
+    }
+    const limited = await server.app.inject({ method: 'POST', url: '/rooms' });
+    expect(limited.statusCode).toBe(429);
+    expect(limited.json()).toMatchObject({ code: 'RATE_LIMITED' });
+  });
 });

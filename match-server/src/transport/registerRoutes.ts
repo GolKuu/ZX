@@ -6,6 +6,7 @@ import {
   MessageRateLimiter,
   parseClientMessage,
 } from './ClientMessageParser.js';
+import { ApiRateLimiter } from './ApiRateLimiter.js';
 
 type RoomParams = { code: string };
 type SocketQuery = { matchId?: string; token?: string };
@@ -15,13 +16,17 @@ export function registerRoutes(
   rooms: RoomManager,
   config: ServerConfig,
 ) {
+  const roomCreates = new ApiRateLimiter(20, 60_000);
+  const roomJoins = new ApiRateLimiter(60, 60_000);
   app.get('/health', async () => ({ ok: true, service: 'circle-clash-match-server' }));
 
-  app.post('/rooms', async (_request, reply) => {
+  app.post('/rooms', async (request, reply) => {
+    if (!roomCreates.allow(request.ip)) return rateLimitError(reply);
     return reply.code(201).send(rooms.createRoom());
   });
 
   app.post<{ Params: RoomParams }>('/rooms/:code/join', async (request, reply) => {
+    if (!roomJoins.allow(request.ip)) return rateLimitError(reply);
     try {
       return reply.code(200).send(rooms.joinRoom(request.params.code));
     } catch (error) {
@@ -99,4 +104,13 @@ function roomError(
     });
   }
   throw error;
+}
+
+function rateLimitError(reply: {
+  code: (statusCode: number) => { send: (payload: unknown) => unknown };
+}) {
+  return reply.code(429).send({
+    code: 'RATE_LIMITED',
+    message: 'Too many room requests',
+  });
 }

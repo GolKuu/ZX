@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import type { PlayerId } from '../../core/types';
+import type { PlayerId, SimulationSnapshot } from '../../core/types';
 import { getCharacter } from '../../data/characters/circleFighters';
 import type { TeamSimulationSnapshot } from '../../team/TeamTypes';
 import { FighterRenderer } from '../fighters/FighterRenderer';
@@ -18,14 +18,19 @@ export class TeamFighterRenderers {
 
   constructor(private readonly scene: Phaser.Scene) {}
 
-  sync(snapshot: TeamSimulationSnapshot, countdownLabel: string) {
+  sync(
+    snapshot: SimulationSnapshot | TeamSimulationSnapshot,
+    countdownLabel: string,
+  ) {
     const context = { matchWinner: snapshot.matchWinner };
     const stopped = snapshot.hitStopTicks > 0;
     for (const teamId of ['player1', 'player2'] as const) {
       const fighter = snapshot.fighters[teamId];
       const active = this.ensure(this.active, teamId, fighter.characterId);
       active.renderer.sync(fighter, context, stopped);
-      const assist = snapshot.teamBattle.teams[teamId].assist;
+      const assist = 'teamBattle' in snapshot
+        ? snapshot.teamBattle.teams[teamId].assist
+        : null;
       if (assist) {
         const helper = this.ensure(
           this.helpers,
@@ -64,7 +69,7 @@ export class TeamFighterRenderers {
     return next;
   }
 
-  private syncHud(snapshot: TeamSimulationSnapshot, countdownLabel: string) {
+  private syncHud(snapshot: SimulationSnapshot, countdownLabel: string) {
     const key = `${snapshot.fighters.player1.characterId}:${snapshot.fighters.player2.characterId}`;
     if (!this.hud || this.hudCharacters !== key) {
       this.hud?.destroy();
