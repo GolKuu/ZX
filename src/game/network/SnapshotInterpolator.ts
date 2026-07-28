@@ -1,17 +1,17 @@
 import { TICKS_PER_SECOND } from '../config/balanceConfig';
 import { cloneSnapshot } from '../core/cloneSnapshot';
-import type { SimulationSnapshot } from '../core/types';
+import type { TeamSimulationSnapshot } from '../team/TeamTypes';
 import { INTERPOLATION_DELAY_TICKS } from './protocol';
 
 type TimedSnapshot = {
-  snapshot: SimulationSnapshot;
+  snapshot: TeamSimulationSnapshot;
   receivedAt: number;
 };
 
 export class SnapshotInterpolator {
   private snapshots: TimedSnapshot[] = [];
 
-  add(snapshot: SimulationSnapshot, receivedAt = performance.now()) {
+  add(snapshot: TeamSimulationSnapshot, receivedAt = performance.now()) {
     this.snapshots.push({ snapshot: cloneSnapshot(snapshot), receivedAt });
     this.snapshots = this.snapshots
       .sort((first, second) => first.snapshot.tick - second.snapshot.tick)

@@ -1,4 +1,6 @@
 import type { FighterSnapshot, SimulationSnapshot } from './types';
+import { cloneTeamBattle } from '../team/TeamSnapshotUtils';
+import type { TeamSimulationSnapshot } from '../team/TeamTypes';
 
 function cloneFighter(fighter: FighterSnapshot): FighterSnapshot {
   return {
@@ -10,8 +12,10 @@ function cloneFighter(fighter: FighterSnapshot): FighterSnapshot {
   };
 }
 
-export function cloneSnapshot(snapshot: SimulationSnapshot): SimulationSnapshot {
-  return {
+export function cloneSnapshot<T extends SimulationSnapshot>(snapshot: T): T {
+  const cloned: SimulationSnapshot & {
+    teamBattle?: TeamSimulationSnapshot['teamBattle'];
+  } = {
     ...snapshot,
     wins: { ...snapshot.wins },
     fighters: {
@@ -24,4 +28,10 @@ export function cloneSnapshot(snapshot: SimulationSnapshot): SimulationSnapshot 
     },
     traps: snapshot.traps.map((trap) => ({ ...trap })),
   };
+  if ('teamBattle' in snapshot) {
+    cloned.teamBattle = cloneTeamBattle(
+      (snapshot as TeamSimulationSnapshot).teamBattle,
+    );
+  }
+  return cloned as T;
 }
