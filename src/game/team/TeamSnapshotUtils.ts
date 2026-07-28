@@ -55,4 +55,8 @@ export function resetTransientState(fighter: FighterSnapshot, x: number) {
   fighter.grounded = true;
   fighter.vulnerableTicksRemaining = 0;
   fighter.landedTicksRemaining = 0;
+  fighter.rhythmPressure = Math.min(fighter.rhythmPressure, 45);
+  fighter.rhythmLockTicks = 0;
+  fighter.lastAttackIntent = null;
+  fighter.lastAttackIntentTick = -1_000;
 }

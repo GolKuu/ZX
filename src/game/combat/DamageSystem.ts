@@ -41,7 +41,8 @@ export class DamageSystem {
     const rawDamage = blocked
       ? matchupDamage
       : this.passive.incomingDamage(defender, definition, matchupDamage);
-    const damage = this.health.damage(defender, rawDamage);
+    const counterDamage = defender.rhythmLockTicks > 0 ? rawDamage * 1.15 : rawDamage;
+    const damage = this.health.damage(defender, counterDamage);
 
     this.energy.gain(attacker, definition.energyGain * attackerBonuses.energyGainMultiplier);
     if (!blocked) this.passive.recordHit(attacker, definition);

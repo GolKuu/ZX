@@ -8,6 +8,7 @@ export type {
 
 export type PlayerId = 'player1' | 'player2';
 export type Facing = -1 | 1;
+export type AttackIntentKind = 'light' | 'heavy' | 'special' | 'throw';
 
 export const GAME_ACTIONS = [
   'MOVE_LEFT',
@@ -109,6 +110,11 @@ export type FighterSnapshot = {
   maxArmorPlates: number;
   vulnerableTicksRemaining: number;
   landedTicksRemaining: number;
+  rhythmPressure: number;
+  maxRhythmPressure: number;
+  rhythmLockTicks: number;
+  lastAttackIntent: AttackIntentKind | null;
+  lastAttackIntentTick: number;
 };
 
 export type ComboSnapshot = {

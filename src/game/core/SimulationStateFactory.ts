@@ -57,6 +57,11 @@ export function createFighter(
     maxArmorPlates: isGranite ? 3 : 0,
     vulnerableTicksRemaining: 0,
     landedTicksRemaining: 0,
+    rhythmPressure: 0,
+    maxRhythmPressure: 100,
+    rhythmLockTicks: 0,
+    lastAttackIntent: null,
+    lastAttackIntentTick: -1_000,
   };
 }
 
