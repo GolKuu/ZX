@@ -22,8 +22,15 @@ export class SoloAiController {
 
     const tuning = AI_TUNING[this.difficulty];
     const distance = Math.abs(fighter.x - opponent.x);
+    if (fighter.rhythmLockTicks > 0 || fighter.rhythmPressure >= 76) {
+      return this.recoverRhythm(fighter.x, opponent.x, distance, tuning.defenseRange);
+    }
     if (this.shouldDefend(distance, opponent.mode, tuning.defenseRange)) {
       return { held: ['DEFENSE'], pressed: [], released: [] };
+    }
+    if (opponent.rhythmLockTicks > 0 && distance <= tuning.attackRange) {
+      const punish = fighter.energy >= 35 ? 'SPECIAL_ATTACK' : 'HEAVY_ATTACK';
+      return { held: [punish], pressed: [punish], released: [] };
     }
 
     const held: CombatAction[] = [];
@@ -53,6 +60,19 @@ export class SoloAiController {
       distance < defenseRange &&
       (opponentMode === 'attackStartup' || opponentMode === 'attackActive')
     );
+  }
+
+  private recoverRhythm(
+    fighterX: number,
+    opponentX: number,
+    distance: number,
+    defenseRange: number,
+  ): PlayerInputFrame {
+    if (distance <= defenseRange) {
+      return { held: ['DEFENSE'], pressed: [], released: [] };
+    }
+    const retreat = fighterX < opponentX ? 'MOVE_LEFT' : 'MOVE_RIGHT';
+    return { held: [retreat], pressed: [], released: [] };
   }
 
   private attackFor(tick: number, distance: number, energy: number): CombatAction | null {

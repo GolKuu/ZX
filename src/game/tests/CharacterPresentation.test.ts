@@ -47,9 +47,9 @@ describe('final character presentation', () => {
   });
 
   it('keeps the shared reference outline and luminous visor language', () => {
-    expect(MODEL_OUTLINE).toBe(0x292441);
-    expect(MODEL_OUTLINE_CSS).toBe('#292441');
-    expect(MODEL_EYE_GLOW).toBe(0xeafff8);
+    expect(MODEL_OUTLINE).toBe(0x201a36);
+    expect(MODEL_OUTLINE_CSS).toBe('#201a36');
+    expect(MODEL_EYE_GLOW).toBe(0xcffff7);
   });
 
   it('keeps grounded idle and walking poses above the shared foot anchor', () => {

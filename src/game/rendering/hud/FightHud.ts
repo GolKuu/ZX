@@ -41,8 +41,8 @@ export class FightHud {
       .setOrigin(0.5)
       .setDepth(21)
       .setVisible(false);
-    this.comboOne = makeComboText(scene, 42, 122, 0);
-    this.comboTwo = makeComboText(scene, 918, 122, 1);
+    this.comboOne = makeComboText(scene, 42, 141, 0);
+    this.comboTwo = makeComboText(scene, 918, 141, 1);
     this.superOne = createSuperIndicator(scene, 42, 0);
     this.superTwo = createSuperIndicator(scene, 918, 1);
     this.defenseTraining = new DefenseTrainingHud(scene, showCombatHints);
@@ -55,10 +55,12 @@ export class FightHud {
       makeGaugeLabel(scene, 44, 55, 'ENERGY', 0),
       makeGaugeLabel(scene, 44, 69, 'BLOCK', 0),
       makeGaugeLabel(scene, 44, 82, firstCharacter.passiveName.toUpperCase(), 0),
+      makeGaugeLabel(scene, 44, 94, 'ТЕМП', 0),
       makeGaugeLabel(scene, 916, 30, 'HP', 1),
       makeGaugeLabel(scene, 916, 55, 'ENERGY', 1),
       makeGaugeLabel(scene, 916, 69, 'BLOCK', 1),
       makeGaugeLabel(scene, 916, 82, secondCharacter.passiveName.toUpperCase(), 1),
+      makeGaugeLabel(scene, 916, 94, 'ТЕМП', 1),
     ];
     [
       this.timer, this.round, this.comboOne, this.comboTwo,
@@ -93,6 +95,12 @@ export class FightHud {
     this.round.setText(`Раунд ${snapshot.roundNumber}`);
     this.updateCombo(this.comboOne, snapshot.combos.player1);
     this.updateCombo(this.comboTwo, snapshot.combos.player2);
+    this.gaugeLabels[4].setText(
+      snapshot.fighters.player1.rhythmLockTicks > 0 ? 'ПЕРЕГРУЗКА' : 'ТЕМП',
+    );
+    this.gaugeLabels[9].setText(
+      snapshot.fighters.player2.rhythmLockTicks > 0 ? 'ПЕРЕГРУЗКА' : 'ТЕМП',
+    );
     this.defenseTraining.update(snapshot);
     this.superOne.setVisible(
       this.showCombatHints &&

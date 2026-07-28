@@ -10,11 +10,11 @@ export function drawHudChrome(
   const width = BAR_WIDTH * uiScale + 24;
   graphics
     .fillStyle(0xffffff, 0.82)
-    .fillRoundedRect(24, 12, width, 98 * uiScale, 20)
-    .fillRoundedRect(936 - width, 12, width, 98 * uiScale, 20)
+    .fillRoundedRect(24, 12, width, 116 * uiScale, 20)
+    .fillRoundedRect(936 - width, 12, width, 116 * uiScale, 20)
     .lineStyle(3, 0x30264f, 0.82)
-    .strokeRoundedRect(24, 12, width, 98 * uiScale, 20)
-    .strokeRoundedRect(936 - width, 12, width, 98 * uiScale, 20)
+    .strokeRoundedRect(24, 12, width, 116 * uiScale, 20)
+    .strokeRoundedRect(936 - width, 12, width, 116 * uiScale, 20)
     .fillStyle(0xffffff, 0.92)
     .fillCircle(480, 39, 38 * uiScale)
     .lineStyle(4, 0x30264f, 0.9)
@@ -53,6 +53,16 @@ export function drawFighterBars(
     passiveColor,
     mirrored,
   );
+  drawBar(
+    graphics,
+    x,
+    96 * uiScale,
+    width,
+    8 * uiScale,
+    fighter.rhythmPressure / fighter.maxRhythmPressure,
+    fighter.rhythmLockTicks > 0 ? 0xff5d73 : 0xffb95a,
+    mirrored,
+  );
   drawDefenseSegments(graphics, fighter, x, mirrored, uiScale);
 }
 
@@ -70,9 +80,9 @@ function drawDefenseSegments(
     const filled = index < fighter.defense.segments;
     graphics
       .fillStyle(filled ? 0x7557ff : 0xffffff, filled ? 1 : 0.42)
-      .fillCircle(segmentX, 99 * uiScale, 6 * uiScale)
+      .fillCircle(segmentX, 114 * uiScale, 6 * uiScale)
       .lineStyle(2 * uiScale, 0x30264f, 0.7)
-      .strokeCircle(segmentX, 99 * uiScale, 6 * uiScale);
+      .strokeCircle(segmentX, 114 * uiScale, 6 * uiScale);
   }
 }
 
@@ -114,7 +124,7 @@ export function createSuperIndicator(
   originX: number,
 ) {
   return scene.add
-    .text(x, 100, 'SUPER READY', {
+    .text(x, 119, 'SUPER READY', {
       fontFamily: 'Arial',
       fontSize: '11px',
       fontStyle: 'bold',

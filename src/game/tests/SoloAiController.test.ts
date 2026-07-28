@@ -30,6 +30,27 @@ describe('SoloAiController', () => {
     expect(input.pressed).toContain('LIGHT_ATTACK');
   });
 
+  it('punishes an opponent who overloaded their rhythm', () => {
+    const simulation = activeSimulation(19, 400, 490);
+    simulation.updateState((state) => {
+      state.fighters.player1.rhythmLockTicks = 25;
+    });
+
+    const input = new SoloAiController('HARD').frame('player2', simulation.getSnapshot());
+    expect(input.pressed).toContain('HEAVY_ATTACK');
+  });
+
+  it('stops attacking to recover its own rhythm', () => {
+    const simulation = activeSimulation(19, 400, 490);
+    simulation.updateState((state) => {
+      state.fighters.player2.rhythmPressure = 82;
+    });
+
+    const input = new SoloAiController('HARD').frame('player2', simulation.getSnapshot());
+    expect(input.pressed).toHaveLength(0);
+    expect(input.held).toEqual(['DEFENSE']);
+  });
+
   it('keeps the current behavior as easy and attacks faster on medium', () => {
     const snapshot = activeSimulation(23, 400, 490).getSnapshot();
 
