@@ -137,6 +137,35 @@ kbd {
   color: var(--muted);
 }
 
+.rhythm-guide {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #fff2ce;
+}
+
+.rhythm-guide > span {
+  display: grid;
+  width: 60px;
+  height: 60px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  color: white;
+  background: #ff9e57;
+  font-size: .72rem;
+  font-weight: 950;
+}
+
+.rhythm-guide p {
+  margin: 4px 0 0;
+  line-height: 1.45;
+}
+
 .combat-hints-toggle {
   display: flex;
   align-items: center;

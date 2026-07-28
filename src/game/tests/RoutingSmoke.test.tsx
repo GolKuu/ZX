@@ -25,6 +25,7 @@ const routes = [
   ['/effects-gallery', 'Атака видна сразу'],
   ['/controls', 'Управление'],
   ['/settings', 'Масштаб интерфейса'],
+  ['/status', 'Состояние Circle Clash'],
   ['/profile', 'Профиль'],
   ['/auth', 'Вход в Circle Clash'],
 ] as const;

@@ -18,6 +18,7 @@ import { ArenaViewerPage } from '../pages/ArenaViewerPage';
 import { CharacterViewerPage } from '../pages/CharacterViewerPage';
 import { EffectsGalleryPage } from '../pages/EffectsGalleryPage';
 import { SettingsPage } from '../pages/SettingsPage';
+import { StatusPage } from '../pages/StatusPage';
 
 const FightPage = lazy(() =>
   import('../pages/FightPage').then((module) => ({ default: module.FightPage })),
@@ -93,6 +94,7 @@ export function AppRouter() {
       <Route path="/visual-style-guide" component={VisualStyleGuidePage} />
       <Route path="/controls" component={ControlsPage} />
       <Route path="/settings" component={SettingsPage} />
+      <Route path="/status" component={StatusPage} />
       <Route path="/profile" component={ProfilePage} />
       <Route path="/players/:playerId" component={PublicPlayerPage} />
       <Route path="/auth" component={AuthPage} />

@@ -20,11 +20,35 @@ export function registerRoutes(
 ) {
   const roomCreates = new ApiRateLimiter(20, 60_000);
   const roomJoins = new ApiRateLimiter(60, 60_000);
-  app.get('/health', async () => ({ ok: true, service: 'circle-clash-match-server' }));
+  app.get('/health', async (_request, reply) => {
+    reply.header('cache-control', 'no-store');
+    return healthPayload();
+  });
+  app.get('/ready', async (_request, reply) => {
+    reply.header('cache-control', 'no-store');
+    return { ...healthPayload(), ready: true };
+  });
+  app.get('/status', async (_request, reply) => {
+    reply.header('cache-control', 'no-store');
+    return {
+      ...healthPayload(),
+      rooms: {
+        solo: rooms.activeRoomCount(),
+        team: teamRooms.activeRoomCount(),
+      },
+    };
+  });
 
   app.post('/rooms', async (request, reply) => {
     if (!roomCreates.allow(request.ip)) return rateLimitError(reply);
-    return reply.code(201).send(rooms.createRoom());
+    const credentials = rooms.createRoom();
+    request.log.info({
+      event: 'room.created',
+      matchId: credentials.matchId,
+      roomCode: credentials.roomCode,
+      mode: 'solo',
+    }, 'Private room created');
+    return reply.code(201).send(credentials);
   });
 
   app.post<{ Params: RoomParams }>('/rooms/:code/join', async (request, reply) => {
@@ -36,11 +60,20 @@ export function registerRoutes(
     }
   });
 
-  app.post('/team-rooms', async (_request, reply) => {
-    return reply.code(201).send(teamRooms.createRoom());
+  app.post('/team-rooms', async (request, reply) => {
+    if (!roomCreates.allow(request.ip)) return rateLimitError(reply);
+    const credentials = teamRooms.createRoom();
+    request.log.info({
+      event: 'room.created',
+      matchId: credentials.matchId,
+      roomCode: credentials.roomCode,
+      mode: 'team',
+    }, 'Private team room created');
+    return reply.code(201).send(credentials);
   });
 
   app.post<{ Params: RoomParams }>('/team-rooms/:code/join', async (request, reply) => {
+    if (!roomJoins.allow(request.ip)) return rateLimitError(reply);
     try {
       return reply.code(200).send(teamRooms.joinRoom(request.params.code));
     } catch (error) {
@@ -135,10 +168,23 @@ function roomError(
 }
 
 function rateLimitError(reply: {
+  header: (name: string, value: string) => unknown;
   code: (statusCode: number) => { send: (payload: unknown) => unknown };
 }) {
+  reply.header('retry-after', '60');
   return reply.code(429).send({
     code: 'RATE_LIMITED',
     message: 'Too many room requests',
   });
+}
+
+function healthPayload() {
+  return {
+    ok: true,
+    status: 'ok',
+    service: 'circle-clash-match-server',
+    version: process.env.npm_package_version || 'dev',
+    uptimeSeconds: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+  };
 }

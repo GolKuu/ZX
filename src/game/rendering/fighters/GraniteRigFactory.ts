@@ -9,12 +9,12 @@ import {
 } from './modelStyle';
 
 export function createGraniteRig(scene: Phaser.Scene, character: CharacterDefinition) {
-  const backLeg = stoneLeg(scene, -24, 27, character.shadowColor);
-  const frontLeg = stoneLeg(scene, 24, 27, character.color, true);
-  const backArm = stoneArm(scene, -49, -15, -1, character.shadowColor);
+  const backLeg = stoneLeg(scene, -29, 25, character.shadowColor);
+  const frontLeg = stoneLeg(scene, 29, 25, character.color, true);
+  const backArm = stoneArm(scene, -58, -18, -1, character.shadowColor);
   const torso = createTorso(scene, character);
   const head = createHead(scene, character);
-  const frontArm = stoneArm(scene, 49, -15, 1, character.color, true);
+  const frontArm = stoneArm(scene, 58, -18, 1, character.color, true);
   const root = scene.add.container(0, 0, [
     backLeg, backArm, frontLeg, torso, head, frontArm,
   ]);
@@ -65,7 +65,7 @@ function stoneLeg(
 
 function createTorso(scene: Phaser.Scene, character: CharacterDefinition) {
   const body = scene.add
-    .polygon(0, 0, [-52, -29, -34, -45, 31, -45, 53, -27, 51, 19, 32, 43, -33, 43, -53, 17], character.color)
+    .polygon(0, 0, [-61, -24, -39, -51, 22, -47, 58, -31, 64, 12, 38, 49, -29, 45, -58, 22], character.color)
     .setStrokeStyle(7, MODEL_OUTLINE, 1);
   const shoulderRock = scene.add
     .polygon(-42, -36, [-18, -7, -5, -20, 14, -16, 22, 3, 6, 17, -16, 13], character.shadowColor)
@@ -82,7 +82,7 @@ function createTorso(scene: Phaser.Scene, character: CharacterDefinition) {
 
 function createHead(scene: Phaser.Scene, character: CharacterDefinition) {
   const head = scene.add
-    .polygon(0, 0, [-34, -16, -12, -31, 29, -25, 36, 7, 17, 25, -27, 22, -37, 1], character.color)
+    .polygon(0, 0, [-42, -10, -25, -32, 19, -37, 41, -14, 36, 14, 11, 31, -31, 23, -43, 4], character.color)
     .setStrokeStyle(6, MODEL_OUTLINE, 1);
   const facePlate = scene.add
     .polygon(1, 1, [-28, -9, -5, -15, 29, -8, 22, 11, -23, 10], MODEL_OUTLINE);

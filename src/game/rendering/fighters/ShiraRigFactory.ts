@@ -9,12 +9,12 @@ import {
 } from './modelStyle';
 
 export function createShiraRig(scene: Phaser.Scene, character: CharacterDefinition) {
-  const backLeg = ribbonTail(scene, -13, 25, -1, character.shadowColor);
-  const frontLeg = ribbonTail(scene, 13, 25, 1, character.accentColor, true);
-  const backArm = scissorWing(scene, -31, -13, -1, character.shadowColor, 0x9feadf);
+  const backLeg = ribbonTail(scene, -17, 22, -1, character.shadowColor);
+  const frontLeg = ribbonTail(scene, 17, 22, 1, character.accentColor, true);
+  const backArm = scissorWing(scene, -37, -16, -1, character.shadowColor, 0x9feadf);
   const torso = createCore(scene, character);
   const head = createShell(scene, character);
-  const frontArm = scissorWing(scene, 31, -13, 1, character.color, character.accentColor, true);
+  const frontArm = scissorWing(scene, 37, -16, 1, character.color, character.accentColor, true);
   const root = scene.add.container(0, 0, [
     backLeg, backArm, frontLeg, torso, head, frontArm,
   ]);
@@ -69,7 +69,7 @@ function scissorWing(
 function createCore(scene: Phaser.Scene, character: CharacterDefinition) {
   const aura = scene.add.ellipse(0, 2, 65, 79, character.accentColor, 0.12);
   const body = scene.add
-    .polygon(0, 0, [0, -45, 32, -27, 35, 15, 15, 43, -15, 43, -35, 15, -32, -27], character.color)
+    .polygon(0, 0, [0, -53, 28, -30, 42, 6, 21, 47, 0, 55, -21, 47, -42, 6, -28, -30], character.color)
     .setStrokeStyle(6, MODEL_OUTLINE, 1);
   const breastplate = scene.add
     .polygon(0, 9, [-19, -18, 19, -18, 14, 22, 0, 31, -14, 22], 0xc9b9f4, 0.72);
@@ -88,7 +88,8 @@ function createShell(scene: Phaser.Scene, character: CharacterDefinition) {
   const rightFin = scene.add
     .polygon(27, -2, [3, -15, 25, -28, 17, 1, 28, 17, 2, 11], character.accentColor)
     .setStrokeStyle(4, MODEL_OUTLINE, 1);
-  const shell = scene.add.ellipse(0, 0, 61, 49, character.color)
+  const shell = scene.add
+    .polygon(0, 0, [-36, -12, -15, -31, 22, -27, 38, -4, 24, 26, -21, 27, -39, 5], character.color)
     .setStrokeStyle(6, MODEL_OUTLINE, 1);
   const visor = scene.add.ellipse(0, -1, 40, 21, MODEL_OUTLINE);
   const leftEye = scene.add.ellipse(-10, -1, 7, 10, MODEL_EYE_GLOW);

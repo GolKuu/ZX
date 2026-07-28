@@ -75,6 +75,26 @@ describe('CombatSimulation', () => {
     expect(simulation.getSnapshot().fighters.player1.mode).toBe('dashing');
   });
 
+  it('turns rapid attack mashing into a deterministic punish window', () => {
+    const simulation = new CombatSimulation();
+    activate(simulation);
+
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      simulation.step(
+        inputFrame('player1', ['LIGHT_ATTACK'], ['LIGHT_ATTACK']),
+        FIXED_STEP_SECONDS,
+      );
+      for (let gap = 0; gap < 2; gap += 1) {
+        simulation.step(emptyInputFrame(), FIXED_STEP_SECONDS);
+      }
+    }
+
+    const fighter = simulation.getSnapshot().fighters.player1;
+    expect(fighter.rhythmPressure).toBe(fighter.maxRhythmPressure);
+    expect(fighter.rhythmLockTicks).toBeGreaterThan(0);
+    expect(fighter.vulnerableTicksRemaining).toBeGreaterThan(0);
+  });
+
   it('lets an airborne fighter cross over the opponent and turns both fighters', () => {
     const simulation = new CombatSimulation();
     const close = simulation.getSnapshot();

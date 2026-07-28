@@ -23,6 +23,7 @@ export function AppShell({
           <Link href="/arena-viewer">Арены</Link>
           <Link href="/effects-gallery">Эффекты</Link>
           <Link href="/settings">Настройки</Link>
+          <Link href="/status">Статус</Link>
           <Link href="/profile">Профиль</Link>
         </nav>
         <FullscreenButton compact />

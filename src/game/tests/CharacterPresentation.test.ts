@@ -15,6 +15,8 @@ import {
   VICTORY_CUTSCENE_MS,
   VICTORY_SCENES,
 } from '../rendering/victory/victoryScenes';
+import { CHARACTER_MOTION } from '../rendering/animation/CharacterMotionProfiles';
+import { CHARACTER_SKINS } from '../../components/characters/characterSkinProfiles';
 
 describe('final character presentation', () => {
   it('gives every fighter a named hand hit, kick and force special', () => {
@@ -44,6 +46,17 @@ describe('final character presentation', () => {
     expect(new Set(
       Object.values(FORCE_MODEL_CONFIGS).map((config) => JSON.stringify(config)),
     ).size).toBe(13);
+  });
+
+  it('gives all 15 fighters unique viewer skins and motion timing', () => {
+    expect(Object.keys(CHARACTER_SKINS)).toHaveLength(15);
+    expect(Object.keys(CHARACTER_MOTION)).toHaveLength(15);
+    expect(new Set(
+      Object.values(CHARACTER_SKINS).map((skin) => JSON.stringify(skin)),
+    ).size).toBe(15);
+    expect(new Set(
+      Object.values(CHARACTER_MOTION).map((motion) => JSON.stringify(motion)),
+    ).size).toBe(15);
   });
 
   it('keeps the shared reference outline and luminous visor language', () => {

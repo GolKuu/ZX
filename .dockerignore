@@ -1,0 +1,11 @@
+.git
+.github
+.env
+.env.local
+artifacts
+dist
+node_modules
+match-server/dist
+match-server/node_modules
+supabase/.temp
+*.log

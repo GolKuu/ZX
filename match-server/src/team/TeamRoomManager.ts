@@ -54,6 +54,10 @@ export class TeamRoomManager {
     return this.byCode.get(normalizeCode(code)) ?? null;
   }
 
+  activeRoomCount() {
+    return this.byId.size;
+  }
+
   private addPlayer(room: TeamMatchRoom, playerId: PlayerId): RoomCredentials {
     const playerToken = randomBytes(32).toString('hex');
     room.addPlayer(playerId, playerToken);
