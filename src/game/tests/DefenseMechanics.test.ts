@@ -10,7 +10,7 @@ import type {
   CombatAction,
   PlayerInputFrame,
 } from '../core/types';
-import { getCharacterAttacks } from '../data/attacks/temporaryCharacterAttacks';
+import { getCharacterAttacks } from '../data/attacks/characterAttacks';
 
 describe('complete defense system', () => {
   it('supports high and low guard while throws pass through both', () => {

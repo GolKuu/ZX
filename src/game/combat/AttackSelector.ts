@@ -1,4 +1,4 @@
-import { getCharacterAttacks } from '../data/attacks/temporaryCharacterAttacks';
+import { getCharacterAttacks } from '../data/attacks/characterAttacks';
 import type { FighterSnapshot, PlayerInputFrame } from '../core/types';
 import type { AttackDefinition, CharacterAttackSet } from './AttackDefinition';
 

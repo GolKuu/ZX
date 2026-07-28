@@ -3,7 +3,7 @@ import { BlockSystem } from '../combat/BlockSystem';
 import { FIXED_STEP_SECONDS } from '../config/balanceConfig';
 import { CombatSimulation } from '../core/CombatSimulation';
 import { createFighter } from '../core/SimulationStateFactory';
-import { getCharacterAttacks } from '../data/attacks/temporaryCharacterAttacks';
+import { getCharacterAttacks } from '../data/attacks/characterAttacks';
 import { emptyInputFrame } from './testFixtures';
 
 describe('contextual defense', () => {

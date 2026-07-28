@@ -1,7 +1,6 @@
-import { AttackSystem, type AttackContact } from '../combat/AttackSystem';
+import { AttackSystem } from '../combat/AttackSystem';
 import { BlockSystem } from '../combat/BlockSystem';
 import { ComboSystem } from '../combat/ComboSystem';
-import { DamageSystem } from '../combat/DamageSystem';
 import { balanceConfig } from '../config/balanceConfig';
 import { cloneSnapshot } from './cloneSnapshot';
 import { CollisionSystem } from './CollisionSystem';
@@ -11,11 +10,11 @@ import { MovementSystem } from './MovementSystem';
 import { RoundManager } from './RoundManager';
 import { CombatInputPipeline } from './CombatInputPipeline';
 import { ArenaTrapSystem } from '../combat/ArenaTrapSystem';
+import { CombatContactResolver } from '../combat/CombatContactResolver';
 import { createFighter, createInitialState } from './SimulationStateFactory';
 import type {
   InputFrame,
   PlayerId,
-  PlayerInputFrame,
   SimulationSnapshot,
 } from './types';
 
@@ -26,7 +25,6 @@ export class CombatSimulation {
   private readonly attacks: AttackSystem;
   private readonly blocks = new BlockSystem();
   private readonly combos = new ComboSystem();
-  private readonly damage = new DamageSystem();
   private readonly collisions = new CollisionSystem();
   private readonly movement = new MovementSystem();
   private readonly states = new FighterStateMachine();
@@ -34,6 +32,7 @@ export class CombatSimulation {
   private readonly round = new RoundManager();
   private readonly inputs = new CombatInputPipeline();
   private readonly traps = new ArenaTrapSystem();
+  private readonly contacts = new CombatContactResolver();
 
   constructor(private readonly characters: Record<PlayerId, string> = DEFAULT_CHARACTERS) {
     this.state = createInitialState(characters);
@@ -73,8 +72,16 @@ export class CombatSimulation {
       this.state.fighters.player2,
       this.state.fighters.player1,
     );
-    if (firstHit) this.resolveContact('player1', 'player2', firstHit, resolvedInput.player2);
-    if (secondHit) this.resolveContact('player2', 'player1', secondHit, resolvedInput.player1);
+    if (firstHit) {
+      this.contacts.resolve(
+        this.state, this.blocks, 'player1', 'player2', firstHit, resolvedInput.player2,
+      );
+    }
+    if (secondHit) {
+      this.contacts.resolve(
+        this.state, this.blocks, 'player2', 'player1', secondHit, resolvedInput.player1,
+      );
+    }
 
     PLAYERS.forEach((id) => this.attacks.finishTick(this.state.fighters[id]));
     this.collisions.separateFighters(this.state.fighters.player1, this.state.fighters.player2);
@@ -116,27 +123,6 @@ export class CombatSimulation {
     }
     this.state.tick += 1;
     return true;
-  }
-
-  private resolveContact(
-    attackerId: PlayerId,
-    defenderId: PlayerId,
-    contact: AttackContact,
-    defenderInput: PlayerInputFrame,
-  ) {
-    const attacker = this.state.fighters[attackerId];
-    const defender = this.state.fighters[defenderId];
-    const block = this.blocks.tryBlock(defender, defenderInput, contact.definition);
-    const result = this.damage.apply(
-      attacker,
-      defender,
-      contact.definition,
-      this.state.combos[attackerId],
-      block,
-    );
-    if (result.damage > 0 || block.blocked) {
-      this.state.hitStopTicks = Math.max(this.state.hitStopTicks, contact.definition.hitStopFrames);
-    }
   }
 
   private finishRoundIfNeeded() {

@@ -1,4 +1,4 @@
-import { getCharacterAttacks } from '../../game/data/attacks/temporaryCharacterAttacks';
+import { getCharacterAttacks } from '../../game/data/attacks/characterAttacks';
 import type { CharacterDefinition } from '../../game/data/characters/circleFighters';
 
 export function MoveSetTable({ character }: { character: CharacterDefinition }) {

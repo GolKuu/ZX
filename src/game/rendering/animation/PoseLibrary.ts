@@ -1,5 +1,6 @@
 import type { AnimationStateId } from './AnimationCatalog';
 import type { RigFrame, RigPose } from './RigTypes';
+import { applyReactionPose } from './PoseReactions';
 
 const BASE: RigPose = {
   x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1,
@@ -12,6 +13,7 @@ export function poseFor(frame: RigFrame, kind: 'granite' | 'shira'): RigPose {
   const pose = { ...BASE };
   pose.y = Math.sin(time * 0.7) * (kind === 'granite' ? 1.2 : 2);
   pose.head = Math.sin(time * 0.55) * 0.025;
+  if (applyReactionPose(pose, frame.state, time, kind)) return pose;
   if (frame.state === 'walk') applyWalk(pose, time, kind);
   else if (frame.state.startsWith('dash')) applyDash(pose, frame.state);
   else if (frame.state === 'jump-fall') applyFall(pose);
@@ -20,10 +22,6 @@ export function poseFor(frame: RigFrame, kind: 'granite' | 'shira'): RigPose {
   else if (frame.state === 'crouch') applyCrouch(pose);
   else if (isDefense(frame.state)) applyDefense(pose, frame.state);
   else if (isAttack(frame.state)) applyAttack(pose, frame, kind);
-  else if (isReaction(frame.state)) applyReaction(pose, frame.state);
-  else if (frame.state === 'victory') applyVictory(pose, time, kind);
-  else if (frame.state === 'defeat') applyDefeat(pose);
-  else if (frame.state === 'passive-full') applyCharged(pose, time);
   return pose;
 }
 
@@ -113,48 +111,10 @@ function applyAttack(pose: RigPose, frame: RigFrame, kind: 'granite' | 'shira') 
   }
 }
 
-function applyReaction(pose: RigPose, state: AnimationStateId) {
-  if (state === 'knockdown') {
-    pose.rotation = 1.35;
-    pose.y = 24;
-  } else if (state === 'wake-up') {
-    pose.rotation = 0.4;
-    pose.y = 15;
-    pose.scaleY = 0.8;
-  } else {
-    pose.rotation = -0.24;
-    pose.x = -9;
-    pose.frontArm = 0.8;
-    pose.backArm = -0.7;
-  }
-}
-
-function applyVictory(pose: RigPose, time: number, kind: 'granite' | 'shira') {
-  pose.frontArm = -2.45;
-  pose.backArm = kind === 'granite' ? 2.45 : -1.9;
-  pose.y = -Math.abs(Math.sin(time)) * (kind === 'shira' ? 7 : 2);
-  pose.scaleX = 1.08;
-}
-
-function applyDefeat(pose: RigPose) {
-  pose.rotation = 1.45;
-  pose.y = 28;
-  pose.scaleY = 0.82;
-}
-
-function applyCharged(pose: RigPose, time: number) {
-  pose.scaleX = 1.03 + Math.sin(time * 2) * 0.035;
-  pose.scaleY = 1.03 + Math.cos(time * 2) * 0.035;
-}
-
 function isDefense(state: AnimationStateId) {
   return state.includes('block') || state === 'combo-break' || state === 'combo-escape';
 }
 
 function isAttack(state: AnimationStateId) {
   return /light|heavy|special|throw|grab|super|reversal|auto-combo/.test(state);
-}
-
-function isReaction(state: AnimationStateId) {
-  return /reaction|knockdown|wake-up/.test(state);
 }

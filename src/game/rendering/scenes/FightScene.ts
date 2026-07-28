@@ -14,6 +14,7 @@ import { FighterRenderer } from '../fighters/FighterRenderer';
 import { FightHud } from '../hud/FightHud';
 import { ArenaTrapRenderer } from '../arenas/ArenaTrapRenderer';
 import { PerformanceMonitor } from '../../diagnostics/PerformanceMonitor';
+import { createSceneButton } from './createSceneButton';
 
 export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpMatchConfig) {
   return class FightScene extends Phaser.Scene {
@@ -47,11 +48,11 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
         settingsStore.load().showCombatHints,
       );
       this.traps = new ArenaTrapRenderer(this);
-      this.pauseButton = this.createButton(24, 492, 'Ⅱ Пауза', () => this.togglePause());
-      this.createButton(132, 492, '← Выбор', () =>
+      this.pauseButton = createSceneButton(this, 24, 492, 'Ⅱ Пауза', () => this.togglePause());
+      createSceneButton(this, 132, 492, '← Выбор', () =>
         bridge.emit(GameEvents.returnToSetupRequested, undefined),
       );
-      this.createButton(240, 492, '⌂ Меню', () =>
+      createSceneButton(this, 240, 492, '⌂ Меню', () =>
         bridge.emit(GameEvents.exitRequested, undefined),
       );
       this.bindBridgeCommands();
@@ -150,19 +151,5 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
       bridge.emit(GameEvents.destroyed, undefined);
     }
 
-    private createButton(x: number, y: number, label: string, action: () => void) {
-      return this.add
-        .text(x, y, label, {
-          fontFamily: 'Arial',
-          fontSize: '14px',
-          fontStyle: 'bold',
-          color: '#ffffff',
-          backgroundColor: '#30264fdd',
-          padding: { x: 11, y: 8 },
-        })
-        .setDepth(30)
-        .setInteractive({ useHandCursor: true })
-        .on(Phaser.Input.Events.POINTER_DOWN, action);
-    }
   };
 }

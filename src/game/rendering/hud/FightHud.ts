@@ -4,6 +4,7 @@ import type { ComboSnapshot, SimulationSnapshot } from '../../core/types';
 import { createSuperIndicator, drawFighterBars, drawRoundWins } from './HudBars';
 import { DefenseTrainingHud } from './DefenseTrainingHud';
 import type { CharacterDefinition } from '../../data/characters/circleFighters';
+import { makeComboText, makeGaugeLabel, makeHudText } from './HudTextFactory';
 
 export class FightHud {
   private readonly graphics: Phaser.GameObjects.Graphics;
@@ -24,8 +25,8 @@ export class FightHud {
     private readonly showCombatHints = true,
   ) {
     this.graphics = scene.add.graphics().setDepth(20);
-    this.timer = this.makeText(scene, 480, 18, '90', '32px');
-    this.round = this.makeText(scene, 480, 56, 'Раунд 1', '15px');
+    this.timer = makeHudText(scene, 480, 18, '90', '32px');
+    this.round = makeHudText(scene, 480, 56, 'Раунд 1', '15px');
     this.status = scene.add
       .text(480, 170, '', {
         fontFamily: 'Arial',
@@ -38,20 +39,20 @@ export class FightHud {
       .setOrigin(0.5)
       .setDepth(21)
       .setVisible(false);
-    this.comboOne = this.makeComboText(scene, 42, 122, 0);
-    this.comboTwo = this.makeComboText(scene, 918, 122, 1);
+    this.comboOne = makeComboText(scene, 42, 122, 0);
+    this.comboTwo = makeComboText(scene, 918, 122, 1);
     this.superOne = createSuperIndicator(scene, 42, 0);
     this.superTwo = createSuperIndicator(scene, 918, 1);
     this.defenseTraining = new DefenseTrainingHud(scene, showCombatHints);
     this.gaugeLabels = [
-      this.makeGaugeLabel(scene, 44, 30, 'HP', 0),
-      this.makeGaugeLabel(scene, 44, 55, 'ENERGY', 0),
-      this.makeGaugeLabel(scene, 44, 69, 'BLOCK', 0),
-      this.makeGaugeLabel(scene, 44, 82, firstCharacter.passiveName.toUpperCase(), 0),
-      this.makeGaugeLabel(scene, 916, 30, 'HP', 1),
-      this.makeGaugeLabel(scene, 916, 55, 'ENERGY', 1),
-      this.makeGaugeLabel(scene, 916, 69, 'BLOCK', 1),
-      this.makeGaugeLabel(scene, 916, 82, secondCharacter.passiveName.toUpperCase(), 1),
+      makeGaugeLabel(scene, 44, 30, 'HP', 0),
+      makeGaugeLabel(scene, 44, 55, 'ENERGY', 0),
+      makeGaugeLabel(scene, 44, 69, 'BLOCK', 0),
+      makeGaugeLabel(scene, 44, 82, firstCharacter.passiveName.toUpperCase(), 0),
+      makeGaugeLabel(scene, 916, 30, 'HP', 1),
+      makeGaugeLabel(scene, 916, 55, 'ENERGY', 1),
+      makeGaugeLabel(scene, 916, 69, 'BLOCK', 1),
+      makeGaugeLabel(scene, 916, 82, secondCharacter.passiveName.toUpperCase(), 1),
     ];
   }
 
@@ -119,49 +120,4 @@ export class FightHud {
       .setVisible(combo.hits >= 2);
   }
 
-  private makeText(scene: Phaser.Scene, x: number, y: number, value: string, fontSize: string) {
-    return scene.add
-      .text(x, y, value, {
-        fontFamily: 'Arial',
-        fontSize,
-        fontStyle: 'bold',
-        color: '#30264f',
-      })
-      .setOrigin(0.5, 0)
-      .setDepth(21);
-  }
-
-  private makeComboText(scene: Phaser.Scene, x: number, y: number, originX: number) {
-    return scene.add
-      .text(x, y, '', {
-        fontFamily: 'Arial',
-        fontSize: '22px',
-        fontStyle: 'bold',
-        align: originX === 0 ? 'left' : 'right',
-        color: '#ffffff',
-        stroke: '#30264f',
-        strokeThickness: 5,
-      })
-      .setOrigin(originX, 0)
-      .setDepth(21)
-      .setVisible(false);
-  }
-
-  private makeGaugeLabel(
-    scene: Phaser.Scene,
-    x: number,
-    y: number,
-    value: string,
-    originX: number,
-  ) {
-    return scene.add
-      .text(x, y, value, {
-        fontFamily: 'Arial',
-        fontSize: '8px',
-        fontStyle: 'bold',
-        color: '#30264f',
-      })
-      .setOrigin(originX, 0)
-      .setDepth(22);
-  }
 }

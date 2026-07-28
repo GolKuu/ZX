@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { AttackSystem } from '../combat/AttackSystem';
 import { createFighter } from '../core/SimulationStateFactory';
 import type { CombatAction, PlayerInputFrame } from '../core/types';
-import { getCharacterAttacks } from '../data/attacks/temporaryCharacterAttacks';
+import { getCharacterAttacks } from '../data/attacks/characterAttacks';
 
 describe('auto combo', () => {
   it('advances three light stages only after three separate presses', () => {

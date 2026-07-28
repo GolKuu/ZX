@@ -1,4 +1,4 @@
-import { characterAttacks } from '../data/attacks/temporaryCharacterAttacks';
+import { characterAttacks } from '../data/attacks/characterAttacks';
 
 export type HitboxAlignmentReport = {
   checked: number;

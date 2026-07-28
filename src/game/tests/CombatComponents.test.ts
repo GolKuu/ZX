@@ -3,7 +3,7 @@ import { EnergyComponent } from '../combat/EnergyComponent';
 import { HealthComponent } from '../combat/HealthComponent';
 import { CollisionSystem } from '../core/CollisionSystem';
 import { createFighter } from '../core/SimulationStateFactory';
-import { getCharacterAttacks } from '../data/attacks/temporaryCharacterAttacks';
+import { getCharacterAttacks } from '../data/attacks/characterAttacks';
 
 describe('combat components', () => {
   it('caps health and energy mutations deterministically', () => {

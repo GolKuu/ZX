@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import type { CharacterDefinition } from '../../data/characters/circleFighters';
-import { getCharacterAttacks } from '../../data/attacks/temporaryCharacterAttacks';
+import { getCharacterAttacks } from '../../data/attacks/characterAttacks';
 import type { FighterSnapshot, PlayerId } from '../../core/types';
 
 export class AttackVisualRenderer {

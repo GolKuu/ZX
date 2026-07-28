@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getCharacterAttacks } from '../data/attacks/temporaryCharacterAttacks';
+import { getCharacterAttacks } from '../data/attacks/characterAttacks';
 
 describe('original character attacks', () => {
   it.each(['granite', 'shira'])('defines the complete moveset for %s', (characterId) => {

@@ -1,3 +1,11 @@
+import type { DefenseSnapshot } from './DefenseTypes';
+
+export type {
+  DefenseEffect,
+  DefenseSnapshot,
+  DefenseTimingFeedback,
+} from './DefenseTypes';
+
 export type PlayerId = 'player1' | 'player2';
 export type Facing = -1 | 1;
 
@@ -64,24 +72,6 @@ export type AttackRuntimeSnapshot = {
   phase: 'startup' | 'active' | 'recovery';
   hitHitboxes: number[];
   connected: boolean;
-};
-
-export type DefenseTimingFeedback = 'none' | 'too-early' | 'success' | 'too-late';
-export type DefenseEffect =
-  | 'none'
-  | 'precise-block'
-  | 'perfect-block'
-  | 'combo-escape'
-  | 'combo-break';
-
-export type DefenseSnapshot = {
-  segments: number;
-  maxSegments: number;
-  comboEscapeCooldownTicks: number;
-  feedback: DefenseTimingFeedback;
-  feedbackTicksRemaining: number;
-  effect: DefenseEffect;
-  effectTicksRemaining: number;
 };
 
 export type FighterSnapshot = {

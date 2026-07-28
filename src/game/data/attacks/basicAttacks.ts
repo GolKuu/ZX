@@ -1,5 +1,5 @@
 import type { AttackDefinition } from '../../combat/AttackDefinition';
-import { characterAttacks } from './temporaryCharacterAttacks';
+import { characterAttacks } from './characterAttacks';
 
 export type { AttackDefinition };
 
