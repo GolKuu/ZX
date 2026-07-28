@@ -76,7 +76,7 @@ on conflict (id) do nothing;
 -- is intentionally used here so duplicated or missing Auth metadata cannot
 -- block the migration.
 insert into public.profiles (id, nickname, created_at)
-select id, 'Игрок-' || left(id::text, 8), created_at
+select id, 'Игрок-' || left(replace(id::text, '-', ''), 16), created_at
 from auth.users
 on conflict (id) do nothing;
 
@@ -120,7 +120,7 @@ declare
   requested_nickname text := trim(coalesce(new.raw_user_meta_data ->> 'nickname', ''));
 begin
   if char_length(requested_nickname) not between 3 and 24 then
-    requested_nickname := 'Игрок-' || left(new.id::text, 8);
+    requested_nickname := 'Игрок-' || left(replace(new.id::text, '-', ''), 16);
   end if;
 
   insert into public.profiles (id, nickname)
@@ -132,7 +132,7 @@ begin
 exception
   when unique_violation then
     insert into public.profiles (id, nickname)
-    values (new.id, 'Игрок-' || left(new.id::text, 8));
+    values (new.id, 'Игрок-' || left(replace(new.id::text, '-', ''), 16));
     insert into public.player_settings (user_id) values (new.id);
     insert into public.player_statistics (user_id) values (new.id);
     return new;
