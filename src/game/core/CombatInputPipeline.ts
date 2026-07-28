@@ -12,12 +12,13 @@ export class CombatInputPipeline {
     const resolved = this.resolver.resolve(input, state);
     PLAYERS.forEach((playerId) => {
       const opponentId = playerId === 'player1' ? 'player2' : 'player1';
-      this.defensiveActions.apply(
+      const usedDefense = this.defensiveActions.apply(
         state.fighters[playerId],
         state.fighters[opponentId],
         resolved[playerId],
         state.combos[opponentId],
       );
+      if (usedDefense) resolved[playerId] = { held: [], pressed: [], released: [] };
     });
     return resolved;
   }

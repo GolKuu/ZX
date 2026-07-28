@@ -46,7 +46,7 @@ describe('deterministic combat rules', () => {
     );
     const defender = crouchingGuard.getSnapshot().fighters.player2;
     expect(defender.mode).toBe('blockstun');
-    expect(defender.health).toBe(99);
+    expect(defender.health).toBe(100);
   });
 
   it('applies knockdown, wake-up and knockback away from the attacker', () => {
