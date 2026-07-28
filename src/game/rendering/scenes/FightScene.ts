@@ -177,6 +177,26 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
         this.victoryElapsedMs,
       );
       this.feedback.sync(snapshot, deltaMs);
+
+      // emit DOM overlay positions for React layer (keeps menu-like SVGs synced)
+      bridge.emit((GameEvents as any).domCharacterSync, {
+        player1: {
+          x: snapshot.fighters.player1.x,
+          y: snapshot.fighters.player1.y,
+          facing: snapshot.fighters.player1.facing,
+          state: this.fighterStateName(snapshot.fighters.player1),
+        },
+        player2: {
+          x: snapshot.fighters.player2.x,
+          y: snapshot.fighters.player2.y,
+          facing: snapshot.fighters.player2.facing,
+          state: this.fighterStateName(snapshot.fighters.player2),
+        },
+      });
+    }
+
+    private fighterStateName(f: import('../../core/types').FighterSnapshot) {
+      return f.mode === 'attackActive' && f.attack ? 'light' : f.mode === 'dashing' ? 'dash' : 'idle';
     }
 
     private characterFor(playerId: PlayerId) {

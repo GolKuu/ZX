@@ -12,6 +12,7 @@ export const GameEvents = {
   rematchRequested: 'game:rematch-requested',
   matchEnded: 'game:match-ended',
   mobileAction: 'game:mobile-action',
+  domCharacterSync: 'game:dom-character-sync',
 } as const;
 
 export type GameEventPayloads = {
@@ -29,6 +30,10 @@ export type GameEventPayloads = {
     wins: Record<PlayerId, number>;
   };
   [GameEvents.mobileAction]: { playerId: PlayerId; action: string; pressed: boolean };
+  [GameEvents.domCharacterSync]: {
+    player1: { x: number; y: number; facing: number; state: string };
+    player2: { x: number; y: number; facing: number; state: string };
+  };
 };
 
 export type GameEventName = keyof GameEventPayloads;

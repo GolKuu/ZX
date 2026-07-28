@@ -5,6 +5,7 @@ import { createGameConfig } from '../config/gameConfig';
 import { GameEvents } from './GameEvents';
 import type { LocalPvpMatchConfig } from '../../stores/localPvpStore';
 import MobileControls from '../../components/controls/MobileControls';
+import DomCharacterOverlay from '../../components/game/DomCharacterOverlay';
 
 export function GameCanvas({
   matchConfig,
@@ -109,6 +110,7 @@ export function GameCanvas({
       )}
       <div ref={parentRef} className="game-canvas__surface" />
       {isMobile && <MobileControls />}
+      <DomCharacterOverlay parentRef={parentRef} />
     </section>
   );
 }
