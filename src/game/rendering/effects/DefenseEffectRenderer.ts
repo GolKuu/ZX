@@ -23,6 +23,7 @@ export class DefenseEffectRenderer {
     if (effect === 'perfect-block') this.drawPerfectBlock(progress);
     if (effect === 'combo-break') this.drawComboBreak(progress);
     if (effect === 'combo-escape') this.drawComboEscape(progress);
+    if (effect === 'perfect-reversal') this.drawPerfectReversal(progress);
   }
 
   private drawPreciseBlock(progress: number) {
@@ -56,5 +57,15 @@ export class DefenseEffectRenderer {
       .strokeEllipse(0, 38, 100 + progress * 90, 62 + progress * 38)
       .lineStyle(3, 0xffffff, 0.8)
       .strokeEllipse(0, 38, 64 + progress * 60, 42 + progress * 24);
+  }
+
+  private drawPerfectReversal(progress: number) {
+    this.graphics
+      .fillStyle(0xfff1a8, 0.22)
+      .fillCircle(0, 38, 46 + progress * 74)
+      .lineStyle(9, 0xe9a84a, 0.96)
+      .beginPath().arc(0, 38, 54 + progress * 38, -0.8, 4.8).strokePath()
+      .fillStyle(0xffffff, 0.92)
+      .fillTriangle(62, -1, 79, 12, 55, 18);
   }
 }

@@ -68,7 +68,11 @@ export function actionForCommand(
   switch (command) {
     case 'SUPER_ATTACK': return 'SUPER_ATTACK';
     case 'COMBO_BREAK': return 'COMBO_BREAK';
-    case 'MOMENTUM_REVERSAL': return 'MOMENTUM_REVERSAL';
+    case 'MOMENTUM_REVERSAL':
+      return context.fighter.mode === 'wakeup' &&
+        context.fighter.modeTicksRemaining <= 1
+        ? 'PERFECT_REVERSAL'
+        : 'MOMENTUM_REVERSAL';
     case 'GRAB': return 'GRAB';
     case 'AIR_SPECIAL': return 'AIR_SPECIAL';
     case 'SPECIAL_ATTACK':

@@ -6,6 +6,7 @@ export class AttackSelector {
   select(fighter: FighterSnapshot, input: PlayerInputFrame) {
     const set = getCharacterAttacks(fighter.characterId);
     if (input.pressed.includes('SUPER_ATTACK')) return set.superAttack;
+    if (input.pressed.includes('PERFECT_REVERSAL')) return set.reversal;
     if (input.pressed.includes('ENHANCED_SPECIAL')) {
       const hasResource = fighter.characterId === 'shira'
         ? fighter.passiveValue >= fighter.maxPassiveValue

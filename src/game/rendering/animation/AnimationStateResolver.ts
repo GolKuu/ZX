@@ -37,6 +37,7 @@ function defenseAnimation(fighter: FighterSnapshot): AnimationStateId | null {
     case 'precise-block': return 'precise-block';
     case 'combo-break': return 'combo-break';
     case 'combo-escape': return 'combo-escape';
+    case 'perfect-reversal': return 'perfect-reversal';
     default: return null;
   }
 }

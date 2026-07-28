@@ -84,6 +84,28 @@ describe('Granite and Shira prototypes', () => {
     expect(fighter.passiveValue).toBe(24);
   });
 
+  it('rewards an exact wake-up input with a Perfect Reversal', () => {
+    const simulation = new CombatSimulation();
+    const snapshot = simulation.getSnapshot();
+    snapshot.roundPhase = 'ACTIVE';
+    snapshot.fighters.player1.mode = 'wakeup';
+    snapshot.fighters.player1.modeTicksRemaining = 1;
+    snapshot.fighters.player1.energy = 35;
+    simulation.restore(snapshot);
+    simulation.step({
+      player1: {
+        held: ['DEFENSE', 'HEAVY_ATTACK'],
+        pressed: ['DEFENSE', 'HEAVY_ATTACK'],
+        released: [],
+      },
+      player2: { held: [], pressed: [], released: [] },
+    }, FIXED_STEP_SECONDS);
+    const fighter = simulation.getSnapshot().fighters.player1;
+    expect(fighter.attack?.id).toBe('granite-momentum-reversal');
+    expect(fighter.defense.effect).toBe('perfect-reversal');
+    expect(fighter.energy).toBe(15);
+  });
+
   it('keeps 30 seconds of fixed-step simulation inside the CPU budget', () => {
     const simulation = new CombatSimulation();
     const snapshot = simulation.getSnapshot();

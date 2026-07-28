@@ -5,7 +5,8 @@ export type DefenseEffect =
   | 'precise-block'
   | 'perfect-block'
   | 'combo-escape'
-  | 'combo-break';
+  | 'combo-break'
+  | 'perfect-reversal';
 
 export type DefenseSnapshot = {
   segments: number;

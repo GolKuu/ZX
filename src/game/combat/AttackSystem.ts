@@ -5,6 +5,7 @@ import { AttackSelector } from './AttackSelector';
 import { EnergyComponent } from './EnergyComponent';
 import type { AttackDefinition } from './AttackDefinition';
 import { CharacterPassiveSystem } from './CharacterPassiveSystem';
+import { setDefenseEffect } from './DefenseState';
 
 export type AttackContact = {
   definition: AttackDefinition;
@@ -24,7 +25,9 @@ export class AttackSystem {
 
   prepare(fighter: FighterSnapshot, input: PlayerInputFrame) {
     const requested = this.selector.select(fighter, input);
-    if (requested && this.canStart(fighter, requested)) this.start(fighter, requested);
+    if (requested && this.canStart(fighter, requested)) {
+      this.start(fighter, requested, input.pressed.includes('PERFECT_REVERSAL'));
+    }
     const definition = this.currentDefinition(fighter);
     if (!definition || !fighter.attack) return;
 
@@ -86,7 +89,11 @@ export class AttackSystem {
 
   private canStart(fighter: FighterSnapshot, requested: AttackDefinition) {
     if (!fighter.attack) {
-      return this.states.canStartAttack(fighter) &&
+      const wakeupReversal =
+        requested.action === 'MOMENTUM_REVERSAL' &&
+        fighter.mode === 'wakeup' &&
+        fighter.modeTicksRemaining <= 1;
+      return (this.states.canStartAttack(fighter) || wakeupReversal) &&
         this.energy.canSpend(fighter, requested.energyCost);
     }
     const current = this.currentDefinition(fighter);
@@ -101,8 +108,16 @@ export class AttackSystem {
     ) && this.energy.canSpend(fighter, requested.energyCost);
   }
 
-  private start(fighter: FighterSnapshot, definition: AttackDefinition) {
+  private start(
+    fighter: FighterSnapshot,
+    definition: AttackDefinition,
+    perfectReversal = false,
+  ) {
     if (!this.energy.spend(fighter, definition.energyCost)) return;
+    if (perfectReversal) {
+      this.energy.gain(fighter, 15);
+      setDefenseEffect(fighter, 'perfect-reversal');
+    }
     fighter.velocityX = 0;
     fighter.attack = {
       id: definition.id,
