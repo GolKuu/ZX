@@ -2,12 +2,13 @@ import type { RoomApiError, RoomCredentials } from './protocol';
 import { matchServerHttpUrl } from './matchServerUrl';
 
 export async function createPrivateRoom() {
-  return roomRequest('/rooms', { method: 'POST' });
+  return roomRequest('/rooms', { method: 'POST', body: '{}' });
 }
 
 export async function joinPrivateRoom(roomCode: string) {
   return roomRequest(`/rooms/${encodeURIComponent(roomCode)}/join`, {
     method: 'POST',
+    body: '{}',
   });
 }
 
