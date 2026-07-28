@@ -1,0 +1,44 @@
+.character-picker {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.character-picker legend {
+  margin-bottom: 12px;
+  font-weight: 950;
+}
+
+.character-picker > div {
+  display: flex;
+  gap: 12px;
+}
+
+.fighter-choice {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.fighter-choice--selected {
+  border-color: var(--purple);
+  background: #f0ebff;
+}
+
+.fighter-choice input {
+  position: absolute;
+  opacity: 0;
+}
+
+.fighter-choice > span {
+  width: 32px;
+  height: 32px;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 2px 3px 0 var(--ink);
+}

@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppProviders } from '../../app/providers';
 import { GameCanvas } from '../bridge/GameCanvas';
+import { createTestMatchConfig } from './testFixtures';
 
 const lifecycle = vi.hoisted(() => ({ created: 0, destroyed: 0 }));
 
@@ -60,7 +61,11 @@ describe('GameCanvas lifecycle', () => {
       root.render(
         <StrictMode>
           <AppProviders>
-            <GameCanvas onExit={() => undefined} />
+            <GameCanvas
+              matchConfig={createTestMatchConfig()}
+              onExit={() => undefined}
+              onReturnToSetup={() => undefined}
+            />
           </AppProviders>
         </StrictMode>,
       );
@@ -73,7 +78,11 @@ describe('GameCanvas lifecycle', () => {
     await act(async () => {
       root.render(
         <AppProviders>
-          <GameCanvas onExit={() => undefined} />
+          <GameCanvas
+            matchConfig={createTestMatchConfig()}
+            onExit={() => undefined}
+            onReturnToSetup={() => undefined}
+          />
         </AppProviders>,
       );
     });

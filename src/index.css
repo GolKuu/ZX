@@ -5,3 +5,6 @@
 @import './styles/menu.css';
 @import './styles/game.css';
 @import './styles/controls.css';
+@import './styles/local-pvp.css';
+@import './styles/character-picker.css';
+@import './styles/bindings.css';

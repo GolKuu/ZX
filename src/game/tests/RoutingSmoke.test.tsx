@@ -14,7 +14,7 @@ vi.mock('../bridge/GameCanvas', () => ({
 
 const routes = [
   ['/', 'Выбери режим'],
-  ['/local-pvp', 'Локальный PvP'],
+  ['/local-pvp', 'Подготовка LOCAL_PVP'],
   ['/fight', 'Готовим арену…'],
   ['/training', 'В разработке'],
   ['/characters', 'Персонажи'],

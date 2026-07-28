@@ -6,6 +6,10 @@ React отвечает за сайт и маршруты, Phaser — за аре
 
 Стек: **Vite + React + TypeScript + Phaser 3 + Supabase + Vercel**.
 
+Режим `LOCAL_PVP` поддерживает двух игроков на одной клавиатуре, клавиатуру с геймпадом
+или два разных геймпада. Подготовка матча находится на `/local-pvp`, переназначение
+клавиш — на `/controls`; бой нельзя запустить с конфликтующей или неполной конфигурацией.
+
 - Архитектура: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - План развития: [`docs/ROADMAP.md`](docs/ROADMAP.md)
 

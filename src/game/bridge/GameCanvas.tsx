@@ -3,8 +3,17 @@ import { useEffect, useRef, useState } from 'react';
 import { useGameBridge } from '../../app/gameBridgeContext';
 import { createGameConfig } from '../config/gameConfig';
 import { GameEvents } from './GameEvents';
+import type { LocalPvpMatchConfig } from '../../stores/localPvpStore';
 
-export function GameCanvas({ onExit }: { onExit: () => void }) {
+export function GameCanvas({
+  matchConfig,
+  onExit,
+  onReturnToSetup,
+}: {
+  matchConfig: LocalPvpMatchConfig;
+  onExit: () => void;
+  onReturnToSetup: () => void;
+}) {
   const parentRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
   const bridge = useGameBridge();
@@ -16,9 +25,10 @@ export function GameCanvas({ onExit }: { onExit: () => void }) {
 
     const stopReadyListener = bridge.on(GameEvents.ready, () => setIsReady(true));
     const stopExitListener = bridge.on(GameEvents.exitRequested, onExit);
+    const stopSetupListener = bridge.on(GameEvents.returnToSetupRequested, onReturnToSetup);
     parent.querySelectorAll('canvas').forEach((canvas) => canvas.remove());
 
-    const game = new Phaser.Game(createGameConfig(parent, bridge));
+    const game = new Phaser.Game(createGameConfig(parent, bridge, matchConfig));
     gameRef.current = game;
     const resizeObserver = new ResizeObserver(() => game.scale.refresh());
     resizeObserver.observe(parent);
@@ -26,13 +36,14 @@ export function GameCanvas({ onExit }: { onExit: () => void }) {
     return () => {
       stopReadyListener();
       stopExitListener();
+      stopSetupListener();
       resizeObserver.disconnect();
       if (gameRef.current === game) gameRef.current = null;
       game.destroy(true);
       parent.replaceChildren();
       setIsReady(false);
     };
-  }, [bridge, onExit]);
+  }, [bridge, matchConfig, onExit, onReturnToSetup]);
 
   return (
     <section className="game-canvas" aria-label="Арена Circle Clash">

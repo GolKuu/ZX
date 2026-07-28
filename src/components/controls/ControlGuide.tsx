@@ -1,10 +1,10 @@
 const rows = [
   { action: 'Движение', player1: 'A / D', player2: '← / →' },
-  { action: 'Прыжок', player1: 'W', player2: '↑' },
-  { action: 'Удар', player1: 'F', player2: 'Num 1' },
-  { action: 'Блок', player1: 'G', player2: 'Num 2' },
-  { action: 'Пауза', player1: 'P', player2: 'P' },
-  { action: 'В меню', player1: 'Esc', player2: 'Esc' },
+  { action: 'Прыжок / приседание', player1: 'H / S', player2: '↑ / ↓' },
+  { action: 'Лёгкая / тяжёлая', player1: 'J / K', player2: 'Num 1 / 2' },
+  { action: 'Спецатака / блок', player1: 'L / ;', player2: 'Num 3 / 0' },
+  { action: 'Захват / супер', player1: 'U / I', player2: 'Num Enter / +' },
+  { action: 'Пауза', player1: 'Esc', player2: 'Esc' },
 ];
 
 export function ControlGuide() {

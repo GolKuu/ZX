@@ -27,8 +27,10 @@ export class FighterRenderer {
   }
 
   sync(snapshot: FighterSnapshot) {
-    this.container.setPosition(snapshot.x, snapshot.y - 38);
-    this.container.setScale(snapshot.mode === 'blocking' ? 0.9 : 1);
+    const crouchScale = snapshot.mode === 'crouching' ? 0.72 : 1;
+    this.container.setPosition(snapshot.x, snapshot.y - 38 * crouchScale);
+    this.container.setScale(snapshot.facing, crouchScale);
+    if (snapshot.mode === 'blocking') this.container.setScale(snapshot.facing * 0.9, 0.9);
     this.body.setAlpha(snapshot.mode === 'hitstun' ? 0.55 : 1);
     this.shadow.setScale(snapshot.grounded ? 1 : 0.7);
   }
