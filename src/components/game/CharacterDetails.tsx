@@ -35,6 +35,7 @@ export function CharacterDetails({
         <p>{character.passiveDescription}</p>
         <small>
           Ресурс: {character.uniqueResource.name} · {character.uniqueResource.description}
+          {character.uniqueResource.status === 'prototype' && ' · механика запланирована'}
         </small>
       </section>
       <div className="fighter-details__traits">

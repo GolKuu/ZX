@@ -9,6 +9,7 @@ export function createFighter(
 ): FighterSnapshot {
   const character = getCharacter(characterId);
   const isGranite = character.id === 'granite';
+  const resource = character.uniqueResource;
   return {
     id,
     characterId,
@@ -41,8 +42,8 @@ export function createFighter(
     lastMoveTapAction: null,
     lastMoveTapTick: -1_000,
     grounded: true,
-    passiveValue: isGranite ? 100 : 0,
-    maxPassiveValue: 100,
+    passiveValue: isGranite ? 100 : resource.initialValue,
+    maxPassiveValue: isGranite ? 100 : resource.maximumValue,
     armorPlates: isGranite ? 3 : 0,
     maxArmorPlates: isGranite ? 3 : 0,
     vulnerableTicksRemaining: 0,
