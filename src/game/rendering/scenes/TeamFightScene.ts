@@ -45,7 +45,7 @@ export function createTeamFightScene(
         bridge.emit(GameEvents.exitRequested, undefined),
       );
       this.inputs.attach();
-      this.sync(deltaMs);
+      this.sync();
       bridge.emit(GameEvents.ready, { canvasCount: 1 });
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.cleanup());
     }

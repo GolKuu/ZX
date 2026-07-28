@@ -41,7 +41,7 @@ export function createOnlineFightScene(
         bridge.emit(GameEvents.exitRequested, undefined),
       );
       this.inputs.attach();
-      this.syncRenderers(deltaMs);
+      this.syncRenderers();
       bridge.emit(GameEvents.ready, { canvasCount: 1 });
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.cleanup());
     }
