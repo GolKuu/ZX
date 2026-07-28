@@ -20,7 +20,6 @@ describe('complete defense system', () => {
     expect(block(attacks.low, ['BLOCK', 'CROUCH']).blocked).toBe(true);
     expect(block(attacks.grab, ['BLOCK', 'CROUCH']).blocked).toBe(false);
   });
-
   it('scales gauge and block stun for normal, precise and perfect blocks', () => {
     const attack = getCharacterAttacks('pulse').special;
     const normal = applyBlockedAttack(attack, ['BLOCK']);
@@ -37,7 +36,6 @@ describe('complete defense system', () => {
       10 - balanceConfig.perfectBlockAdvantageFrames,
     );
   });
-
   it('allows chip damage only on special and super attacks', () => {
     const attacks = getCharacterAttacks('pulse');
     expect(attacks.lightChain[0].chipDamage).toBe(0);
@@ -45,7 +43,6 @@ describe('complete defense system', () => {
     expect(attacks.special.chipDamage).toBeGreaterThan(0);
     expect(attacks.superAttack.chipDamage).toBeGreaterThan(0);
   });
-
   it('opens a narrow Escape window and applies cooldown to early or late attempts', () => {
     const actions = new DefensiveActionSystem();
     const fighter = stunnedFighter();
@@ -63,7 +60,6 @@ describe('complete defense system', () => {
     expect(actions.apply(lateFighter, opponent, pressed('COMBO_ESCAPE'), late)).toBe(false);
     expect(lateFighter.defense.feedback).toBe('too-late');
   });
-
   it('escapes to neutral for free only during the marked window', () => {
     const actions = new DefensiveActionSystem();
     const fighter = stunnedFighter();
@@ -77,7 +73,6 @@ describe('complete defense system', () => {
     expect(Math.abs(fighter.x - opponent.x)).toBe(balanceConfig.comboEscapeNeutralDistance);
     expect(incoming.hits).toBe(0);
   });
-
   it('spends one segment on a broad Combo Break shockwave without damage', () => {
     const actions = new DefensiveActionSystem();
     const fighter = stunnedFighter();

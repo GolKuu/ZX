@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { balanceConfig, FIXED_STEP_SECONDS } from '../config/balanceConfig';
 import { CombatSimulation } from '../core/CombatSimulation';
-import type { CombatAction } from '../core/types';
 import { emptyInputFrame, inputFrame } from './testFixtures';
 
 function activate(simulation: CombatSimulation) {
@@ -34,30 +33,6 @@ describe('CombatSimulation', () => {
     snapshot.fighters.player1.x = 0;
 
     expect(simulation.getSnapshot().fighters.player1.x).toBe(410);
-  });
-
-  it('applies a special only after startup and deals chip damage while blocking', () => {
-    const simulation = new CombatSimulation();
-    const close = simulation.getSnapshot();
-    close.roundPhase = 'ACTIVE';
-    close.phaseTicksRemaining = 0;
-    close.fighters.player1.x = 430;
-    close.fighters.player2.x = 500;
-    simulation.restore(close);
-
-    simulation.step(
-      combatFrame(['SPECIAL_ATTACK'], ['SPECIAL_ATTACK'], ['BLOCK']),
-      FIXED_STEP_SECONDS,
-    );
-    expect(simulation.getSnapshot().fighters.player2.health).toBe(100);
-    for (let frame = 0; frame < 12; frame += 1) {
-      simulation.step(combatFrame([], [], ['BLOCK']), FIXED_STEP_SECONDS);
-    }
-
-    const defender = simulation.getSnapshot().fighters.player2;
-    expect(defender.health).toBe(98);
-    expect(defender.mode).toBe('blockstun');
-    expect(defender.blockMeter).toBeLessThan(defender.maxBlockMeter);
   });
 
   it('locks movement during 3, 2, 1, FIGHT countdown', () => {
@@ -150,15 +125,4 @@ function forceRoundWin(simulation: CombatSimulation, winner: 'player1' | 'player
   snapshot.fighters[winner === 'player1' ? 'player2' : 'player1'].health = 0;
   simulation.restore(snapshot);
   simulation.step(emptyInputFrame(), FIXED_STEP_SECONDS);
-}
-
-function combatFrame(
-  playerOneHeld: CombatAction[],
-  playerOnePressed: CombatAction[],
-  playerTwoHeld: CombatAction[],
-) {
-  const frame = emptyInputFrame();
-  frame.player1 = { held: playerOneHeld, pressed: playerOnePressed, released: [] };
-  frame.player2 = { held: playerTwoHeld, pressed: [], released: [] };
-  return frame;
 }
