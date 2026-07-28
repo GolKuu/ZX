@@ -1,6 +1,5 @@
 import { circleFighters } from '../../../src/game/data/characters/circleFighters.js';
 import type { PlayerId } from '../../../src/game/core/types.js';
-import { teamActionsForBitmask } from '../../../src/game/network/InputCodec.js';
 import type {
   ClientControlMessage,
   OnlineRoomStatus,
@@ -81,17 +80,10 @@ export class RoomCommands {
     packet: Extract<ClientControlMessage, { type: 'input' }>['payload'],
   ) {
     const match = this.host.match();
-    if (!['playing', 'disconnected'].includes(this.host.status()) || !match) return;
+    if (this.host.status() !== 'playing' || !match) return;
     if (packet.matchId !== this.host.matchId) {
       this.host.output.error(player, 'MATCH_ID', 'Wrong match');
       return;
-    }
-    for (const action of teamActionsForBitmask(packet.actionBitmask)) {
-      const validation = match.validateAction(player.playerId, action);
-      if (!validation.ok) {
-        this.host.output.error(player, validation.reason, 'Team action rejected');
-        return;
-      }
     }
     const error = player.input.enqueue(packet, match.tick);
     if (error) this.host.output.error(player, error, 'Input rejected');

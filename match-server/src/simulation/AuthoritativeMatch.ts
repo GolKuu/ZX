@@ -1,39 +1,29 @@
-import { FIXED_STEP_SECONDS } from '../../../src/game/config/balanceConfig.js';
-import type { PlayerId } from '../../../src/game/core/types.js';
-import { TeamCombatSimulation } from '../../../src/game/team/TeamCombatSimulation.js';
-import { createTeamBattleConfig } from '../../../src/game/team/TeamModeFactory.js';
+import {
+  balanceConfig,
+  FIXED_STEP_SECONDS,
+} from '../../../src/game/config/balanceConfig.js';
+import { CombatSimulation } from '../../../src/game/core/CombatSimulation.js';
 import type {
-  TeamAction,
-  TeamSimulationSnapshot,
-} from '../../../src/game/team/TeamTypes.js';
+  InputFrame,
+  PlayerId,
+  SimulationSnapshot,
+} from '../../../src/game/core/types.js';
 import type { PlayerInputTimeline } from './PlayerInputTimeline.js';
 
 export class AuthoritativeMatch {
-  private readonly simulation: TeamCombatSimulation;
+  private readonly simulation: CombatSimulation;
 
   constructor(private readonly characters: Record<PlayerId, string>) {
-    this.simulation = new TeamCombatSimulation(
-      createTeamBattleConfig('ONLINE_2V2', {
-        player1: [characters.player1, backupFor(characters.player1)],
-        player2: [characters.player2, backupFor(characters.player2)],
-      }),
-    );
+    this.simulation = new CombatSimulation(characters);
   }
 
   step(inputs: Record<PlayerId, PlayerInputTimeline>) {
-    this.simulation.step({
-      ONLINE_PLAYER_1: inputs.player1.frame(this.tick),
-      ONLINE_PLAYER_2: inputs.player2.frame(this.tick),
-    }, FIXED_STEP_SECONDS);
+    const frame: InputFrame = {
+      player1: inputs.player1.frame(this.tick),
+      player2: inputs.player2.frame(this.tick),
+    };
+    this.simulation.step(frame, FIXED_STEP_SECONDS);
     return this.snapshot;
-  }
-
-  setAiTakeover(playerId: PlayerId, active: boolean) {
-    this.simulation.setAiTakeover(playerId, active);
-  }
-
-  validateAction(playerId: PlayerId, action: TeamAction) {
-    return this.simulation.validateAction(playerId, action);
   }
 
   setPaused(paused: boolean) {
@@ -49,20 +39,16 @@ export class AuthoritativeMatch {
   forfeit(winner: PlayerId) {
     const loser: PlayerId = winner === 'player1' ? 'player2' : 'player1';
     const state = this.simulation.getSnapshot();
-    state.teamBattle.teams[loser].members.forEach((member) => {
-      member.fighter.health = 0;
-      member.defeated = true;
-    });
+    state.fighters[loser].health = 0;
     state.roundWinner = winner;
     state.matchWinner = winner;
-    state.teamBattle.winner = winner;
-    state.wins[winner] = 1;
+    state.wins[winner] = balanceConfig.roundsToWin;
     state.roundPhase = 'MATCH_OVER';
     state.paused = false;
     this.simulation.restore(state);
   }
 
-  get snapshot(): TeamSimulationSnapshot {
+  get snapshot(): SimulationSnapshot {
     return this.simulation.getSnapshot();
   }
 
@@ -73,8 +59,4 @@ export class AuthoritativeMatch {
   get selectedCharacters() {
     return { ...this.characters };
   }
-}
-
-function backupFor(characterId: string) {
-  return characterId === 'granite' ? 'shira' : 'granite';
 }

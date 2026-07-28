@@ -33,9 +33,9 @@ export class RoomConnections {
       connected: true,
       disconnectedAt: null,
     });
-    this.host.match()?.setAiTakeover(playerId, false);
     if (this.host.status() === 'disconnected' && this.everyPlayer((item) => item.connected)) {
       this.host.setStatus(this.host.match()?.snapshot.matchWinner ? 'finished' : 'playing');
+      this.host.match()?.setPaused(false);
     }
     sendMessage(socket, {
       type: 'connected',
@@ -58,7 +58,7 @@ export class RoomConnections {
     });
     if (this.host.status() === 'playing') {
       this.host.setStatus('disconnected');
-      this.host.match()?.setAiTakeover(playerId, true);
+      this.host.match()?.setPaused(true);
     }
     this.host.output.broadcastRoom();
   }

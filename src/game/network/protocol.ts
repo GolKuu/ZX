@@ -1,7 +1,6 @@
-import type { PlayerId } from '../core/types';
-import type { TeamSimulationSnapshot } from '../team/TeamTypes';
+import type { PlayerId, SimulationSnapshot } from '../core/types';
 
-export const NETWORK_PROTOCOL_VERSION = 2;
+export const NETWORK_PROTOCOL_VERSION = 1;
 export const DEFAULT_INPUT_DELAY_TICKS = 3;
 export const SNAPSHOT_INTERVAL_TICKS = 3;
 export const INTERPOLATION_DELAY_TICKS = 6;
@@ -67,7 +66,7 @@ export type ServerMessage =
       type: 'snapshot';
       matchId: string;
       serverTick: number;
-      snapshot: TeamSimulationSnapshot;
+      snapshot: SimulationSnapshot;
       processedSequences: Record<PlayerId, number>;
     }
   | { type: 'pong'; clientTime: number; serverTime: number }
