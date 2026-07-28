@@ -6,7 +6,7 @@ export function createForceHead(scene: Phaser.Scene, character: CharacterDefinit
   const pieces: Phaser.GameObjects.GameObject[] = [];
   if (character.id === 'caliber') {
     pieces.push(
-      scene.add.roundedRectangle(0, 0, 66, 45, 11, character.color).setStrokeStyle(5, outline),
+      scene.add.rectangle(0, 0, 66, 45, character.color).setStrokeStyle(5, outline),
       scene.add.rectangle(24, -25, 24, 11, character.accentColor).setStrokeStyle(3, outline),
     );
   } else if (character.id === 'volt') {

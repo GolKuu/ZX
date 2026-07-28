@@ -113,7 +113,7 @@ export function createForceLeg(
     );
   } else {
     pieces.push(scene.add
-      .roundedRect(5, 59, style === 'stub' ? 38 : 31, 22, 7, color, alpha)
+      .rectangle(5, 59, style === 'stub' ? 38 : 31, 22, color, alpha)
       .setStrokeStyle(4, outline));
   }
   return scene.add.container(x, 27, pieces);
