@@ -109,19 +109,19 @@ export function createForceLeg(
       .setStrokeStyle(getModelStrokeWidth(4, 'limb'), outline));
     if (style === 'talon') {
       pieces.push(scene.add.triangle(23, 67, -8, -5, 9, 1, -6, 7, 0xf4efce, alpha)
-        .setStrokeStyle(2, outline));
+        .setStrokeStyle(getModelStrokeWidth(2, 'accent'), outline));
     }
   } else if (style === 'root') {
     pieces.push(
       scene.add.triangle(-7, 65, -18, 8, 5, -14, 15, 8, color, alpha)
-        .setStrokeStyle(3, outline),
+        .setStrokeStyle(getModelStrokeWidth(3, 'accent'), outline),
       scene.add.triangle(10, 66, -13, 8, 4, -13, 17, 8, color, alpha)
-        .setStrokeStyle(3, outline),
+        .setStrokeStyle(getModelStrokeWidth(3, 'accent'), outline),
     );
   } else {
     pieces.push(scene.add
       .rectangle(5, 59, style === 'stub' ? 38 : 31, 22, color, alpha)
-      .setStrokeStyle(4, outline));
+      .setStrokeStyle(getModelStrokeWidth(4, 'limb'), outline));
   }
   return scene.add.container(x, 27, pieces);
 }

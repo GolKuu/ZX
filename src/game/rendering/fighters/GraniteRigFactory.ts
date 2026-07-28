@@ -37,10 +37,10 @@ function stoneArm(
     .setStrokeStyle(getModelStrokeWidth(3, 'detail'), MODEL_OUTLINE, 0.8);
   const slab = scene.add
     .polygon(0, 27, mirror([-13, -14, 14, -11, 22, 24, 8, 43, -16, 34], direction), color)
-    .setStrokeStyle(5, MODEL_OUTLINE, 1);
+    .setStrokeStyle(getModelStrokeWidth(5, 'limb'), MODEL_OUTLINE, 1);
   const fist = scene.add
     .polygon(direction * 7, 62, mirror([-19, -16, 17, -14, 25, 7, 9, 22, -21, 13], direction), color)
-    .setStrokeStyle(6, MODEL_OUTLINE, 1);
+    .setStrokeStyle(getModelStrokeWidth(6, 'limb'), MODEL_OUTLINE, 1);
   const shine = scene.add
     .polygon(direction * 5, 24, mirror([-4, -9, 6, -7, 10, 13, 1, 18, -5, 8], direction), MODEL_HIGHLIGHT, front ? 0.32 : 0.12);
   return scene.add.container(x, y, [shoulder, jointRing, slab, fist, shine]);
@@ -56,10 +56,10 @@ function stoneLeg(
   const hip = scene.add.circle(0, 0, 16, color).setStrokeStyle(getModelStrokeWidth(5, 'joint'), MODEL_OUTLINE, 1);
   const pillar = scene.add
     .polygon(0, 27, [-14, -16, 14, -14, 17, 27, -12, 30], color)
-    .setStrokeStyle(5, MODEL_OUTLINE, 1);
+    .setStrokeStyle(getModelStrokeWidth(5, 'limb'), MODEL_OUTLINE, 1);
   const foot = scene.add
     .polygon(4, 57, [-19, -11, 17, -10, 28, 6, 17, 15, -23, 12], color)
-    .setStrokeStyle(5, MODEL_OUTLINE, 1);
+    .setStrokeStyle(getModelStrokeWidth(5, 'limb'), MODEL_OUTLINE, 1);
   const shine = scene.add.rectangle(-5, 25, 7, 24, MODEL_HIGHLIGHT, front ? 0.3 : 0.1);
   return scene.add.container(x, y, [hip, pillar, foot, shine]);
 }
@@ -84,9 +84,10 @@ function createTorso(scene: Phaser.Scene, character: CharacterDefinition) {
 function createHead(scene: Phaser.Scene, character: CharacterDefinition) {
   const head = scene.add
     .polygon(0, 0, [-42, -10, -25, -32, 19, -37, 41, -14, 36, 14, 11, 31, -31, 23, -43, 4], character.color)
-    .setStrokeStyle(6, MODEL_OUTLINE, 1);
+    .setStrokeStyle(getModelStrokeWidth(6, 'body'), MODEL_OUTLINE, 1);
   const facePlate = scene.add
-    .polygon(1, 1, [-28, -9, -5, -15, 29, -8, 22, 11, -23, 10], MODEL_OUTLINE);
+    .polygon(1, 1, [-28, -9, -5, -15, 29, -8, 22, 11, -23, 10], MODEL_OUTLINE)
+    .setStrokeStyle(getModelStrokeWidth(4, 'detail'), MODEL_OUTLINE, 0.9);
   const leftEye = scene.add.ellipse(-11, 0, 8, 11, 0xffefae);
   const rightEye = scene.add.ellipse(13, 0, 8, 11, 0xffefae);
   const eyeGlint = scene.add.circle(-13, -3, 2, MODEL_HIGHLIGHT);
