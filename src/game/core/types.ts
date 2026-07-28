@@ -5,19 +5,41 @@ export const GAME_ACTIONS = [
   'MOVE_LEFT',
   'MOVE_RIGHT',
   'JUMP',
-  'CROUCH',
   'LIGHT_ATTACK',
   'HEAVY_ATTACK',
   'SPECIAL_ATTACK',
+  'DEFENSE',
+  'PAUSE',
+] as const;
+
+export const CONTEXT_ACTIONS = [
+  'CROUCH',
   'BLOCK',
   'GRAB',
   'SUPER_ATTACK',
   'COMBO_ESCAPE',
+  'COMBO_BREAK',
   'MOMENTUM_REVERSAL',
-  'PAUSE',
+  'PERFECT_BLOCK',
+  'DASH_LEFT',
+  'DASH_RIGHT',
+  'DIRECTIONAL_LIGHT',
+  'RETREAT_LIGHT',
+  'AIR_LIGHT',
+  'DASH_LIGHT',
+  'DIRECTIONAL_HEAVY',
+  'RETREAT_HEAVY',
+  'AIR_HEAVY',
+  'DASH_HEAVY',
+  'DIRECTIONAL_SPECIAL',
+  'RETREAT_SPECIAL',
+  'AIR_SPECIAL',
 ] as const;
 
 export type GameAction = (typeof GAME_ACTIONS)[number];
+export type ContextAction = (typeof CONTEXT_ACTIONS)[number];
+export type CombatAction = GameAction | ContextAction;
+export type ControlScheme = 'CLASSIC' | 'SIMPLIFIED' | 'ONE_HANDED';
 
 export type FighterMode =
   | 'idle'
@@ -76,9 +98,9 @@ export type ComboSnapshot = {
 };
 
 export type PlayerInputFrame = {
-  held: readonly GameAction[];
-  pressed: readonly GameAction[];
-  released: readonly GameAction[];
+  held: readonly CombatAction[];
+  pressed: readonly CombatAction[];
+  released: readonly CombatAction[];
 };
 
 export type InputFrame = Record<PlayerId, PlayerInputFrame>;

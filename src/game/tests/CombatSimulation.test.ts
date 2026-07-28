@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { balanceConfig, FIXED_STEP_SECONDS } from '../config/balanceConfig';
 import { CombatSimulation } from '../core/CombatSimulation';
-import type { GameAction } from '../core/types';
+import type { CombatAction } from '../core/types';
 import { emptyInputFrame, inputFrame } from './testFixtures';
 
 function activate(simulation: CombatSimulation) {
@@ -150,9 +150,9 @@ function forceRoundWin(simulation: CombatSimulation, winner: 'player1' | 'player
 }
 
 function combatFrame(
-  playerOneHeld: GameAction[],
-  playerOnePressed: GameAction[],
-  playerTwoHeld: GameAction[],
+  playerOneHeld: CombatAction[],
+  playerOnePressed: CombatAction[],
+  playerTwoHeld: CombatAction[],
 ) {
   const frame = emptyInputFrame();
   frame.player1 = { held: playerOneHeld, pressed: playerOnePressed, released: [] };

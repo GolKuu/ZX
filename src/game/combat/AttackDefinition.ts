@@ -1,4 +1,4 @@
-import type { GameAction } from '../core/types';
+import type { CombatAction } from '../core/types';
 
 export type HitLevel = 'mid' | 'low' | 'overhead' | 'air' | 'throw';
 export type AttackCategory = 'light' | 'heavy' | 'special' | 'throw' | 'super';
@@ -48,7 +48,7 @@ export type AttackDefinition = {
   effectId: string;
   soundId: string;
   category: AttackCategory;
-  action: GameAction;
+  action: CombatAction;
   knockdown: boolean;
   sideSwitch: boolean;
   energyGain: number;
@@ -56,13 +56,29 @@ export type AttackDefinition = {
 };
 
 export type CharacterAttackSet = {
-  lightChain: readonly [AttackDefinition, AttackDefinition, AttackDefinition];
-  heavy: readonly [AttackDefinition, AttackDefinition];
+  lightChain: readonly [
+    AttackDefinition,
+    AttackDefinition,
+    AttackDefinition,
+    AttackDefinition,
+  ];
+  heavy: readonly [AttackDefinition, AttackDefinition, AttackDefinition];
   low: AttackDefinition;
   air: AttackDefinition;
+  airHeavy: AttackDefinition;
+  forwardLight: AttackDefinition;
+  retreatLight: AttackDefinition;
+  dashLight: AttackDefinition;
+  forwardHeavy: AttackDefinition;
+  retreatHeavy: AttackDefinition;
+  dashHeavy: AttackDefinition;
   special: AttackDefinition;
+  forwardSpecial: AttackDefinition;
+  retreatSpecial: AttackDefinition;
+  airSpecial: AttackDefinition;
   grab: AttackDefinition;
   forwardThrow: AttackDefinition;
   backThrow: AttackDefinition;
+  reversal: AttackDefinition;
   superAttack: AttackDefinition;
 };

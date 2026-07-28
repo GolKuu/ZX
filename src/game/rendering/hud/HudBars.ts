@@ -55,3 +55,22 @@ function drawBar(
   const fillX = mirrored ? x + width - 3 - fillWidth : x + 3;
   graphics.fillRoundedRect(fillX, y + 3, fillWidth, height - 6, (height - 6) / 2);
 }
+
+export function createSuperIndicator(
+  scene: Phaser.Scene,
+  x: number,
+  originX: number,
+) {
+  return scene.add
+    .text(x, 88, 'SUPER READY', {
+      fontFamily: 'Arial',
+      fontSize: '11px',
+      fontStyle: 'bold',
+      color: '#8b5b00',
+      backgroundColor: '#ffdc62dd',
+      padding: { x: 6, y: 3 },
+    })
+    .setOrigin(originX, 0)
+    .setDepth(22)
+    .setVisible(false);
+}

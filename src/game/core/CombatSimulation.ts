@@ -9,6 +9,7 @@ import { FighterStateMachine } from './FighterStateMachine';
 import { MatchManager } from './MatchManager';
 import { MovementSystem } from './MovementSystem';
 import { RoundManager } from './RoundManager';
+import { CombatInputPipeline } from './CombatInputPipeline';
 import { createFighter, createInitialState } from './SimulationStateFactory';
 import type {
   InputFrame,
@@ -19,7 +20,6 @@ import type {
 
 const PLAYERS: readonly PlayerId[] = ['player1', 'player2'];
 const DEFAULT_CHARACTERS = { player1: 'comet', player2: 'pulse' };
-
 export class CombatSimulation {
   private state: SimulationSnapshot;
   private readonly attacks: AttackSystem;
@@ -31,24 +31,25 @@ export class CombatSimulation {
   private readonly states = new FighterStateMachine();
   private readonly match = new MatchManager();
   private readonly round = new RoundManager();
+  private readonly inputs = new CombatInputPipeline();
 
   constructor(private readonly characters: Record<PlayerId, string> = DEFAULT_CHARACTERS) {
     this.state = createInitialState(characters);
     this.attacks = new AttackSystem();
   }
-
   step(input: InputFrame, stepSeconds: number) {
     if (this.state.paused || this.state.roundPhase === 'MATCH_OVER') return;
     if (this.advanceNonActiveRound()) return;
 
+    const resolvedInput = this.inputs.resolve(input, this.state);
     PLAYERS.forEach((id) => this.states.tick(this.state.fighters[id]));
     PLAYERS.forEach((id) => this.combos.tick(this.state.combos[id]));
     this.updateFacing();
-    PLAYERS.forEach((id) => this.attacks.prepare(this.state.fighters[id], input[id]));
+    PLAYERS.forEach((id) => this.attacks.prepare(this.state.fighters[id], resolvedInput[id]));
     PLAYERS.forEach((id) =>
-      this.movement.update(this.state.fighters[id], input[id], stepSeconds, this.state.tick),
+      this.movement.update(this.state.fighters[id], resolvedInput[id], stepSeconds, this.state.tick),
     );
-    PLAYERS.forEach((id) => this.blocks.update(this.state.fighters[id], input[id]));
+    PLAYERS.forEach((id) => this.blocks.update(this.state.fighters[id], resolvedInput[id]));
 
     const firstHit = this.attacks.findContact(
       this.state.fighters.player1,
@@ -58,8 +59,8 @@ export class CombatSimulation {
       this.state.fighters.player2,
       this.state.fighters.player1,
     );
-    if (firstHit) this.resolveContact('player1', 'player2', firstHit, input.player2);
-    if (secondHit) this.resolveContact('player2', 'player1', secondHit, input.player1);
+    if (firstHit) this.resolveContact('player1', 'player2', firstHit, resolvedInput.player2);
+    if (secondHit) this.resolveContact('player2', 'player1', secondHit, resolvedInput.player1);
 
     PLAYERS.forEach((id) => this.attacks.finishTick(this.state.fighters[id]));
     this.collisions.separateFighters(this.state.fighters.player1, this.state.fighters.player2);
@@ -75,6 +76,7 @@ export class CombatSimulation {
 
   rematch() {
     this.state = createInitialState(this.characters);
+    this.inputs.reset();
   }
 
   getCountdownLabel() {
@@ -87,6 +89,7 @@ export class CombatSimulation {
 
   restore(snapshot: SimulationSnapshot) {
     this.state = cloneSnapshot(snapshot);
+    this.inputs.reset();
   }
 
   private advanceNonActiveRound() {
@@ -135,6 +138,7 @@ export class CombatSimulation {
       player2: createFighter('player2', 710, this.characters.player2),
     };
     PLAYERS.forEach((id) => this.combos.reset(this.state.combos[id]));
+    this.inputs.reset();
   }
 
   private updateFacing() {

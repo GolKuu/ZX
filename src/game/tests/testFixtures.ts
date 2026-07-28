@@ -2,7 +2,7 @@ import {
   cloneKeyboardProfiles,
   defaultGamepadProfile,
 } from '../config/defaultControls';
-import type { GameAction, InputFrame, PlayerId, PlayerInputFrame } from '../core/types';
+import type { CombatAction, InputFrame, PlayerId, PlayerInputFrame } from '../core/types';
 import type { LocalPvpMatchConfig } from '../../stores/localPvpStore';
 
 export const emptyPlayerInput = (): PlayerInputFrame => ({
@@ -13,8 +13,8 @@ export const emptyPlayerInput = (): PlayerInputFrame => ({
 
 export function inputFrame(
   playerId: PlayerId,
-  held: GameAction[] = [],
-  pressed: GameAction[] = held,
+  held: CombatAction[] = [],
+  pressed: CombatAction[] = held,
 ): InputFrame {
   return {
     player1:

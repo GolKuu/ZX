@@ -104,7 +104,7 @@ describe('LOCAL_PVP user flow', () => {
     await act(async () => findButton(host, 'Заменить').click());
     await act(async () => findButton(host, 'Сохранить').click());
 
-    const saved = localStorage.getItem('circle-clash-controls-v2');
+    const saved = localStorage.getItem('circle-clash-controls-v3');
     expect(saved).toContain('"MOVE_LEFT":"KeyD"');
     expect(saved).toContain('"MOVE_RIGHT":"KeyZ"');
     await act(async () => root.unmount());

@@ -1,5 +1,6 @@
 import type { CharacterAttackSet } from '../../combat/AttackDefinition';
 import { makeAttack } from './attackFactory';
+import { createContextualAttacks } from './contextualAttacks';
 
 function createAttackSet(characterId: string): CharacterAttackSet {
   const light1 = makeAttack(characterId, 'light-1', {
@@ -11,16 +12,24 @@ function createAttackSet(characterId: string): CharacterAttackSet {
     category: 'light', cancelInto: ['light', 'special'],
   });
   const light3 = makeAttack(characterId, 'light-3', {
-    startup: 6, active: 4, recovery: 14, damage: 8, action: 'LIGHT_ATTACK',
-    category: 'light', knockbackX: 300, knockdown: true,
+    startup: 6, active: 4, recovery: 11, damage: 7, action: 'LIGHT_ATTACK',
+    category: 'light', knockbackX: 260, cancelInto: ['light', 'special'],
+  });
+  const light4 = makeAttack(characterId, 'light-4', {
+    startup: 7, active: 5, recovery: 16, damage: 9, action: 'LIGHT_ATTACK',
+    category: 'light', knockbackX: 330, knockdown: true,
   });
   const heavy1 = makeAttack(characterId, 'heavy-1', {
     startup: 9, active: 4, recovery: 18, damage: 12, action: 'HEAVY_ATTACK',
-    category: 'heavy', reach: 88, cancelInto: ['special'],
+    category: 'heavy', reach: 88, cancelInto: ['heavy', 'special'],
   });
   const heavy2 = makeAttack(characterId, 'heavy-2', {
-    startup: 13, active: 5, recovery: 23, damage: 16, action: 'HEAVY_ATTACK',
-    category: 'heavy', reach: 104, knockbackX: 390, knockdown: true,
+    startup: 11, active: 5, recovery: 19, damage: 14, action: 'HEAVY_ATTACK',
+    category: 'heavy', reach: 104, knockbackX: 340, cancelInto: ['heavy', 'special'],
+  });
+  const heavy3 = makeAttack(characterId, 'heavy-3', {
+    startup: 14, active: 6, recovery: 25, damage: 18, action: 'HEAVY_ATTACK',
+    category: 'heavy', reach: 116, knockbackX: 430, knockdown: true,
   });
   const low = makeAttack(characterId, 'low', {
     startup: 7, active: 4, recovery: 15, damage: 8, action: 'LIGHT_ATTACK',
@@ -52,9 +61,10 @@ function createAttackSet(characterId: string): CharacterAttackSet {
     category: 'super', reach: 150, knockbackX: 560, knockbackY: 260,
     knockdown: true, energyCost: 100,
   });
+  const contextual = createContextualAttacks(characterId);
   return {
-    lightChain: [light1, light2, light3],
-    heavy: [heavy1, heavy2],
+    lightChain: [light1, light2, light3, light4],
+    heavy: [heavy1, heavy2, heavy3],
     low,
     air,
     special,
@@ -62,6 +72,7 @@ function createAttackSet(characterId: string): CharacterAttackSet {
     forwardThrow,
     backThrow,
     superAttack,
+    ...contextual,
   };
 }
 

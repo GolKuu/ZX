@@ -8,6 +8,7 @@ import { FixedStepLoop } from '../../core/FixedStepLoop';
 import type { PlayerId } from '../../core/types';
 import { circleFighters } from '../../data/characters/circleFighters';
 import { InputManager } from '../../input/InputManager';
+import { settingsStore } from '../../../stores/settingsStore';
 import { createArena } from '../arenas/createArena';
 import { FighterRenderer } from '../fighters/FighterRenderer';
 import { FightHud } from '../hud/FightHud';
@@ -33,9 +34,9 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
 
     create() {
       createArena(this);
-      this.fighterOne = new FighterRenderer(this, this.characterFor('player1'));
-      this.fighterTwo = new FighterRenderer(this, this.characterFor('player2'));
-      this.hud = new FightHud(this);
+      this.fighterOne = new FighterRenderer(this, 'player1', this.characterFor('player1'));
+      this.fighterTwo = new FighterRenderer(this, 'player2', this.characterFor('player2'));
+      this.hud = new FightHud(this, settingsStore.load().showCombatHints);
       this.pauseButton = this.createButton(24, 492, 'Ⅱ Пауза', () => this.togglePause());
       this.createButton(132, 492, '← Выбор', () =>
         bridge.emit(GameEvents.returnToSetupRequested, undefined),

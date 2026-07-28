@@ -1,11 +1,18 @@
-import type { GameAction, PlayerId } from '../core/types';
+import type {
+  ContextAction,
+  ControlScheme,
+  GameAction,
+  PlayerId,
+} from '../core/types';
 
 export type KeyboardInputProfile = {
   id: string;
   kind: 'keyboard';
   playerId: PlayerId;
   label: string;
+  scheme: ControlScheme;
   bindings: Record<GameAction, string>;
+  classicBindings?: Partial<Record<ContextAction, string>>;
 };
 
 export type GamepadButtonBinding = {
@@ -25,7 +32,9 @@ export type GamepadInputProfile = {
   id: string;
   kind: 'gamepad';
   label: string;
+  scheme: ControlScheme;
   bindings: Record<GameAction, readonly GamepadBinding[]>;
+  classicBindings?: Partial<Record<ContextAction, readonly GamepadBinding[]>>;
 };
 
 export type InputProfile = KeyboardInputProfile | GamepadInputProfile;

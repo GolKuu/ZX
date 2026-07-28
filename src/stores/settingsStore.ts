@@ -2,6 +2,7 @@ export type GameSettings = {
   musicVolume: number;
   effectsVolume: number;
   reducedMotion: boolean;
+  showCombatHints: boolean;
 };
 
 const STORAGE_KEY = 'circle-clash-settings';
@@ -9,6 +10,7 @@ const defaults: GameSettings = {
   musicVolume: 0.6,
   effectsVolume: 0.8,
   reducedMotion: false,
+  showCombatHints: true,
 };
 
 export const settingsStore = {

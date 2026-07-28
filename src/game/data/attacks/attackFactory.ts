@@ -3,14 +3,15 @@ import type {
   AttackDefinition,
   HitLevel,
 } from '../../combat/AttackDefinition';
-import type { GameAction } from '../../core/types';
+import type { CombatAction } from '../../core/types';
+import { balanceConfig } from '../../config/balanceConfig';
 
 type AttackOptions = {
   startup: number;
   active?: number;
   recovery: number;
   damage: number;
-  action: GameAction;
+  action: CombatAction;
   category: AttackCategory;
   level?: HitLevel;
   reach?: number;
@@ -63,12 +64,16 @@ export function makeAttack(
       cancelInto.length > 0
         ? [{
             startFrame: cancelStart,
-            endFrame: cancelStart + Math.min(5, options.recovery),
+            endFrame:
+              cancelStart + Math.min(balanceConfig.comboContinuationWindow, options.recovery),
             into: cancelInto,
             onHitOnly: true,
           }]
         : [],
-    comboScaling: options.category === 'light' ? 0.88 : 0.82,
+    comboScaling:
+      options.category === 'light' || options.category === 'heavy'
+        ? balanceConfig.autoComboDamageScale
+        : 0.82,
     reversalType: options.category === 'super' ? 'invincible' : 'none',
     comboEscapeWindows: [{ startFrame: activeStart, endFrame: cancelStart + 2 }],
     animationId: `${slot}-animation`,

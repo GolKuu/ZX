@@ -13,19 +13,15 @@ export const defaultKeyboardProfiles: KeyboardProfiles = {
     kind: 'keyboard',
     playerId: 'player1',
     label: 'Клавиатура — Player 1',
+    scheme: 'SIMPLIFIED',
     bindings: {
       MOVE_LEFT: 'KeyA',
       MOVE_RIGHT: 'KeyD',
       JUMP: 'KeyH',
-      CROUCH: 'KeyS',
       LIGHT_ATTACK: 'KeyJ',
       HEAVY_ATTACK: 'KeyK',
       SPECIAL_ATTACK: 'KeyL',
-      BLOCK: 'Semicolon',
-      GRAB: 'KeyU',
-      SUPER_ATTACK: 'KeyI',
-      COMBO_ESCAPE: 'KeyO',
-      MOMENTUM_REVERSAL: 'KeyP',
+      DEFENSE: 'Semicolon',
       PAUSE: sharedPause,
     },
   },
@@ -34,19 +30,15 @@ export const defaultKeyboardProfiles: KeyboardProfiles = {
     kind: 'keyboard',
     playerId: 'player2',
     label: 'Клавиатура — Player 2',
+    scheme: 'SIMPLIFIED',
     bindings: {
       MOVE_LEFT: 'ArrowLeft',
       MOVE_RIGHT: 'ArrowRight',
       JUMP: 'ArrowUp',
-      CROUCH: 'ArrowDown',
       LIGHT_ATTACK: 'Numpad1',
       HEAVY_ATTACK: 'Numpad2',
       SPECIAL_ATTACK: 'Numpad3',
-      BLOCK: 'Numpad0',
-      GRAB: 'NumpadEnter',
-      SUPER_ATTACK: 'NumpadAdd',
-      COMBO_ESCAPE: 'NumpadDivide',
-      MOMENTUM_REVERSAL: 'NumpadMultiply',
+      DEFENSE: 'Numpad0',
       PAUSE: sharedPause,
     },
   },
@@ -62,22 +54,15 @@ export const defaultGamepadProfile: GamepadInputProfile = {
   id: 'standard-gamepad',
   kind: 'gamepad',
   label: 'Стандартный геймпад',
+  scheme: 'SIMPLIFIED',
   bindings: {
     MOVE_LEFT: axis(-1, 14),
     MOVE_RIGHT: axis(1, 15),
-    JUMP: button(0),
-    CROUCH: [
-      { type: 'axis', axis: 1, direction: 1 },
-      { type: 'button', index: 13 },
-    ],
-    LIGHT_ATTACK: button(2),
-    HEAVY_ATTACK: button(3),
-    SPECIAL_ATTACK: button(1),
-    BLOCK: button(4),
-    GRAB: button(5),
-    SUPER_ATTACK: button(6),
-    COMBO_ESCAPE: button(8),
-    MOMENTUM_REVERSAL: button(10),
+    JUMP: button(2),
+    LIGHT_ATTACK: button(0),
+    HEAVY_ATTACK: button(1),
+    SPECIAL_ATTACK: button(3),
+    DEFENSE: button(4),
     PAUSE: button(9),
   },
 };
@@ -90,22 +75,21 @@ export function cloneKeyboardProfiles(profiles = defaultKeyboardProfiles): Keybo
 }
 
 export function cloneKeyboardProfile(profile: KeyboardInputProfile): KeyboardInputProfile {
-  return { ...profile, bindings: { ...profile.bindings } };
+  return {
+    ...profile,
+    bindings: { ...profile.bindings },
+    classicBindings: profile.classicBindings ? { ...profile.classicBindings } : undefined,
+  };
 }
 
 export const actionLabels: Record<GameAction, string> = {
   MOVE_LEFT: 'Влево',
   MOVE_RIGHT: 'Вправо',
   JUMP: 'Прыжок',
-  CROUCH: 'Приседание',
   LIGHT_ATTACK: 'Лёгкая атака',
   HEAVY_ATTACK: 'Тяжёлая атака',
   SPECIAL_ATTACK: 'Специальная атака',
-  BLOCK: 'Блок',
-  GRAB: 'Захват',
-  SUPER_ATTACK: 'Суперприём',
-  COMBO_ESCAPE: 'Выход из комбо',
-  MOMENTUM_REVERSAL: 'Разворот импульса',
+  DEFENSE: 'Защита',
   PAUSE: 'Пауза',
 };
 

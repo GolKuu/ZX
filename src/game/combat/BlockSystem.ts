@@ -40,7 +40,11 @@ export class BlockSystem {
           : defender.guard !== null;
     if (!correctGuard) return false;
 
-    defender.blockMeter = Math.max(0, defender.blockMeter - attack.blockDamage);
+    const perfect = input.held.includes('PERFECT_BLOCK');
+    defender.blockMeter = Math.max(
+      0,
+      defender.blockMeter - (perfect ? 0 : attack.blockDamage),
+    );
     if (defender.blockMeter > 0) return true;
     defender.guard = null;
     return false;

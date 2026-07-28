@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { balanceConfig, FIXED_STEP_SECONDS } from '../config/balanceConfig';
 import { CombatSimulation } from '../core/CombatSimulation';
-import type { GameAction } from '../core/types';
+import type { CombatAction } from '../core/types';
 import { emptyInputFrame } from './testFixtures';
 
 describe('deterministic combat rules', () => {
@@ -89,10 +89,10 @@ function closeActiveSimulation() {
 
 function performStartup(
   simulation: CombatSimulation,
-  action: GameAction,
+  action: CombatAction,
   startupFrames: number,
-  directions: GameAction[] = [],
-  defenderHeld: GameAction[] = [],
+  directions: CombatAction[] = [],
+  defenderHeld: CombatAction[] = [],
 ) {
   simulation.step(actionFrame(action, directions, defenderHeld), FIXED_STEP_SECONDS);
   for (let frame = 0; frame < startupFrames; frame += 1) {
@@ -101,16 +101,16 @@ function performStartup(
 }
 
 function actionFrame(
-  action: GameAction,
-  held: GameAction[] = [],
-  defenderHeld: GameAction[] = [],
+  action: CombatAction,
+  held: CombatAction[] = [],
+  defenderHeld: CombatAction[] = [],
 ) {
   const frame = heldFrame([...held, action], defenderHeld);
   frame.player1.pressed = [action];
   return frame;
 }
 
-function heldFrame(held: GameAction[], defenderHeld: GameAction[] = []) {
+function heldFrame(held: CombatAction[], defenderHeld: CombatAction[] = []) {
   const frame = emptyInputFrame();
   frame.player1 = { held, pressed: [], released: [] };
   frame.player2 = { held: defenderHeld, pressed: [], released: [] };

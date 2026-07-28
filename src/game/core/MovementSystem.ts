@@ -54,6 +54,11 @@ export class MovementSystem {
   }
 
   private detectDash(fighter: FighterSnapshot, input: PlayerInputFrame, tick: number) {
+    if (input.pressed.includes('DASH_LEFT') || input.pressed.includes('DASH_RIGHT')) {
+      fighter.dashDirection = input.pressed.includes('DASH_LEFT') ? -1 : 1;
+      fighter.dashTicksRemaining = balanceConfig.dashDurationTicks;
+      return;
+    }
     const action = input.pressed.find(
       (item): item is 'MOVE_LEFT' | 'MOVE_RIGHT' =>
         item === 'MOVE_LEFT' || item === 'MOVE_RIGHT',
@@ -61,7 +66,7 @@ export class MovementSystem {
     if (!action) return;
     const isDoubleTap =
       fighter.lastMoveTapAction === action &&
-      tick - fighter.lastMoveTapTick <= balanceConfig.doubleTapWindowTicks;
+      tick - fighter.lastMoveTapTick <= balanceConfig.doubleTapWindow;
     fighter.lastMoveTapAction = action;
     fighter.lastMoveTapTick = tick;
     if (isDoubleTap) {

@@ -1,23 +1,23 @@
-import type { GameAction, InputFrame, PlayerId } from './types';
+import type { CombatAction, InputFrame, PlayerId } from './types';
 
 const PLAYERS: readonly PlayerId[] = ['player1', 'player2'];
 
 export class InputBuffer {
-  private held = new Map<PlayerId, Set<GameAction>>(PLAYERS.map((id) => [id, new Set()]));
-  private pressed = new Map<PlayerId, Set<GameAction>>(PLAYERS.map((id) => [id, new Set()]));
-  private released = new Map<PlayerId, Set<GameAction>>(PLAYERS.map((id) => [id, new Set()]));
+  private held = new Map<PlayerId, Set<CombatAction>>(PLAYERS.map((id) => [id, new Set()]));
+  private pressed = new Map<PlayerId, Set<CombatAction>>(PLAYERS.map((id) => [id, new Set()]));
+  private released = new Map<PlayerId, Set<CombatAction>>(PLAYERS.map((id) => [id, new Set()]));
 
-  press(playerId: PlayerId, action: GameAction) {
+  press(playerId: PlayerId, action: CombatAction) {
     const held = this.held.get(playerId)!;
     if (!held.has(action)) this.pressed.get(playerId)!.add(action);
     held.add(action);
   }
 
-  release(playerId: PlayerId, action: GameAction) {
+  release(playerId: PlayerId, action: CombatAction) {
     if (this.held.get(playerId)!.delete(action)) this.released.get(playerId)!.add(action);
   }
 
-  consumePressed(playerId: PlayerId, action: GameAction) {
+  consumePressed(playerId: PlayerId, action: CombatAction) {
     return this.pressed.get(playerId)!.delete(action);
   }
 
