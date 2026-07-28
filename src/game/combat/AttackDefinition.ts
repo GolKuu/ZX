@@ -50,6 +50,7 @@ export type AttackDefinition = {
   category: AttackCategory;
   action: CombatAction;
   knockdown: boolean;
+  isFinisher: boolean;
   sideSwitch: boolean;
   energyGain: number;
   energyCost: number;

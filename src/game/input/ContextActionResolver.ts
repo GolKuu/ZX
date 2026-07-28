@@ -23,12 +23,20 @@ export class ContextActionResolver {
     const command = highestPriority(commands);
 
     if (input.frame.held.includes('DEFENSE')) held.push('BLOCK');
-    if (input.recentlyPressed('DEFENSE', balanceConfig.perfectBlockWindow)) {
-      held.push('PERFECT_BLOCK');
-    }
+    this.appendBlockTiming(input, held);
     this.applyCommand(command, input, context, held, pressed);
     this.appendClassicActions(input.frame, held, pressed);
     return { held: unique(held), pressed: unique(pressed), released: [] };
+  }
+
+  private appendBlockTiming(input: RecognizedInput, held: CombatAction[]) {
+    const pressAge = input.framesSincePressed('DEFENSE');
+    if (pressAge === null) return;
+    if (pressAge < balanceConfig.perfectBlockWindowFrames) {
+      held.push('PERFECT_BLOCK');
+    } else if (pressAge < balanceConfig.preciseBlockWindowFrames) {
+      held.push('PRECISE_BLOCK');
+    }
   }
 
   private applyCommand(

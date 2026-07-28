@@ -1,5 +1,6 @@
 import type { FighterMode, FighterSnapshot } from './types';
 import { balanceConfig } from '../config/balanceConfig';
+import { tickDefenseState } from '../combat/DefenseState';
 
 export class FighterStateMachine {
   transition(fighter: FighterSnapshot, mode: FighterMode, durationTicks = 0) {
@@ -9,6 +10,7 @@ export class FighterStateMachine {
   }
 
   tick(fighter: FighterSnapshot) {
+    tickDefenseState(fighter);
     if (fighter.modeTicksRemaining > 0) fighter.modeTicksRemaining -= 1;
     if (fighter.modeTicksRemaining > 0 || fighter.mode === 'knockout') return;
     if (fighter.mode === 'knockdown') {

@@ -8,6 +8,7 @@ export type RecognizedInput = {
   toward: boolean;
   away: boolean;
   defenseCombo: (action: GameAction, window?: number) => boolean;
+  framesSincePressed: (action: GameAction) => number | null;
   recentlyPressed: (action: GameAction, window: number) => boolean;
   sequence: (actions: readonly GameAction[], window?: number) => boolean;
   doubleTapped: 'MOVE_LEFT' | 'MOVE_RIGHT' | null;
@@ -42,6 +43,10 @@ export class CommandRecognizer {
         frame.held.includes('DEFENSE') &&
         frame.pressed.includes(action) &&
         this.areSimultaneous(recent, 'DEFENSE', action, window),
+      framesSincePressed: (action) => {
+        const pressedAt = lastTick(recent, action);
+        return pressedAt === null ? null : tick - pressedAt;
+      },
       recentlyPressed: (action, window) =>
         recent.some((entry) => entry.action === action && tick - entry.tick <= window),
       sequence: (actions, window = balanceConfig.inputBufferWindow) =>

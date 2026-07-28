@@ -3,6 +3,7 @@ import type { FighterSnapshot, SimulationSnapshot } from './types';
 function cloneFighter(fighter: FighterSnapshot): FighterSnapshot {
   return {
     ...fighter,
+    defense: { ...fighter.defense },
     attack: fighter.attack
       ? { ...fighter.attack, hitHitboxes: [...fighter.attack.hitHitboxes] }
       : null,

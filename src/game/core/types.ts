@@ -20,6 +20,7 @@ export const CONTEXT_ACTIONS = [
   'COMBO_ESCAPE',
   'COMBO_BREAK',
   'MOMENTUM_REVERSAL',
+  'PRECISE_BLOCK',
   'PERFECT_BLOCK',
   'DASH_LEFT',
   'DASH_RIGHT',
@@ -65,6 +66,24 @@ export type AttackRuntimeSnapshot = {
   connected: boolean;
 };
 
+export type DefenseTimingFeedback = 'none' | 'too-early' | 'success' | 'too-late';
+export type DefenseEffect =
+  | 'none'
+  | 'precise-block'
+  | 'perfect-block'
+  | 'combo-escape'
+  | 'combo-break';
+
+export type DefenseSnapshot = {
+  segments: number;
+  maxSegments: number;
+  comboEscapeCooldownTicks: number;
+  feedback: DefenseTimingFeedback;
+  feedbackTicksRemaining: number;
+  effect: DefenseEffect;
+  effectTicksRemaining: number;
+};
+
 export type FighterSnapshot = {
   id: PlayerId;
   characterId: string;
@@ -80,6 +99,7 @@ export type FighterSnapshot = {
   blockMeter: number;
   maxBlockMeter: number;
   guard: 'standing' | 'crouching' | null;
+  defense: DefenseSnapshot;
   mode: FighterMode;
   modeTicksRemaining: number;
   attack: AttackRuntimeSnapshot | null;
@@ -95,6 +115,10 @@ export type ComboSnapshot = {
   damage: number;
   targetId: PlayerId | null;
   remainingTicks: number;
+  escapeWindowStartsInTicks: number | null;
+  escapeWindowTicksRemaining: number;
+  breakWindowTicksRemaining: number;
+  breakAllowed: boolean;
 };
 
 export type PlayerInputFrame = {

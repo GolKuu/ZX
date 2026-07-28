@@ -112,13 +112,13 @@ export class CombatSimulation {
   ) {
     const attacker = this.state.fighters[attackerId];
     const defender = this.state.fighters[defenderId];
-    const blocked = this.blocks.tryBlock(defender, defenderInput, contact.definition);
+    const block = this.blocks.tryBlock(defender, defenderInput, contact.definition);
     this.damage.apply(
       attacker,
       defender,
       contact.definition,
       this.state.combos[attackerId],
-      blocked,
+      block,
     );
   }
 

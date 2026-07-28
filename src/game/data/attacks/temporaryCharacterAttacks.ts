@@ -17,7 +17,7 @@ function createAttackSet(characterId: string): CharacterAttackSet {
   });
   const light4 = makeAttack(characterId, 'light-4', {
     startup: 7, active: 5, recovery: 16, damage: 9, action: 'LIGHT_ATTACK',
-    category: 'light', knockbackX: 330, knockdown: true,
+    category: 'light', knockbackX: 330, knockdown: true, isFinisher: true,
   });
   const heavy1 = makeAttack(characterId, 'heavy-1', {
     startup: 9, active: 4, recovery: 18, damage: 12, action: 'HEAVY_ATTACK',
@@ -29,7 +29,7 @@ function createAttackSet(characterId: string): CharacterAttackSet {
   });
   const heavy3 = makeAttack(characterId, 'heavy-3', {
     startup: 14, active: 6, recovery: 25, damage: 18, action: 'HEAVY_ATTACK',
-    category: 'heavy', reach: 116, knockbackX: 430, knockdown: true,
+    category: 'heavy', reach: 116, knockbackX: 430, knockdown: true, isFinisher: true,
   });
   const low = makeAttack(characterId, 'low', {
     startup: 7, active: 4, recovery: 15, damage: 8, action: 'LIGHT_ATTACK',

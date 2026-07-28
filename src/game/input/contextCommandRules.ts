@@ -12,10 +12,11 @@ export function findContextCommands(input: RecognizedInput, context: ActionConte
   if (input.defenseCombo('SPECIAL_ATTACK')) {
     if (
       fighter.mode === 'hitstun' &&
-      incomingCombo.hits > 0 &&
-      fighter.blockMeter >= balanceConfig.comboBreakCost
+      incomingCombo.hits > 0
     ) commands.add('COMBO_BREAK');
-    else if (fighter.energy >= fighter.maxEnergy) commands.add('SUPER_ATTACK');
+    else if (fighter.mode !== 'hitstun' && fighter.energy >= fighter.maxEnergy) {
+      commands.add('SUPER_ATTACK');
+    }
   }
   if (
     input.defenseCombo('HEAVY_ATTACK', balanceConfig.reversalWindow) &&
@@ -26,7 +27,7 @@ export function findContextCommands(input: RecognizedInput, context: ActionConte
     input.away &&
     fighter.mode === 'hitstun' &&
     incomingCombo.hits > 0 &&
-    fighter.modeTicksRemaining <= balanceConfig.escapeWindow
+    pressedDefenseOrDirection(input)
   ) commands.add('COMBO_ESCAPE');
   if (
     input.defenseCombo('LIGHT_ATTACK') &&
@@ -42,6 +43,12 @@ export function findContextCommands(input: RecognizedInput, context: ActionConte
     commands.add('MOVE');
   }
   return commands;
+}
+
+function pressedDefenseOrDirection(input: RecognizedInput) {
+  return input.frame.pressed.some((action) =>
+    action === 'DEFENSE' || action === 'MOVE_LEFT' || action === 'MOVE_RIGHT',
+  );
 }
 
 function canGrab(fighter: ActionContext['fighter']) {

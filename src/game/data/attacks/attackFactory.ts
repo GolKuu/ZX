@@ -19,6 +19,7 @@ type AttackOptions = {
   knockbackX?: number;
   knockbackY?: number;
   knockdown?: boolean;
+  isFinisher?: boolean;
   sideSwitch?: boolean;
   energyCost?: number;
   cancelInto?: readonly AttackCategory[];
@@ -39,7 +40,10 @@ export function makeAttack(
     activeFrames: active,
     recoveryFrames: options.recovery,
     damage: options.damage,
-    chipDamage: Math.max(0, Math.round(options.damage * 0.12)),
+    chipDamage:
+      options.category === 'special' || options.category === 'super'
+        ? Math.max(1, Math.round(options.damage * 0.12))
+        : 0,
     blockDamage: Math.max(5, Math.round(options.damage * 1.4)),
     hitStun: Math.max(10, options.startup + 7),
     blockStun: Math.max(6, options.startup),
@@ -82,6 +86,7 @@ export function makeAttack(
     category: options.category,
     action: options.action,
     knockdown: options.knockdown ?? false,
+    isFinisher: options.isFinisher ?? false,
     sideSwitch: options.sideSwitch ?? false,
     energyGain: Math.max(4, Math.round(options.damage * 0.8)),
     energyCost: options.energyCost ?? 0,

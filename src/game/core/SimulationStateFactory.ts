@@ -21,6 +21,15 @@ export function createFighter(
     blockMeter: balanceConfig.maxBlockMeter,
     maxBlockMeter: balanceConfig.maxBlockMeter,
     guard: null,
+    defense: {
+      segments: balanceConfig.maxDefenseSegments,
+      maxSegments: balanceConfig.maxDefenseSegments,
+      comboEscapeCooldownTicks: 0,
+      feedback: 'none',
+      feedbackTicksRemaining: 0,
+      effect: 'none',
+      effectTicksRemaining: 0,
+    },
     mode: 'idle',
     modeTicksRemaining: 0,
     attack: null,
@@ -50,8 +59,21 @@ export function createInitialState(
       player2: createFighter('player2', 710, characters.player2),
     },
     combos: {
-      player1: { hits: 0, damage: 0, targetId: null, remainingTicks: 0 },
-      player2: { hits: 0, damage: 0, targetId: null, remainingTicks: 0 },
+      player1: createCombo(),
+      player2: createCombo(),
     },
+  };
+}
+
+function createCombo() {
+  return {
+    hits: 0,
+    damage: 0,
+    targetId: null,
+    remainingTicks: 0,
+    escapeWindowStartsInTicks: null,
+    escapeWindowTicksRemaining: 0,
+    breakWindowTicksRemaining: 0,
+    breakAllowed: false,
   };
 }

@@ -5,11 +5,10 @@ import type {
   PlayerInputFrame,
 } from '../core/types';
 import { ComboSystem } from './ComboSystem';
-import { EnergyComponent } from './EnergyComponent';
+import { setDefenseEffect, setDefenseFeedback } from './DefenseState';
 
 export class DefensiveActionSystem {
   private readonly combos = new ComboSystem();
-  private readonly energy = new EnergyComponent();
 
   apply(
     fighter: FighterSnapshot,
@@ -21,7 +20,7 @@ export class DefensiveActionSystem {
       return this.comboBreak(fighter, opponent, incomingCombo);
     }
     if (input.pressed.includes('COMBO_ESCAPE')) {
-      return this.comboEscape(fighter, incomingCombo);
+      return this.comboEscape(fighter, opponent, incomingCombo);
     }
     return false;
   }
@@ -31,21 +30,48 @@ export class DefensiveActionSystem {
     opponent: FighterSnapshot,
     combo: ComboSnapshot,
   ) {
-    if (fighter.mode !== 'hitstun' || combo.hits === 0 ||
-      fighter.blockMeter < balanceConfig.comboBreakCost) return false;
-    fighter.blockMeter -= balanceConfig.comboBreakCost;
+    const defense = fighter.defense;
+    if (
+      fighter.mode !== 'hitstun' ||
+      combo.hits === 0 ||
+      !combo.breakAllowed ||
+      combo.breakWindowTicksRemaining === 0 ||
+      defense.segments < balanceConfig.comboBreakSegmentCost
+    ) return false;
+    defense.segments -= balanceConfig.comboBreakSegmentCost;
     this.release(fighter);
+    this.release(opponent);
+    const fighterDirection = fighter.x <= opponent.x ? -1 : 1;
+    fighter.velocityX = fighterDirection * balanceConfig.comboBreakKnockbackSpeed;
+    opponent.velocityX = -fighterDirection * balanceConfig.comboBreakKnockbackSpeed;
     opponent.attack = null;
-    opponent.velocityX = fighter.facing * -360;
+    setDefenseFeedback(fighter, 'success');
+    setDefenseEffect(fighter, 'combo-break');
     this.combos.reset(combo);
     return true;
   }
 
-  private comboEscape(fighter: FighterSnapshot, combo: ComboSnapshot) {
-    if (fighter.mode !== 'hitstun' || combo.hits === 0 ||
-      !this.energy.spend(fighter, balanceConfig.comboEscapeCost)) return false;
+  private comboEscape(
+    fighter: FighterSnapshot,
+    opponent: FighterSnapshot,
+    combo: ComboSnapshot,
+  ) {
+    if (fighter.mode !== 'hitstun' || combo.hits === 0) return false;
+    if (fighter.defense.comboEscapeCooldownTicks > 0) return false;
+    if (combo.escapeWindowTicksRemaining === 0) {
+      fighter.defense.comboEscapeCooldownTicks =
+        balanceConfig.comboEscapeFailureCooldownFrames;
+      setDefenseFeedback(
+        fighter,
+        combo.escapeWindowStartsInTicks !== null ? 'too-early' : 'too-late',
+      );
+      return false;
+    }
     this.release(fighter);
-    fighter.velocityX = fighter.facing * -420;
+    this.release(opponent);
+    this.resetToNeutral(fighter, opponent);
+    setDefenseFeedback(fighter, 'success');
+    setDefenseEffect(fighter, 'combo-escape');
     this.combos.reset(combo);
     return true;
   }
@@ -54,5 +80,23 @@ export class DefensiveActionSystem {
     fighter.attack = null;
     fighter.modeTicksRemaining = 0;
     fighter.mode = fighter.grounded ? 'idle' : 'jumping';
+    fighter.guard = null;
+  }
+
+  private resetToNeutral(fighter: FighterSnapshot, opponent: FighterSnapshot) {
+    const halfGap = balanceConfig.comboEscapeNeutralDistance / 2;
+    const minimumCenter = balanceConfig.fighterRadius + halfGap;
+    const maximumCenter = balanceConfig.arenaWidth - balanceConfig.fighterRadius - halfGap;
+    const center = Math.min(
+      maximumCenter,
+      Math.max(minimumCenter, (fighter.x + opponent.x) / 2),
+    );
+    const fighterSide = fighter.x <= opponent.x ? -1 : 1;
+    fighter.x = center + fighterSide * halfGap;
+    opponent.x = center - fighterSide * halfGap;
+    fighter.velocityX = 0;
+    opponent.velocityX = 0;
+    fighter.facing = fighterSide === -1 ? 1 : -1;
+    opponent.facing = fighter.facing === 1 ? -1 : 1;
   }
 }
