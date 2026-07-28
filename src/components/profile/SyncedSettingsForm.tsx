@@ -1,10 +1,16 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { applyLocalAccessibility, syncCurrentSettings } from '../../lib/settingsSync';
 import { settingsStore, type GameSettings } from '../../stores/settingsStore';
 
 export function SyncedSettingsForm({ userId }: { userId?: string }) {
   const [settings, setSettings] = useState(() => settingsStore.load());
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const refresh = () => setSettings(settingsStore.load());
+    window.addEventListener('circle-clash-settings-synced', refresh);
+    return () => window.removeEventListener('circle-clash-settings-synced', refresh);
+  }, []);
 
   async function save(event: FormEvent) {
     event.preventDefault();

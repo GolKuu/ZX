@@ -13,6 +13,7 @@ export async function loadAndApplyCloudSettings(userId: string) {
     settingsStore.save(settings);
     applyLocalAccessibility(settings);
     controls.importCloud(cloud.control_layout);
+    window.dispatchEvent(new Event('circle-clash-settings-synced'));
   } catch {
     // Offline play continues with the last safe local copy.
   }
