@@ -1,4 +1,5 @@
 import { CollisionSystem } from '../core/CollisionSystem';
+import { balanceConfig } from '../config/balanceConfig';
 import type { ArenaTrapSnapshot, FighterSnapshot } from '../core/types';
 import type { AttackDefinition } from './AttackDefinition';
 import { CharacterPassiveSystem } from './CharacterPassiveSystem';
@@ -27,7 +28,12 @@ export class ArenaTrapSystem {
       const worldHitbox = this.collisions.getHitbox(fighter, hitbox);
       traps.forEach((trap) => {
         if (!trap.active || !trap.cuttable) return;
-        const trapBox = { x: trap.x - 16, y: 410, width: 32, height: 40 };
+        const trapBox = {
+          x: trap.x - 16,
+          y: balanceConfig.groundY - 190,
+          width: 32,
+          height: 190,
+        };
         if (!this.collisions.overlaps(worldHitbox, trapBox)) return;
         trap.active = false;
         this.passive.recordTrapCut(fighter);
