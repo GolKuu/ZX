@@ -45,15 +45,33 @@ export function SyncedSettingsForm({ userId }: { userId?: string }) {
             <option value="high">Высокая</option>
           </select>
         </label>
-        <label>Уровень крови
+        <label>Мультяшные частицы попаданий
           <select
             value={settings.bloodLevel}
-            onChange={(event) => patch(setSettings, { bloodLevel: Number(event.target.value) as 0 | 1 | 2 })}
+            onChange={(event) => patch(setSettings, {
+              bloodLevel: Number(event.target.value) as GameSettings['bloodLevel'],
+            })}
           >
             <option value={0}>Выключена</option>
-            <option value={1}>Умеренно</option>
-            <option value={2}>Полностью</option>
+            <option value={1}>Мало</option>
+            <option value={2}>Средне</option>
+            <option value={3}>Много</option>
           </select>
+        </label>
+        <label>Тряска камеры
+          <select value={settings.cameraShake} onChange={(event) => patch(setSettings, {
+            cameraShake: Number(event.target.value) as GameSettings['cameraShake'],
+          })}>
+            <option value={0}>Выключена</option>
+            <option value={1}>Лёгкая</option>
+            <option value={2}>Средняя</option>
+            <option value={3}>Сильная</option>
+          </select>
+        </label>
+        <label>Масштаб интерфейса: {Math.round(settings.uiScale * 100)}%
+          <input type="range" min="0.85" max="1.3" step="0.05"
+            value={settings.uiScale}
+            onChange={(event) => patch(setSettings, { uiScale: Number(event.target.value) })} />
         </label>
         <Volume label="Общая громкость" value={settings.masterVolume}
           onChange={(masterVolume) => patch(setSettings, { masterVolume })} />
@@ -62,6 +80,9 @@ export function SyncedSettingsForm({ userId }: { userId?: string }) {
         <Volume label="Эффекты" value={settings.effectsVolume}
           onChange={(effectsVolume) => patch(setSettings, { effectsVolume })} />
       </div>
+      <p className="settings-note">
+        Частицы всегда абстрактные и мультяшные: без органов, ран и реалистичной крови.
+      </p>
       <fieldset className="accessibility-options">
         <legend>Доступность</legend>
         <Toggle label="Уменьшить движение" checked={settings.reducedMotion}
