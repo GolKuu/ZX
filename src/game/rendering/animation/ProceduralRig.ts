@@ -15,6 +15,7 @@ export class ProceduralRig implements CharacterRig {
       state: 'idle',
       tick: 0,
       phase: null,
+      motion: null,
       stopped: false,
     }, kind);
   }

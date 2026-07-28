@@ -10,6 +10,7 @@ import { AttackVisualRenderer } from '../effects/AttackVisualRenderer';
 import { DefenseEffectRenderer } from '../effects/DefenseEffectRenderer';
 import { MotionTrailRenderer } from '../effects/MotionTrailRenderer';
 import { createCharacterBody } from './CharacterBodyFactory';
+import { findCharacterAttack } from '../../data/attacks/characterAttacks';
 
 export class FighterRenderer {
   readonly container: Phaser.GameObjects.Container;
@@ -40,6 +41,9 @@ export class FighterRenderer {
 
   sync(snapshot: FighterSnapshot, context: AnimationContext, stopped = false) {
     this.state = resolveAnimationState(snapshot, context);
+    const attack = snapshot.attack
+      ? findCharacterAttack(snapshot.characterId, snapshot.attack.id)
+      : null;
     if (!stopped) this.animationTick += 1;
     this.container.setPosition(snapshot.x, snapshot.y - 38);
     this.facingContainer.setScale(snapshot.facing, 1);
@@ -47,6 +51,7 @@ export class FighterRenderer {
       state: this.state,
       tick: this.animationTick,
       phase: snapshot.attack?.phase ?? null,
+      motion: attack?.motion ?? null,
       stopped,
     });
     const stunned = snapshot.mode === 'hitstun' || snapshot.mode === 'blockstun';

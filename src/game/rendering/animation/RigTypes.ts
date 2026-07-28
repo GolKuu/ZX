@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import type { AttackMotion } from '../../combat/AttackDefinition';
 import type { AnimationStateId } from './AnimationCatalog';
 
 export type RigPose = {
@@ -29,6 +30,7 @@ export type RigFrame = {
   state: AnimationStateId;
   tick: number;
   phase: 'startup' | 'active' | 'recovery' | null;
+  motion: AttackMotion | null;
   stopped: boolean;
 };
 

@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 import type { CharacterDefinition } from '../../data/characters/circleFighters';
-import { getCharacterAttacks } from '../../data/attacks/characterAttacks';
+import { findCharacterAttack } from '../../data/attacks/characterAttacks';
 import type { FighterSnapshot, PlayerId } from '../../core/types';
+import type { AttackVisualShape } from '../../combat/AttackDefinition';
 
 export class AttackVisualRenderer {
   readonly graphics: Phaser.GameObjects.Graphics;
@@ -21,57 +22,76 @@ export class AttackVisualRenderer {
       this.graphics.setVisible(false);
       return;
     }
-    const definition = allAttacks(snapshot.characterId)
-      .find((candidate) => candidate.id === attack.id);
+    const definition = findCharacterAttack(snapshot.characterId, attack.id);
     const hitbox = definition?.hitboxes[0];
     if (!definition || !hitbox) return;
     const alpha = attack.phase === 'active' ? 0.88 : attack.phase === 'startup' ? 0.28 : 0.13;
     this.graphics.setVisible(true).setAlpha(alpha).setScale(snapshot.facing, 1);
     const x = hitbox.offsetX;
     const y = hitbox.offsetY + 38;
-    if (this.character.visualKind === 'granite') {
-      this.drawGranite(x, y, hitbox.width, hitbox.height, attack.phase === 'active');
-    } else {
-      this.drawShira(x, y, hitbox.width, hitbox.height, attack.frame);
-    }
+    this.drawShape(
+      definition.visualShape,
+      x,
+      y,
+      hitbox.width,
+      hitbox.height,
+      attack.phase === 'active',
+      attack.frame,
+    );
   }
 
-  private drawGranite(x: number, y: number, width: number, height: number, active: boolean) {
+  private drawShape(
+    shape: AttackVisualShape,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    active: boolean,
+    frame: number,
+  ) {
+    const color = this.character.accentColor;
+    const lineWidth = active ? 8 : 4;
     const centerY = y + height / 2;
-    this.graphics
-      .fillStyle(this.character.accentColor, active ? 0.48 : 0.18)
-      .fillTriangle(x, centerY + height * 0.3, x + width * 0.68, y, x + width, centerY)
-      .lineStyle(active ? 8 : 4, 0xffe2a2, 0.82)
-      .beginPath()
-      .moveTo(x, centerY + height * 0.32)
-      .lineTo(x + width * 0.7, y + height * 0.08)
-      .lineTo(x + width, centerY)
-      .strokePath();
-    if (height <= 40) {
-      this.graphics.beginPath().moveTo(x, y + height).lineTo(x + width, y + height).strokePath();
+    this.graphics.lineStyle(lineWidth, color, 0.9);
+    if (shape === 'line') {
+      this.graphics
+        .fillStyle(color, active ? 0.34 : 0.15)
+        .fillRoundedRect(x, centerY - height * 0.18, width, height * 0.36, 12)
+        .beginPath().moveTo(x, centerY).lineTo(x + width, centerY).strokePath();
+      return;
     }
-  }
-
-  private drawShira(x: number, y: number, width: number, height: number, frame: number) {
-    const inset = frame % 2 === 0 ? 3 : 8;
+    if (shape === 'arc') {
+      this.graphics
+        .beginPath()
+        .arc(x + width * 0.42, centerY, width * 0.62, -1.1, 1.08)
+        .strokePath()
+        .lineStyle(Math.max(2, lineWidth / 2), 0xffffff, 0.72)
+        .beginPath()
+        .arc(x + width * 0.38, centerY, width * 0.48, -1, 0.98)
+        .strokePath();
+      return;
+    }
+    if (shape === 'ground') {
+      this.graphics
+        .fillStyle(color, active ? 0.42 : 0.16)
+        .fillTriangle(x, y + height, x + width * 0.58, y, x + width, y + height)
+        .beginPath().moveTo(x, y + height).lineTo(x + width, y + height).strokePath();
+      return;
+    }
+    if (shape === 'projectile') {
+      const pulse = 1 + (frame % 3) * 0.08;
+      this.graphics
+        .fillStyle(color, active ? 0.56 : 0.2)
+        .fillEllipse(x + width * 0.72, centerY, width * 0.52 * pulse, height * 0.72)
+        .beginPath().moveTo(x, centerY).lineTo(x + width * 0.62, centerY).strokePath();
+      return;
+    }
     this.graphics
-      .lineStyle(9, this.character.accentColor, 0.9)
-      .beginPath().moveTo(x, y + inset).lineTo(x + width, y + height - inset).strokePath()
-      .lineStyle(5, 0xffffff, 0.88)
-      .beginPath().moveTo(x + 8, y + height - inset).lineTo(x + width, y + inset).strokePath();
+      .fillStyle(color, active ? 0.48 : 0.18)
+      .fillCircle(x + width * 0.55, centerY, Math.max(height, width * 0.42) / 2)
+      .lineStyle(Math.max(2, lineWidth / 2), 0xffffff, 0.75)
+      .strokeCircle(x + width * 0.55, centerY, Math.max(height, width * 0.42) / 2);
   }
-}
-
-function allAttacks(characterId: string) {
-  const set = getCharacterAttacks(characterId);
-  return [
-    ...set.lightChain, ...set.heavy, set.low, set.lowHeavy, set.air, set.airHeavy,
-    set.forwardLight, set.retreatLight, set.dashLight,
-    set.forwardHeavy, set.retreatHeavy, set.dashHeavy,
-    set.special, set.forwardSpecial, set.retreatSpecial, set.airSpecial,
-    set.enhancedSpecial, set.grab, set.forwardThrow, set.backThrow,
-    set.reversal, set.superAttack,
-  ];
 }
 
 export function ownsAttackVisual(ownerId: PlayerId, snapshot: FighterSnapshot) {

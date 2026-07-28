@@ -95,6 +95,12 @@ function applyAttack(pose: RigPose, frame: RigFrame, kind: 'granite' | 'shira') 
   const drive = frame.phase === 'startup' ? -0.4 : frame.phase === 'active' ? 1 : 0.28;
   const heavy = frame.state.includes('heavy') || frame.state === 'super';
   const low = frame.state.includes('low');
+  if (frame.motion?.includes('kick')) {
+    applyKick(pose, frame.motion, drive, heavy);
+    if (low) applyCrouch(pose);
+    if (frame.state.includes('air')) pose.y -= 9;
+    return;
+  }
   pose.x = drive * (heavy ? 11 : 7);
   pose.rotation = drive * (heavy ? 0.18 : 0.12);
   pose.frontArm = drive * (kind === 'shira' ? -0.3 : -1.45);
@@ -108,6 +114,38 @@ function applyAttack(pose: RigPose, frame: RigFrame, kind: 'granite' | 'shira') 
     pose.frontArm -= kind === 'shira' ? 0.34 : 0.42;
     pose.backArm += kind === 'shira' ? 0.22 : 0.5;
     pose.scaleX += 0.08;
+  }
+}
+
+function applyKick(
+  pose: RigPose,
+  motion: NonNullable<RigFrame['motion']>,
+  drive: number,
+  heavy: boolean,
+) {
+  pose.x = drive * (heavy ? 13 : 9);
+  pose.frontArm = -0.82;
+  pose.backArm = 0.72;
+  pose.backLeg = drive < 0 ? 0.42 : -0.22;
+  pose.scaleX = drive > 0 ? 1.2 : 0.94;
+  pose.scaleY = drive > 0 ? 0.84 : 1.06;
+  if (motion === 'front-kick') {
+    pose.frontLeg = drive * -1.28;
+    pose.rotation = drive * -0.08;
+  } else if (motion === 'roundhouse-kick') {
+    pose.frontLeg = drive * -1.82;
+    pose.backLeg = 0.48;
+    pose.rotation = drive * 0.32;
+  } else if (motion === 'sweep-kick') {
+    pose.frontLeg = drive * 1.42;
+    pose.backLeg = -0.76;
+    pose.y = 13;
+    pose.rotation = drive * -0.18;
+  } else {
+    pose.frontLeg = drive < 0 ? -1.75 : 0.32;
+    pose.backLeg = -0.38;
+    pose.y = drive > 0 ? -5 : 0;
+    pose.rotation = drive * 0.12;
   }
 }
 
