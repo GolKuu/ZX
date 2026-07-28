@@ -49,14 +49,15 @@ export function HomePage() {
     <AppShell>
       <section className="hero">
         <div>
-          <p className="eyebrow">Локальная арена для друзей</p>
+          <p className="eyebrow">Тактический файтинг на реакцию</p>
           <h1>
-            Два характера.
+            Читай соперника.
             <br />
-            Одно столкновение.
+            Отвечай точно.
           </h1>
           <p className="hero__description">
-            Circle Clash — оригинальный браузерный файтинг про камень, ножницы и точный тайминг.
+            Circle Clash — бой 15 необычных существ, где точный блок, смена дистанции
+            и своевременный контрудар сильнее беспорядочного нажатия кнопок.
           </p>
         </div>
         <div className="hero-fighters" aria-hidden="true">
