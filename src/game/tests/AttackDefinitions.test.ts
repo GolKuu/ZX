@@ -71,15 +71,26 @@ describe('character attacks', () => {
     expect(set.heavy.every((attack) => attack.comboScaling === 0.88)).toBe(true);
   });
 
-  it.each(['granite', 'shira'])('places standing strikes above low attacks for %s', (id) => {
+  it.each(circleFighters.map((fighter) => fighter.id))(
+    'places head strikes above body and low attacks for %s',
+    (id) => {
     const set = getCharacterAttacks(id);
     [...set.lightChain, ...set.heavy].forEach((attack) => {
       const hitbox = attack.hitboxes[0];
-      expect(hitbox.offsetY + hitbox.height / 2).toBeLessThanOrEqual(-60);
+      expect(hitbox.offsetY + hitbox.height / 2).toBeLessThanOrEqual(-110);
+    });
+    const headStrikes = [...set.lightChain, ...set.heavy].filter(
+      (attack) => ['punch', 'roundhouse-kick', 'axe-kick'].includes(attack.motion),
+    );
+    expect(headStrikes.length).toBeGreaterThan(0);
+    headStrikes.forEach((attack) => {
+      const hitbox = attack.hitboxes[0];
+      expect(hitbox.offsetY + hitbox.height / 2).toBeLessThanOrEqual(-140);
     });
     const lowHitbox = set.low.hitboxes[0];
     expect(lowHitbox.offsetY + lowHitbox.height / 2).toBeGreaterThan(-30);
-  });
+    },
+  );
 
   it('uses different hit shapes and leg animations across the roster', () => {
     circleFighters.forEach((fighter) => {

@@ -33,8 +33,8 @@ export class CollisionSystem {
 
   getHurtbox(fighter: FighterSnapshot): WorldRect {
     const crouched = fighter.mode === 'crouching' || fighter.guard === 'crouching';
-    const height = crouched ? 50 : 76;
-    return { x: fighter.x - 31, y: fighter.y - height, width: 62, height };
+    const height = crouched ? 138 : 190;
+    return { x: fighter.x - 35, y: fighter.y - height, width: 70, height };
   }
 
   getHitbox(fighter: FighterSnapshot, hitbox: HitboxDefinition): WorldRect {

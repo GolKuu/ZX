@@ -68,7 +68,7 @@ function applyFall(pose: RigPose, kind: 'granite' | 'shira') {
 }
 
 function applyLanding(pose: RigPose) {
-  pose.y = 7;
+  pose.y = 0;
   pose.scaleX = 1.15;
   pose.scaleY = 0.74;
   pose.frontLeg = -0.24;
@@ -76,7 +76,7 @@ function applyLanding(pose: RigPose) {
 }
 
 function applyCrouch(pose: RigPose) {
-  pose.y = 13;
+  pose.y = 0;
   pose.scaleY = 0.72;
   pose.frontLeg = -0.55;
   pose.backLeg = 0.45;
@@ -144,7 +144,7 @@ function applyKick(
   } else if (motion === 'sweep-kick') {
     pose.frontLeg = drive * 1.42;
     pose.backLeg = -0.76;
-    pose.y = 13;
+    pose.y = 0;
     pose.rotation = drive * -0.18;
   } else {
     pose.frontLeg = drive < 0 ? -1.75 : 0.32;

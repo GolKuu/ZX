@@ -33,4 +33,18 @@ describe('combat components', () => {
     attacker.facing = -1;
     expect(collision.getHitbox(attacker, hitbox).x).toBeLessThan(attacker.x);
   });
+
+  it('covers the visible head with the standing hurtbox', () => {
+    const collision = new CollisionSystem();
+    const fighter = createFighter('player2', 500);
+    const hurtbox = collision.getHurtbox(fighter);
+    const headStrike = getCharacterAttacks('granite').lightChain[0].hitboxes[0];
+
+    expect(hurtbox.y).toBe(fighter.y - 190);
+    expect(headStrike.offsetY + headStrike.height / 2).toBe(-148);
+    expect(collision.overlaps(
+      collision.getHitbox(createFighter('player1', 430), headStrike),
+      hurtbox,
+    )).toBe(true);
+  });
 });

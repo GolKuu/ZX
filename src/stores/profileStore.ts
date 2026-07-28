@@ -1,12 +1,20 @@
 export type LocalProfile = {
-  displayName: string;
-  favoriteCharacterId: string | null;
+  nickname: string;
+  avatarUrl: string | null;
+  region: string;
+  language: string;
+  favoriteCharacterIds: string[];
+  createdAt: string;
 };
 
 const STORAGE_KEY = 'circle-clash-profile';
 const defaultProfile: LocalProfile = {
-  displayName: 'Гость Circle Clash',
-  favoriteCharacterId: null,
+  nickname: 'Гость Circle Clash',
+  avatarUrl: null,
+  region: 'KZ',
+  language: 'ru',
+  favoriteCharacterIds: [],
+  createdAt: new Date(0).toISOString(),
 };
 
 export const profileStore = {

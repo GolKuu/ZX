@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { ReactGameBridge } from '../game/bridge/ReactGameBridge';
+import { AuthProvider } from './AuthProvider';
 import { GameBridgeContext } from './gameBridgeContext';
 
 export function AppProviders({ children }: { children: ReactNode }) {
@@ -7,5 +8,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
 
   useEffect(() => () => bridge.clear(), [bridge]);
 
-  return <GameBridgeContext.Provider value={bridge}>{children}</GameBridgeContext.Provider>;
+  return (
+    <AuthProvider>
+      <GameBridgeContext.Provider value={bridge}>{children}</GameBridgeContext.Provider>
+    </AuthProvider>
+  );
 }

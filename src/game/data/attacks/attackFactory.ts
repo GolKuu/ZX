@@ -44,8 +44,12 @@ export function makeAttack(
   const activeStart = options.startup;
   const cancelStart = activeStart + active;
   const cancelInto = options.cancelInto ?? [];
-  const verticalLift = options.verticalLift ??
-    (options.level === 'low' ? 0 : options.level === 'air' ? 16 : 24);
+  const hitboxHeight = options.height ?? 44;
+  const hitboxCenterY = targetCenterY(
+    options.level ?? 'mid',
+    options.motion ?? defaultMotion(options.category, options.level),
+    options.verticalLift,
+  );
   return {
     id: `${characterId}-${slot}`,
     name: options.name,
@@ -69,9 +73,9 @@ export function makeAttack(
         startFrame: activeStart,
         endFrame: activeStart + active - 1,
         offsetX: 24,
-        offsetY: -(options.height ?? 58) - verticalLift,
+        offsetY: hitboxCenterY - hitboxHeight / 2,
         width: options.reach ?? 74,
-        height: options.height ?? 44,
+        height: hitboxHeight,
       },
     ],
     movementTimeline:
@@ -117,6 +121,22 @@ export function makeAttack(
     hitStopFrames: options.hitStop ?? (options.category === 'heavy' ? 5 : 3),
     visualReach: (options.reach ?? 74) + 24,
   };
+}
+
+function targetCenterY(
+  level: HitLevel,
+  motion: AttackMotion,
+  verticalLift?: number,
+) {
+  if (verticalLift !== undefined) return -verticalLift;
+  if (level === 'low') return -16;
+  if (level === 'air') return -44;
+  if (level === 'throw') return -92;
+  if (motion === 'punch' || motion === 'roundhouse-kick') return -148;
+  if (motion === 'axe-kick') return -156;
+  if (motion === 'front-kick' || motion === 'thrust') return -130;
+  if (motion === 'slash') return -140;
+  return -114;
 }
 
 function defaultMotion(category: AttackCategory, level?: HitLevel): AttackMotion {

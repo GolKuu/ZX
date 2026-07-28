@@ -30,6 +30,13 @@ export class ControlStorage {
     }
   }
 
+  importCloud(value: unknown) {
+    const profiles = this.parse(JSON.stringify(value));
+    if (!profiles || findMissingActions(profiles).length > 0) return false;
+    this.save(profiles);
+    return true;
+  }
+
   reset() {
     const defaults = cloneKeyboardProfiles(defaultKeyboardProfiles);
     if (typeof localStorage !== 'undefined') {
