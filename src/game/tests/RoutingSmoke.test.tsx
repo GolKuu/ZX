@@ -20,7 +20,11 @@ const routes = [
   ['/online', 'Приватная комната'],
   ['/training', 'Точный блок'],
   ['/characters', 'Персонажи'],
+  ['/character-viewer', 'Ключевые позы'],
+  ['/arena-viewer', 'Три спокойных мира'],
+  ['/effects-gallery', 'Атака видна сразу'],
   ['/controls', 'Управление'],
+  ['/settings', 'Масштаб интерфейса'],
   ['/profile', 'Профиль'],
   ['/auth', 'Вход в Circle Clash'],
 ] as const;

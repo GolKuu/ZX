@@ -111,84 +111,9 @@
 .effect-preview__spark--two { right: 20px; bottom: 22px; transform: rotate(80deg); }
 .effect-preview__spark--three { top: 50px; right: 12px; transform: rotate(110deg); }
 
-.particle-lab {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, .8fr);
-  align-items: center;
-  gap: 36px;
-  margin-top: 28px;
-  padding: clamp(24px, 4vw, 42px);
-  border-radius: 30px;
-  color: white;
-  background: #30264f;
-}
-
-.particle-lab p {
-  color: #dcd4ed;
-}
-
-.particle-levels {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.particle-lab .state-chip--active {
-  color: #30264f;
-  background: #ffdc62;
-}
-
-.particle-lab .viewer-message {
-  color: #a9f1df;
-}
-
-.particle-preview {
-  position: relative;
-  min-height: 290px;
-  border-radius: 26px;
-  background: radial-gradient(circle at 50% 54%, #ffffff2b, transparent 48%), #241d3d;
-  overflow: hidden;
-}
-
-.particle-preview__impact {
-  position: absolute;
-  z-index: 2;
-  top: 46%;
-  left: 50%;
-  color: #ffdc62;
-  font-size: 2rem;
-  font-weight: 950;
-  text-shadow: 4px 4px 0 #ff7185;
-  transform: translate(-50%, -50%) rotate(-8deg);
-}
-
-.particle-preview i {
-  --distance: calc(64px + var(--particle-index) * 4px);
-  position: absolute;
-  top: 48%;
-  left: 50%;
-  width: 10px;
-  height: 10px;
-  border-radius: 50% 50% 44% 44%;
-  background: #ff7185;
-  transform: rotate(var(--particle-angle)) translateX(var(--distance));
-  opacity: calc(.95 - var(--particle-index) * .025);
-}
-
 @media (max-width: 1000px) {
   .effects-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 700px) {
-  .effects-grid,
-  .particle-lab {
-    grid-template-columns: 1fr;
-  }
-
-  .particle-preview {
-    min-height: 230px;
   }
 }
 

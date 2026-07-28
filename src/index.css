@@ -1,4 +1,5 @@
 @import './styles/base.css';
+@import './styles/fullscreen.css';
 @import './styles/layout.css';
 @import './styles/cards.css';
 @import './styles/hero.css';
@@ -16,5 +17,7 @@
 @import './styles/character-art.css';
 @import './styles/style-guide.css';
 @import './styles/moveset-guide.css';
-@import './styles/art-viewers.css';
+@import './styles/character-viewer.css';
+@import './styles/arena-viewer.css';
 @import './styles/effects-gallery.css';
+@import './styles/particle-gallery.css';
