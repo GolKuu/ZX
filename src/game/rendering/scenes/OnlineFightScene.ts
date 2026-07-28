@@ -12,6 +12,7 @@ import { createSceneButton } from './createSceneButton';
 import { TeamFighterRenderers } from './TeamFighterRenderers';
 import { settingsStore } from '../../../stores/settingsStore';
 import { CartoonParticlePool } from '../effects/CartoonParticlePool';
+import { PerformanceMonitor } from '../../diagnostics/PerformanceMonitor';
 
 export function createOnlineFightScene(
   bridge: ReactGameBridge,
@@ -24,6 +25,7 @@ export function createOnlineFightScene(
     private fighters!: TeamFighterRenderers;
     private traps!: ArenaTrapRenderer;
     private feedback!: CartoonParticlePool;
+    private readonly performance = new PerformanceMonitor();
 
     constructor() {
       super('OnlineFightScene');
@@ -34,6 +36,7 @@ export function createOnlineFightScene(
       this.fighters = new TeamFighterRenderers(this);
       this.traps = new ArenaTrapRenderer(this);
       this.feedback = new CartoonParticlePool(this, settingsStore.load());
+      this.performance.attach(this);
       createSceneButton(this, 24, 492, '← Выйти', () =>
         bridge.emit(GameEvents.returnToSetupRequested, undefined),
       );
@@ -47,12 +50,14 @@ export function createOnlineFightScene(
     }
 
     update(_time: number, deltaMs: number) {
+      this.performance.beginFrame();
       this.loop.advance(deltaMs / 1_000, () => {
         const input = this.inputs.snapshot();
         client.submitInput(input.player1);
         this.inputs.endTick();
       });
-      this.syncRenderers();
+      this.syncRenderers(deltaMs);
+      this.performance.record(this, deltaMs);
     }
 
     private syncRenderers(deltaMs = 0) {
@@ -68,6 +73,7 @@ export function createOnlineFightScene(
       this.fighters.destroy();
       this.traps.destroy();
       this.feedback.destroy();
+      this.performance.destroy();
       bridge.emit(GameEvents.destroyed, undefined);
     }
   };

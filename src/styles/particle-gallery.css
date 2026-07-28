@@ -50,7 +50,6 @@
 }
 
 .particle-preview i {
-  --distance: calc(64px + var(--particle-index) * 4px);
   position: absolute;
   top: 48%;
   left: 50%;
@@ -58,8 +57,8 @@
   height: 10px;
   border-radius: 50% 50% 44% 44%;
   background: #ff7185;
-  transform: rotate(var(--particle-angle)) translateX(var(--distance));
-  opacity: calc(.95 - var(--particle-index) * .025);
+  transform: rotate(var(--particle-angle)) translateX(var(--particle-distance));
+  opacity: var(--particle-opacity);
 }
 
 @media (max-width: 700px) {

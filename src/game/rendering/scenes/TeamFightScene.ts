@@ -14,6 +14,7 @@ import { TeamFighterRenderers } from './TeamFighterRenderers';
 import { RoundManager } from '../../core/RoundManager';
 import { settingsStore } from '../../../stores/settingsStore';
 import { CartoonParticlePool } from '../effects/CartoonParticlePool';
+import { PerformanceMonitor } from '../../diagnostics/PerformanceMonitor';
 
 export function createTeamFightScene(
   bridge: ReactGameBridge,
@@ -27,6 +28,7 @@ export function createTeamFightScene(
     private fighters!: TeamFighterRenderers;
     private traps!: ArenaTrapRenderer;
     private feedback!: CartoonParticlePool;
+    private readonly performance = new PerformanceMonitor();
     private resultEmitted = false;
 
     constructor() {
@@ -38,6 +40,7 @@ export function createTeamFightScene(
       this.fighters = new TeamFighterRenderers(this);
       this.traps = new ArenaTrapRenderer(this);
       this.feedback = new CartoonParticlePool(this, settingsStore.load());
+      this.performance.attach(this);
       createSceneButton(this, 24, 492, '← Режимы', () =>
         bridge.emit(GameEvents.returnToSetupRequested, undefined),
       );
@@ -51,12 +54,14 @@ export function createTeamFightScene(
     }
 
     update(_time: number, deltaMs: number) {
+      this.performance.beginFrame();
       this.loop.advance(deltaMs / 1_000, () => {
         const input = this.inputs.snapshot();
         this.simulation.step(mapInput(config.battle.mode, input), FIXED_STEP_SECONDS);
         this.inputs.endTick();
       });
-      this.sync();
+      this.sync(deltaMs);
+      this.performance.record(this, deltaMs);
       const snapshot = this.simulation.getSnapshot();
       if (snapshot.matchWinner && !this.resultEmitted) {
         this.resultEmitted = true;
@@ -79,6 +84,7 @@ export function createTeamFightScene(
       this.fighters.destroy();
       this.traps.destroy();
       this.feedback.destroy();
+      this.performance.destroy();
       bridge.emit(GameEvents.destroyed, undefined);
     }
   };

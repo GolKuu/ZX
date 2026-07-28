@@ -29,6 +29,7 @@ export class PerformanceMonitor {
 
   attach(scene: Phaser.Scene) {
     this.renderer.attach(scene);
+    if (!showOverlay()) return;
     this.label = scene.add
       .text(936, 512, 'PERF: прогрев…', {
         fontFamily: 'Arial',
@@ -98,4 +99,9 @@ function memoryUsageMb() {
 
 function valueOrDash(value: number | null) {
   return value === null ? '—' : value;
+}
+
+function showOverlay() {
+  return typeof location !== 'undefined' &&
+    new URLSearchParams(location.search).get('perf') === '1';
 }

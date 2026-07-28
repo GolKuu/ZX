@@ -21,8 +21,9 @@ export function ParticlePreview({ level }: { level: 0 | 1 | 2 | 3 }) {
         <i
           key={index}
           style={{
-            '--particle-index': index,
             '--particle-angle': `${-145 + (index * 170) / Math.max(1, count - 1)}deg`,
+            '--particle-distance': `${64 + index * 4}px`,
+            '--particle-opacity': Math.max(0.48, 0.95 - index * 0.025),
           } as React.CSSProperties}
         />
       ))}
