@@ -3,6 +3,7 @@ import websocket from '@fastify/websocket';
 import Fastify, { LogController } from 'fastify';
 import type { ServerConfig } from './serverConfig.js';
 import { RoomManager } from './rooms/RoomManager.js';
+import { TeamRoomManager } from './team/TeamRoomManager.js';
 import { registerRoutes } from './transport/registerRoutes.js';
 
 export async function buildServer(config: ServerConfig) {
@@ -14,6 +15,7 @@ export async function buildServer(config: ServerConfig) {
     bodyLimit: 16 * 1_024,
   });
   const rooms = new RoomManager(config);
+  const teamRooms = new TeamRoomManager(config);
   await app.register(cors, {
     origin: config.clientOrigins,
     methods: ['GET', 'POST'],
@@ -24,10 +26,13 @@ export async function buildServer(config: ServerConfig) {
       perMessageDeflate: false,
     },
   });
-  registerRoutes(app, rooms, config);
+  registerRoutes(app, rooms, teamRooms, config);
 
-  const timer = setInterval(() => rooms.tickAll(), 1_000 / 60);
+  const timer = setInterval(() => {
+    rooms.tickAll();
+    teamRooms.tickAll();
+  }, 1_000 / 60);
   timer.unref();
   app.addHook('onClose', async () => clearInterval(timer));
-  return { app, rooms };
+  return { app, rooms, teamRooms };
 }

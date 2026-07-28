@@ -4,6 +4,7 @@ import { GameEvents } from '../../bridge/GameEvents';
 import { FixedStepLoop } from '../../core/FixedStepLoop';
 import { RoundManager } from '../../core/RoundManager';
 import type { PlayerId } from '../../core/types';
+import type { TeamSimulationSnapshot } from '../../team/TeamTypes';
 import type { OnlineMatchClient } from '../../network/OnlineMatchClient';
 import { createOnlineAssignments } from '../../network/createOnlineAssignments';
 import { InputManager } from '../../input/InputManager';
@@ -32,7 +33,7 @@ export function createOnlineFightScene(
       createArena(this);
       this.fighters = new TeamFighterRenderers(this);
       this.traps = new ArenaTrapRenderer(this);
-      createSceneButton(this, 24, 492, '← Комната', () =>
+      createSceneButton(this, 24, 492, '← Выйти', () =>
         bridge.emit(GameEvents.returnToSetupRequested, undefined),
       );
       createSceneButton(this, 150, 492, '⌂ Меню', () =>
@@ -55,8 +56,9 @@ export function createOnlineFightScene(
 
     private syncRenderers() {
       const snapshot = client.renderSnapshot();
-      if (!snapshot) return;
-      this.fighters.sync(snapshot, this.round.countdownLabel(snapshot));
+      if (!snapshot || !('teamBattle' in snapshot)) return;
+      const teamSnapshot = snapshot as TeamSimulationSnapshot;
+      this.fighters.sync(teamSnapshot, this.round.countdownLabel(teamSnapshot));
       this.traps.sync(snapshot.traps);
     }
 

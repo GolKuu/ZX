@@ -78,7 +78,6 @@ export class OnlineMatchClient {
     } as const;
     this.socket.send({ type: 'input', payload: packet });
     this.prediction.predict(this.sequence, frame);
-    this.emit();
   }
 
   renderSnapshot(now = performance.now()): SimulationSnapshot | null {

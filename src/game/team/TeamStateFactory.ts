@@ -18,6 +18,19 @@ export function createTeamBattleState(config: TeamBattleConfig): TeamBattleSnaps
   };
 }
 
+export function createEmptyCombo() {
+  return {
+    hits: 0,
+    damage: 0,
+    targetId: null,
+    remainingTicks: 0,
+    escapeWindowStartsInTicks: null,
+    escapeWindowTicksRemaining: 0,
+    breakWindowTicksRemaining: 0,
+    breakAllowed: false,
+  };
+}
+
 function createTeam(
   teamId: PlayerId,
   config: TeamBattleConfig,

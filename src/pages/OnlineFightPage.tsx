@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'wouter';
 import { NetworkStatusBadge } from '../components/online/NetworkStatusBadge';
 import { OnlineGameCanvas } from '../game/bridge/OnlineGameCanvas';
@@ -29,10 +29,17 @@ export function OnlineFightPage() {
       .catch(() => navigate(`/online/${roomCode}`));
   }, [client, navigate, roomCode]);
 
+  const characters = useMemo(
+    () => roomCharacters(state.room?.players ?? {}),
+    [
+      state.room?.players.player1?.characterId,
+      state.room?.players.player2?.characterId,
+    ],
+  );
+
   if (!client || !state.room) {
     return <main className="fight-page"><p className="route-loading">Восстанавливаем матч…</p></main>;
   }
-  const characters = roomCharacters(state.room.players);
   const winner = snapshot?.matchWinner ?? null;
 
   return (
@@ -51,9 +58,12 @@ export function OnlineFightPage() {
         state.connectionStatus === 'reconnecting') && (
         <div className="match-overlay" role="alertdialog" aria-modal="true">
           <div>
-            <p className="eyebrow">Временная замена</p>
-            <h2>Отключившегося игрока ведёт ИИ</h2>
-            <p>Сервер продолжает бой и вернёт управление игроку после переподключения.</p>
+            <p className="eyebrow">Матч на паузе</p>
+            <h2>Восстанавливаем соединение</h2>
+            <p>
+              Сервер хранит место игрока 30 секунд и продолжит бой
+              с последнего подтверждённого состояния.
+            </p>
             <button className="button button--secondary" onClick={exit}>Выйти</button>
           </div>
         </div>

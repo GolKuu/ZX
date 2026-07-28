@@ -10,6 +10,7 @@ import type {
   SimulationSnapshot,
 } from '../core/types';
 import { cloneFighter, resetTransientState } from './TeamSnapshotUtils';
+import { createEmptyCombo } from './TeamStateFactory';
 import type {
   TeamAction,
   TeamBattleSnapshot,
@@ -97,6 +98,7 @@ export class TeamAssistSystem {
       block,
     );
     assist.connected = true;
+    battle.teams[teamId].assistComboLocked = true;
   }
 
   private hitAssistant(
@@ -129,7 +131,7 @@ export class TeamAssistSystem {
     this.health.damage(opponent, balanceConfig.burstAssistDamage);
     opponent.velocityX = (opponent.x < active.x ? -1 : 1) *
       balanceConfig.burstAssistKnockbackSpeed;
-    state.combos[opponentId] = emptyCombo();
+    state.combos[opponentId] = createEmptyCombo();
   }
 
   private persistOrDismiss(teamId: PlayerId, battle: TeamBattleSnapshot) {
@@ -145,17 +147,4 @@ export class TeamAssistSystem {
 
 function attackInput(): PlayerInputFrame {
   return { held: ['LIGHT_ATTACK'], pressed: ['LIGHT_ATTACK'], released: [] };
-}
-
-function emptyCombo() {
-  return {
-    hits: 0,
-    damage: 0,
-    targetId: null,
-    remainingTicks: 0,
-    escapeWindowStartsInTicks: null,
-    escapeWindowTicksRemaining: 0,
-    breakWindowTicksRemaining: 0,
-    breakAllowed: false,
-  };
 }

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { balanceConfig } from '../../src/game/config/balanceConfig.js';
-import { AuthoritativeMatch } from '../src/simulation/AuthoritativeMatch.js';
 import { PlayerInputTimeline } from '../src/simulation/PlayerInputTimeline.js';
+import { AuthoritativeTeamMatch } from '../src/team/AuthoritativeTeamMatch.js';
 
 describe('authoritative team match', () => {
   it('rejects team actions outside the active round', () => {
-    const match = createMatch();
+    const { match } = createMatch();
     expect(match.validateAction('player1', 'ASSIST')).toEqual({
       ok: false,
       reason: 'ROUND_NOT_ACTIVE',
@@ -37,7 +37,7 @@ function createMatch() {
     player2: new PlayerInputTimeline(0),
   };
   return {
-    match: new AuthoritativeMatch({ player1: 'granite', player2: 'shira' }),
+    match: new AuthoritativeTeamMatch({ player1: 'granite', player2: 'shira' }),
     inputs,
   };
 }

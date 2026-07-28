@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import type { RawData, WebSocket } from 'ws';
 import type { ServerConfig } from '../serverConfig.js';
 import { RoomError, RoomManager } from '../rooms/RoomManager.js';
+import { TeamRoomManager } from '../team/TeamRoomManager.js';
 import {
   MessageRateLimiter,
   parseClientMessage,
@@ -14,6 +15,7 @@ type SocketQuery = { matchId?: string; token?: string };
 export function registerRoutes(
   app: FastifyInstance,
   rooms: RoomManager,
+  teamRooms: TeamRoomManager,
   config: ServerConfig,
 ) {
   const roomCreates = new ApiRateLimiter(20, 60_000);
@@ -34,6 +36,18 @@ export function registerRoutes(
     }
   });
 
+  app.post('/team-rooms', async (_request, reply) => {
+    return reply.code(201).send(teamRooms.createRoom());
+  });
+
+  app.post<{ Params: RoomParams }>('/team-rooms/:code/join', async (request, reply) => {
+    try {
+      return reply.code(200).send(teamRooms.joinRoom(request.params.code));
+    } catch (error) {
+      return roomError(reply, error);
+    }
+  });
+
   app.get<{ Querystring: SocketQuery }>(
     '/ws',
     { websocket: true },
@@ -47,7 +61,7 @@ export function registerRoutes(
         socket.close(1008, 'Missing credentials');
         return;
       }
-      connectSocket(socket, matchId, token, rooms);
+      connectSocket(socket, matchId, token, rooms, teamRooms);
     },
   );
 }
@@ -57,14 +71,28 @@ function connectSocket(
   matchId: string,
   token: string,
   rooms: RoomManager,
+  teamRooms: TeamRoomManager,
 ) {
-  let connection: ReturnType<RoomManager['connect']>;
+  let connection:
+    | ReturnType<RoomManager['connect']>
+    | ReturnType<TeamRoomManager['connect']>;
   try {
     connection = rooms.connect(matchId, token, socket);
   } catch (error) {
-    const code = error instanceof RoomError ? error.code : 'CONNECTION_REJECTED';
-    socket.close(1008, code);
-    return;
+    if (!(error instanceof RoomError) || error.code !== 'ROOM_NOT_FOUND') {
+      const code = error instanceof RoomError ? error.code : 'CONNECTION_REJECTED';
+      socket.close(1008, code);
+      return;
+    }
+    try {
+      connection = teamRooms.connect(matchId, token, socket);
+    } catch (teamError) {
+      const code = teamError instanceof RoomError
+        ? teamError.code
+        : 'CONNECTION_REJECTED';
+      socket.close(1008, code);
+      return;
+    }
   }
   const limiter = new MessageRateLimiter();
   socket.on('message', (raw: RawData) => {
