@@ -110,7 +110,7 @@ describe('LOCAL_PVP user flow', () => {
     await act(async () => root.unmount());
   });
 
-  it('swaps characters instead of assigning the same fighter to both players', async () => {
+  it('allows both players to select the same fighter for a neutral mirror', async () => {
     const location = memoryLocation({ path: '/local-pvp' });
     const host = document.createElement('div');
     document.body.append(host);
@@ -138,9 +138,10 @@ describe('LOCAL_PVP user flow', () => {
     ).toBe(true);
     expect(
       host.querySelector<HTMLInputElement>(
-        'input[name="character-player2"][value="granite"]',
+        'input[name="character-player2"][value="shira"]',
       )?.checked,
     ).toBe(true);
+    expect(host.querySelectorAll('.matchup-info--neutral')).toHaveLength(2);
     await act(async () => root.unmount());
   });
 });

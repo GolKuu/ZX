@@ -6,15 +6,26 @@ import {
 } from '../../stores/localPvpStore';
 
 describe('LOCAL_PVP validation', () => {
-  it('requires two visually distinct characters', () => {
-    const keyboard = { kind: 'keyboard' as const, id: 'keyboard' as const };
+  it('allows a neutral mirror match', () => {
+    const firstGamepad = {
+      kind: 'gamepad' as const,
+      id: 'pad-0',
+      gamepadIndex: 0,
+      gamepadLabel: 'First Pad',
+    };
+    const secondGamepad = {
+      kind: 'gamepad' as const,
+      id: 'pad-1',
+      gamepadIndex: 1,
+      gamepadLabel: 'Second Pad',
+    };
     const config = createMatchConfig(
-      { player1: keyboard, player2: keyboard },
+      { player1: firstGamepad, player2: secondGamepad },
       cloneKeyboardProfiles(),
       { player1: 'granite', player2: 'granite' },
       { player1: true, player2: true },
     );
-    expect(validateMatchConfig(config)).toContain('разные персонажи');
+    expect(validateMatchConfig(config)).toBeNull();
   });
 
   it('rejects one gamepad selected by both players', () => {

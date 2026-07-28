@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { getCharacterAttacks } from '../data/attacks/characterAttacks';
+import { circleFighters } from '../data/characters/circleFighters';
 
-describe('original character attacks', () => {
-  it.each(['granite', 'shira'])('defines the complete moveset for %s', (characterId) => {
+describe('character attacks', () => {
+  it.each(circleFighters.map((fighter) => fighter.id))(
+    'defines the complete base moveset for %s',
+    (characterId) => {
     const set = getCharacterAttacks(characterId);
     expect(set.lightChain).toHaveLength(3);
     expect(set.heavy).toHaveLength(3);
@@ -19,7 +22,8 @@ describe('original character attacks', () => {
       set.forwardThrow,
       set.backThrow,
     ]).toHaveLength(11);
-  });
+    },
+  );
 
   it('contains deterministic frame, collision and presentation metadata', () => {
     const attack = getCharacterAttacks('granite').special;
@@ -75,5 +79,14 @@ describe('original character attacks', () => {
     });
     const lowHitbox = set.low.hitboxes[0];
     expect(lowHitbox.offsetY + lowHitbox.height / 2).toBeGreaterThan(-30);
+  });
+
+  it('uses different hit shapes and leg animations across the roster', () => {
+    circleFighters.forEach((fighter) => {
+      const set = getCharacterAttacks(fighter.id);
+      const basics = [...set.lightChain, ...set.heavy, set.low, set.air, set.airHeavy];
+      expect(new Set(basics.map((attack) => attack.visualShape)).size).toBeGreaterThan(1);
+      expect(basics.some((attack) => attack.motion.includes('kick'))).toBe(true);
+    });
   });
 });
