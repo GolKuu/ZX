@@ -25,6 +25,7 @@ export class DamageSystem {
     block: BlockResult,
   ): DamageResult {
     const blocked = block.blocked;
+    const armoredReaction = !blocked && this.passive.absorbsReaction(defender, definition);
     if (definition.sideSwitch && !blocked) this.switchSides(attacker, defender);
     const direction = attacker.x <= defender.x ? 1 : -1;
     const baseDamage =
@@ -58,7 +59,7 @@ export class DamageSystem {
           attacker.attack.frame - balanceConfig.perfectBlockAdvantageFrames,
         );
       }
-    } else if (!blocked && this.passive.absorbsReaction(defender, definition)) {
+    } else if (armoredReaction) {
       defender.modeTicksRemaining = 0;
     } else if (block.kind === 'precise') {
       this.states.enterBlockstun(

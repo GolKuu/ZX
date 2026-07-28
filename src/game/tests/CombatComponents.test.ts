@@ -12,7 +12,7 @@ describe('combat components', () => {
     const energy = new EnergyComponent();
 
     expect(health.damage(fighter, 12.4)).toBe(12);
-    expect(fighter.health).toBe(88);
+    expect(fighter.health).toBe(fighter.maxHealth - 12);
     energy.gain(fighter, 150);
     expect(fighter.energy).toBe(100);
     expect(energy.spend(fighter, 60)).toBe(true);
@@ -24,7 +24,7 @@ describe('combat components', () => {
     const collision = new CollisionSystem();
     const attacker = createFighter('player1', 430);
     const defender = createFighter('player2', 500);
-    const hitbox = getCharacterAttacks('comet').lightChain[0].hitboxes[0];
+    const hitbox = getCharacterAttacks('granite').lightChain[0].hitboxes[0];
 
     expect(collision.overlaps(
       collision.getHitbox(attacker, hitbox),

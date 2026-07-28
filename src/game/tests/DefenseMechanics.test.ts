@@ -14,14 +14,14 @@ import { getCharacterAttacks } from '../data/attacks/temporaryCharacterAttacks';
 
 describe('complete defense system', () => {
   it('supports high and low guard while throws pass through both', () => {
-    const attacks = getCharacterAttacks('pulse');
+    const attacks = getCharacterAttacks('shira');
     expect(block(attacks.air, ['BLOCK']).blocked).toBe(true);
     expect(block(attacks.low, ['BLOCK']).blocked).toBe(false);
     expect(block(attacks.low, ['BLOCK', 'CROUCH']).blocked).toBe(true);
     expect(block(attacks.grab, ['BLOCK', 'CROUCH']).blocked).toBe(false);
   });
   it('scales gauge and block stun for normal, precise and perfect blocks', () => {
-    const attack = getCharacterAttacks('pulse').special;
+    const attack = getCharacterAttacks('shira').special;
     const normal = applyBlockedAttack(attack, ['BLOCK']);
     const precise = applyBlockedAttack(attack, ['BLOCK', 'PRECISE_BLOCK']);
     const perfect = applyBlockedAttack(attack, ['BLOCK', 'PERFECT_BLOCK']);
@@ -37,7 +37,7 @@ describe('complete defense system', () => {
     );
   });
   it('allows chip damage only on special and super attacks', () => {
-    const attacks = getCharacterAttacks('pulse');
+    const attacks = getCharacterAttacks('shira');
     expect(attacks.lightChain[0].chipDamage).toBe(0);
     expect(attacks.heavy[0].chipDamage).toBe(0);
     expect(attacks.special.chipDamage).toBeGreaterThan(0);
@@ -88,9 +88,9 @@ describe('complete defense system', () => {
   });
 
   it('forbids Combo Break during throws, supers and finishers', () => {
-    const attacks = getCharacterAttacks('pulse');
+    const attacks = getCharacterAttacks('shira');
     const combos = new ComboSystem();
-    for (const attack of [attacks.grab, attacks.superAttack, attacks.lightChain[3]]) {
+    for (const attack of [attacks.grab, attacks.superAttack, attacks.lightChain[2]]) {
       const incoming = combo();
       combos.register(incoming, 'player1', attack.damage, attack);
       expect(incoming.breakAllowed).toBe(false);

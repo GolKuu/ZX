@@ -5,7 +5,7 @@ export type LocalMatchup = {
 };
 
 export const defaultMatchup: LocalMatchup = {
-  player1CharacterId: 'comet',
-  player2CharacterId: 'pulse',
+  player1CharacterId: 'granite',
+  player2CharacterId: 'shira',
   arenaId: 'sunny-rooftop',
 };

@@ -18,6 +18,7 @@ export function AppShell({
           <span>Circle Clash</span>
         </Link>
         <nav className="site-header__nav" aria-label="Основная навигация">
+          <Link href="/visual-style-guide">Стиль</Link>
           <Link href="/controls">Управление</Link>
           <Link href="/profile">Профиль</Link>
         </nav>

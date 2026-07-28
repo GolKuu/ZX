@@ -1,6 +1,6 @@
 import type { AttackDefinition } from '../../combat/AttackDefinition';
-import { temporaryCharacterAttacks } from './temporaryCharacterAttacks';
+import { characterAttacks } from './temporaryCharacterAttacks';
 
 export type { AttackDefinition };
 
-export const lightStrike = temporaryCharacterAttacks.comet.lightChain[0];
+export const lightStrike = characterAttacks.granite.lightChain[0];

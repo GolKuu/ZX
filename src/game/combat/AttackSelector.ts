@@ -11,7 +11,12 @@ export class AttackSelector {
     if (input.pressed.includes('DIRECTIONAL_SPECIAL')) return set.forwardSpecial;
     if (input.pressed.includes('RETREAT_SPECIAL')) return set.retreatSpecial;
     if (input.pressed.includes('SPECIAL_ATTACK')) {
-      return fighter.passiveValue >= fighter.maxPassiveValue ? set.enhancedSpecial : set.special;
+      const hasEnhancedResource = fighter.characterId === 'shira'
+        ? fighter.passiveValue >= fighter.maxPassiveValue
+        : fighter.energy >= set.enhancedSpecial.energyCost;
+      return input.held.includes('HEAVY_ATTACK') && hasEnhancedResource
+        ? set.enhancedSpecial
+        : set.special;
     }
     if (input.pressed.includes('GRAB')) return this.selectThrow(set, fighter, input);
     if (input.pressed.includes('DASH_HEAVY')) return set.dashHeavy;

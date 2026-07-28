@@ -125,20 +125,20 @@ describe('LOCAL_PVP user flow', () => {
       );
     });
 
-    const playerOnePulse = host.querySelector<HTMLInputElement>(
-      'input[name="character-player1"][value="pulse"]',
+    const playerOneShira = host.querySelector<HTMLInputElement>(
+      'input[name="character-player1"][value="shira"]',
     );
-    if (!playerOnePulse) throw new Error('Player 1 Pulse option not found');
-    await act(async () => playerOnePulse.click());
+    if (!playerOneShira) throw new Error('Player 1 Shira option not found');
+    await act(async () => playerOneShira.click());
 
     expect(
       host.querySelector<HTMLInputElement>(
-        'input[name="character-player1"][value="pulse"]',
+        'input[name="character-player1"][value="shira"]',
       )?.checked,
     ).toBe(true);
     expect(
       host.querySelector<HTMLInputElement>(
-        'input[name="character-player2"][value="comet"]',
+        'input[name="character-player2"][value="granite"]',
       )?.checked,
     ).toBe(true);
     await act(async () => root.unmount());

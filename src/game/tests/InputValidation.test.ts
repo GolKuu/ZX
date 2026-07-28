@@ -11,7 +11,7 @@ describe('LOCAL_PVP validation', () => {
     const config = createMatchConfig(
       { player1: keyboard, player2: keyboard },
       cloneKeyboardProfiles(),
-      { player1: 'comet', player2: 'comet' },
+      { player1: 'granite', player2: 'granite' },
       { player1: true, player2: true },
     );
     expect(validateMatchConfig(config)).toContain('разные персонажи');
@@ -27,7 +27,7 @@ describe('LOCAL_PVP validation', () => {
     const config = createMatchConfig(
       { player1: gamepad, player2: gamepad },
       cloneKeyboardProfiles(),
-      { player1: 'comet', player2: 'pulse' },
+      { player1: 'granite', player2: 'shira' },
       { player1: true, player2: true },
     );
     expect(validateMatchConfig(config)).toContain('один и тот же геймпад');
@@ -38,7 +38,7 @@ describe('LOCAL_PVP validation', () => {
     const config = createMatchConfig(
       { player1: keyboard, player2: keyboard },
       cloneKeyboardProfiles(),
-      { player1: 'comet', player2: 'pulse' },
+      { player1: 'granite', player2: 'shira' },
       { player1: true, player2: false },
     );
     expect(validateMatchConfig(config)).toContain('Player 2');
@@ -51,7 +51,7 @@ describe('LOCAL_PVP validation', () => {
     const config = createMatchConfig(
       { player1: keyboard, player2: keyboard },
       profiles,
-      { player1: 'comet', player2: 'pulse' },
+      { player1: 'granite', player2: 'shira' },
       { player1: true, player2: true },
     );
     expect(validateMatchConfig(config)).toContain('конфликты');
@@ -62,7 +62,7 @@ describe('LOCAL_PVP validation', () => {
         createMatchConfig(
           { player1: keyboard, player2: keyboard },
           profiles,
-          { player1: 'comet', player2: 'pulse' },
+          { player1: 'granite', player2: 'shira' },
           { player1: true, player2: true },
         ),
       ),

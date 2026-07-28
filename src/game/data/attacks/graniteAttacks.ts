@@ -111,7 +111,7 @@ function createGranitePowers() {
     enhancedSpecial: hit('enhanced-special', 'Живой разлом', {
       startup: 12, active: 10, recovery: 30, damage: 31, action: 'SPECIAL_ATTACK',
       category: 'special', reach: 176, height: 40, knockbackX: 570,
-      knockdown: true, hitStop: 11,
+      knockdown: true, hitStop: 11, energyCost: 50,
     }),
     grab: hit('grab', 'Хват коренной породы', {
       startup: 7, active: 2, recovery: 19, damage: 4, action: 'GRAB',

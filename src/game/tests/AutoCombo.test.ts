@@ -5,7 +5,7 @@ import type { CombatAction, PlayerInputFrame } from '../core/types';
 import { getCharacterAttacks } from '../data/attacks/temporaryCharacterAttacks';
 
 describe('auto combo', () => {
-  it('advances four light stages only after four separate presses', () => {
+  it('advances three light stages only after three separate presses', () => {
     const attacks = new AttackSystem();
     const fighter = createFighter('player1', 430);
     const defender = createFighter('player2', 500);
@@ -13,13 +13,13 @@ describe('auto combo', () => {
 
     pressAndConnect(attacks, fighter, defender, 'LIGHT_ATTACK');
     ids.push(fighter.attack!.id);
-    for (let stage = 1; stage < 4; stage += 1) {
+    for (let stage = 1; stage < 3; stage += 1) {
       advanceToCancel(attacks, fighter);
       pressAndConnect(attacks, fighter, defender, 'LIGHT_ATTACK');
       ids.push(fighter.attack!.id);
     }
     expect(ids).toEqual([
-      'comet-light-1', 'comet-light-2', 'comet-light-3', 'comet-light-4',
+      'granite-light-1', 'granite-light-2', 'granite-light-3',
     ]);
   });
 
@@ -31,23 +31,23 @@ describe('auto combo', () => {
     pressAndConnect(attacks, fighter, defender, 'HEAVY_ATTACK');
     advanceToCancel(attacks, fighter);
     pressAndConnect(attacks, fighter, defender, 'HEAVY_ATTACK');
-    expect(fighter.attack?.id).toBe('comet-heavy-2');
+    expect(fighter.attack?.id).toBe('granite-heavy-2');
     advanceToCancel(attacks, fighter);
     pressAndConnect(attacks, fighter, defender, 'HEAVY_ATTACK');
-    expect(fighter.attack?.id).toBe('comet-heavy-3');
+    expect(fighter.attack?.id).toBe('granite-heavy-3');
 
     const mixed = createFighter('player1', 430);
     pressAndConnect(attacks, mixed, defender, 'LIGHT_ATTACK');
     advanceToCancel(attacks, mixed);
     attacks.prepare(mixed, input('SPECIAL_ATTACK'));
-    expect(mixed.attack?.id).toBe('comet-special');
+    expect(mixed.attack?.id).toBe('granite-special-neutral');
   });
 
   it('stops without another press and cannot execute a chain from one input', () => {
     const attacks = new AttackSystem();
     const fighter = createFighter('player1', 430);
     attacks.prepare(fighter, input('LIGHT_ATTACK'));
-    const definition = getCharacterAttacks('comet').lightChain[0];
+    const definition = getCharacterAttacks('granite').lightChain[0];
     const total = definition.startupFrames + definition.activeFrames + definition.recoveryFrames;
     for (let tick = 0; tick < total; tick += 1) {
       attacks.prepare(fighter, emptyInput());
@@ -64,7 +64,7 @@ function pressAndConnect(
   action: CombatAction,
 ) {
   attacks.prepare(fighter, input(action));
-  for (let tick = 0; tick < 20 && !fighter.attack?.connected; tick += 1) {
+  for (let tick = 0; tick < 80 && !fighter.attack?.connected; tick += 1) {
     attacks.findContact(fighter, defender);
     attacks.finishTick(fighter);
     attacks.prepare(fighter, emptyInput());

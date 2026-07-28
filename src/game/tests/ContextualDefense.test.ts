@@ -19,7 +19,7 @@ describe('contextual defense', () => {
     expect(blocks.tryBlock(
       fighter,
       input,
-      getCharacterAttacks('pulse').lightChain[0],
+      getCharacterAttacks('shira').lightChain[0],
     )).toMatchObject({ blocked: true, kind: 'perfect' });
     expect(fighter.blockMeter).toBe(fighter.maxBlockMeter);
   });
@@ -105,7 +105,8 @@ describe('contextual defense', () => {
     charged.fighters.player1.energy = 100;
     reversal.restore(charged);
     reversal.step(input, FIXED_STEP_SECONDS);
-    expect(reversal.getSnapshot().fighters.player1.attack?.id).toBe('comet-reversal');
+    expect(reversal.getSnapshot().fighters.player1.attack?.id)
+      .toBe('granite-momentum-reversal');
 
     const superMove = activeSimulation();
     const full = superMove.getSnapshot();
@@ -118,7 +119,7 @@ describe('contextual defense', () => {
       released: [],
     };
     superMove.step(input, FIXED_STEP_SECONDS);
-    expect(superMove.getSnapshot().fighters.player1.attack?.id).toBe('comet-super');
+    expect(superMove.getSnapshot().fighters.player1.attack?.id).toBe('granite-super');
   });
 });
 

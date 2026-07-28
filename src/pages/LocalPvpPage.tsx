@@ -29,8 +29,8 @@ export function LocalPvpPage() {
     player2: keyboardDevice,
   });
   const [characters, setCharacters] = useState<Record<PlayerId, string>>({
-    player1: 'comet',
-    player2: 'pulse',
+    player1: 'granite',
+    player2: 'shira',
   });
   const [ready, setReady] = useState<Record<PlayerId, boolean>>({
     player1: false,

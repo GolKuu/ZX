@@ -1,0 +1,91 @@
+.character-art {
+  display: block;
+  overflow: visible;
+}
+
+.character-art .art-shadow {
+  fill: #25213a;
+  opacity: 0.18;
+  transform-origin: center;
+  transition: transform 220ms ease;
+}
+
+.character-art .art-rig,
+.character-art .art-arm,
+.character-art .art-leg,
+.character-art .art-head {
+  transform-box: fill-box;
+  transform-origin: top center;
+  transition: transform 240ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.character-art[data-state="walk"] .art-leg--front {
+  transform: rotate(18deg);
+}
+
+.character-art[data-state="walk"] .art-leg--back {
+  transform: rotate(-18deg);
+}
+
+.character-art[data-state="walk"] .art-arm--front {
+  transform: rotate(-15deg);
+}
+
+.character-art[data-state="walk"] .art-arm--back {
+  transform: rotate(15deg);
+}
+
+.character-art[data-state="dash"] .art-rig {
+  transform: translateX(18px) rotate(7deg) scale(1.12, .88);
+}
+
+.character-art[data-state="jump-rise"] .art-rig {
+  transform: translateY(-22px) scale(.9, 1.12);
+}
+
+.character-art[data-state="landing"] .art-rig {
+  transform: translateY(18px) scale(1.15, .78);
+}
+
+.character-art[data-state*="light"] .art-arm--front,
+.character-art[data-state*="heavy"] .art-arm--front,
+.character-art[data-state*="reversal"] .art-arm--front {
+  transform: rotate(-72deg) scaleY(1.12);
+}
+
+.character-art[data-state*="heavy"] .art-rig {
+  transform: translateX(10px) rotate(5deg) scale(1.1, .9);
+}
+
+.character-art[data-state*="block"] .art-arm--front {
+  transform: translate(-22px, -6px) rotate(-115deg);
+}
+
+.character-art[data-state="combo-break"] .art-arm--front {
+  transform: rotate(-145deg);
+}
+
+.character-art[data-state="combo-break"] .art-arm--back {
+  transform: rotate(145deg);
+}
+
+.character-art[data-state="knockdown"] .art-rig,
+.character-art[data-state="defeat"] .art-rig {
+  transform: translateY(68px) rotate(78deg) scale(.9);
+}
+
+.character-art[data-state="wake-up"] .art-rig {
+  transform: translateY(42px) rotate(24deg) scaleY(.82);
+}
+
+.character-art[data-state="victory"] .art-arm--front {
+  transform: rotate(-155deg);
+}
+
+.character-art[data-state="victory"] .art-arm--back {
+  transform: rotate(150deg);
+}
+
+.character-art[data-state="victory"] .art-rig {
+  transform: translateY(-8px) scale(1.05);
+}

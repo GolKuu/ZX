@@ -45,7 +45,10 @@ export class CharacterPassiveSystem {
   }
 
   spendEnhanced(fighter: FighterSnapshot, definition: AttackDefinition) {
-    if (!definition.id.endsWith('enhanced-special')) return;
+    if (
+      fighter.characterId !== 'shira' ||
+      !definition.id.endsWith('enhanced-special')
+    ) return;
     fighter.passiveValue = 0;
   }
 

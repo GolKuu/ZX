@@ -1,5 +1,6 @@
 import { AppShell } from '../components/layout/AppShell';
 import { MenuOption } from '../components/menu/MenuOption';
+import { CharacterArt } from '../components/characters/CharacterArt';
 
 const menuItems = [
   {
@@ -14,6 +15,7 @@ const menuItems = [
   { title: 'Кооператив', description: 'Сражайтесь в одной команде', icon: '♣' },
   { title: 'Тренировка', description: 'Отработка приёмов и таймингов', icon: '◉' },
   { title: 'Персонажи', description: 'Познакомиться с бойцами', icon: '●', href: '/characters' },
+  { title: 'Visual Style Guide', description: 'Анимации, палитры и приёмы', icon: '✦', href: '/visual-style-guide' },
   { title: 'Управление', description: 'Клавиши обоих игроков', icon: '⌨', href: '/controls' },
   { title: 'Профиль', description: 'Аккаунт и будущая статистика', icon: '☺', href: '/profile' },
 ] as const;
@@ -25,18 +27,18 @@ export function HomePage() {
         <div>
           <p className="eyebrow">Локальная арена для друзей</p>
           <h1>
-            Простые круги.
+            Два характера.
             <br />
-            Большое столкновение.
+            Одно столкновение.
           </h1>
           <p className="hero__description">
-            Circle Clash — яркий браузерный файтинг для двух игроков за одной клавиатурой.
+            Circle Clash — оригинальный браузерный файтинг про камень, ножницы и точный тайминг.
           </p>
         </div>
         <div className="hero-fighters" aria-hidden="true">
-          <span className="hero-fighter hero-fighter--comet">●</span>
+          <CharacterArt characterId="granite" />
           <span className="hero-versus">VS</span>
-          <span className="hero-fighter hero-fighter--pulse">●</span>
+          <CharacterArt characterId="shira" />
         </div>
       </section>
 

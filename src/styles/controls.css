@@ -43,16 +43,30 @@ kbd {
   background: #ffffffd9;
 }
 
-.character-card__portrait {
+.character-card__art {
   display: grid;
   width: 128px;
   height: 128px;
   flex: 0 0 auto;
   place-items: center;
   border: 7px solid white;
-  border-radius: 50%;
-  color: transparent;
+  border-radius: 30px;
+  background: #edf0f3;
   box-shadow: 8px 9px 0 var(--ink);
+  overflow: hidden;
+}
+
+.character-card--shira .character-card__art {
+  background: #fff0f1;
+}
+
+.character-card__art .character-art {
+  width: 118px;
+  transform: translateY(16px);
+}
+
+.character-guide-link {
+  margin-top: 28px;
 }
 
 .development-notice > span {

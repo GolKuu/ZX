@@ -45,7 +45,7 @@ export function createTestMatchConfig(): LocalPvpMatchConfig {
         gamepadProfile: defaultGamepadProfile,
       },
     },
-    characters: { player1: 'comet', player2: 'pulse' },
+    characters: { player1: 'granite', player2: 'shira' },
     ready: { player1: true, player2: true },
   };
 }

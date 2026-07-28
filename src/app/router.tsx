@@ -8,6 +8,7 @@ import { LocalPvpPage } from '../pages/LocalPvpPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { ProfilePage } from '../pages/ProfilePage';
 import { TrainingPage } from '../pages/TrainingPage';
+import { VisualStyleGuidePage } from '../pages/VisualStyleGuidePage';
 
 const FightPage = lazy(() =>
   import('../pages/FightPage').then((module) => ({ default: module.FightPage })),
@@ -29,6 +30,7 @@ export function AppRouter() {
       <Route path="/fight" component={FightRoute} />
       <Route path="/training" component={TrainingPage} />
       <Route path="/characters" component={CharactersPage} />
+      <Route path="/visual-style-guide" component={VisualStyleGuidePage} />
       <Route path="/controls" component={ControlsPage} />
       <Route path="/profile" component={ProfilePage} />
       <Route path="/auth" component={AuthPage} />

@@ -1,23 +1,28 @@
 import { describe, expect, it } from 'vitest';
 import { getCharacterAttacks } from '../data/attacks/temporaryCharacterAttacks';
 
-describe('temporary character attacks', () => {
-  it.each(['comet', 'pulse'])('defines the complete moveset for %s', (characterId) => {
+describe('original character attacks', () => {
+  it.each(['granite', 'shira'])('defines the complete moveset for %s', (characterId) => {
     const set = getCharacterAttacks(characterId);
-    expect(set.lightChain).toHaveLength(4);
+    expect(set.lightChain).toHaveLength(3);
     expect(set.heavy).toHaveLength(3);
     expect([
       set.low,
+      set.lowHeavy,
       set.air,
+      set.airHeavy,
       set.special,
+      set.forwardSpecial,
+      set.retreatSpecial,
+      set.enhancedSpecial,
       set.grab,
       set.forwardThrow,
       set.backThrow,
-    ]).toHaveLength(6);
+    ]).toHaveLength(11);
   });
 
   it('contains deterministic frame, collision and presentation metadata', () => {
-    const attack = getCharacterAttacks('comet').special;
+    const attack = getCharacterAttacks('granite').special;
     expect(attack.startupFrames).toBeGreaterThan(0);
     expect(attack.activeFrames).toBeGreaterThan(0);
     expect(attack.recoveryFrames).toBeGreaterThan(0);
@@ -28,11 +33,12 @@ describe('temporary character attacks', () => {
   });
 
   it('assigns a distinct effect id to every attack variant', () => {
-    const set = getCharacterAttacks('comet');
+    const set = getCharacterAttacks('granite');
     const attacks = [
       ...set.lightChain,
       ...set.heavy,
       set.low,
+      set.lowHeavy,
       set.air,
       set.airHeavy,
       set.forwardLight,
@@ -45,6 +51,7 @@ describe('temporary character attacks', () => {
       set.forwardSpecial,
       set.retreatSpecial,
       set.airSpecial,
+      set.enhancedSpecial,
       set.grab,
       set.forwardThrow,
       set.backThrow,
@@ -55,7 +62,7 @@ describe('temporary character attacks', () => {
   });
 
   it('uses 88% scaling for light and heavy auto combos', () => {
-    const set = getCharacterAttacks('comet');
+    const set = getCharacterAttacks('granite');
     expect(set.lightChain.every((attack) => attack.comboScaling === 0.88)).toBe(true);
     expect(set.heavy.every((attack) => attack.comboScaling === 0.88)).toBe(true);
   });

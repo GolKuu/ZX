@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { balanceConfig, FIXED_STEP_SECONDS } from '../config/balanceConfig';
 import { CombatSimulation } from '../core/CombatSimulation';
 import { emptyInputFrame, inputFrame } from './testFixtures';
+import { getCharacter } from '../data/characters/circleFighters';
 
 function activate(simulation: CombatSimulation) {
   const snapshot = simulation.getSnapshot();
@@ -20,7 +21,10 @@ describe('CombatSimulation', () => {
     }
 
     const snapshot = simulation.getSnapshot();
-    expect(snapshot.fighters.player1.x).toBeCloseTo(250 + balanceConfig.walkSpeed, 4);
+    expect(snapshot.fighters.player1.x).toBeCloseTo(
+      250 + getCharacter('granite').stats.walkSpeed,
+      4,
+    );
     expect(() => JSON.stringify(snapshot)).not.toThrow();
   });
 
