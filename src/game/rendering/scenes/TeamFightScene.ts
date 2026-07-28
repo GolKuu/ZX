@@ -12,6 +12,8 @@ import { ArenaTrapRenderer } from '../arenas/ArenaTrapRenderer';
 import { createSceneButton } from './createSceneButton';
 import { TeamFighterRenderers } from './TeamFighterRenderers';
 import { RoundManager } from '../../core/RoundManager';
+import { settingsStore } from '../../../stores/settingsStore';
+import { CartoonParticlePool } from '../effects/CartoonParticlePool';
 
 export function createTeamFightScene(
   bridge: ReactGameBridge,
@@ -24,6 +26,7 @@ export function createTeamFightScene(
     private readonly round = new RoundManager();
     private fighters!: TeamFighterRenderers;
     private traps!: ArenaTrapRenderer;
+    private feedback!: CartoonParticlePool;
     private resultEmitted = false;
 
     constructor() {
@@ -34,6 +37,7 @@ export function createTeamFightScene(
       createArena(this);
       this.fighters = new TeamFighterRenderers(this);
       this.traps = new ArenaTrapRenderer(this);
+      this.feedback = new CartoonParticlePool(this, settingsStore.load());
       createSceneButton(this, 24, 492, '← Режимы', () =>
         bridge.emit(GameEvents.returnToSetupRequested, undefined),
       );
@@ -41,7 +45,7 @@ export function createTeamFightScene(
         bridge.emit(GameEvents.exitRequested, undefined),
       );
       this.inputs.attach();
-      this.sync();
+      this.sync(deltaMs);
       bridge.emit(GameEvents.ready, { canvasCount: 1 });
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.cleanup());
     }
@@ -63,16 +67,18 @@ export function createTeamFightScene(
       }
     }
 
-    private sync() {
+    private sync(deltaMs = 0) {
       const snapshot = this.simulation.getSnapshot();
       this.fighters.sync(snapshot, this.round.countdownLabel(snapshot));
       this.traps.sync(snapshot.traps);
+      this.feedback.sync(snapshot, deltaMs);
     }
 
     private cleanup() {
       this.inputs.detach();
       this.fighters.destroy();
       this.traps.destroy();
+      this.feedback.destroy();
       bridge.emit(GameEvents.destroyed, undefined);
     }
   };

@@ -10,6 +10,8 @@ import { createArena } from '../arenas/createArena';
 import { ArenaTrapRenderer } from '../arenas/ArenaTrapRenderer';
 import { createSceneButton } from './createSceneButton';
 import { TeamFighterRenderers } from './TeamFighterRenderers';
+import { settingsStore } from '../../../stores/settingsStore';
+import { CartoonParticlePool } from '../effects/CartoonParticlePool';
 
 export function createOnlineFightScene(
   bridge: ReactGameBridge,
@@ -21,6 +23,7 @@ export function createOnlineFightScene(
     private readonly inputs = new InputManager(createOnlineAssignments());
     private fighters!: TeamFighterRenderers;
     private traps!: ArenaTrapRenderer;
+    private feedback!: CartoonParticlePool;
 
     constructor() {
       super('OnlineFightScene');
@@ -30,6 +33,7 @@ export function createOnlineFightScene(
       createArena(this);
       this.fighters = new TeamFighterRenderers(this);
       this.traps = new ArenaTrapRenderer(this);
+      this.feedback = new CartoonParticlePool(this, settingsStore.load());
       createSceneButton(this, 24, 492, '← Выйти', () =>
         bridge.emit(GameEvents.returnToSetupRequested, undefined),
       );
@@ -37,7 +41,7 @@ export function createOnlineFightScene(
         bridge.emit(GameEvents.exitRequested, undefined),
       );
       this.inputs.attach();
-      this.syncRenderers();
+      this.syncRenderers(deltaMs);
       bridge.emit(GameEvents.ready, { canvasCount: 1 });
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.cleanup());
     }
@@ -51,17 +55,19 @@ export function createOnlineFightScene(
       this.syncRenderers();
     }
 
-    private syncRenderers() {
+    private syncRenderers(deltaMs = 0) {
       const snapshot = client.renderSnapshot();
       if (!snapshot) return;
       this.fighters.sync(snapshot, this.round.countdownLabel(snapshot));
       this.traps.sync(snapshot.traps);
+      this.feedback.sync(snapshot, deltaMs);
     }
 
     private cleanup() {
       this.inputs.detach();
       this.fighters.destroy();
       this.traps.destroy();
+      this.feedback.destroy();
       bridge.emit(GameEvents.destroyed, undefined);
     }
   };

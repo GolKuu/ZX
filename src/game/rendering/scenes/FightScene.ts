@@ -17,6 +17,7 @@ import { PerformanceMonitor } from '../../diagnostics/PerformanceMonitor';
 import { createSceneButton } from './createSceneButton';
 import { VictoryCutsceneRenderer } from '../victory/VictoryCutsceneRenderer';
 import { VICTORY_CUTSCENE_MS } from '../victory/victoryScenes';
+import { CartoonParticlePool } from '../effects/CartoonParticlePool';
 
 export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpMatchConfig) {
   return class FightScene extends Phaser.Scene {
@@ -32,6 +33,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
     private pauseButton!: Phaser.GameObjects.Text;
     private traps!: ArenaTrapRenderer;
     private victory!: VictoryCutsceneRenderer;
+    private feedback!: CartoonParticlePool;
     private readonly performance = new PerformanceMonitor();
     private resultEmitted = false;
     private victoryElapsedMs = 0;
@@ -53,6 +55,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
       );
       this.traps = new ArenaTrapRenderer(this);
       this.victory = new VictoryCutsceneRenderer(this);
+      this.feedback = new CartoonParticlePool(this, settingsStore.load());
       this.performance.attach(this);
       this.pauseButton = createSceneButton(this, 24, 492, 'Ⅱ Пауза', () => this.togglePause());
       createSceneButton(this, 132, 492, '← Выбор', () =>
@@ -148,6 +151,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
         winner ? this.characterFor(winner) : null,
         this.victoryElapsedMs,
       );
+      this.feedback.sync(snapshot, deltaMs);
     }
 
     private characterFor(playerId: PlayerId) {
@@ -166,6 +170,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
       this.traps.destroy();
       this.hud.destroy();
       this.victory.destroy();
+      this.feedback.destroy();
       this.performance.destroy();
       bridge.emit(GameEvents.destroyed, undefined);
     }
