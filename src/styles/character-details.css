@@ -62,6 +62,27 @@
   gap: 10px;
 }
 
+.fighter-details__moves {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.fighter-details__moves span {
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+  border-radius: 12px;
+  background: white;
+  font-size: .82rem;
+}
+
+.fighter-details__moves b {
+  color: var(--purple-dark);
+  font-size: .68rem;
+  text-transform: uppercase;
+}
+
 .fighter-details__traits section {
   padding: 12px;
   border-radius: 14px;
@@ -95,7 +116,8 @@
 
 @media (max-width: 520px) {
   .fighter-details__traits,
-  .fighter-details__stats {
+  .fighter-details__stats,
+  .fighter-details__moves {
     grid-template-columns: 1fr;
   }
 }

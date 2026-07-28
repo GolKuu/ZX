@@ -3,6 +3,7 @@ import type { CharacterDefinition } from '../../data/characters/circleFighters';
 import { findCharacterAttack } from '../../data/attacks/characterAttacks';
 import type { FighterSnapshot, PlayerId } from '../../core/types';
 import type { AttackVisualShape } from '../../combat/AttackDefinition';
+import { drawPowerAccent } from './AttackPowerAccents';
 
 export class AttackVisualRenderer {
   readonly graphics: Phaser.GameObjects.Graphics;
@@ -38,6 +39,17 @@ export class AttackVisualRenderer {
       attack.phase === 'active',
       attack.frame,
     );
+    if (definition.category === 'special' || definition.category === 'super') {
+      drawPowerAccent(
+        this.graphics,
+        this.character,
+        x,
+        y,
+        hitbox.width,
+        hitbox.height,
+        attack.frame,
+      );
+    }
   }
 
   private drawShape(

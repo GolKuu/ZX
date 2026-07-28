@@ -1,6 +1,7 @@
 import { CharacterPortrait } from '../characters/CharacterPortrait';
 import { getCharacter } from '../../game/data/characters/circleFighters';
 import { characterMatchup } from '../../game/data/forceMatchups';
+import { getCharacterAttacks } from '../../game/data/attacks/characterAttacks';
 
 const difficultyLabels = ['Новичок', 'Легко', 'Средне', 'Сложно', 'Эксперт'];
 
@@ -13,6 +14,7 @@ export function CharacterDetails({
 }) {
   const character = getCharacter(characterId);
   const matchup = characterMatchup(characterId, opponentCharacterId);
+  const attacks = getCharacterAttacks(characterId);
 
   return (
     <article className="fighter-details">
@@ -37,6 +39,11 @@ export function CharacterDetails({
           Ресурс: {character.uniqueResource.name} · {character.uniqueResource.description}
           {character.uniqueResource.status === 'prototype' && ' · механика запланирована'}
         </small>
+      </section>
+      <section className="fighter-details__moves" aria-label="Фирменные атаки">
+        <span><b>Рука</b>{attacks.lightChain[0].name}</span>
+        <span><b>Нога</b>{attacks.lightChain[1].name}</span>
+        <span><b>Сила</b>{attacks.special.name}</span>
       </section>
       <div className="fighter-details__traits">
         <TraitList title="Сильные стороны" items={character.strengths} />
