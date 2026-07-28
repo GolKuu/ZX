@@ -25,9 +25,9 @@ export class FighterRenderer {
   private state: AnimationStateId = 'idle';
 
   constructor(scene: Phaser.Scene, ownerId: PlayerId, character: CharacterDefinition) {
-    this.shadow = scene.add.ellipse(0, 38, 96, 20, character.shadowColor, 0.25);
+    this.shadow = scene.add.ellipse(0, 38, 96, 20, character.shadowColor, 0.25).setDepth(1);
     this.rig = createCharacterBody(scene, character);
-    this.facingContainer = scene.add.container(0, 38 - RIG_RESTING_BOTTOM, [this.rig.root]);
+    this.facingContainer = scene.add.container(0, 38 - RIG_RESTING_BOTTOM, [this.rig.root]).setDepth(3);
     this.defenseVisual = new DefenseEffectRenderer(scene);
     this.attackVisual = new AttackVisualRenderer(scene, ownerId, character);
     this.trail = new MotionTrailRenderer(scene, character);
@@ -37,7 +37,7 @@ export class FighterRenderer {
       this.defenseVisual.graphics,
       this.facingContainer,
       this.attackVisual.graphics,
-    ]);
+    ]).setDepth(2);
   }
 
   sync(snapshot: FighterSnapshot, context: AnimationContext, stopped = false) {

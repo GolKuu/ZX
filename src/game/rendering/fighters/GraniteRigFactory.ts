@@ -3,6 +3,7 @@ import type { CharacterDefinition } from '../../data/characters/circleFighters';
 import { ProceduralRig } from '../animation/ProceduralRig';
 import type { RigParts } from '../animation/RigTypes';
 import {
+  getModelStrokeWidth,
   GRANITE_CORE_GLOW,
   MODEL_HIGHLIGHT,
   MODEL_OUTLINE,
@@ -31,9 +32,9 @@ function stoneArm(
   front = false,
 ) {
   const shoulder = scene.add.circle(0, 0, front ? 20 : 18, color)
-    .setStrokeStyle(5, MODEL_OUTLINE, 1);
+    .setStrokeStyle(getModelStrokeWidth(5, 'joint'), MODEL_OUTLINE, 1);
   const jointRing = scene.add.circle(0, 0, front ? 10 : 9, characterShade(color), 0.55)
-    .setStrokeStyle(3, MODEL_OUTLINE, 0.8);
+    .setStrokeStyle(getModelStrokeWidth(3, 'detail'), MODEL_OUTLINE, 0.8);
   const slab = scene.add
     .polygon(0, 27, mirror([-13, -14, 14, -11, 22, 24, 8, 43, -16, 34], direction), color)
     .setStrokeStyle(5, MODEL_OUTLINE, 1);
@@ -52,7 +53,7 @@ function stoneLeg(
   color: number,
   front = false,
 ) {
-  const hip = scene.add.circle(0, 0, 16, color).setStrokeStyle(5, MODEL_OUTLINE, 1);
+  const hip = scene.add.circle(0, 0, 16, color).setStrokeStyle(getModelStrokeWidth(5, 'joint'), MODEL_OUTLINE, 1);
   const pillar = scene.add
     .polygon(0, 27, [-14, -16, 14, -14, 17, 27, -12, 30], color)
     .setStrokeStyle(5, MODEL_OUTLINE, 1);
@@ -66,7 +67,7 @@ function stoneLeg(
 function createTorso(scene: Phaser.Scene, character: CharacterDefinition) {
   const body = scene.add
     .polygon(0, 0, [-61, -24, -39, -51, 22, -47, 58, -31, 64, 12, 38, 49, -29, 45, -58, 22], character.color)
-    .setStrokeStyle(7, MODEL_OUTLINE, 1);
+    .setStrokeStyle(getModelStrokeWidth(7, 'body'), MODEL_OUTLINE, 1);
   const shoulderRock = scene.add
     .polygon(-42, -36, [-18, -7, -5, -20, 14, -16, 22, 3, 6, 17, -16, 13], character.shadowColor)
     .setStrokeStyle(5, MODEL_OUTLINE, 1);
@@ -74,8 +75,8 @@ function createTorso(scene: Phaser.Scene, character: CharacterDefinition) {
     .polygon(0, 13, [-43, -11, 42, -12, 36, 29, 22, 38, -27, 38, -42, 25], character.shadowColor, 0.42);
   const core = scene.add
     .polygon(5, 0, [-17, -22, 14, -22, 23, 2, 8, 25, -19, 13], GRANITE_CORE_GLOW)
-    .setStrokeStyle(4, 0xffefb0, 1);
-  const crack = scene.add.graphics().lineStyle(5, MODEL_HIGHLIGHT, 0.92)
+    .setStrokeStyle(getModelStrokeWidth(4, 'accent'), 0xffefb0, 1);
+  const crack = scene.add.graphics().lineStyle(getModelStrokeWidth(5, 'accent'), MODEL_HIGHLIGHT, 0.92)
     .beginPath().moveTo(2, -18).lineTo(-5, -3).lineTo(5, 6).lineTo(0, 20).strokePath();
   return scene.add.container(0, -10, [body, shoulderRock, lowerPlate, core, crack]);
 }

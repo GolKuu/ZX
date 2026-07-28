@@ -3,6 +3,7 @@ import type { CharacterDefinition } from '../../data/characters/circleFighters';
 import { ProceduralRig } from '../animation/ProceduralRig';
 import type { RigParts } from '../animation/RigTypes';
 import {
+  getModelStrokeWidth,
   MODEL_EYE_GLOW,
   MODEL_HIGHLIGHT,
   MODEL_OUTLINE,
@@ -32,7 +33,7 @@ function ribbonTail(
 ) {
   const knot = scene.add.circle(0, 0, 9, color).setStrokeStyle(4, MODEL_OUTLINE, 1);
   const loop = scene.add.ellipse(direction * 2, 25, 29, 49, MODEL_OUTLINE, 0.08)
-    .setStrokeStyle(10, color, front ? 1 : 0.72);
+    .setStrokeStyle(getModelStrokeWidth(10, 'limb'), color, front ? 1 : 0.72);
   const ankle = scene.add.circle(direction * 5, 45, 8, MODEL_HIGHLIGHT)
     .setStrokeStyle(4, MODEL_OUTLINE, 1);
   const tip = scene.add
@@ -60,7 +61,7 @@ function scissorWing(
     .setStrokeStyle(4, MODEL_OUTLINE, 1);
   const handle = scene.add
     .ellipse(0, 0, 25, 29, shellColor, front ? 1 : 0.8)
-    .setStrokeStyle(5, MODEL_OUTLINE, 1);
+    .setStrokeStyle(getModelStrokeWidth(5, 'body'), MODEL_OUTLINE, 1);
   const inner = scene.add.ellipse(0, 0, 10, 13, MODEL_OUTLINE, 0.9);
   const pin = scene.add.circle(direction * 9, 0, 4, 0xd9fff8);
   return scene.add.container(x, y, [bladeOne, bladeTwo, shoulder, handle, inner, pin]);

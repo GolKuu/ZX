@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { CharacterDefinition } from '../../data/characters/circleFighters';
 import type { TorsoStyle } from './forceModelConfigs';
-import { MODEL_HIGHLIGHT, MODEL_OUTLINE } from './modelStyle';
+import { getModelStrokeWidth, MODEL_HIGHLIGHT, MODEL_OUTLINE } from './modelStyle';
 
 const TORSO_POINTS: Record<Exclude<TorsoStyle, 'round'>, number[]> = {
   armor: [-39, -37, -22, -48, 23, -47, 40, -34, 38, 30, 20, 44, -22, 44, -40, 29],
@@ -23,11 +23,11 @@ export function createForceTorso(
   const body = style === 'round'
     ? scene.add.ellipse(0, 0, 86, 94, character.color)
     : scene.add.polygon(0, 0, TORSO_POINTS[style], character.color);
-  body.setStrokeStyle(5, outline, 1);
+  body.setStrokeStyle(getModelStrokeWidth(5, 'body'), outline, 1);
   const shade = scene.add.ellipse(9, 12, 45, 62, character.shadowColor, 0.22);
   const plate = scene.add
     .polygon(0, 8, [-25, -25, 24, -25, 20, 24, 0, 36, -20, 24], character.accentColor, 0.26)
-    .setStrokeStyle(2, character.accentColor, 0.48);
+    .setStrokeStyle(getModelStrokeWidth(2, 'accent'), character.accentColor, 0.48);
   const emblem = createEmblem(scene, character);
   return scene.add.container(0, -10, [body, shade, plate, emblem]);
 }

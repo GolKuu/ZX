@@ -15,7 +15,7 @@ export class AttackVisualRenderer {
     private readonly ownerId: PlayerId,
     private readonly character: CharacterDefinition,
   ) {
-    this.graphics = scene.add.graphics().setDepth(8).setVisible(false);
+    this.graphics = scene.add.graphics().setDepth(9).setVisible(false);
   }
 
   sync(snapshot: FighterSnapshot) {
@@ -70,7 +70,7 @@ export class AttackVisualRenderer {
     frame: number,
   ) {
     const color = this.character.accentColor;
-    const lineWidth = active ? 8 : 4;
+    const lineWidth = active ? 10 : 6;
     const centerY = y + height / 2;
     this.graphics.lineStyle(lineWidth, color, 0.9);
     if (shape === 'line') {
