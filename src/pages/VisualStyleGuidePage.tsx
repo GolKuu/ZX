@@ -11,7 +11,7 @@ export function VisualStyleGuidePage() {
       <PageHeader
         eyebrow="Художественный прототип · v1"
         title="Visual Style Guide"
-        description="Оригинальные процедурные бойцы: крупные формы, мягкий контур, ограниченная палитра и заменяемый скелет без внешних ассетов."
+        description="Оригинальные нечеловеческие существа: цельные силуэты, мягкий контур, ограниченная палитра и заменяемый процедурный скелет."
       />
 
       <section className="style-principles" aria-label="Принципы">

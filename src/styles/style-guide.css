@@ -36,8 +36,8 @@
 }
 
 .style-character--shira {
-  border-color: #f0cbd1;
-  background: linear-gradient(145deg, #fff0f1, #fff);
+  border-color: #d9cdf5;
+  background: linear-gradient(145deg, #f3efff, #fff);
 }
 
 .style-character > header {
@@ -94,7 +94,7 @@
 }
 
 .style-character--shira .animation-showcase__stage {
-  background: #fbe1e4;
+  background: #e9e1f8;
 }
 
 .animation-showcase__stage .character-art {

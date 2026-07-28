@@ -66,4 +66,14 @@ describe('original character attacks', () => {
     expect(set.lightChain.every((attack) => attack.comboScaling === 0.88)).toBe(true);
     expect(set.heavy.every((attack) => attack.comboScaling === 0.88)).toBe(true);
   });
+
+  it.each(['granite', 'shira'])('places standing strikes above low attacks for %s', (id) => {
+    const set = getCharacterAttacks(id);
+    [...set.lightChain, ...set.heavy].forEach((attack) => {
+      const hitbox = attack.hitboxes[0];
+      expect(hitbox.offsetY + hitbox.height / 2).toBeLessThanOrEqual(-60);
+    });
+    const lowHitbox = set.low.hitboxes[0];
+    expect(lowHitbox.offsetY + lowHitbox.height / 2).toBeGreaterThan(-30);
+  });
 });

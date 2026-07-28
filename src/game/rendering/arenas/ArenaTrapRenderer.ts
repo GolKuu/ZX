@@ -28,7 +28,7 @@ export class ArenaTrapRenderer {
 
   private drawRibbonTrap(x: number) {
     this.graphics
-      .fillStyle(0xe15367, 0.86)
+      .fillStyle(0x9b73e6, 0.86)
       .fillTriangle(x - 16, 447, x, 410, x + 4, 447)
       .fillStyle(0x5bd6c7, 0.9)
       .fillTriangle(x - 4, 447, x + 9, 416, x + 17, 447)

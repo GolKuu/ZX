@@ -10,7 +10,7 @@ export function CharactersPage() {
       <PageHeader
         eyebrow="Первый оригинальный состав"
         title="Персонажи"
-        description="Два бойца с разными силуэтами, темпом, ресурсами и полными наборами приёмов."
+        description="Два нечеловеческих бойца с цельными силуэтами, разным темпом и полными наборами приёмов."
       />
       <div className="character-grid">
         {circleFighters.map((fighter) => (
