@@ -31,7 +31,7 @@ export type UniqueResource = {
 };
 
 export type CharacterVisualModel = {
-  type: 'procedural-placeholder' | 'original-prototype';
+  type: 'final-procedural' | 'final-original';
   rig: VisualRigKind;
   silhouette: SilhouetteKind;
   symbol: string;

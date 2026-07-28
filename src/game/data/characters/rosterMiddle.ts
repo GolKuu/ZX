@@ -16,7 +16,7 @@ export const rosterMiddle = [
     basicAttackNames: ['Капля', 'Волновой кик', 'Гребень', 'Прибой', 'Низкая волна', 'Водопад'],
     color: 0x2479a7, cssColor: '#2479a7', accentColor: 0x7de3e8,
     accentCss: '#7de3e8', shadowColor: 0x123c55,
-    visualModel: { type: 'procedural-placeholder', rig: 'shira', silhouette: 'balanced', symbol: '≈' },
+    visualModel: { type: 'final-procedural', rig: 'shira', silhouette: 'balanced', symbol: '≈' },
     stats: { maxHealth: 104, walkSpeed: 260, airMoveSpeed: 320, dashSpeed: 515, dashTicks: 10, jumpSpeed: 720, range: 4 },
   }),
   defineCharacter({
@@ -34,7 +34,7 @@ export const rosterMiddle = [
     basicAttackNames: ['Порыв', 'Вертушка ветра', 'Срез воздуха', 'Штормовой локоть', 'Скольжение', 'Небесная пятка'],
     color: 0x74a7b4, cssColor: '#74a7b4', accentColor: 0xe5fbff,
     accentCss: '#e5fbff', shadowColor: 0x355761,
-    visualModel: { type: 'procedural-placeholder', rig: 'shira', silhouette: 'agile', symbol: '↝' },
+    visualModel: { type: 'final-procedural', rig: 'shira', silhouette: 'agile', symbol: '↝' },
     stats: { maxHealth: 90, walkSpeed: 340, airMoveSpeed: 405, dashSpeed: 625, dashTicks: 7, jumpSpeed: 800, range: 3 },
   }),
   defineCharacter({
@@ -52,7 +52,7 @@ export const rosterMiddle = [
     basicAttackNames: ['Кромка листа', 'Складной кик', 'Самолёт', 'Журавль', 'Нижний сгиб', 'Падающий лист'],
     color: 0xe8dfcf, cssColor: '#e8dfcf', accentColor: 0xe56c62,
     accentCss: '#e56c62', shadowColor: 0x665e55,
-    visualModel: { type: 'procedural-placeholder', rig: 'shira', silhouette: 'agile', symbol: '◇' },
+    visualModel: { type: 'final-procedural', rig: 'shira', silhouette: 'agile', symbol: '◇' },
     stats: { maxHealth: 92, walkSpeed: 285, airMoveSpeed: 345, dashSpeed: 545, dashTicks: 9, jumpSpeed: 745, range: 5 },
   }),
   defineCharacter({
@@ -70,7 +70,7 @@ export const rosterMiddle = [
     basicAttackNames: ['Мягкий тычок', 'Пружинный кик', 'Отскок', 'Сжатие', 'Низкий хлопок', 'Пористое падение'],
     color: 0xd8b940, cssColor: '#d8b940', accentColor: 0x7bd7b4,
     accentCss: '#7bd7b4', shadowColor: 0x685921,
-    visualModel: { type: 'procedural-placeholder', rig: 'granite', silhouette: 'heavy', symbol: '▦' },
+    visualModel: { type: 'final-procedural', rig: 'granite', silhouette: 'heavy', symbol: '▦' },
     stats: { maxHealth: 118, walkSpeed: 215, airMoveSpeed: 270, dashSpeed: 455, dashTicks: 12, jumpSpeed: 680, range: 2 },
   }),
   defineCharacter({
@@ -88,7 +88,7 @@ export const rosterMiddle = [
     basicAttackNames: ['Коготь', 'Задняя лапа', 'Укус', 'Плечо стаи', 'Охотничья подсечка', 'Прыжок волка'],
     color: 0x58636f, cssColor: '#58636f', accentColor: 0xa9d56e,
     accentCss: '#a9d56e', shadowColor: 0x262d34,
-    visualModel: { type: 'procedural-placeholder', rig: 'shira', silhouette: 'agile', symbol: '◢' },
+    visualModel: { type: 'final-procedural', rig: 'shira', silhouette: 'agile', symbol: '◢' },
     stats: { maxHealth: 102, walkSpeed: 305, airMoveSpeed: 360, dashSpeed: 585, dashTicks: 8, jumpSpeed: 755, range: 2 },
   }),
 ] as const;

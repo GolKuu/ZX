@@ -15,6 +15,8 @@ import { FightHud } from '../hud/FightHud';
 import { ArenaTrapRenderer } from '../arenas/ArenaTrapRenderer';
 import { PerformanceMonitor } from '../../diagnostics/PerformanceMonitor';
 import { createSceneButton } from './createSceneButton';
+import { VictoryCutsceneRenderer } from '../victory/VictoryCutsceneRenderer';
+import { VICTORY_CUTSCENE_MS } from '../victory/victoryScenes';
 
 export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpMatchConfig) {
   return class FightScene extends Phaser.Scene {
@@ -29,8 +31,10 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
     private hud!: FightHud;
     private pauseButton!: Phaser.GameObjects.Text;
     private traps!: ArenaTrapRenderer;
+    private victory!: VictoryCutsceneRenderer;
     private readonly performance = new PerformanceMonitor();
     private resultEmitted = false;
+    private victoryElapsedMs = 0;
     private stopBridgeListeners: Array<() => void> = [];
 
     constructor() {
@@ -48,6 +52,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
         settingsStore.load().showCombatHints,
       );
       this.traps = new ArenaTrapRenderer(this);
+      this.victory = new VictoryCutsceneRenderer(this);
       this.performance.attach(this);
       this.pauseButton = createSceneButton(this, 24, 492, 'Ⅱ Пауза', () => this.togglePause());
       createSceneButton(this, 132, 492, '← Выбор', () =>
@@ -58,7 +63,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
       );
       this.bindBridgeCommands();
       this.inputManager.attach();
-      this.syncRenderers();
+      this.syncRenderers(0);
 
       const canvasCount = this.game.canvas.parentElement?.querySelectorAll('canvas').length ?? 1;
       bridge.emit(GameEvents.ready, { canvasCount });
@@ -72,7 +77,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
         this.simulation.step(input, FIXED_STEP_SECONDS);
         this.inputManager.endTick();
       });
-      this.syncRenderers();
+      this.syncRenderers(deltaMs);
       this.emitMatchResult();
       this.performance.record(this, deltaMs);
     }
@@ -82,6 +87,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
         bridge.on(GameEvents.rematchRequested, () => {
           this.simulation.rematch();
           this.resultEmitted = false;
+          this.victoryElapsedMs = 0;
         }),
         bridge.on(GameEvents.switchToKeyboardRequested, ({ playerId }) => {
           const profiles = {
@@ -116,6 +122,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
     private emitMatchResult() {
       const snapshot = this.simulation.getSnapshot();
       if (!snapshot.matchWinner || this.resultEmitted) return;
+      if (this.victoryElapsedMs < VICTORY_CUTSCENE_MS) return;
       this.resultEmitted = true;
       bridge.emit(GameEvents.matchEnded, {
         winner: snapshot.matchWinner,
@@ -123,14 +130,24 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
       });
     }
 
-    private syncRenderers() {
+    private syncRenderers(deltaMs: number) {
       const snapshot = this.simulation.getSnapshot();
       const context = { matchWinner: snapshot.matchWinner };
+      this.victoryElapsedMs = snapshot.matchWinner
+        ? this.victoryElapsedMs + deltaMs
+        : 0;
       const stopped = snapshot.hitStopTicks > 0;
       this.fighterOne.sync(snapshot.fighters.player1, context, stopped);
       this.fighterTwo.sync(snapshot.fighters.player2, context, stopped);
       this.traps.sync(snapshot.traps);
       this.hud.update(snapshot, this.simulation.getCountdownLabel());
+      const winner = snapshot.matchWinner;
+      this.victory.sync(
+        winner,
+        winner ? snapshot.fighters[winner] : null,
+        winner ? this.characterFor(winner) : null,
+        this.victoryElapsedMs,
+      );
     }
 
     private characterFor(playerId: PlayerId) {
@@ -148,6 +165,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
       this.fighterTwo.destroy();
       this.traps.destroy();
       this.hud.destroy();
+      this.victory.destroy();
       this.performance.destroy();
       bridge.emit(GameEvents.destroyed, undefined);
     }

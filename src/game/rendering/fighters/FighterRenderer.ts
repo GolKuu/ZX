@@ -11,6 +11,7 @@ import { DefenseEffectRenderer } from '../effects/DefenseEffectRenderer';
 import { MotionTrailRenderer } from '../effects/MotionTrailRenderer';
 import { createCharacterBody } from './CharacterBodyFactory';
 import { findCharacterAttack } from '../../data/attacks/characterAttacks';
+import { RIG_RESTING_BOTTOM } from '../animation/RigTypes';
 
 export class FighterRenderer {
   readonly container: Phaser.GameObjects.Container;
@@ -26,7 +27,7 @@ export class FighterRenderer {
   constructor(scene: Phaser.Scene, ownerId: PlayerId, character: CharacterDefinition) {
     this.shadow = scene.add.ellipse(0, 38, 96, 20, character.shadowColor, 0.25);
     this.rig = createCharacterBody(scene, character);
-    this.facingContainer = scene.add.container(0, -44, [this.rig.root]);
+    this.facingContainer = scene.add.container(0, 38 - RIG_RESTING_BOTTOM, [this.rig.root]);
     this.defenseVisual = new DefenseEffectRenderer(scene);
     this.attackVisual = new AttackVisualRenderer(scene, ownerId, character);
     this.trail = new MotionTrailRenderer(scene, character.accentColor, character.visualKind);
@@ -40,7 +41,9 @@ export class FighterRenderer {
   }
 
   sync(snapshot: FighterSnapshot, context: AnimationContext, stopped = false) {
-    this.state = resolveAnimationState(snapshot, context);
+    const nextState = resolveAnimationState(snapshot, context);
+    if (nextState !== this.state) this.animationTick = 0;
+    this.state = nextState;
     const attack = snapshot.attack
       ? findCharacterAttack(snapshot.characterId, snapshot.attack.id)
       : null;

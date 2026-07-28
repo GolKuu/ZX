@@ -1,6 +1,7 @@
 import type { AnimationStateId } from './AnimationCatalog';
 import type { RigFrame, RigPose } from './RigTypes';
 import { applyReactionPose } from './PoseReactions';
+import type { CharacterId } from '../../data/characters/circleFighters';
 
 const BASE: RigPose = {
   x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1,
@@ -8,12 +9,16 @@ const BASE: RigPose = {
   frontLeg: 0, backLeg: 0,
 };
 
-export function poseFor(frame: RigFrame, kind: 'granite' | 'shira'): RigPose {
+export function poseFor(
+  frame: RigFrame,
+  kind: 'granite' | 'shira',
+  characterId: CharacterId,
+): RigPose {
   const time = frame.tick / 7;
   const pose = { ...BASE };
-  pose.y = Math.sin(time * 0.7) * (kind === 'granite' ? 1.2 : 2);
+  pose.y = -Math.abs(Math.sin(time * 0.7)) * (kind === 'granite' ? 1.2 : 2);
   pose.head = Math.sin(time * 0.55) * 0.025;
-  if (applyReactionPose(pose, frame.state, time, kind)) return pose;
+  if (applyReactionPose(pose, frame.state, time, characterId)) return pose;
   if (frame.state === 'walk') applyWalk(pose, time, kind);
   else if (frame.state.startsWith('dash')) applyDash(pose, frame.state, kind);
   else if (frame.state === 'jump-fall') applyFall(pose, kind);
@@ -31,7 +36,7 @@ function applyWalk(pose: RigPose, time: number, kind: 'granite' | 'shira') {
   pose.backLeg = -stride * 0.55;
   pose.frontArm = -stride * (kind === 'shira' ? 0.18 : 0.42);
   pose.backArm = stride * (kind === 'shira' ? 0.18 : 0.42);
-  pose.y += Math.abs(stride) * 2;
+  pose.y -= Math.abs(stride) * 2;
   pose.rotation = stride * 0.025;
 }
 

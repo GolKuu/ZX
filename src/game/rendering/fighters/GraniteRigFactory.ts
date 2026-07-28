@@ -16,7 +16,7 @@ export function createGraniteRig(scene: Phaser.Scene, character: CharacterDefini
     backLeg, backArm, frontLeg, torso, head, frontArm,
   ]);
   const parts: RigParts = { root, torso, head, frontArm, backArm, frontLeg, backLeg };
-  return new ProceduralRig(parts, 'granite');
+  return new ProceduralRig(parts, 'granite', character.id);
 }
 
 function stoneArm(

@@ -16,7 +16,7 @@ export function createShiraRig(scene: Phaser.Scene, character: CharacterDefiniti
     backLeg, backArm, frontLeg, torso, head, frontArm,
   ]);
   const parts: RigParts = { root, torso, head, frontArm, backArm, frontLeg, backLeg };
-  return new ProceduralRig(parts, 'shira');
+  return new ProceduralRig(parts, 'shira', character.id);
 }
 
 function ribbonTail(

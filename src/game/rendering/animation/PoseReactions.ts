@@ -1,17 +1,16 @@
 import type { AnimationStateId } from './AnimationCatalog';
 import type { RigPose } from './RigTypes';
+import type { CharacterId } from '../../data/characters/circleFighters';
+import { VICTORY_POSES } from './victoryPoseConfigs';
 
 export function applyReactionPose(
   pose: RigPose,
   state: AnimationStateId,
   time: number,
-  kind: 'granite' | 'shira',
+  characterId: CharacterId,
 ) {
   if (state === 'victory') {
-    pose.frontArm = -2.45;
-    pose.backArm = kind === 'granite' ? 2.45 : -1.9;
-    pose.y = -Math.abs(Math.sin(time)) * (kind === 'shira' ? 7 : 2);
-    pose.scaleX = 1.08;
+    applyVictoryPose(pose, characterId, time);
     return true;
   }
   if (state === 'defeat' || state === 'knockdown') {
@@ -39,4 +38,20 @@ export function applyReactionPose(
     return true;
   }
   return false;
+}
+
+function applyVictoryPose(pose: RigPose, characterId: CharacterId, time: number) {
+  const config = VICTORY_POSES[characterId];
+  const entrance = Math.min(1, time / 1.4);
+  const pulse = Math.sin(time * 1.8);
+  pose.frontArm = config.frontArm * entrance;
+  pose.backArm = config.backArm * entrance;
+  pose.frontLeg = config.frontLeg * entrance;
+  pose.backLeg = config.backLeg * entrance;
+  pose.rotation = config.rotation * entrance;
+  pose.head = config.head + pulse * 0.035;
+  pose.x = pulse * config.sway;
+  pose.y = -Math.abs(Math.sin(time * 1.35)) * config.bounce;
+  pose.scaleX = 1 + (config.scale - 1) * entrance;
+  pose.scaleY = 0.88 + 0.12 * entrance;
 }

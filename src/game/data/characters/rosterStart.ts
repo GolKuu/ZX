@@ -16,7 +16,7 @@ export const rosterStart = [
     basicAttackNames: ['Скол', 'Каменный лоу-кик', 'Клин', 'Монолитный кулак', 'Сланцевый подсек', 'Пятка-метеор'],
     color: 0x596273, cssColor: '#596273', accentColor: 0xe9a84a,
     accentCss: '#e9a84a', shadowColor: 0x252b38,
-    visualModel: { type: 'original-prototype', rig: 'granite', silhouette: 'heavy', symbol: '◆' },
+    visualModel: { type: 'final-original', rig: 'granite', silhouette: 'heavy', symbol: '◆' },
     stats: { maxHealth: 132, walkSpeed: 178, airMoveSpeed: 230, dashSpeed: 420, dashTicks: 13, jumpSpeed: 650, range: 3 },
   }),
   defineCharacter({
@@ -34,7 +34,7 @@ export const rosterStart = [
     basicAttackNames: ['Удар рукоятью', 'Фронт-кик затвора', 'Контрольный выстрел', 'Тяжёлый калибр', 'Низкий рикошет', 'Воздушный залп'],
     color: 0x48576b, cssColor: '#48576b', accentColor: 0xf6c85f,
     accentCss: '#f6c85f', shadowColor: 0x202a38,
-    visualModel: { type: 'procedural-placeholder', rig: 'shira', silhouette: 'balanced', symbol: '●' },
+    visualModel: { type: 'final-procedural', rig: 'shira', silhouette: 'balanced', symbol: '●' },
     stats: { maxHealth: 96, walkSpeed: 250, airMoveSpeed: 300, dashSpeed: 500, dashTicks: 10, jumpSpeed: 700, range: 5 },
   }),
   defineCharacter({
@@ -52,7 +52,7 @@ export const rosterStart = [
     basicAttackNames: ['Искра', 'Разрядный сайд-кик', 'Импульс', 'Громовой локоть', 'Подсечка дугой', 'Удар кометы'],
     color: 0x315bd8, cssColor: '#315bd8', accentColor: 0x88f2ff,
     accentCss: '#88f2ff', shadowColor: 0x17265f,
-    visualModel: { type: 'procedural-placeholder', rig: 'shira', silhouette: 'agile', symbol: 'ϟ' },
+    visualModel: { type: 'final-procedural', rig: 'shira', silhouette: 'agile', symbol: 'ϟ' },
     stats: { maxHealth: 94, walkSpeed: 320, airMoveSpeed: 380, dashSpeed: 610, dashTicks: 8, jumpSpeed: 770, range: 3 },
   }),
   defineCharacter({
@@ -70,7 +70,7 @@ export const rosterStart = [
     basicAttackNames: ['Коготь тени', 'Копытный разворот', 'Печать', 'Рог бездны', 'Теневая подсечка', 'Падение ночи'],
     color: 0x55245f, cssColor: '#55245f', accentColor: 0xf05b78,
     accentCss: '#f05b78', shadowColor: 0x26112d,
-    visualModel: { type: 'procedural-placeholder', rig: 'granite', silhouette: 'balanced', symbol: '◉' },
+    visualModel: { type: 'final-procedural', rig: 'granite', silhouette: 'balanced', symbol: '◉' },
     stats: { maxHealth: 108, walkSpeed: 245, airMoveSpeed: 305, dashSpeed: 505, dashTicks: 10, jumpSpeed: 710, range: 3 },
   }),
   defineCharacter({
@@ -88,7 +88,7 @@ export const rosterStart = [
     basicAttackNames: ['Клык', 'Удар хвостом', 'Взмах крыла', 'Драконий таран', 'Хвостовая подсечка', 'Пикирование'],
     color: 0x8b3e36, cssColor: '#8b3e36', accentColor: 0xffa34d,
     accentCss: '#ffa34d', shadowColor: 0x3f1d1a,
-    visualModel: { type: 'procedural-placeholder', rig: 'granite', silhouette: 'heavy', symbol: '▲' },
+    visualModel: { type: 'final-procedural', rig: 'granite', silhouette: 'heavy', symbol: '▲' },
     stats: { maxHealth: 124, walkSpeed: 205, airMoveSpeed: 260, dashSpeed: 445, dashTicks: 12, jumpSpeed: 675, range: 4 },
   }),
 ] as const;

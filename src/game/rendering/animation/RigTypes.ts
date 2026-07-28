@@ -39,3 +39,5 @@ export type CharacterRig = {
   sync: (frame: RigFrame) => void;
   setAlpha: (alpha: number) => void;
 };
+
+export const RIG_RESTING_BOTTOM = 99;

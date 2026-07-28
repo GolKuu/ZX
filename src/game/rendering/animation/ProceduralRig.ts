@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { CharacterRig, RigFrame, RigParts, RigPose } from './RigTypes';
 import { poseFor } from './PoseLibrary';
+import type { CharacterId } from '../../data/characters/circleFighters';
 
 export class ProceduralRig implements CharacterRig {
   readonly root: Phaser.GameObjects.Container;
@@ -9,6 +10,7 @@ export class ProceduralRig implements CharacterRig {
   constructor(
     private readonly parts: RigParts,
     private readonly kind: 'granite' | 'shira',
+    private readonly characterId: CharacterId,
   ) {
     this.root = parts.root;
     this.current = poseFor({
@@ -17,12 +19,12 @@ export class ProceduralRig implements CharacterRig {
       phase: null,
       motion: null,
       stopped: false,
-    }, kind);
+    }, kind, characterId);
   }
 
   sync(frame: RigFrame) {
     if (frame.stopped) return;
-    const target = poseFor(frame, this.kind);
+    const target = poseFor(frame, this.kind, this.characterId);
     this.current = blendPose(this.current, target);
     const pose = this.current;
     this.root

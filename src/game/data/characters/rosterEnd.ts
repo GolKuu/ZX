@@ -16,7 +16,7 @@ export const rosterEnd = [
     basicAttackNames: ['Ветка', 'Корневой пинок', 'Лоза', 'Удар ствола', 'Ползучий корень', 'Падающая крона'],
     color: 0x557348, cssColor: '#557348', accentColor: 0xc69a55,
     accentCss: '#c69a55', shadowColor: 0x293823,
-    visualModel: { type: 'procedural-placeholder', rig: 'granite', silhouette: 'heavy', symbol: '♣' },
+    visualModel: { type: 'final-procedural', rig: 'granite', silhouette: 'heavy', symbol: '♣' },
     stats: { maxHealth: 122, walkSpeed: 195, airMoveSpeed: 250, dashSpeed: 435, dashTicks: 13, jumpSpeed: 660, range: 5 },
   }),
   defineCharacter({
@@ -34,7 +34,7 @@ export const rosterEnd = [
     basicAttackNames: ['Джеб', 'Фронт-кик', 'Кросс', 'Хук', 'Подсечка', 'Удар в прыжке'],
     color: 0x356e88, cssColor: '#356e88', accentColor: 0xf1b46c,
     accentCss: '#f1b46c', shadowColor: 0x1d3b48,
-    visualModel: { type: 'procedural-placeholder', rig: 'shira', silhouette: 'balanced', symbol: '●' },
+    visualModel: { type: 'final-procedural', rig: 'shira', silhouette: 'balanced', symbol: '●' },
     stats: { maxHealth: 110, walkSpeed: 270, airMoveSpeed: 330, dashSpeed: 525, dashTicks: 10, jumpSpeed: 725, range: 3 },
   }),
   defineCharacter({
@@ -52,7 +52,7 @@ export const rosterEnd = [
     basicAttackNames: ['Клык', 'Хвостовой кик', 'Бросок кобры', 'Укус гадюки', 'Ползучая подсечка', 'Прыжок аспида'],
     color: 0x47743f, cssColor: '#47743f', accentColor: 0xd1e85b,
     accentCss: '#d1e85b', shadowColor: 0x243c20,
-    visualModel: { type: 'procedural-placeholder', rig: 'shira', silhouette: 'agile', symbol: '∿' },
+    visualModel: { type: 'final-procedural', rig: 'shira', silhouette: 'agile', symbol: '∿' },
     stats: { maxHealth: 98, walkSpeed: 295, airMoveSpeed: 350, dashSpeed: 560, dashTicks: 9, jumpSpeed: 750, range: 4 },
   }),
   defineCharacter({
@@ -70,7 +70,7 @@ export const rosterEnd = [
     basicAttackNames: ['Щёлк', 'Ножничный сайд-кик', 'Срез ленты', 'Дуга гильотины', 'Подрез нити', 'Падающие ножницы'],
     color: 0x9b73e6, cssColor: '#9b73e6', accentColor: 0x62d8c7,
     accentCss: '#62d8c7', shadowColor: 0x352d55,
-    visualModel: { type: 'original-prototype', rig: 'shira', silhouette: 'agile', symbol: '✂' },
+    visualModel: { type: 'final-original', rig: 'shira', silhouette: 'agile', symbol: '✂' },
     stats: { maxHealth: 92, walkSpeed: 318, airMoveSpeed: 370, dashSpeed: 590, dashTicks: 8, jumpSpeed: 760, range: 2 },
   }),
   defineCharacter({
@@ -88,7 +88,7 @@ export const rosterEnd = [
     basicAttackNames: ['Уголёк', 'Пылающий круговой', 'Вспышка', 'Огненный кулак', 'Низовое пламя', 'Метеор'],
     color: 0xc94c32, cssColor: '#c94c32', accentColor: 0xffc34f,
     accentCss: '#ffc34f', shadowColor: 0x5a2118,
-    visualModel: { type: 'procedural-placeholder', rig: 'granite', silhouette: 'balanced', symbol: '♨' },
+    visualModel: { type: 'final-procedural', rig: 'granite', silhouette: 'balanced', symbol: '♨' },
     stats: { maxHealth: 100, walkSpeed: 275, airMoveSpeed: 335, dashSpeed: 535, dashTicks: 10, jumpSpeed: 730, range: 4 },
   }),
 ] as const;
