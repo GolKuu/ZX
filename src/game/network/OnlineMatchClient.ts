@@ -1,4 +1,5 @@
-import type { PlayerInputFrame, SimulationSnapshot } from '../core/types';
+import type { PlayerInputFrame } from '../core/types';
+import type { TeamSimulationSnapshot } from '../team/TeamTypes';
 import { encodePlayerInput } from './InputCodec';
 import {
   type OnlineConnectionStatus,
@@ -15,7 +16,7 @@ import { SnapshotInterpolator } from './SnapshotInterpolator';
 export class OnlineMatchClient {
   private readonly socket: OnlineSocket;
   private readonly prediction: PredictionEngine;
-  private readonly interpolation = new SnapshotInterpolator();
+  private readonly interpolation = new SnapshotInterpolator<TeamSimulationSnapshot>();
   private readonly listeners = new Set<() => void>();
   private pingTimer: number | null = null;
   private sequence = 0;
@@ -80,7 +81,7 @@ export class OnlineMatchClient {
     this.emit();
   }
 
-  renderSnapshot(now = performance.now()): SimulationSnapshot | null {
+  renderSnapshot(now = performance.now()): TeamSimulationSnapshot | null {
     return this.prediction.render(this.interpolation.sample(now));
   }
 
