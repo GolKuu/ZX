@@ -35,9 +35,7 @@ export async function buildServer(config: ServerConfig) {
   });
   registerRoutes(app, rooms, teamRooms, config);
   app.setErrorHandler((error, request, reply) => {
-    const statusCode = error.statusCode && error.statusCode >= 400
-      ? error.statusCode
-      : 500;
+    const statusCode = errorStatusCode(error);
     request.log.error({
       event: 'request.error',
       err: error,
@@ -46,7 +44,9 @@ export async function buildServer(config: ServerConfig) {
     }, 'Request failed');
     return reply.code(statusCode).send({
       code: statusCode >= 500 ? 'INTERNAL_SERVER_ERROR' : 'REQUEST_FAILED',
-      message: statusCode >= 500 ? 'Internal server error' : error.message,
+      message: statusCode >= 500
+        ? 'Internal server error'
+        : error instanceof Error ? error.message : 'Request failed',
       requestId: request.id,
     });
   });
@@ -74,4 +74,10 @@ export async function buildServer(config: ServerConfig) {
     app.log.info({ event: 'server.stopped' }, 'Match server stopped');
   });
   return { app, rooms, teamRooms };
+}
+
+function errorStatusCode(error: unknown) {
+  if (!error || typeof error !== 'object' || !('statusCode' in error)) return 500;
+  const statusCode = error.statusCode;
+  return typeof statusCode === 'number' && statusCode >= 400 ? statusCode : 500;
 }
