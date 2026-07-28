@@ -8,6 +8,7 @@ export function drawFighterBars(
   fighter: FighterSnapshot,
   x: number,
   healthColor: number,
+  passiveColor: number,
   mirrored = false,
 ) {
   drawBar(graphics, x, 26, BAR_WIDTH, 24, fighter.health / fighter.maxHealth, healthColor, mirrored);
@@ -20,6 +21,16 @@ export function drawFighterBars(
     8,
     fighter.blockMeter / fighter.maxBlockMeter,
     0x9f8cff,
+    mirrored,
+  );
+  drawBar(
+    graphics,
+    x,
+    84,
+    BAR_WIDTH,
+    7,
+    fighter.passiveValue / fighter.maxPassiveValue,
+    passiveColor,
     mirrored,
   );
   drawDefenseSegments(graphics, fighter, x, mirrored);
@@ -37,9 +48,9 @@ function drawDefenseSegments(
     const filled = index < fighter.defense.segments;
     graphics
       .fillStyle(filled ? 0x7557ff : 0xffffff, filled ? 1 : 0.42)
-      .fillCircle(segmentX, 89, 6)
+      .fillCircle(segmentX, 99, 6)
       .lineStyle(2, 0x30264f, 0.7)
-      .strokeCircle(segmentX, 89, 6);
+      .strokeCircle(segmentX, 99, 6);
   }
 }
 

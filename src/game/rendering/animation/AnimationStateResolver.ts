@@ -57,7 +57,9 @@ function attackAnimation(fighter: FighterSnapshot): AnimationStateId {
     'enhanced-special': 'enhanced-special',
     'momentum-reversal': 'momentum-reversal',
   };
-  return known[id] ?? isAnimationState(id) ? (known[id] ?? id as AnimationStateId) : 'idle';
+  const mapped = known[id];
+  if (mapped) return mapped;
+  return isAnimationState(id) ? id : 'idle';
 }
 
 function isAnimationState(value: string): value is AnimationStateId {

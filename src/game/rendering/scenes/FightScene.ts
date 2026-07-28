@@ -12,6 +12,8 @@ import { settingsStore } from '../../../stores/settingsStore';
 import { createArena } from '../arenas/createArena';
 import { FighterRenderer } from '../fighters/FighterRenderer';
 import { FightHud } from '../hud/FightHud';
+import { ArenaTrapRenderer } from '../arenas/ArenaTrapRenderer';
+import { PerformanceMonitor } from '../../diagnostics/PerformanceMonitor';
 
 export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpMatchConfig) {
   return class FightScene extends Phaser.Scene {
@@ -25,6 +27,8 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
     private fighterTwo!: FighterRenderer;
     private hud!: FightHud;
     private pauseButton!: Phaser.GameObjects.Text;
+    private traps!: ArenaTrapRenderer;
+    private readonly performance = new PerformanceMonitor();
     private resultEmitted = false;
     private stopBridgeListeners: Array<() => void> = [];
 
@@ -36,7 +40,13 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
       createArena(this);
       this.fighterOne = new FighterRenderer(this, 'player1', this.characterFor('player1'));
       this.fighterTwo = new FighterRenderer(this, 'player2', this.characterFor('player2'));
-      this.hud = new FightHud(this, settingsStore.load().showCombatHints);
+      this.hud = new FightHud(
+        this,
+        this.characterFor('player1'),
+        this.characterFor('player2'),
+        settingsStore.load().showCombatHints,
+      );
+      this.traps = new ArenaTrapRenderer(this);
       this.pauseButton = this.createButton(24, 492, 'Ⅱ Пауза', () => this.togglePause());
       this.createButton(132, 492, '← Выбор', () =>
         bridge.emit(GameEvents.returnToSetupRequested, undefined),
@@ -62,6 +72,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
       });
       this.syncRenderers();
       this.emitMatchResult();
+      this.performance.record(this, deltaMs);
     }
 
     private bindBridgeCommands() {
@@ -112,8 +123,11 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
 
     private syncRenderers() {
       const snapshot = this.simulation.getSnapshot();
-      this.fighterOne.sync(snapshot.fighters.player1);
-      this.fighterTwo.sync(snapshot.fighters.player2);
+      const context = { matchWinner: snapshot.matchWinner };
+      const stopped = snapshot.hitStopTicks > 0;
+      this.fighterOne.sync(snapshot.fighters.player1, context, stopped);
+      this.fighterTwo.sync(snapshot.fighters.player2, context, stopped);
+      this.traps.sync(snapshot.traps);
       this.hud.update(snapshot, this.simulation.getCountdownLabel());
     }
 
@@ -128,7 +142,11 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
       this.stopBridgeListeners.forEach((stop) => stop());
       this.stopBridgeListeners = [];
       this.inputManager.detach();
+      this.fighterOne.destroy();
+      this.fighterTwo.destroy();
+      this.traps.destroy();
       this.hud.destroy();
+      this.performance.destroy();
       bridge.emit(GameEvents.destroyed, undefined);
     }
 

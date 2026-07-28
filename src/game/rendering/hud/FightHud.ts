@@ -3,6 +3,7 @@ import { TICKS_PER_SECOND } from '../../config/balanceConfig';
 import type { ComboSnapshot, SimulationSnapshot } from '../../core/types';
 import { createSuperIndicator, drawFighterBars, drawRoundWins } from './HudBars';
 import { DefenseTrainingHud } from './DefenseTrainingHud';
+import type { CharacterDefinition } from '../../data/characters/circleFighters';
 
 export class FightHud {
   private readonly graphics: Phaser.GameObjects.Graphics;
@@ -16,7 +17,12 @@ export class FightHud {
   private readonly gaugeLabels: Phaser.GameObjects.Text[];
   private readonly defenseTraining: DefenseTrainingHud;
 
-  constructor(scene: Phaser.Scene, private readonly showCombatHints = true) {
+  constructor(
+    scene: Phaser.Scene,
+    private readonly firstCharacter: CharacterDefinition,
+    private readonly secondCharacter: CharacterDefinition,
+    private readonly showCombatHints = true,
+  ) {
     this.graphics = scene.add.graphics().setDepth(20);
     this.timer = this.makeText(scene, 480, 18, '90', '32px');
     this.round = this.makeText(scene, 480, 56, 'Раунд 1', '15px');
@@ -41,16 +47,31 @@ export class FightHud {
       this.makeGaugeLabel(scene, 44, 30, 'HP', 0),
       this.makeGaugeLabel(scene, 44, 55, 'ENERGY', 0),
       this.makeGaugeLabel(scene, 44, 69, 'BLOCK', 0),
+      this.makeGaugeLabel(scene, 44, 82, firstCharacter.passiveName.toUpperCase(), 0),
       this.makeGaugeLabel(scene, 916, 30, 'HP', 1),
       this.makeGaugeLabel(scene, 916, 55, 'ENERGY', 1),
       this.makeGaugeLabel(scene, 916, 69, 'BLOCK', 1),
+      this.makeGaugeLabel(scene, 916, 82, secondCharacter.passiveName.toUpperCase(), 1),
     ];
   }
 
   update(snapshot: SimulationSnapshot, countdownLabel: string) {
     this.graphics.clear();
-    drawFighterBars(this.graphics, snapshot.fighters.player1, 36, 0xff5d73);
-    drawFighterBars(this.graphics, snapshot.fighters.player2, 594, 0x3fd1c4, true);
+    drawFighterBars(
+      this.graphics,
+      snapshot.fighters.player1,
+      36,
+      this.firstCharacter.color,
+      this.firstCharacter.accentColor,
+    );
+    drawFighterBars(
+      this.graphics,
+      snapshot.fighters.player2,
+      594,
+      this.secondCharacter.color,
+      this.secondCharacter.accentColor,
+      true,
+    );
     drawRoundWins(this.graphics, snapshot);
     this.timer.setText(String(Math.ceil(snapshot.roundTicksRemaining / TICKS_PER_SECOND)));
     this.round.setText(`Раунд ${snapshot.roundNumber}`);

@@ -14,8 +14,8 @@ export function poseFor(frame: RigFrame, kind: 'granite' | 'shira'): RigPose {
   pose.head = Math.sin(time * 0.55) * 0.025;
   if (frame.state === 'walk') applyWalk(pose, time, kind);
   else if (frame.state.startsWith('dash')) applyDash(pose, frame.state);
-  else if (frame.state.startsWith('jump') || frame.state === 'jump-rise') applyJump(pose);
   else if (frame.state === 'jump-fall') applyFall(pose);
+  else if (frame.state.startsWith('jump')) applyJump(pose);
   else if (frame.state === 'landing') applyLanding(pose);
   else if (frame.state === 'crouch') applyCrouch(pose);
   else if (isDefense(frame.state)) applyDefense(pose, frame.state);
