@@ -12,13 +12,13 @@ export function GraniteCharacterArt() {
         </radialGradient>
       </defs>
       <ellipse className="art-shadow" cx="160" cy="327" rx="91" ry="15" />
-      <g className="art-rig" stroke="#252b38" strokeWidth="7" strokeLinejoin="round">
+      <g className="art-rig" stroke="#292441" strokeWidth="7" strokeLinejoin="round">
         <g className="art-leg art-leg--back">
           <circle cx="126" cy="231" r="19" fill="#46505e" />
           <path d="m108 231 37-2 5 62-44 2Z" fill="#4b5564" />
           <circle cx="128" cy="288" r="15" fill="#6f7986" />
           <path d="m108 289 41-1 10 29-55 1Z" fill="#3a424f" />
-          <path d="m103 309 57-1 14 18H90Z" fill="#252b38" />
+          <path d="m103 309 57-1 14 18H90Z" fill="#292441" />
         </g>
         <g className="art-arm art-arm--back">
           <circle cx="92" cy="137" r="24" fill="#424c5a" />
@@ -40,7 +40,7 @@ export function GraniteCharacterArt() {
         </g>
         <g className="art-head">
           <path d="m111 47 43-27 68 14 18 50-30 39-79-5-31-37Z" fill="url(#granite-body)" />
-          <path d="m108 61 111-13 12 28-116 15Z" fill="#252b38" stroke="none" />
+          <path d="m108 61 111-13 12 28-116 15Z" fill="#292441" stroke="none" />
           <ellipse cx="143" cy="75" rx="8" ry="10" fill="#fff2b4" stroke="none" />
           <ellipse cx="188" cy="70" rx="8" ry="10" fill="#fff2b4" stroke="none" />
         </g>

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { CharacterDefinition } from '../../data/characters/circleFighters';
 import type { ArmStyle, LegStyle } from './forceModelConfigs';
+import { MODEL_HIGHLIGHT, MODEL_OUTLINE } from './modelStyle';
 
 export function createForceArm(
   scene: Phaser.Scene,
@@ -12,7 +13,7 @@ export function createForceArm(
 ) {
   const color = front ? character.color : character.shadowColor;
   const alpha = front ? 1 : 0.76;
-  const outline = character.shadowColor;
+  const outline = MODEL_OUTLINE;
   const joint = scene.add.circle(0, 0, 12, color, alpha).setStrokeStyle(4, outline);
   const upper = scene.add
     .polygon(0, 23, mirror([-9, -17, 10, -15, 13, 24, -10, 29], direction), color, alpha)
@@ -43,7 +44,7 @@ export function createForceArm(
         handX + direction * 9,
         58,
         mirror([-11, -17, 9, -12, 28, 17, 1, 10, -12, 22], direction),
-        style === 'blade' ? 0xf6fbff : character.accentColor,
+        style === 'blade' ? MODEL_HIGHLIGHT : character.accentColor,
         alpha,
       ).setStrokeStyle(4, outline),
     );
@@ -51,8 +52,10 @@ export function createForceArm(
     pieces.push(
       scene.add.rectangle(handX, 56, 15, 35, character.accentColor, alpha)
         .setStrokeStyle(4, outline),
-      scene.add.triangle(handX - 10, 72, 0, 12, 7, -12, 14, 12, color, alpha),
-      scene.add.triangle(handX + 10, 72, 0, 12, 7, -12, 14, 12, color, alpha),
+      scene.add.triangle(handX - 10, 72, 0, 12, 7, -12, 14, 12, color, alpha)
+        .setStrokeStyle(2, outline),
+      scene.add.triangle(handX + 10, 72, 0, 12, 7, -12, 14, 12, color, alpha)
+        .setStrokeStyle(2, outline),
     );
   } else if (style === 'ribbon') {
     pieces.push(
@@ -89,7 +92,7 @@ export function createForceLeg(
 ) {
   const color = front ? character.accentColor : character.shadowColor;
   const alpha = front ? 1 : 0.75;
-  const outline = character.shadowColor;
+  const outline = MODEL_OUTLINE;
   const hip = scene.add.circle(0, 0, 10, color, alpha).setStrokeStyle(4, outline);
   const shin = scene.add
     .polygon(0, 28, [-9, -22, 9, -20, 13, 24, -10, 29], color, alpha)
@@ -104,12 +107,15 @@ export function createForceLeg(
       .polygon(5, 59, [-14, -9, 14, -8, 23, 8, 9, 15, -18, 11], color, alpha)
       .setStrokeStyle(4, outline));
     if (style === 'talon') {
-      pieces.push(scene.add.triangle(23, 67, -8, -5, 9, 1, -6, 7, 0xf4efce, alpha));
+      pieces.push(scene.add.triangle(23, 67, -8, -5, 9, 1, -6, 7, 0xf4efce, alpha)
+        .setStrokeStyle(2, outline));
     }
   } else if (style === 'root') {
     pieces.push(
-      scene.add.triangle(-7, 65, -18, 8, 5, -14, 15, 8, color, alpha),
-      scene.add.triangle(10, 66, -13, 8, 4, -13, 17, 8, color, alpha),
+      scene.add.triangle(-7, 65, -18, 8, 5, -14, 15, 8, color, alpha)
+        .setStrokeStyle(3, outline),
+      scene.add.triangle(10, 66, -13, 8, 4, -13, 17, 8, color, alpha)
+        .setStrokeStyle(3, outline),
     );
   } else {
     pieces.push(scene.add

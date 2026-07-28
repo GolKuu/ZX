@@ -13,7 +13,7 @@ export function ShiraCharacterArt() {
         </linearGradient>
       </defs>
       <ellipse className="art-shadow" cx="160" cy="321" rx="67" ry="12" />
-      <g className="art-rig" stroke="#352d55" strokeWidth="6" strokeLinejoin="round">
+      <g className="art-rig" stroke="#292441" strokeWidth="6" strokeLinejoin="round">
         <g className="art-leg art-leg--back">
           <circle cx="134" cy="244" r="13" fill="#6652a0" />
           <ellipse cx="120" cy="277" rx="17" ry="34" fill="none" stroke="#6f60ad" strokeWidth="12" />
@@ -39,7 +39,7 @@ export function ShiraCharacterArt() {
           <path d="m123 78-34-31 9 47-23 19 49 4Z" fill="#62d8c7" />
           <path d="m197 78 34-31-9 47 23 19-49 4Z" fill="#62d8c7" />
           <ellipse cx="160" cy="95" rx="48" ry="38" fill="url(#shira-shell)" />
-          <ellipse cx="160" cy="99" rx="31" ry="17" fill="#352d55" stroke="none" />
+          <ellipse cx="160" cy="99" rx="31" ry="17" fill="#292441" stroke="none" />
           <ellipse cx="148" cy="98" rx="6" ry="9" fill="#cafff7" stroke="none" />
           <ellipse cx="173" cy="98" rx="6" ry="9" fill="#cafff7" stroke="none" />
           <circle cx="146" cy="95" r="2.5" fill="#fff" stroke="none" />

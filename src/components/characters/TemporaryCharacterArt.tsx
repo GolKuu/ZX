@@ -10,6 +10,11 @@ export function TemporaryCharacterArt({
   const isAgile = character.visualModel.silhouette === 'agile';
   const torsoWidth = isHeavy ? 126 : isAgile ? 76 : 98;
   const torsoX = 160 - torsoWidth / 2;
+  const headPath = isHeavy
+    ? 'm116 78 22-43 47 3 22 40-17 38h-58Z'
+    : isAgile
+      ? 'm120 75 20-34 42-3 22 37-16 40h-51Z'
+      : 'm119 77 16-39 51-1 17 40-17 39h-50Z';
 
   return (
     <>
@@ -20,13 +25,14 @@ export function TemporaryCharacterArt({
         </linearGradient>
       </defs>
       <ellipse className="art-shadow" cx="160" cy="326" rx={isHeavy ? 82 : 64} ry="13" />
-      <g className="art-rig" stroke="#252b38" strokeWidth="7" strokeLinejoin="round">
+      <g className="art-rig" stroke="#292441" strokeWidth="7" strokeLinejoin="round">
         <g className="art-leg art-leg--back">
           <path d="m132 231-11 84" fill="none" stroke={character.cssColor} strokeWidth={isAgile ? 15 : 23} />
           <path d="m102 318 43-5 10 15H96Z" fill={character.cssColor} />
         </g>
         <g className="art-arm art-arm--back">
           <path d="m116 143-46 94" fill="none" stroke={character.cssColor} strokeWidth={isHeavy ? 28 : 18} />
+          <circle cx="112" cy="150" r={isHeavy ? 18 : 14} fill="#fffaf3" />
           <circle cx="68" cy="242" r={isHeavy ? 18 : 13} fill={character.accentCss} />
         </g>
         <path
@@ -51,13 +57,20 @@ export function TemporaryCharacterArt({
           <path d="m184 314 43 4 9 13h-56Z" fill={character.accentCss} />
         </g>
         <g className="art-head">
-          <path d="m121 78 18-45 21 20 23-26 20 48-16 39h-53Z" fill={`url(#${gradientId})`} />
-          <path d="m137 82h47" fill="none" stroke="#252b38" strokeWidth="17" />
+          {isAgile && (
+            <>
+              <path d="m126 75-32-32 9 43-22 18 45 5Z" fill={character.accentCss} />
+              <path d="m194 75 32-32-9 43 22 18-45 5Z" fill={character.accentCss} />
+            </>
+          )}
+          <path d={headPath} fill={`url(#${gradientId})`} />
+          <path d="m137 82h47" fill="none" stroke="#292441" strokeWidth="18" />
           <circle cx="148" cy="81" r="5" fill="#fff" stroke="none" />
           <circle cx="174" cy="81" r="5" fill="#fff" stroke="none" />
         </g>
         <g className="art-arm art-arm--front">
           <path d="m204 142 48 92" fill="none" stroke={character.accentCss} strokeWidth={isHeavy ? 28 : 18} />
+          <circle cx="207" cy="149" r={isHeavy ? 18 : 14} fill="#fffaf3" />
           <circle cx="255" cy="240" r={isHeavy ? 18 : 13} fill={character.cssColor} />
         </g>
       </g>

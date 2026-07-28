@@ -1,8 +1,13 @@
 import Phaser from 'phaser';
 import type { CharacterDefinition } from '../../data/characters/circleFighters';
+import {
+  MODEL_EYE_GLOW,
+  MODEL_HIGHLIGHT,
+  MODEL_OUTLINE,
+} from './modelStyle';
 
 export function createForceHead(scene: Phaser.Scene, character: CharacterDefinition) {
-  const outline = character.shadowColor;
+  const outline = MODEL_OUTLINE;
   const pieces: Phaser.GameObjects.GameObject[] = [];
   if (character.id === 'caliber') {
     pieces.push(
@@ -81,15 +86,15 @@ export function createForceHead(scene: Phaser.Scene, character: CharacterDefinit
       .polygon(0, 0, [-29, -23, 29, -23, 31, 20, 0, 30, -31, 20], character.color)
       .setStrokeStyle(5, outline));
   }
-  pieces.push(...createFace(scene, character));
+  pieces.push(...createFace(scene));
   return scene.add.container(0, -61, pieces);
 }
 
-function createFace(scene: Phaser.Scene, character: CharacterDefinition) {
-  const visor = scene.add.ellipse(0, 2, 43, 20, character.shadowColor, 0.92);
-  const leftEye = scene.add.ellipse(-10, 1, 6, 8, character.accentColor);
-  const rightEye = scene.add.ellipse(10, 1, 6, 8, character.accentColor);
-  const glint = scene.add.circle(-12, -2, 2, 0xffffff);
+function createFace(scene: Phaser.Scene) {
+  const visor = scene.add.ellipse(0, 2, 43, 20, MODEL_OUTLINE, 0.95);
+  const leftEye = scene.add.ellipse(-10, 1, 6, 9, MODEL_EYE_GLOW);
+  const rightEye = scene.add.ellipse(10, 1, 6, 9, MODEL_EYE_GLOW);
+  const glint = scene.add.circle(-12, -2, 2, MODEL_HIGHLIGHT);
   return [visor, leftEye, rightEye, glint];
 }
 

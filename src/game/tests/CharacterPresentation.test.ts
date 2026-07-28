@@ -7,6 +7,11 @@ import { RIG_RESTING_BOTTOM, type RigFrame } from '../rendering/animation/RigTyp
 import { VICTORY_POSES } from '../rendering/animation/victoryPoseConfigs';
 import { FORCE_MODEL_CONFIGS, forceModelConfig } from '../rendering/fighters/forceModelConfigs';
 import {
+  MODEL_EYE_GLOW,
+  MODEL_OUTLINE,
+  MODEL_OUTLINE_CSS,
+} from '../rendering/fighters/modelStyle';
+import {
   VICTORY_CUTSCENE_MS,
   VICTORY_SCENES,
 } from '../rendering/victory/victoryScenes';
@@ -39,6 +44,12 @@ describe('final character presentation', () => {
     expect(new Set(
       Object.values(FORCE_MODEL_CONFIGS).map((config) => JSON.stringify(config)),
     ).size).toBe(13);
+  });
+
+  it('keeps the shared reference outline and luminous visor language', () => {
+    expect(MODEL_OUTLINE).toBe(0x292441);
+    expect(MODEL_OUTLINE_CSS).toBe('#292441');
+    expect(MODEL_EYE_GLOW).toBe(0xeafff8);
   });
 
   it('keeps grounded idle and walking poses above the shared foot anchor', () => {
