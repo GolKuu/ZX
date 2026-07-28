@@ -7,6 +7,7 @@ import { GameCanvas } from '../game/bridge/GameCanvas';
 import { GameEvents } from '../game/bridge/GameEvents';
 import type { PlayerId } from '../game/core/types';
 import { localPvpStore } from '../stores/localPvpStore';
+import { FullscreenButton } from '../components/layout/FullscreenButton';
 
 type DeviceIssue = { playerId: PlayerId; label: string };
 type MatchResult = { winner: PlayerId; wins: Record<PlayerId, number> };
@@ -64,6 +65,9 @@ export function FightPage() {
 
   return (
     <main className="fight-page">
+      <div className="fight-toolbar">
+        <FullscreenButton compact />
+      </div>
       <GameCanvas
         matchConfig={matchConfig}
         onExit={exitToMenu}

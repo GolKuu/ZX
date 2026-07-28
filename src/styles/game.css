@@ -9,6 +9,20 @@
   background: #241d3d;
 }
 
+.fight-toolbar {
+  position: fixed;
+  z-index: 30;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+}
+
+.fight-toolbar .fullscreen-button {
+  color: white;
+  border-color: #ffffff42;
+  background: #241d3dbd;
+  backdrop-filter: blur(10px);
+}
+
 .route-loading {
   display: grid;
   min-height: 100vh;
@@ -36,6 +50,13 @@
 
 .game-canvas__surface canvas {
   display: block;
+}
+
+@media (max-width: 620px) {
+  .fight-toolbar {
+    top: 8px;
+    right: 8px;
+  }
 }
 
 .game-canvas__loading {

@@ -9,6 +9,7 @@
   --coral: #ff5d73;
   --mint: #3fd1c4;
   --yellow: #ffdc62;
+  --ui-scale: 1;
   font-family: Inter, ui-rounded, 'Nunito Sans', system-ui, -apple-system, sans-serif;
   color: var(--ink);
   background: #f7f1ff;
@@ -23,6 +24,7 @@
 html {
   min-width: 320px;
   min-height: 100%;
+  font-size: calc(100% * var(--ui-scale));
 }
 
 body {
@@ -57,7 +59,7 @@ input:focus-visible,
 }
 
 html.large-text {
-  font-size: 112.5%;
+  font-size: calc(112.5% * var(--ui-scale));
 }
 
 html.high-contrast {
@@ -144,6 +146,32 @@ p {
   margin-top: 18px;
   padding-inline: 32px;
   font-size: 1.05rem;
+}
+
+.fullscreen-button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 13px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  color: var(--ink);
+  background: #ffffffcc;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.fullscreen-button:hover {
+  border-color: var(--purple);
+  transform: translateY(-2px);
+}
+
+.fullscreen-button--compact {
+  width: 42px;
+  padding: 8px;
 }
 
 @media (prefers-reduced-motion: reduce) {

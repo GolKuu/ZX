@@ -56,3 +56,20 @@ export function makeGaugeLabel(
     .setOrigin(originX, 0)
     .setDepth(22);
 }
+
+export function makeFighterName(
+  scene: Phaser.Scene,
+  x: number,
+  value: string,
+  originX: number,
+) {
+  return scene.add
+    .text(x, 5, value.toUpperCase(), {
+      fontFamily: 'Arial',
+      fontSize: '13px',
+      fontStyle: 'bold',
+      color: '#30264f',
+    })
+    .setOrigin(originX, 0)
+    .setDepth(22);
+}

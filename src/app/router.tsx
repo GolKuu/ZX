@@ -14,6 +14,9 @@ import { TeamModesPage } from '../pages/TeamModesPage';
 import { TeamOnlineLobbyPage } from '../pages/TeamOnlineLobbyPage';
 import { VisualStyleGuidePage } from '../pages/VisualStyleGuidePage';
 import { AiFightSetupPage } from '../pages/AiFightSetupPage';
+import { ArenaViewerPage } from '../pages/ArenaViewerPage';
+import { CharacterViewerPage } from '../pages/CharacterViewerPage';
+import { EffectsGalleryPage } from '../pages/EffectsGalleryPage';
 
 const FightPage = lazy(() =>
   import('../pages/FightPage').then((module) => ({ default: module.FightPage })),
@@ -83,6 +86,9 @@ export function AppRouter() {
       <Route path="/online" component={OnlineLobbyPage} />
       <Route path="/training" component={TrainingPage} />
       <Route path="/characters" component={CharactersPage} />
+      <Route path="/character-viewer" component={CharacterViewerPage} />
+      <Route path="/effects-gallery" component={EffectsGalleryPage} />
+      <Route path="/arena-viewer" component={ArenaViewerPage} />
       <Route path="/visual-style-guide" component={VisualStyleGuidePage} />
       <Route path="/controls" component={ControlsPage} />
       <Route path="/profile" component={ProfilePage} />

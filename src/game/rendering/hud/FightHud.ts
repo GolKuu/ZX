@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
 import { TICKS_PER_SECOND } from '../../config/balanceConfig';
 import type { ComboSnapshot, SimulationSnapshot } from '../../core/types';
-import { createSuperIndicator, drawFighterBars, drawRoundWins } from './HudBars';
+import { createSuperIndicator, drawFighterBars, drawHudChrome, drawRoundWins } from './HudBars';
 import { DefenseTrainingHud } from './DefenseTrainingHud';
 import type { CharacterDefinition } from '../../data/characters/circleFighters';
-import { makeComboText, makeGaugeLabel, makeHudText } from './HudTextFactory';
+import { makeComboText, makeFighterName, makeGaugeLabel, makeHudText } from './HudTextFactory';
 
 export class FightHud {
   private readonly graphics: Phaser.GameObjects.Graphics;
@@ -16,6 +16,7 @@ export class FightHud {
   private readonly superOne: Phaser.GameObjects.Text;
   private readonly superTwo: Phaser.GameObjects.Text;
   private readonly gaugeLabels: Phaser.GameObjects.Text[];
+  private readonly names: Phaser.GameObjects.Text[];
   private readonly defenseTraining: DefenseTrainingHud;
 
   constructor(
@@ -23,6 +24,7 @@ export class FightHud {
     private readonly firstCharacter: CharacterDefinition,
     private readonly secondCharacter: CharacterDefinition,
     private readonly showCombatHints = true,
+    private readonly uiScale = 1,
   ) {
     this.graphics = scene.add.graphics().setDepth(20);
     this.timer = makeHudText(scene, 480, 18, '90', '32px');
@@ -44,6 +46,10 @@ export class FightHud {
     this.superOne = createSuperIndicator(scene, 42, 0);
     this.superTwo = createSuperIndicator(scene, 918, 1);
     this.defenseTraining = new DefenseTrainingHud(scene, showCombatHints);
+    this.names = [
+      makeFighterName(scene, 40, firstCharacter.name, 0),
+      makeFighterName(scene, 920, secondCharacter.name, 1),
+    ];
     this.gaugeLabels = [
       makeGaugeLabel(scene, 44, 30, 'HP', 0),
       makeGaugeLabel(scene, 44, 55, 'ENERGY', 0),
@@ -54,24 +60,33 @@ export class FightHud {
       makeGaugeLabel(scene, 916, 69, 'BLOCK', 1),
       makeGaugeLabel(scene, 916, 82, secondCharacter.passiveName.toUpperCase(), 1),
     ];
+    [
+      this.timer, this.round, this.comboOne, this.comboTwo,
+      this.superOne, this.superTwo, ...this.names, ...this.gaugeLabels,
+    ].forEach((object) => object.setScale(uiScale));
   }
 
   update(snapshot: SimulationSnapshot, countdownLabel: string) {
     this.graphics.clear();
+    drawHudChrome(this.graphics, this.uiScale);
+    const barWidth = 330 * this.uiScale;
     drawFighterBars(
       this.graphics,
       snapshot.fighters.player1,
       36,
       this.firstCharacter.color,
       this.firstCharacter.accentColor,
+      false,
+      this.uiScale,
     );
     drawFighterBars(
       this.graphics,
       snapshot.fighters.player2,
-      594,
+      924 - barWidth,
       this.secondCharacter.color,
       this.secondCharacter.accentColor,
       true,
+      this.uiScale,
     );
     drawRoundWins(this.graphics, snapshot);
     this.timer.setText(String(Math.ceil(snapshot.roundTicksRemaining / TICKS_PER_SECOND)));
@@ -112,6 +127,7 @@ export class FightHud {
     this.superTwo.destroy();
     this.defenseTraining.destroy();
     this.gaugeLabels.forEach((label) => label.destroy());
+    this.names.forEach((name) => name.destroy());
   }
 
   private updateCombo(text: Phaser.GameObjects.Text, combo: ComboSnapshot) {

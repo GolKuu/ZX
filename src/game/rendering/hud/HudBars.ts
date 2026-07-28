@@ -3,6 +3,24 @@ import type { FighterSnapshot, SimulationSnapshot } from '../../core/types';
 
 const BAR_WIDTH = 330;
 
+export function drawHudChrome(
+  graphics: Phaser.GameObjects.Graphics,
+  uiScale: number,
+) {
+  const width = BAR_WIDTH * uiScale + 24;
+  graphics
+    .fillStyle(0xffffff, 0.82)
+    .fillRoundedRect(24, 12, width, 98 * uiScale, 20)
+    .fillRoundedRect(936 - width, 12, width, 98 * uiScale, 20)
+    .lineStyle(3, 0x30264f, 0.82)
+    .strokeRoundedRect(24, 12, width, 98 * uiScale, 20)
+    .strokeRoundedRect(936 - width, 12, width, 98 * uiScale, 20)
+    .fillStyle(0xffffff, 0.92)
+    .fillCircle(480, 39, 38 * uiScale)
+    .lineStyle(4, 0x30264f, 0.9)
+    .strokeCircle(480, 39, 38 * uiScale);
+}
+
 export function drawFighterBars(
   graphics: Phaser.GameObjects.Graphics,
   fighter: FighterSnapshot,
@@ -10,15 +28,17 @@ export function drawFighterBars(
   healthColor: number,
   passiveColor: number,
   mirrored = false,
+  uiScale = 1,
 ) {
-  drawBar(graphics, x, 26, BAR_WIDTH, 24, fighter.health / fighter.maxHealth, healthColor, mirrored);
-  drawBar(graphics, x, 56, BAR_WIDTH, 10, fighter.energy / fighter.maxEnergy, 0xffdc62, mirrored);
+  const width = BAR_WIDTH * uiScale;
+  drawBar(graphics, x, 26 * uiScale, width, 24 * uiScale, fighter.health / fighter.maxHealth, healthColor, mirrored);
+  drawBar(graphics, x, 56 * uiScale, width, 10 * uiScale, fighter.energy / fighter.maxEnergy, 0xffdc62, mirrored);
   drawBar(
     graphics,
     x,
-    72,
-    BAR_WIDTH,
-    8,
+    72 * uiScale,
+    width,
+    8 * uiScale,
     fighter.blockMeter / fighter.maxBlockMeter,
     0x9f8cff,
     mirrored,
@@ -26,14 +46,14 @@ export function drawFighterBars(
   drawBar(
     graphics,
     x,
-    84,
-    BAR_WIDTH,
-    7,
+    84 * uiScale,
+    width,
+    7 * uiScale,
     fighter.passiveValue / fighter.maxPassiveValue,
     passiveColor,
     mirrored,
   );
-  drawDefenseSegments(graphics, fighter, x, mirrored);
+  drawDefenseSegments(graphics, fighter, x, mirrored, uiScale);
 }
 
 function drawDefenseSegments(
@@ -41,16 +61,18 @@ function drawDefenseSegments(
   fighter: FighterSnapshot,
   x: number,
   mirrored: boolean,
+  uiScale: number,
 ) {
+  const width = BAR_WIDTH * uiScale;
   for (let index = 0; index < fighter.defense.maxSegments; index += 1) {
-    const offset = index * 18;
-    const segmentX = mirrored ? x + BAR_WIDTH - 11 - offset : x + 11 + offset;
+    const offset = index * 18 * uiScale;
+    const segmentX = mirrored ? x + width - 11 * uiScale - offset : x + 11 * uiScale + offset;
     const filled = index < fighter.defense.segments;
     graphics
       .fillStyle(filled ? 0x7557ff : 0xffffff, filled ? 1 : 0.42)
-      .fillCircle(segmentX, 99, 6)
-      .lineStyle(2, 0x30264f, 0.7)
-      .strokeCircle(segmentX, 99, 6);
+      .fillCircle(segmentX, 99 * uiScale, 6 * uiScale)
+      .lineStyle(2 * uiScale, 0x30264f, 0.7)
+      .strokeCircle(segmentX, 99 * uiScale, 6 * uiScale);
   }
 }
 

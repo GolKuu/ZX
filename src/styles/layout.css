@@ -2,7 +2,7 @@
   position: relative;
   min-height: 100vh;
   padding: 22px clamp(20px, 4vw, 68px) 64px;
-  overflow: hidden;
+  overflow-x: clip;
 }
 
 .app-shell--compact .page-content {
@@ -42,6 +42,7 @@
   align-items: center;
   justify-content: space-between;
   min-height: 62px;
+  gap: 20px;
 }
 
 .brand {
@@ -80,6 +81,7 @@
 .page-content {
   position: relative;
   margin-top: clamp(48px, 8vh, 88px);
+  animation: page-enter 360ms cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .page-header {
@@ -104,7 +106,43 @@
 }
 
 @media (max-width: 760px) {
+  .app-shell {
+    padding: 14px 16px 46px;
+  }
+
+  .site-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
   .site-header__nav {
-    display: none;
+    order: 3;
+    width: 100%;
+    gap: 8px;
+    padding: 4px 0 8px;
+    overflow-x: auto;
+  }
+
+  .site-header__nav a {
+    padding: 8px 11px;
+    border-radius: 999px;
+    background: #ffffffa8;
+    font-size: .78rem;
+    white-space: nowrap;
+  }
+
+  .page-content {
+    margin-top: 38px;
+  }
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(.992);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }

@@ -46,6 +46,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
     }
 
     create() {
+      const settings = settingsStore.load();
       createArena(this);
       this.fighterOne = new FighterRenderer(this, 'player1', this.characterFor('player1'));
       this.fighterTwo = new FighterRenderer(this, 'player2', this.characterFor('player2'));
@@ -53,11 +54,12 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
         this,
         this.characterFor('player1'),
         this.characterFor('player2'),
-        settingsStore.load().showCombatHints,
+        settings.showCombatHints,
+        settings.uiScale,
       );
       this.traps = new ArenaTrapRenderer(this);
       this.victory = new VictoryCutsceneRenderer(this);
-      this.feedback = new CartoonParticlePool(this, settingsStore.load());
+      this.feedback = new CartoonParticlePool(this, settings);
       this.performance.attach(this);
       this.pauseButton = createSceneButton(this, 24, 492, 'Ⅱ Пауза', () => this.togglePause());
       createSceneButton(this, 132, 492, '← Выбор', () =>

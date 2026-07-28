@@ -21,11 +21,9 @@ const LEVEL_LABELS: Record<EffectLevel, string> = {
 
 export function EffectsGalleryPage() {
   const [level, setLevel] = useState<EffectLevel>(() => settingsStore.load().bloodLevel);
-  const [saved, setSaved] = useState(false);
 
   function choose(next: EffectLevel) {
     setLevel(next);
-    setSaved(false);
     settingsStore.save({ ...settingsStore.load(), bloodLevel: next });
   }
 
@@ -66,7 +64,7 @@ export function EffectsGalleryPage() {
               </button>
             ))}
           </div>
-          {saved && <p className="viewer-message" role="status">Настройка сохранена.</p>}
+          <p className="viewer-message" role="status">Выбор сразу сохранён для следующего боя.</p>
         </div>
         <ParticlePreview level={level} />
       </section>

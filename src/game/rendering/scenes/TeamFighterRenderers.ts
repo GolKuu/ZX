@@ -4,6 +4,7 @@ import { getCharacter } from '../../data/characters/circleFighters';
 import type { TeamSimulationSnapshot } from '../../team/TeamTypes';
 import { FighterRenderer } from '../fighters/FighterRenderer';
 import { FightHud } from '../hud/FightHud';
+import { settingsStore } from '../../../stores/settingsStore';
 
 type RenderedFighter = {
   characterId: string;
@@ -77,7 +78,8 @@ export class TeamFighterRenderers {
         this.scene,
         getCharacter(snapshot.fighters.player1.characterId),
         getCharacter(snapshot.fighters.player2.characterId),
-        true,
+        settingsStore.load().showCombatHints,
+        settingsStore.load().uiScale,
       );
       this.hudCharacters = key;
     }
