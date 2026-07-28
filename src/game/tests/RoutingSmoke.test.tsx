@@ -20,7 +20,7 @@ const routes = [
   ['/characters', 'Персонажи'],
   ['/controls', 'Управление'],
   ['/profile', 'Профиль'],
-  ['/auth', 'Вход в профиль'],
+  ['/auth', 'Вход в Circle Clash'],
 ] as const;
 
 describe('application routes', () => {

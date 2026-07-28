@@ -112,7 +112,7 @@ p {
 .button--primary {
   color: white;
   background: var(--purple);
-  box-shadow: 0 10px 0 var(--purple-dark), 0 16px 28px #7557ff42;
+  box-shadow: 0 5px 0 var(--purple-dark), 0 10px 20px #7557ff2e;
 }
 
 .button--secondary {

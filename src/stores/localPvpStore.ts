@@ -38,6 +38,10 @@ export function createMatchConfig(
 }
 
 export function validateMatchConfig(config: LocalPvpMatchConfig) {
+  if (config.characters.player1 === config.characters.player2) {
+    return 'Игрокам нужны разные персонажи.';
+  }
+
   if (!config.ready.player1) return 'Player 1 ещё не подтвердил готовность.';
   if (!config.ready.player2) return 'Player 2 ещё не подтвердил готовность.';
 

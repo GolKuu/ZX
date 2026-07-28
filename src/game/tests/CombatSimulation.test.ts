@@ -93,6 +93,29 @@ describe('CombatSimulation', () => {
     expect(simulation.getSnapshot().fighters.player1.mode).toBe('dashing');
   });
 
+  it('lets an airborne fighter cross over the opponent and turns both fighters', () => {
+    const simulation = new CombatSimulation();
+    const close = simulation.getSnapshot();
+    close.roundPhase = 'ACTIVE';
+    close.phaseTicksRemaining = 0;
+    close.fighters.player1.x = 420;
+    close.fighters.player2.x = 510;
+    simulation.restore(close);
+
+    simulation.step(
+      inputFrame('player1', ['MOVE_RIGHT', 'JUMP'], ['JUMP']),
+      FIXED_STEP_SECONDS,
+    );
+    for (let tick = 0; tick < 65; tick += 1) {
+      simulation.step(inputFrame('player1', ['MOVE_RIGHT'], []), FIXED_STEP_SECONDS);
+    }
+
+    const snapshot = simulation.getSnapshot();
+    expect(snapshot.fighters.player1.x).toBeGreaterThan(snapshot.fighters.player2.x);
+    expect(snapshot.fighters.player1.facing).toBe(-1);
+    expect(snapshot.fighters.player2.facing).toBe(1);
+  });
+
   it('runs 90-second rounds and finishes after two round wins', () => {
     const simulation = new CombatSimulation();
     activate(simulation);

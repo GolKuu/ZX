@@ -1,9 +1,12 @@
 import { Link } from 'wouter';
+import { useAuthEmail } from '../components/auth/useAuthEmail';
 import { AppShell } from '../components/layout/AppShell';
 import { PageHeader } from '../components/layout/PageHeader';
 import { isSupabaseConfigured } from '../lib/supabase';
 
 export function ProfilePage() {
+  const email = useAuthEmail();
+
   return (
     <AppShell compact>
       <PageHeader
@@ -14,16 +17,20 @@ export function ProfilePage() {
       <section className="profile-card">
         <span className="profile-card__avatar">C</span>
         <div>
-          <h2>Гость Circle Clash</h2>
+          <h2>{email ?? 'Гость Circle Clash'}</h2>
           <p>
-            {isSupabaseConfigured
+            {email
+              ? 'Профиль подключён. Локальный PvP готов к игре.'
+              : isSupabaseConfigured
               ? 'Supabase подключён — можно войти в аккаунт.'
               : 'Локальный бой доступен без подключения аккаунта.'}
           </p>
         </div>
-        <Link href="/auth" className="button button--secondary">
-          Войти
-        </Link>
+        {!email && (
+          <Link href="/auth" className="button button--secondary">
+            Войти
+          </Link>
+        )}
       </section>
     </AppShell>
   );

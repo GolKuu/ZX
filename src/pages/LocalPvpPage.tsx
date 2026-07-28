@@ -50,6 +50,22 @@ export function LocalPvpPage() {
     setError('');
   }
 
+  function updateCharacter(playerId: PlayerId, characterId: string) {
+    const opponentId = playerId === 'player1' ? 'player2' : 'player1';
+    setCharacters((current) => {
+      if (current[opponentId] !== characterId) {
+        return { ...current, [playerId]: characterId };
+      }
+      return {
+        ...current,
+        [playerId]: characterId,
+        [opponentId]: current[playerId],
+      };
+    });
+    setReady({ player1: false, player2: false });
+    setError('');
+  }
+
   function startMatch() {
     const nextError = validateMatchConfig(config);
     if (nextError) {
@@ -96,18 +112,14 @@ export function LocalPvpPage() {
           <CharacterSelector
             playerId="player1"
             value={characters.player1}
-            onChange={(characterId) =>
-              setCharacters((current) => ({ ...current, player1: characterId }))
-            }
+            onChange={(characterId) => updateCharacter('player1', characterId)}
           />
         </SetupStep>
         <SetupStep number={5} title="Персонаж Player 2">
           <CharacterSelector
             playerId="player2"
             value={characters.player2}
-            onChange={(characterId) =>
-              setCharacters((current) => ({ ...current, player2: characterId }))
-            }
+            onChange={(characterId) => updateCharacter('player2', characterId)}
           />
         </SetupStep>
         <SetupStep number={6} title="Подтверждение готовности">

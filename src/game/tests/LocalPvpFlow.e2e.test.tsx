@@ -109,6 +109,40 @@ describe('LOCAL_PVP user flow', () => {
     expect(saved).toContain('"MOVE_RIGHT":"KeyZ"');
     await act(async () => root.unmount());
   });
+
+  it('swaps characters instead of assigning the same fighter to both players', async () => {
+    const location = memoryLocation({ path: '/local-pvp' });
+    const host = document.createElement('div');
+    document.body.append(host);
+    const root = createRoot(host);
+    await act(async () => {
+      root.render(
+        <Router hook={location.hook}>
+          <AppProviders>
+            <AppRouter />
+          </AppProviders>
+        </Router>,
+      );
+    });
+
+    const playerOnePulse = host.querySelector<HTMLInputElement>(
+      'input[name="character-player1"][value="pulse"]',
+    );
+    if (!playerOnePulse) throw new Error('Player 1 Pulse option not found');
+    await act(async () => playerOnePulse.click());
+
+    expect(
+      host.querySelector<HTMLInputElement>(
+        'input[name="character-player1"][value="pulse"]',
+      )?.checked,
+    ).toBe(true);
+    expect(
+      host.querySelector<HTMLInputElement>(
+        'input[name="character-player2"][value="comet"]',
+      )?.checked,
+    ).toBe(true);
+    await act(async () => root.unmount());
+  });
 });
 
 function findButton(host: HTMLElement, text: string) {

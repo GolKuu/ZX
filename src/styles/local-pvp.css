@@ -1,15 +1,15 @@
 .setup-flow {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  gap: 14px;
 }
 
 .setup-step {
-  padding: 24px;
+  padding: 18px;
   border: 2px solid var(--line);
-  border-radius: 26px;
+  border-radius: 20px;
   background: #ffffffdc;
-  box-shadow: 0 14px 34px #4d357012;
+  box-shadow: 0 8px 20px #4d35700d;
 }
 
 .setup-step:nth-child(3),
@@ -22,7 +22,7 @@
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .setup-step > header > span {

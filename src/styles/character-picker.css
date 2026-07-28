@@ -35,10 +35,40 @@
   opacity: 0;
 }
 
-.fighter-choice > span {
+.fighter-choice__portrait {
   width: 32px;
   height: 32px;
+  position: relative;
+  flex: 0 0 auto;
   border: 3px solid white;
   border-radius: 50%;
+  background: var(--fighter-color);
   box-shadow: 2px 3px 0 var(--ink);
+}
+
+.fighter-choice__portrait--comet::after {
+  content: "";
+  position: absolute;
+  width: 13px;
+  height: 8px;
+  top: -6px;
+  right: -8px;
+  border: 2px solid var(--ink);
+  border-radius: 70% 20% 70% 20%;
+  background: var(--fighter-accent);
+  transform: rotate(28deg);
+}
+
+.fighter-choice__portrait--pulse {
+  box-shadow: inset 0 0 0 6px var(--fighter-color), 2px 3px 0 var(--ink);
+  background: var(--fighter-accent);
+}
+
+.fighter-choice__portrait--pulse::after {
+  content: "";
+  position: absolute;
+  inset: 9px -8px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  transform: rotate(-18deg);
 }

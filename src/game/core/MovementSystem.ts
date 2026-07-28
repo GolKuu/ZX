@@ -24,7 +24,11 @@ export class MovementSystem {
       fighter.dashTicksRemaining -= 1;
       fighter.mode = 'dashing';
     } else if (!locked && fighter.mode !== 'blocking') {
-      const speed = crouching ? balanceConfig.crouchSpeed : balanceConfig.walkSpeed;
+      const speed = crouching
+        ? balanceConfig.crouchSpeed
+        : fighter.grounded
+          ? balanceConfig.walkSpeed
+          : balanceConfig.airMoveSpeed;
       fighter.velocityX = direction * speed;
     } else if (fighter.mode !== 'attackStartup' && fighter.mode !== 'attackActive') {
       fighter.velocityX *= fighter.grounded ? 0.82 : 0.97;

@@ -20,7 +20,7 @@ export class CollisionSystem {
     const minimumDistance = balanceConfig.fighterRadius * 2;
     const distance = right.x - left.x;
     const verticalDistance = Math.abs(right.y - left.y);
-    if (verticalDistance > balanceConfig.fighterRadius * 1.45) return;
+    if (verticalDistance > balanceConfig.fighterRadius * 1.1) return;
     if (Math.abs(distance) >= minimumDistance) return;
 
     const direction = distance >= 0 ? 1 : -1;

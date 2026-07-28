@@ -1,70 +1,68 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { SupabaseSetupMessage } from './SupabaseSetupMessage';
 
-// Вход и регистрация по email + паролю. Это пример — Codex поможет улучшить (Google-вход и т.д.).
 export function Auth() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
   const [busy, setBusy] = useState(false);
 
   if (!isSupabaseConfigured) return <SupabaseSetupMessage />;
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
     setBusy(true);
     setMessage('');
+    setIsError(false);
+
     try {
-      const fn =
-        mode === 'signup'
-          ? supabase.auth.signUp({
-              email,
-              password,
-              options: { emailRedirectTo: window.location.origin },
-            })
-          : supabase.auth.signInWithPassword({ email, password });
-      const { error } = await fn;
-      if (error) setMessage(error.message);
-      else if (mode === 'signup') setMessage('Готово! Проверь почту, если нужна подтверждалка.');
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/profile`,
+          shouldCreateUser: true,
+        },
+      });
+      if (error) {
+        setIsError(true);
+        setMessage(error.message);
+      } else {
+        setMessage('Ссылка отправлена. Откройте письмо на этом устройстве.');
+      }
     } catch {
-      setMessage('Что-то пошло не так. Попробуй ещё раз.');
+      setIsError(true);
+      setMessage('Не удалось отправить письмо. Попробуйте ещё раз.');
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <section className="card">
-      <h2>{mode === 'signin' ? 'Вход' : 'Регистрация'}</h2>
-      <form onSubmit={handleSubmit} className="form">
+    <section className="auth-card">
+      <form onSubmit={handleSubmit} className="auth-form">
+        <label htmlFor="auth-email">Email</label>
         <input
+          id="auth-email"
           type="email"
-          placeholder="email"
+          inputMode="email"
+          autoComplete="email"
+          placeholder="name@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(event) => setEmail(event.target.value)}
+          disabled={busy}
           required
         />
-        <input
-          type="password"
-          placeholder="пароль (6+ символов)"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          minLength={6}
-          required
-        />
-        <button type="submit" disabled={busy}>
-          {busy ? '…' : mode === 'signin' ? 'Войти' : 'Создать аккаунт'}
+        <button type="submit" className="button button--primary" disabled={busy}>
+          {busy ? 'Отправляем…' : 'Войти или зарегистрироваться'}
         </button>
       </form>
-      {message && <p className="message">{message}</p>}
-      <button
-        className="ghost"
-        onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
-      >
-        {mode === 'signin' ? 'Нет аккаунта? Зарегистрируйся' : 'Уже есть аккаунт? Войти'}
-      </button>
+      {message && (
+        <p className={isError ? 'auth-message auth-message--error' : 'auth-message'} role="status">
+          {message}
+        </p>
+      )}
+      <p className="auth-privacy">Без пароля. Мы отправим одноразовую ссылку для входа.</p>
     </section>
   );
 }

@@ -36,11 +36,11 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
       this.fighterOne = new FighterRenderer(this, this.characterFor('player1'));
       this.fighterTwo = new FighterRenderer(this, this.characterFor('player2'));
       this.hud = new FightHud(this);
-      this.pauseButton = this.createButton(36, 84, 'Пауза', () => this.togglePause());
-      this.createButton(36, 126, 'К выбору', () =>
+      this.pauseButton = this.createButton(24, 492, 'Ⅱ Пауза', () => this.togglePause());
+      this.createButton(132, 492, '← Выбор', () =>
         bridge.emit(GameEvents.returnToSetupRequested, undefined),
       );
-      this.createButton(36, 168, 'В меню', () =>
+      this.createButton(240, 492, '⌂ Меню', () =>
         bridge.emit(GameEvents.exitRequested, undefined),
       );
       this.bindBridgeCommands();
@@ -83,19 +83,19 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
     private togglePause() {
       const nextPaused = !this.simulation.getSnapshot().paused;
       this.simulation.setPaused(nextPaused);
-      this.pauseButton.setText(nextPaused ? 'Продолжить' : 'Пауза');
+      this.pauseButton.setText(nextPaused ? '▶ Продолжить' : 'Ⅱ Пауза');
       bridge.emit(GameEvents.pauseChanged, { paused: nextPaused });
     }
 
     private handleDisconnect(playerId: PlayerId, label: string) {
       this.simulation.setPaused(true);
-      this.pauseButton?.setText('Продолжить');
+      this.pauseButton?.setText('▶ Продолжить');
       bridge.emit(GameEvents.deviceDisconnected, { playerId, label });
     }
 
     private handleReconnect(playerId: PlayerId, label: string) {
       this.simulation.setPaused(false);
-      this.pauseButton?.setText('Пауза');
+      this.pauseButton?.setText('Ⅱ Пауза');
       bridge.emit(GameEvents.deviceReconnected, { playerId, label });
     }
 
@@ -135,11 +135,11 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
       return this.add
         .text(x, y, label, {
           fontFamily: 'Arial',
-          fontSize: '17px',
+          fontSize: '14px',
           fontStyle: 'bold',
-          color: '#30264f',
-          backgroundColor: '#ffffffdd',
-          padding: { x: 14, y: 9 },
+          color: '#ffffff',
+          backgroundColor: '#30264fdd',
+          padding: { x: 11, y: 8 },
         })
         .setDepth(30)
         .setInteractive({ useHandCursor: true })

@@ -1,6 +1,7 @@
 import { playerLabels } from '../../game/config/defaultControls';
 import type { PlayerId } from '../../game/core/types';
 import { circleFighters } from '../../game/data/characters/circleFighters';
+import type { CSSProperties } from 'react';
 
 export function CharacterSelector({
   playerId,
@@ -27,7 +28,14 @@ export function CharacterSelector({
               checked={value === fighter.id}
               onChange={() => onChange(fighter.id)}
             />
-            <span style={{ background: fighter.cssColor }} aria-hidden="true" />
+            <span
+              className={`fighter-choice__portrait fighter-choice__portrait--${fighter.visualKind}`}
+              style={{
+                '--fighter-color': fighter.cssColor,
+                '--fighter-accent': `#${fighter.accentColor.toString(16).padStart(6, '0')}`,
+              } as CSSProperties}
+              aria-hidden="true"
+            />
             <strong>{fighter.name}</strong>
           </label>
         ))}

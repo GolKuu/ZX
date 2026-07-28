@@ -6,6 +6,17 @@ import {
 } from '../../stores/localPvpStore';
 
 describe('LOCAL_PVP validation', () => {
+  it('requires two visually distinct characters', () => {
+    const keyboard = { kind: 'keyboard' as const, id: 'keyboard' as const };
+    const config = createMatchConfig(
+      { player1: keyboard, player2: keyboard },
+      cloneKeyboardProfiles(),
+      { player1: 'comet', player2: 'comet' },
+      { player1: true, player2: true },
+    );
+    expect(validateMatchConfig(config)).toContain('разные персонажи');
+  });
+
   it('rejects one gamepad selected by both players', () => {
     const gamepad = {
       kind: 'gamepad' as const,
