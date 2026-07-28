@@ -62,10 +62,15 @@ export function parseGameplayInputPacket(value: unknown) {
   if (!isSafeTick(value.tick) || !isSafeTick(value.acknowledgedTick)) {
     return invalid('INPUT_TICK');
   }
-  if (!Number.isSafeInteger(value.sequence) || value.sequence < 1) {
+  if (
+    typeof value.sequence !== 'number' ||
+    !Number.isSafeInteger(value.sequence) ||
+    value.sequence < 1
+  ) {
     return invalid('INPUT_SEQUENCE');
   }
   if (
+    typeof value.actionBitmask !== 'number' ||
     !Number.isInteger(value.actionBitmask) ||
     value.actionBitmask < 0 ||
     (value.actionBitmask & ~ALL_ONLINE_ACTION_BITS) !== 0

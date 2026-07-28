@@ -34,7 +34,7 @@ export type RoomOptions = {
 };
 
 export function sendMessage(socket: WebSocket | null, message: ServerMessage) {
-  if (!socket || socket.readyState !== socket.OPEN) return;
+  if (!socket || socket.readyState !== 1) return;
   socket.send(JSON.stringify(message));
 }
 
