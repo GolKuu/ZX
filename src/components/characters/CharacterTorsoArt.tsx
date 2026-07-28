@@ -1,4 +1,3 @@
-import { CharacterSkinArt } from './CharacterSkinArt';
 import { CharacterFace, CharacterSkinDetails } from './CharacterSkinDetails';
 import { CHARACTER_SKINS } from './characterSkinProfiles';
 import { getCharacter } from '../../game/data/characters/circleFighters';
