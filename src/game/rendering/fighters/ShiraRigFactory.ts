@@ -79,9 +79,7 @@ function createShell(scene: Phaser.Scene, character: CharacterDefinition) {
   const shell = scene.add
     .ellipse(0, 0, 55, 43, character.color)
     .setStrokeStyle(5, OUTLINE, 1);
-  const visor = scene.add
-    .roundedRect?.(0, -1, 34, 17, 8, OUTLINE) ??
-    scene.add.rectangle(0, -1, 34, 17, OUTLINE);
+  const visor = scene.add.ellipse(0, -1, 36, 18, OUTLINE);
   const leftEye = scene.add.ellipse(-9, -1, 6, 8, 0xc9fff5);
   const rightEye = scene.add.ellipse(9, -1, 6, 8, 0xc9fff5);
   const glint = scene.add.circle(-11, -4, 2, 0xffffff);

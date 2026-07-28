@@ -73,9 +73,9 @@ function createTorso(scene: Phaser.Scene, character: CharacterDefinition) {
   const core = scene.add
     .polygon(8, 0, [-10, -15, 9, -18, 18, 1, 5, 20, -14, 10], character.accentColor)
     .setStrokeStyle(3, 0xffe2a2, 0.9);
-  const neck = scene.add.roundedRect?.(0, -45, 28, 18, 6, character.shadowColor);
-  const children = neck ? [body, chest, core, neck] : [body, chest, core];
-  return scene.add.container(0, -12, children);
+  const neck = scene.add.rectangle(0, -44, 28, 18, character.shadowColor)
+    .setStrokeStyle(4, OUTLINE, 1);
+  return scene.add.container(0, -12, [neck, body, chest, core]);
 }
 
 function createHead(scene: Phaser.Scene, character: CharacterDefinition) {
