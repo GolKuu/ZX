@@ -141,6 +141,10 @@ React отвечает за сайт и маршруты, Phaser — за аре
 | `supabase/migrations/` | Таблицы базы (применяются `npm run db:push`) |
 | `supabase/tests/database/` | pgTAP-тесты RLS (`npm run test:db`) |
 | `supabase/functions/delete-account/` | JWT-защищённое удаление аккаунта |
+
+Проверки аккаунтов: `npm test` запускает клиентские и статические security-тесты,
+`npm run test:remote` проверяет реальные анонимные RLS-границы связанного проекта, а
+`npm run test:db` выполняет полный pgTAP-набор (для него локально нужен Docker).
 | `supabase/functions/ai/` | AI на бесплатном ключе Gemini (день 5) |
 | `AGENTS.md` | Контекст для Codex — он читает это сам |
 | `CODEX_SETUP.md` | Готовые промпты для Codex по дням |
