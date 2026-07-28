@@ -51,17 +51,7 @@ export function LocalPvpPage() {
   }
 
   function updateCharacter(playerId: PlayerId, characterId: string) {
-    const opponentId = playerId === 'player1' ? 'player2' : 'player1';
-    setCharacters((current) => {
-      if (current[opponentId] !== characterId) {
-        return { ...current, [playerId]: characterId };
-      }
-      return {
-        ...current,
-        [playerId]: characterId,
-        [opponentId]: current[playerId],
-      };
-    });
+    setCharacters((current) => ({ ...current, [playerId]: characterId }));
     setReady({ player1: false, player2: false });
     setError('');
   }
@@ -112,6 +102,7 @@ export function LocalPvpPage() {
           <CharacterSelector
             playerId="player1"
             value={characters.player1}
+            opponentCharacterId={characters.player2}
             onChange={(characterId) => updateCharacter('player1', characterId)}
           />
         </SetupStep>
@@ -119,6 +110,7 @@ export function LocalPvpPage() {
           <CharacterSelector
             playerId="player2"
             value={characters.player2}
+            opponentCharacterId={characters.player1}
             onChange={(characterId) => updateCharacter('player2', characterId)}
           />
         </SetupStep>

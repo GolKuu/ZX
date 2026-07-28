@@ -1,21 +1,24 @@
 import { playerLabels } from '../../game/config/defaultControls';
 import type { PlayerId } from '../../game/core/types';
 import { circleFighters } from '../../game/data/characters/circleFighters';
-import type { CSSProperties } from 'react';
+import { CharacterPortrait } from '../characters/CharacterPortrait';
+import { CharacterDetails } from './CharacterDetails';
 
 export function CharacterSelector({
   playerId,
   value,
+  opponentCharacterId,
   onChange,
 }: {
   playerId: PlayerId;
   value: string;
+  opponentCharacterId: string;
   onChange: (characterId: string) => void;
 }) {
   return (
     <fieldset className="character-picker">
       <legend>{playerLabels[playerId]}</legend>
-      <div>
+      <div className="character-picker__roster">
         {circleFighters.map((fighter) => (
           <label
             className={value === fighter.id ? 'fighter-choice fighter-choice--selected' : 'fighter-choice'}
@@ -28,18 +31,16 @@ export function CharacterSelector({
               checked={value === fighter.id}
               onChange={() => onChange(fighter.id)}
             />
-            <span
-              className={`fighter-choice__portrait fighter-choice__portrait--${fighter.visualKind}`}
-              style={{
-                '--fighter-color': fighter.cssColor,
-                '--fighter-accent': `#${fighter.accentColor.toString(16).padStart(6, '0')}`,
-              } as CSSProperties}
-              aria-hidden="true"
-            />
+            <CharacterPortrait character={fighter} />
             <strong>{fighter.name}</strong>
+            <small>{fighter.force}</small>
           </label>
         ))}
       </div>
+      <CharacterDetails
+        characterId={value}
+        opponentCharacterId={opponentCharacterId}
+      />
     </fieldset>
   );
 }

@@ -5,11 +5,12 @@ import {
   type AnimationStateId,
 } from '../../game/rendering/animation/AnimationCatalog';
 import { CharacterArt } from './CharacterArt';
+import type { CharacterId } from '../../game/data/characters/circleFighters';
 
 export function AnimationShowcase({
   characterId,
 }: {
-  characterId: 'granite' | 'shira';
+  characterId: CharacterId;
 }) {
   const [state, setState] = useState<AnimationStateId>('idle');
   const [playing, setPlaying] = useState(true);
