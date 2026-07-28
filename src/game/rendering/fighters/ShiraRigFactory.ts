@@ -3,83 +3,89 @@ import type { CharacterDefinition } from '../../data/characters/circleFighters';
 import { ProceduralRig } from '../animation/ProceduralRig';
 import type { RigParts } from '../animation/RigTypes';
 
-export function createShiraRig(
-  scene: Phaser.Scene,
-  character: CharacterDefinition,
-) {
-  const backLeg = ribbonLeg(scene, -12, 29, character.shadowColor);
-  const frontLeg = ribbonLeg(scene, 14, 29, character.color);
-  const backArm = scissorArm(scene, -27, -22, character.shadowColor, character.accentColor);
-  const torso = createTorso(scene, character);
-  const head = createHead(scene, character);
-  const frontArm = scissorArm(scene, 28, -23, character.color, character.accentColor, true);
+const OUTLINE = 0x352d55;
+
+export function createShiraRig(scene: Phaser.Scene, character: CharacterDefinition) {
+  const backLeg = ribbonTail(scene, -13, 25, character.shadowColor);
+  const frontLeg = ribbonTail(scene, 13, 25, character.accentColor, true);
+  const backArm = scissorWing(scene, -31, -24, character.shadowColor, 0x9feadf);
+  const torso = createCore(scene, character);
+  const head = createShell(scene, character);
+  const frontArm = scissorWing(scene, 31, -24, character.color, character.accentColor, true);
   const root = scene.add.container(0, 0, [
-    backLeg,
-    backArm,
-    frontLeg,
-    torso,
-    head,
-    frontArm,
+    backLeg, backArm, frontLeg, torso, head, frontArm,
   ]);
   const parts: RigParts = { root, torso, head, frontArm, backArm, frontLeg, backLeg };
   return new ProceduralRig(parts, 'shira');
 }
 
-function ribbonLeg(scene: Phaser.Scene, x: number, y: number, color: number) {
-  const shin = scene.add
-    .polygon(0, 20, [-10, -22, 9, -24, 8, 18, 18, 34, -14, 34, -7, 14], color)
-    .setStrokeStyle(4, 0x3f2942, 1);
-  const boot = scene.add
-    .polygon(7, 53, [-12, -7, 12, -7, 24, 5, 15, 13, -12, 10], 0x3f2942);
-  return scene.add.container(x, y, [shin, boot]);
-}
-
-function scissorArm(
+function ribbonTail(
   scene: Phaser.Scene,
   x: number,
   y: number,
   color: number,
+  front = false,
+) {
+  const loop = scene.add
+    .ellipse(0, 24, 23, 48, 0xffffff, 0)
+    .setStrokeStyle(front ? 8 : 7, color, front ? 0.95 : 0.7);
+  const knot = scene.add.circle(0, 2, 9, color).setStrokeStyle(4, OUTLINE, 1);
+  const tip = scene.add
+    .polygon(3, 56, [-8, -10, 8, -12, 14, 8, 0, 17, -11, 7], color)
+    .setStrokeStyle(3, OUTLINE, 0.9);
+  return scene.add.container(x, y, [loop, knot, tip]);
+}
+
+function scissorWing(
+  scene: Phaser.Scene,
+  x: number,
+  y: number,
+  shellColor: number,
   bladeColor: number,
   front = false,
 ) {
-  const sleeve = scene.add
-    .polygon(0, 15, [-10, -18, 11, -17, 9, 24, -9, 27], color)
-    .setStrokeStyle(4, 0x3f2942, 1);
-  const ring = scene.add.circle(0, 37, 10, 0xfff4ed).setStrokeStyle(4, 0x3f2942, 1);
-  const upperBlade = scene.add
-    .polygon(13, 52, [-6, -17, 9, -14, 33, 10, 22, 15, -4, 2], bladeColor, front ? 1 : 0.72)
-    .setStrokeStyle(3, 0x3f2942, 0.9);
-  const lowerBlade = scene.add
-    .polygon(11, 57, [-5, -4, 25, 4, 35, 16, 24, 20, -4, 7], 0xf4f6f7, front ? 1 : 0.7)
-    .setStrokeStyle(3, 0x3f2942, 0.9);
-  return scene.add.container(x, y, [sleeve, ring, upperBlade, lowerBlade]);
+  const joint = scene.add.circle(0, 5, 14, 0xfffbf4).setStrokeStyle(5, OUTLINE, 1);
+  const handle = scene.add
+    .ellipse(0, 28, 24, 36, shellColor, 0.9)
+    .setStrokeStyle(5, OUTLINE, 1);
+  const inner = scene.add.ellipse(0, 28, 9, 18, 0xfffbf4);
+  const bladeOne = scene.add
+    .polygon(8, 51, [-7, -18, 8, -16, 24, 18, 12, 24, -5, 4], bladeColor, front ? 1 : 0.72)
+    .setStrokeStyle(3, OUTLINE, 0.9);
+  const bladeTwo = scene.add
+    .polygon(-7, 54, [-8, -15, 6, -17, -7, 25, -21, 20, -4, 2], 0xf7fbfa, front ? 1 : 0.65)
+    .setStrokeStyle(3, OUTLINE, 0.9);
+  return scene.add.container(x, y, [handle, inner, bladeOne, bladeTwo, joint]);
 }
 
-function createTorso(scene: Phaser.Scene, character: CharacterDefinition) {
+function createCore(scene: Phaser.Scene, character: CharacterDefinition) {
+  const aura = scene.add.ellipse(0, 3, 66, 82, character.accentColor, 0.16);
   const body = scene.add
-    .polygon(0, 0, [-24, -34, 18, -37, 29, -4, 20, 37, -19, 37, -29, -5], character.color)
-    .setStrokeStyle(5, 0x3f2942, 1);
-  const panel = scene.add
-    .polygon(0, 4, [-12, -26, 12, -27, 17, 27, -15, 28], character.shadowColor, 0.72);
-  const seam = scene.add
-    .polygon(0, 0, [-3, -24, 3, -24, 5, 27, -4, 27], character.accentColor);
-  return scene.add.container(0, -11, [body, panel, seam]);
+    .polygon(0, 0, [0, -43, 31, -24, 34, 14, 15, 41, -15, 41, -34, 14, -31, -24], character.color)
+    .setStrokeStyle(5, OUTLINE, 1);
+  const belly = scene.add.ellipse(0, 8, 37, 48, 0xc9b9f4, 0.7);
+  const pivot = scene.add.circle(0, 7, 12, 0xfffbf4).setStrokeStyle(5, OUTLINE, 1);
+  const sparkle = scene.add.polygon(0, 7, [0, -7, 3, -2, 8, 0, 3, 3, 0, 8, -3, 3, -8, 0, -3, -2], character.accentColor);
+  return scene.add.container(0, -10, [aura, body, belly, pivot, sparkle]);
 }
 
-function createHead(scene: Phaser.Scene, character: CharacterDefinition) {
-  const hairBack = scene.add
-    .polygon(-7, -3, [-25, -25, 5, -36, 29, -18, 34, 16, 8, 30, -26, 21], 0x3f2942);
-  const face = scene.add.ellipse(0, 0, 47, 52, 0xffd8cb).setStrokeStyle(5, 0x3f2942, 1);
-  const fringe = scene.add
-    .polygon(-2, -17, [-23, -6, -10, -20, 4, -13, 18, -25, 24, -7, 8, 0, -6, -8], character.color);
-  const ponytail = scene.add
-    .polygon(-29, -10, [-8, -17, -27, -29, -19, 0, -36, 20, -7, 13], character.accentColor)
-    .setStrokeStyle(4, 0x3f2942, 1);
-  const leftEye = scene.add.ellipse(-9, 1, 6, 9, 0x3f2942).setRotation(-0.18);
-  const rightEye = scene.add.ellipse(10, 0, 6, 9, 0x3f2942).setRotation(0.18);
-  const smile = scene.add.arc(1, 9, 10, 15, 165, false, 0x3f2942)
-    .setStrokeStyle(3, 0x3f2942).setFillStyle();
-  return scene.add.container(0, -65, [
-    ponytail, hairBack, face, fringe, leftEye, rightEye, smile,
+function createShell(scene: Phaser.Scene, character: CharacterDefinition) {
+  const leftFin = scene.add
+    .polygon(-27, -2, [-3, -15, -25, -28, -17, 1, -28, 17, -2, 11], character.accentColor)
+    .setStrokeStyle(4, OUTLINE, 1);
+  const rightFin = scene.add
+    .polygon(27, -2, [3, -15, 25, -28, 17, 1, 28, 17, 2, 11], character.accentColor)
+    .setStrokeStyle(4, OUTLINE, 1);
+  const shell = scene.add
+    .ellipse(0, 0, 55, 43, character.color)
+    .setStrokeStyle(5, OUTLINE, 1);
+  const visor = scene.add
+    .roundedRect?.(0, -1, 34, 17, 8, OUTLINE) ??
+    scene.add.rectangle(0, -1, 34, 17, OUTLINE);
+  const leftEye = scene.add.ellipse(-9, -1, 6, 8, 0xc9fff5);
+  const rightEye = scene.add.ellipse(9, -1, 6, 8, 0xc9fff5);
+  const glint = scene.add.circle(-11, -4, 2, 0xffffff);
+  return scene.add.container(0, -64, [
+    leftFin, rightFin, shell, visor, leftEye, rightEye, glint,
   ]);
 }
