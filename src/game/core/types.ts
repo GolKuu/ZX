@@ -17,6 +17,9 @@ export const GAME_ACTIONS = [
   'HEAVY_ATTACK',
   'SPECIAL_ATTACK',
   'DEFENSE',
+  'ASSIST',
+  'TAG_SWITCH',
+  'BURST_ASSIST',
   'PAUSE',
 ] as const;
 

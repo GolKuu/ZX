@@ -31,9 +31,9 @@ describe('network delay and packet loss', () => {
     const match = new AuthoritativeMatch({ player1: 'granite', player2: 'shira' });
     const link = new LaggyLink<GameplayInputPacket>(6, (sequence) => sequence % 5 === 0);
 
-    for (let networkTick = 0; networkTick < 420; networkTick += 1) {
-      const moving = networkTick < 350 ? 1 : 0;
-      const attacking = networkTick > 280 && networkTick % 30 < 6
+    for (let networkTick = 0; networkTick < 720; networkTick += 1) {
+      const moving = networkTick < 650 ? 1 : 0;
+      const attacking = networkTick > 400 && networkTick % 30 < 6
         ? ONLINE_ACTION_BITS.LIGHT_ATTACK
         : 0;
       link.send(packet(networkTick + 1, networkTick, attacking, moving), networkTick);
@@ -42,14 +42,14 @@ describe('network delay and packet loss', () => {
     }
 
     const state = match.snapshot;
-    expect(state.tick).toBe(420);
+    expect(state.tick).toBe(720);
     expect(state.fighters.player1.x).toBeGreaterThan(250);
     expect(state.fighters.player1.x).toBeGreaterThanOrEqual(balanceConfig.fighterRadius);
     expect(state.fighters.player1.x)
       .toBeLessThanOrEqual(balanceConfig.arenaWidth - balanceConfig.fighterRadius);
     expect(state.fighters.player2.health).toBeLessThan(state.fighters.player2.maxHealth);
     expect(state.fighters.player2.health).toBeGreaterThanOrEqual(0);
-    expect(first.lastProcessedSequence).toBeGreaterThan(300);
+    expect(first.lastProcessedSequence).toBeGreaterThan(600);
   });
 
   it('rejects forged state fields and unknown action bits', () => {

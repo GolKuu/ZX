@@ -7,6 +7,9 @@ export const ONLINE_ACTION_BITS = {
   HEAVY_ATTACK: 1 << 2,
   SPECIAL_ATTACK: 1 << 3,
   DEFENSE: 1 << 4,
+  ASSIST: 1 << 5,
+  TAG_SWITCH: 1 << 6,
+  BURST_ASSIST: 1 << 7,
 } as const;
 
 export const ALL_ONLINE_ACTION_BITS = Object.values(ONLINE_ACTION_BITS)

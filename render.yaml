@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: circle-clash-match-server
+    runtime: node
+    plan: free
+    rootDir: match-server
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: CLIENT_ORIGINS
+        sync: false
+      - key: INPUT_DELAY_TICKS
+        value: 3
+      - key: RECONNECT_GRACE_MS
+        value: 30000
