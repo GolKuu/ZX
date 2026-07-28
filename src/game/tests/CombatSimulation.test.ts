@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { balanceConfig, FIXED_STEP_SECONDS } from '../config/balanceConfig';
 import { CombatSimulation } from '../core/CombatSimulation';
+import type { GameAction } from '../core/types';
 import { emptyInputFrame, inputFrame } from './testFixtures';
 
 function activate(simulation: CombatSimulation) {
@@ -35,7 +36,7 @@ describe('CombatSimulation', () => {
     expect(simulation.getSnapshot().fighters.player1.x).toBe(410);
   });
 
-  it('applies a nearby attack and reduces damage while blocking', () => {
+  it('applies an attack only after startup and deals chip damage while blocking', () => {
     const simulation = new CombatSimulation();
     const close = simulation.getSnapshot();
     close.roundPhase = 'ACTIVE';
@@ -44,12 +45,16 @@ describe('CombatSimulation', () => {
     close.fighters.player2.x = 500;
     simulation.restore(close);
 
-    const frame = emptyInputFrame();
-    frame.player1 = { held: ['LIGHT_ATTACK'], pressed: ['LIGHT_ATTACK'], released: [] };
-    frame.player2 = { held: ['BLOCK'], pressed: ['BLOCK'], released: [] };
-    simulation.step(frame, FIXED_STEP_SECONDS);
+    simulation.step(combatFrame(['LIGHT_ATTACK'], ['LIGHT_ATTACK'], ['BLOCK']), FIXED_STEP_SECONDS);
+    expect(simulation.getSnapshot().fighters.player2.health).toBe(100);
+    for (let frame = 0; frame < 4; frame += 1) {
+      simulation.step(combatFrame([], [], ['BLOCK']), FIXED_STEP_SECONDS);
+    }
 
-    expect(simulation.getSnapshot().fighters.player2.health).toBe(98);
+    const defender = simulation.getSnapshot().fighters.player2;
+    expect(defender.health).toBe(99);
+    expect(defender.mode).toBe('blockstun');
+    expect(defender.blockMeter).toBeLessThan(defender.maxBlockMeter);
   });
 
   it('locks movement during 3, 2, 1, FIGHT countdown', () => {
@@ -119,4 +124,15 @@ function forceRoundWin(simulation: CombatSimulation, winner: 'player1' | 'player
   snapshot.fighters[winner === 'player1' ? 'player2' : 'player1'].health = 0;
   simulation.restore(snapshot);
   simulation.step(emptyInputFrame(), FIXED_STEP_SECONDS);
+}
+
+function combatFrame(
+  playerOneHeld: GameAction[],
+  playerOnePressed: GameAction[],
+  playerTwoHeld: GameAction[],
+) {
+  const frame = emptyInputFrame();
+  frame.player1 = { held: playerOneHeld, pressed: playerOnePressed, released: [] };
+  frame.player2 = { held: playerTwoHeld, pressed: [], released: [] };
+  return frame;
 }

@@ -25,27 +25,54 @@ export type FighterMode =
   | 'dashing'
   | 'jumping'
   | 'crouching'
-  | 'attacking'
   | 'blocking'
+  | 'attackStartup'
+  | 'attackActive'
+  | 'attackRecovery'
   | 'hitstun'
+  | 'blockstun'
+  | 'knockdown'
+  | 'wakeup'
   | 'knockout';
+
+export type AttackRuntimeSnapshot = {
+  id: string;
+  frame: number;
+  phase: 'startup' | 'active' | 'recovery';
+  hitHitboxes: number[];
+  connected: boolean;
+};
 
 export type FighterSnapshot = {
   id: PlayerId;
+  characterId: string;
   x: number;
   y: number;
   velocityX: number;
   velocityY: number;
   facing: Facing;
   health: number;
+  maxHealth: number;
+  energy: number;
+  maxEnergy: number;
+  blockMeter: number;
+  maxBlockMeter: number;
+  guard: 'standing' | 'crouching' | null;
   mode: FighterMode;
   modeTicksRemaining: number;
-  attackCooldownTicks: number;
+  attack: AttackRuntimeSnapshot | null;
   dashTicksRemaining: number;
   dashDirection: Facing;
   lastMoveTapAction: 'MOVE_LEFT' | 'MOVE_RIGHT' | null;
   lastMoveTapTick: number;
   grounded: boolean;
+};
+
+export type ComboSnapshot = {
+  hits: number;
+  damage: number;
+  targetId: PlayerId | null;
+  remainingTicks: number;
 };
 
 export type PlayerInputFrame = {
@@ -69,12 +96,5 @@ export type SimulationSnapshot = {
   wins: Record<PlayerId, number>;
   roundTicksRemaining: number;
   fighters: Record<PlayerId, FighterSnapshot>;
-};
-
-export type AttackHit = {
-  attackerId: PlayerId;
-  defenderId: PlayerId;
-  damage: number;
-  hitstunTicks: number;
-  unblockable?: boolean;
+  combos: Record<PlayerId, ComboSnapshot>;
 };

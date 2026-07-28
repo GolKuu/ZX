@@ -1,51 +1,116 @@
-import { balanceConfig } from '../config/balanceConfig';
-import type {
-  AttackHit,
-  FighterSnapshot,
-  GameAction,
-  PlayerInputFrame,
-} from '../core/types';
+import { CollisionSystem } from '../core/CollisionSystem';
+import { FighterStateMachine } from '../core/FighterStateMachine';
+import type { FighterSnapshot, PlayerInputFrame } from '../core/types';
+import { AttackSelector } from './AttackSelector';
+import { EnergyComponent } from './EnergyComponent';
+import type { AttackDefinition } from './AttackDefinition';
 
-type AttackPreset = {
-  action: GameAction;
-  damage: number;
-  cooldown: number;
-  range: number;
-  unblockable?: boolean;
+export type AttackContact = {
+  definition: AttackDefinition;
+  hitboxIndex: number;
 };
 
-const attacks: readonly AttackPreset[] = [
-  { action: 'LIGHT_ATTACK', damage: 8, cooldown: 24, range: 104 },
-  { action: 'HEAVY_ATTACK', damage: 14, cooldown: 38, range: 116 },
-  { action: 'SPECIAL_ATTACK', damage: 18, cooldown: 54, range: 135 },
-  { action: 'GRAB', damage: 11, cooldown: 42, range: 82, unblockable: true },
-  { action: 'SUPER_ATTACK', damage: 25, cooldown: 90, range: 150 },
-];
-
 export class AttackSystem {
-  tryAttack(
-    attacker: FighterSnapshot,
-    defender: FighterSnapshot,
-    input: PlayerInputFrame,
-  ): AttackHit | null {
-    const preset = attacks.find((attack) => input.pressed.includes(attack.action));
-    if (!preset || attacker.attackCooldownTicks > 0) return null;
-    if (attacker.mode === 'hitstun' || attacker.mode === 'knockout') return null;
+  private readonly collision = new CollisionSystem();
+  private readonly energy = new EnergyComponent();
+  private readonly states = new FighterStateMachine();
+  private readonly selector: AttackSelector;
 
-    attacker.attackCooldownTicks = preset.cooldown;
-    attacker.mode = 'attacking';
-    attacker.modeTicksRemaining = Math.min(18, Math.round(preset.cooldown / 2));
+  constructor() {
+    this.selector = new AttackSelector();
+  }
 
-    const distance = Math.abs(attacker.x - defender.x);
-    const heightDifference = Math.abs(attacker.y - defender.y);
-    if (distance > preset.range || heightDifference > balanceConfig.fighterRadius) return null;
+  prepare(fighter: FighterSnapshot, input: PlayerInputFrame) {
+    const requested = this.selector.select(fighter, input);
+    if (requested && this.canStart(fighter, requested)) this.start(fighter, requested);
+    const definition = this.currentDefinition(fighter);
+    if (!definition || !fighter.attack) return;
 
-    return {
-      attackerId: attacker.id,
-      defenderId: defender.id,
-      damage: preset.damage,
-      hitstunTicks: balanceConfig.hitstunTicks,
-      unblockable: preset.unblockable,
+    fighter.attack.phase = this.phaseAt(definition, fighter.attack.frame);
+    fighter.mode =
+      fighter.attack.phase === 'startup'
+        ? 'attackStartup'
+        : fighter.attack.phase === 'active'
+          ? 'attackActive'
+          : 'attackRecovery';
+    const movement = definition.movementTimeline.find(
+      (entry) => entry.frame === fighter.attack?.frame,
+    );
+    if (movement) {
+      fighter.velocityX = movement.velocityX * fighter.facing;
+      fighter.velocityY = -movement.velocityY;
+    }
+  }
+
+  findContact(attacker: FighterSnapshot, defender: FighterSnapshot): AttackContact | null {
+    const runtime = attacker.attack;
+    const definition = this.currentDefinition(attacker);
+    if (!runtime || !definition || runtime.phase !== 'active') return null;
+    const hurtbox = this.collision.getHurtbox(defender);
+
+    for (const [index, hitbox] of definition.hitboxes.entries()) {
+      if (runtime.hitHitboxes.includes(index)) continue;
+      if (runtime.frame < hitbox.startFrame || runtime.frame > hitbox.endFrame) continue;
+      if (!this.collision.overlaps(this.collision.getHitbox(attacker, hitbox), hurtbox)) continue;
+      runtime.hitHitboxes.push(index);
+      runtime.connected = true;
+      return { definition, hitboxIndex: index };
+    }
+    return null;
+  }
+
+  finishTick(fighter: FighterSnapshot) {
+    const runtime = fighter.attack;
+    const definition = this.currentDefinition(fighter);
+    if (!runtime || !definition) return;
+    runtime.frame += 1;
+    const total = definition.startupFrames + definition.activeFrames + definition.recoveryFrames;
+    if (runtime.frame < total) return;
+    fighter.attack = null;
+    fighter.velocityX = 0;
+    if (fighter.mode.startsWith('attack')) {
+      fighter.mode = fighter.grounded ? 'idle' : 'jumping';
+    }
+  }
+
+  currentDefinition(fighter: FighterSnapshot) {
+    return this.selector.find(fighter);
+  }
+
+  private canStart(fighter: FighterSnapshot, requested: AttackDefinition) {
+    if (!fighter.attack) {
+      return this.states.canStartAttack(fighter) &&
+        this.energy.canSpend(fighter, requested.energyCost);
+    }
+    const current = this.currentDefinition(fighter);
+    if (!current) return false;
+    return current.cancelWindows.some(
+      (window) =>
+        fighter.attack &&
+        fighter.attack.frame >= window.startFrame &&
+        fighter.attack.frame <= window.endFrame &&
+        window.into.includes(requested.category) &&
+        (!window.onHitOnly || fighter.attack.connected),
+    ) && this.energy.canSpend(fighter, requested.energyCost);
+  }
+
+  private start(fighter: FighterSnapshot, definition: AttackDefinition) {
+    if (!this.energy.spend(fighter, definition.energyCost)) return;
+    fighter.velocityX = 0;
+    fighter.attack = {
+      id: definition.id,
+      frame: 0,
+      phase: 'startup',
+      hitHitboxes: [],
+      connected: false,
     };
+    fighter.guard = null;
+    fighter.mode = 'attackStartup';
+  }
+
+  private phaseAt(definition: AttackDefinition, frame: number) {
+    if (frame < definition.startupFrames) return 'startup' as const;
+    if (frame < definition.startupFrames + definition.activeFrames) return 'active' as const;
+    return 'recovery' as const;
   }
 }

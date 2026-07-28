@@ -1,8 +1,11 @@
-import { AttackSystem } from '../combat/AttackSystem';
+import { AttackSystem, type AttackContact } from '../combat/AttackSystem';
 import { BlockSystem } from '../combat/BlockSystem';
+import { ComboSystem } from '../combat/ComboSystem';
 import { DamageSystem } from '../combat/DamageSystem';
 import { balanceConfig } from '../config/balanceConfig';
+import { cloneSnapshot } from './cloneSnapshot';
 import { CollisionSystem } from './CollisionSystem';
+import { FighterStateMachine } from './FighterStateMachine';
 import { MatchManager } from './MatchManager';
 import { MovementSystem } from './MovementSystem';
 import { RoundManager } from './RoundManager';
@@ -15,39 +18,52 @@ import type {
 } from './types';
 
 const PLAYERS: readonly PlayerId[] = ['player1', 'player2'];
+const DEFAULT_CHARACTERS = { player1: 'comet', player2: 'pulse' };
 
 export class CombatSimulation {
-  private state = createInitialState();
-  private readonly attacks = new AttackSystem();
+  private state: SimulationSnapshot;
+  private readonly attacks: AttackSystem;
   private readonly blocks = new BlockSystem();
+  private readonly combos = new ComboSystem();
   private readonly damage = new DamageSystem();
   private readonly collisions = new CollisionSystem();
   private readonly movement = new MovementSystem();
+  private readonly states = new FighterStateMachine();
   private readonly match = new MatchManager();
   private readonly round = new RoundManager();
 
+  constructor(private readonly characters: Record<PlayerId, string> = DEFAULT_CHARACTERS) {
+    this.state = createInitialState(characters);
+    this.attacks = new AttackSystem();
+  }
+
   step(input: InputFrame, stepSeconds: number) {
     if (this.state.paused || this.state.roundPhase === 'MATCH_OVER') return;
-    if (this.state.roundPhase === 'COUNTDOWN') {
-      this.round.advanceCountdown(this.state);
-      this.state.tick += 1;
-      return;
-    }
-    if (this.state.roundPhase === 'ROUND_OVER') {
-      if (this.round.advanceRoundOver(this.state)) this.startNextRound();
-      this.state.tick += 1;
-      return;
-    }
+    if (this.advanceNonActiveRound()) return;
 
+    PLAYERS.forEach((id) => this.states.tick(this.state.fighters[id]));
+    PLAYERS.forEach((id) => this.combos.tick(this.state.combos[id]));
+    this.updateFacing();
+    PLAYERS.forEach((id) => this.attacks.prepare(this.state.fighters[id], input[id]));
     PLAYERS.forEach((id) =>
       this.movement.update(this.state.fighters[id], input[id], stepSeconds, this.state.tick),
     );
-    this.updateFacing();
-    this.blocks.update(this.state.fighters.player1, input.player1);
-    this.blocks.update(this.state.fighters.player2, input.player2);
-    this.resolveAttack('player1', 'player2', input.player1);
-    this.resolveAttack('player2', 'player1', input.player2);
+    PLAYERS.forEach((id) => this.blocks.update(this.state.fighters[id], input[id]));
+
+    const firstHit = this.attacks.findContact(
+      this.state.fighters.player1,
+      this.state.fighters.player2,
+    );
+    const secondHit = this.attacks.findContact(
+      this.state.fighters.player2,
+      this.state.fighters.player1,
+    );
+    if (firstHit) this.resolveContact('player1', 'player2', firstHit, input.player2);
+    if (secondHit) this.resolveContact('player2', 'player1', secondHit, input.player1);
+
+    PLAYERS.forEach((id) => this.attacks.finishTick(this.state.fighters[id]));
     this.collisions.separateFighters(this.state.fighters.player1, this.state.fighters.player2);
+    this.updateFacing();
     this.round.tickClock(this.state);
     this.finishRoundIfNeeded();
     this.state.tick += 1;
@@ -58,46 +74,54 @@ export class CombatSimulation {
   }
 
   rematch() {
-    this.state = createInitialState();
+    this.state = createInitialState(this.characters);
   }
 
   getCountdownLabel() {
     return this.round.countdownLabel(this.state);
   }
 
-  getSnapshot(): SimulationSnapshot {
-    return {
-      ...this.state,
-      wins: { ...this.state.wins },
-      fighters: {
-        player1: { ...this.state.fighters.player1 },
-        player2: { ...this.state.fighters.player2 },
-      },
-    };
+  getSnapshot() {
+    return cloneSnapshot(this.state);
   }
 
   restore(snapshot: SimulationSnapshot) {
-    this.state = {
-      ...snapshot,
-      wins: { ...snapshot.wins },
-      fighters: {
-        player1: { ...snapshot.fighters.player1 },
-        player2: { ...snapshot.fighters.player2 },
-      },
-    };
+    this.state = cloneSnapshot(snapshot);
   }
 
-  private resolveAttack(attackerId: PlayerId, defenderId: PlayerId, input: PlayerInputFrame) {
+  private advanceNonActiveRound() {
+    if (this.state.roundPhase === 'COUNTDOWN') {
+      this.round.advanceCountdown(this.state);
+    } else if (this.state.roundPhase === 'ROUND_OVER') {
+      if (this.round.advanceRoundOver(this.state)) this.startNextRound();
+    } else {
+      return false;
+    }
+    this.state.tick += 1;
+    return true;
+  }
+
+  private resolveContact(
+    attackerId: PlayerId,
+    defenderId: PlayerId,
+    contact: AttackContact,
+    defenderInput: PlayerInputFrame,
+  ) {
     const attacker = this.state.fighters[attackerId];
     const defender = this.state.fighters[defenderId];
-    const hit = this.attacks.tryAttack(attacker, defender, input);
-    if (hit) this.damage.apply(defender, this.blocks.reduce(hit, defender));
+    const blocked = this.blocks.tryBlock(defender, defenderInput, contact.definition);
+    this.damage.apply(
+      attacker,
+      defender,
+      contact.definition,
+      this.state.combos[attackerId],
+      blocked,
+    );
   }
 
   private finishRoundIfNeeded() {
     const timedOut = this.state.roundTicksRemaining === 0;
-    const knockout =
-      this.state.fighters.player1.health === 0 || this.state.fighters.player2.health === 0;
+    const knockout = PLAYERS.some((id) => this.state.fighters[id].health === 0);
     if (!timedOut && !knockout) return;
     const winner = this.match.findRoundWinner(this.state);
     this.match.recordRound(this.state, winner, balanceConfig.roundsToWin);
@@ -107,9 +131,10 @@ export class CombatSimulation {
   private startNextRound() {
     this.round.resetRound(this.state);
     this.state.fighters = {
-      player1: createFighter('player1', 250),
-      player2: createFighter('player2', 710),
+      player1: createFighter('player1', 250, this.characters.player1),
+      player2: createFighter('player2', 710, this.characters.player2),
     };
+    PLAYERS.forEach((id) => this.combos.reset(this.state.combos[id]));
   }
 
   private updateFacing() {

@@ -1,19 +1,23 @@
 import Phaser from 'phaser';
-import { balanceConfig, TICKS_PER_SECOND } from '../../config/balanceConfig';
-import type { SimulationSnapshot } from '../../core/types';
+import { TICKS_PER_SECOND } from '../../config/balanceConfig';
+import type { ComboSnapshot, SimulationSnapshot } from '../../core/types';
+import { drawFighterBars, drawRoundWins } from './HudBars';
 
 export class FightHud {
   private readonly graphics: Phaser.GameObjects.Graphics;
   private readonly timer: Phaser.GameObjects.Text;
   private readonly round: Phaser.GameObjects.Text;
   private readonly status: Phaser.GameObjects.Text;
+  private readonly comboOne: Phaser.GameObjects.Text;
+  private readonly comboTwo: Phaser.GameObjects.Text;
+  private readonly gaugeLabels: Phaser.GameObjects.Text[];
 
   constructor(scene: Phaser.Scene) {
     this.graphics = scene.add.graphics().setDepth(20);
-    this.timer = this.makeText(scene, balanceConfig.arenaWidth / 2, 28, '90', '32px');
-    this.round = this.makeText(scene, balanceConfig.arenaWidth / 2, 65, 'Раунд 1', '16px');
+    this.timer = this.makeText(scene, 480, 18, '90', '32px');
+    this.round = this.makeText(scene, 480, 56, 'Раунд 1', '15px');
     this.status = scene.add
-      .text(balanceConfig.arenaWidth / 2, 175, '', {
+      .text(480, 170, '', {
         fontFamily: 'Arial',
         fontSize: '54px',
         fontStyle: 'bold',
@@ -24,15 +28,27 @@ export class FightHud {
       .setOrigin(0.5)
       .setDepth(21)
       .setVisible(false);
+    this.comboOne = this.makeComboText(scene, 42, 122, 0);
+    this.comboTwo = this.makeComboText(scene, 918, 122, 1);
+    this.gaugeLabels = [
+      this.makeGaugeLabel(scene, 44, 30, 'HP', 0),
+      this.makeGaugeLabel(scene, 44, 55, 'ENERGY', 0),
+      this.makeGaugeLabel(scene, 44, 69, 'BLOCK', 0),
+      this.makeGaugeLabel(scene, 916, 30, 'HP', 1),
+      this.makeGaugeLabel(scene, 916, 55, 'ENERGY', 1),
+      this.makeGaugeLabel(scene, 916, 69, 'BLOCK', 1),
+    ];
   }
 
   update(snapshot: SimulationSnapshot, countdownLabel: string) {
     this.graphics.clear();
-    this.drawHealth(36, snapshot.fighters.player1.health, 0xff5d73);
-    this.drawHealth(624, snapshot.fighters.player2.health, 0x3fd1c4);
-    this.drawRoundWins(snapshot);
+    drawFighterBars(this.graphics, snapshot.fighters.player1, 36, 0xff5d73);
+    drawFighterBars(this.graphics, snapshot.fighters.player2, 594, 0x3fd1c4, true);
+    drawRoundWins(this.graphics, snapshot);
     this.timer.setText(String(Math.ceil(snapshot.roundTicksRemaining / TICKS_PER_SECOND)));
     this.round.setText(`Раунд ${snapshot.roundNumber}`);
+    this.updateCombo(this.comboOne, snapshot.combos.player1);
+    this.updateCombo(this.comboTwo, snapshot.combos.player2);
 
     const label =
       countdownLabel ||
@@ -53,6 +69,15 @@ export class FightHud {
     this.timer.destroy();
     this.round.destroy();
     this.status.destroy();
+    this.comboOne.destroy();
+    this.comboTwo.destroy();
+    this.gaugeLabels.forEach((label) => label.destroy());
+  }
+
+  private updateCombo(text: Phaser.GameObjects.Text, combo: ComboSnapshot) {
+    text
+      .setText(`${combo.hits} HIT\n${combo.damage} УРОНА`)
+      .setVisible(combo.hits >= 2);
   }
 
   private makeText(
@@ -73,22 +98,37 @@ export class FightHud {
       .setDepth(21);
   }
 
-  private drawHealth(x: number, health: number, color: number) {
-    const width = 300;
-    this.graphics.fillStyle(0x30264f, 0.35).fillRoundedRect(x, 32, width, 28, 14);
-    this.graphics
-      .fillStyle(color)
-      .fillRoundedRect(x + 4, 36, (width - 8) * (health / 100), 20, 10);
+  private makeComboText(scene: Phaser.Scene, x: number, y: number, originX: number) {
+    return scene.add
+      .text(x, y, '', {
+        fontFamily: 'Arial',
+        fontSize: '22px',
+        fontStyle: 'bold',
+        align: originX === 0 ? 'left' : 'right',
+        color: '#ffffff',
+        stroke: '#30264f',
+        strokeThickness: 5,
+      })
+      .setOrigin(originX, 0)
+      .setDepth(21)
+      .setVisible(false);
   }
 
-  private drawRoundWins(snapshot: SimulationSnapshot) {
-    [0, 1].forEach((index) => {
-      this.graphics
-        .fillStyle(index < snapshot.wins.player1 ? 0xffdc62 : 0xffffff, 0.95)
-        .fillCircle(52 + index * 22, 75, 7);
-      this.graphics
-        .fillStyle(index < snapshot.wins.player2 ? 0xffdc62 : 0xffffff, 0.95)
-        .fillCircle(908 - index * 22, 75, 7);
-    });
+  private makeGaugeLabel(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    value: string,
+    originX: number,
+  ) {
+    return scene.add
+      .text(x, y, value, {
+        fontFamily: 'Arial',
+        fontSize: '8px',
+        fontStyle: 'bold',
+        color: '#30264f',
+      })
+      .setOrigin(originX, 0)
+      .setDepth(22);
   }
 }

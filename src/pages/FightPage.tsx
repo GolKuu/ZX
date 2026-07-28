@@ -58,13 +58,6 @@ export function FightPage() {
 
   return (
     <main className="fight-page">
-      <div className="fight-page__heading">
-        <div>
-          <span className="brand__mark">CC</span>
-          <strong>Circle Clash · LOCAL_PVP</strong>
-        </div>
-        <p>Esc / Start — пауза</p>
-      </div>
       <GameCanvas
         matchConfig={matchConfig}
         onExit={exitToMenu}

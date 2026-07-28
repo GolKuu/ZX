@@ -1,6 +1,11 @@
 .fight-page {
-  min-height: 100vh;
-  padding: 18px clamp(14px, 3vw, 40px) 28px;
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   background: #241d3d;
 }
 
@@ -14,38 +19,13 @@
   font-weight: 900;
 }
 
-.fight-page__heading {
-  display: flex;
-  width: min(100%, 1180px);
-  min-height: 54px;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 auto 14px;
-  color: white;
-}
-
-.fight-page__heading > div {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.fight-page__heading p {
-  margin: 0;
-  color: #d8d1ef;
-  font-size: 0.9rem;
-}
-
 .game-canvas {
   position: relative;
-  width: min(100%, 1180px, calc((100vh - 126px) * 16 / 9));
-  aspect-ratio: 16 / 9;
-  margin: 0 auto;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
-  border: 5px solid white;
-  border-radius: 26px;
   background: #8bd8ff;
-  box-shadow: 0 18px 50px #00000057;
 }
 
 .game-canvas__surface,
@@ -69,15 +49,4 @@
   background: #30264fd9;
   font-weight: 900;
   transform: translate(-50%, -50%);
-}
-
-@media (max-width: 700px) {
-  .fight-page__heading p {
-    display: none;
-  }
-
-  .game-canvas {
-    border-width: 3px;
-    border-radius: 16px;
-  }
 }

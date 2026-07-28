@@ -9,9 +9,9 @@ export type FrameData = {
 
 export function getFrameData(attack: AttackDefinition): FrameData {
   return {
-    startup: attack.startupTicks,
-    active: attack.activeTicks,
-    recovery: attack.recoveryTicks,
-    total: attack.startupTicks + attack.activeTicks + attack.recoveryTicks,
+    startup: attack.startupFrames,
+    active: attack.activeFrames,
+    recovery: attack.recoveryFrames,
+    total: attack.startupFrames + attack.activeFrames + attack.recoveryFrames,
   };
 }

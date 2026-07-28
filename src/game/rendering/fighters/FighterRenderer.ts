@@ -31,7 +31,13 @@ export class FighterRenderer {
     this.container.setPosition(snapshot.x, snapshot.y - 38 * crouchScale);
     this.container.setScale(snapshot.facing, crouchScale);
     if (snapshot.mode === 'blocking') this.container.setScale(snapshot.facing * 0.9, 0.9);
-    this.body.setAlpha(snapshot.mode === 'hitstun' ? 0.55 : 1);
+    if (snapshot.mode === 'attackActive') {
+      this.container.setScale(snapshot.facing * 1.16, 0.88);
+    }
+    const knockedDown = snapshot.mode === 'knockdown' || snapshot.mode === 'knockout';
+    this.container.setRotation(knockedDown ? snapshot.facing * 1.35 : 0);
+    const stunned = snapshot.mode === 'hitstun' || snapshot.mode === 'blockstun';
+    this.body.setAlpha(stunned ? 0.55 : snapshot.mode === 'wakeup' ? 0.75 : 1);
     this.shadow.setScale(snapshot.grounded ? 1 : 0.7);
   }
 

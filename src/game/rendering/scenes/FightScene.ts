@@ -14,7 +14,7 @@ import { FightHud } from '../hud/FightHud';
 
 export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpMatchConfig) {
   return class FightScene extends Phaser.Scene {
-    private readonly simulation = new CombatSimulation();
+    private readonly simulation = new CombatSimulation(matchConfig.characters);
     private readonly loop = new FixedStepLoop();
     private readonly inputManager = new InputManager(matchConfig.assignments, {
       onDeviceDisconnected: (playerId, label) => this.handleDisconnect(playerId, label),

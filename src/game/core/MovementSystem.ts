@@ -13,11 +13,8 @@ export class MovementSystem {
     stepSeconds: number,
     tick: number,
   ) {
-    this.fighterStates.tick(fighter);
-    fighter.attackCooldownTicks = Math.max(0, fighter.attackCooldownTicks - 1);
-    this.detectDash(fighter, input, tick);
-
-    const locked = fighter.mode === 'hitstun' || fighter.mode === 'knockout';
+    const locked = this.fighterStates.isControlLocked(fighter) || fighter.mode === 'knockout';
+    if (!locked) this.detectDash(fighter, input, tick);
     const direction =
       Number(input.held.includes('MOVE_RIGHT')) - Number(input.held.includes('MOVE_LEFT'));
     const crouching = input.held.includes('CROUCH') && fighter.grounded && !locked;
@@ -26,9 +23,11 @@ export class MovementSystem {
       fighter.velocityX = fighter.dashDirection * balanceConfig.dashSpeed;
       fighter.dashTicksRemaining -= 1;
       fighter.mode = 'dashing';
-    } else {
+    } else if (!locked && fighter.mode !== 'blocking') {
       const speed = crouching ? balanceConfig.crouchSpeed : balanceConfig.walkSpeed;
-      fighter.velocityX = (locked ? 0 : direction) * speed;
+      fighter.velocityX = direction * speed;
+    } else if (fighter.mode !== 'attackStartup' && fighter.mode !== 'attackActive') {
+      fighter.velocityX *= fighter.grounded ? 0.82 : 0.97;
     }
 
     if (!locked && input.pressed.includes('JUMP') && fighter.grounded) {
@@ -38,7 +37,7 @@ export class MovementSystem {
     } else if (
       !locked &&
       fighter.grounded &&
-      fighter.mode !== 'attacking' &&
+      !fighter.mode.startsWith('attack') &&
       fighter.mode !== 'dashing'
     ) {
       fighter.mode = crouching ? 'crouching' : direction === 0 ? 'idle' : 'walking';

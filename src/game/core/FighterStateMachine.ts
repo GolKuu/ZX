@@ -1,4 +1,5 @@
 import type { FighterMode, FighterSnapshot } from './types';
+import { balanceConfig } from '../config/balanceConfig';
 
 export class FighterStateMachine {
   transition(fighter: FighterSnapshot, mode: FighterMode, durationTicks = 0) {
@@ -10,6 +11,43 @@ export class FighterStateMachine {
   tick(fighter: FighterSnapshot) {
     if (fighter.modeTicksRemaining > 0) fighter.modeTicksRemaining -= 1;
     if (fighter.modeTicksRemaining > 0 || fighter.mode === 'knockout') return;
-    if (fighter.mode === 'attacking' || fighter.mode === 'hitstun') fighter.mode = 'idle';
+    if (fighter.mode === 'knockdown') {
+      this.transition(fighter, 'wakeup', balanceConfig.wakeupTicks);
+      return;
+    }
+    if (fighter.mode === 'hitstun' || fighter.mode === 'blockstun' || fighter.mode === 'wakeup') {
+      fighter.mode = fighter.grounded ? 'idle' : 'jumping';
+    }
+  }
+
+  canStartAttack(fighter: FighterSnapshot) {
+    return !this.isControlLocked(fighter) && fighter.mode !== 'knockout';
+  }
+
+  isControlLocked(fighter: FighterSnapshot) {
+    return [
+      'attackStartup',
+      'attackActive',
+      'attackRecovery',
+      'hitstun',
+      'blockstun',
+      'knockdown',
+      'wakeup',
+    ].includes(fighter.mode);
+  }
+
+  enterHitstun(fighter: FighterSnapshot, frames: number) {
+    fighter.attack = null;
+    this.transition(fighter, 'hitstun', frames);
+  }
+
+  enterBlockstun(fighter: FighterSnapshot, frames: number) {
+    fighter.attack = null;
+    this.transition(fighter, 'blockstun', frames);
+  }
+
+  enterKnockdown(fighter: FighterSnapshot) {
+    fighter.attack = null;
+    this.transition(fighter, 'knockdown', balanceConfig.knockdownTicks);
   }
 }
