@@ -3,8 +3,6 @@ import type { ReactGameBridge } from '../../bridge/ReactGameBridge';
 import { GameEvents } from '../../bridge/GameEvents';
 import { FixedStepLoop } from '../../core/FixedStepLoop';
 import { RoundManager } from '../../core/RoundManager';
-import type { PlayerId } from '../../core/types';
-import type { TeamSimulationSnapshot } from '../../team/TeamTypes';
 import type { OnlineMatchClient } from '../../network/OnlineMatchClient';
 import { createOnlineAssignments } from '../../network/createOnlineAssignments';
 import { InputManager } from '../../input/InputManager';
@@ -16,7 +14,6 @@ import { TeamFighterRenderers } from './TeamFighterRenderers';
 export function createOnlineFightScene(
   bridge: ReactGameBridge,
   client: OnlineMatchClient,
-  _characters: Record<PlayerId, string>,
 ) {
   return class OnlineFightScene extends Phaser.Scene {
     private readonly loop = new FixedStepLoop();
@@ -56,9 +53,8 @@ export function createOnlineFightScene(
 
     private syncRenderers() {
       const snapshot = client.renderSnapshot();
-      if (!snapshot || !('teamBattle' in snapshot)) return;
-      const teamSnapshot = snapshot as TeamSimulationSnapshot;
-      this.fighters.sync(teamSnapshot, this.round.countdownLabel(teamSnapshot));
+      if (!snapshot) return;
+      this.fighters.sync(snapshot, this.round.countdownLabel(snapshot));
       this.traps.sync(snapshot.traps);
     }
 

@@ -55,7 +55,7 @@ describe('application routes', () => {
 
     await act(async () => location.navigate('/'));
     expect(host.textContent).toContain('Выбери режим');
-    expect(host.querySelectorAll('button:disabled')).toHaveLength(3);
+    expect(host.querySelectorAll('button:disabled')).toHaveLength(1);
     expect(consoleError).not.toHaveBeenCalled();
     await act(async () => root.unmount());
   });

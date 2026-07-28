@@ -11,8 +11,8 @@ const menuItems = [
     primary: true,
   },
   {
-    title: 'Онлайн 2 на 2',
-    description: 'Командный бой на авторитетном сервере',
+    title: 'Онлайн 1 на 1',
+    description: 'Приватный бой по ссылке на авторитетном сервере',
     icon: '◎',
     href: '/online',
   },

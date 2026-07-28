@@ -122,7 +122,7 @@ describe('team combat simulation', () => {
     simulation.restore(firstKnockout);
     simulation.step({});
 
-    let snapshot = simulation.getSnapshot();
+    const snapshot = simulation.getSnapshot();
     expect(snapshot.teamBattle.teams.player1.activeMember).toBe(1);
     expect(snapshot.matchWinner).toBeNull();
 

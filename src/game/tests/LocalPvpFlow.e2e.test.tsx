@@ -89,12 +89,12 @@ describe('LOCAL_PVP user flow', () => {
     await act(async () => findButton(host, 'KeyA').click());
     await act(async () =>
       window.dispatchEvent(
-        new KeyboardEvent('keydown', { code: 'KeyZ', bubbles: true, cancelable: true }),
+        new KeyboardEvent('keydown', { code: 'KeyQ', bubbles: true, cancelable: true }),
       ),
     );
-    expect(host.textContent).toContain('KeyZ');
+    expect(host.textContent).toContain('KeyQ');
 
-    await act(async () => findButton(host, 'KeyZ').click());
+    await act(async () => findButton(host, 'KeyQ').click());
     await act(async () =>
       window.dispatchEvent(
         new KeyboardEvent('keydown', { code: 'KeyD', bubbles: true, cancelable: true }),
@@ -106,7 +106,7 @@ describe('LOCAL_PVP user flow', () => {
 
     const saved = localStorage.getItem('circle-clash-controls-v3');
     expect(saved).toContain('"MOVE_LEFT":"KeyD"');
-    expect(saved).toContain('"MOVE_RIGHT":"KeyZ"');
+    expect(saved).toContain('"MOVE_RIGHT":"KeyQ"');
     await act(async () => root.unmount());
   });
 

@@ -66,7 +66,7 @@ export class TeamRoomManager {
   }
 
   private uniqueCode() {
-    let code = '';
+    let code: string;
     do {
       code = [...randomBytes(8)]
         .map((byte) => ALPHABET[byte % ALPHABET.length])

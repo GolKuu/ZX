@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'wouter';
 import { NetworkStatusBadge } from '../components/online/NetworkStatusBadge';
 import { OnlineGameCanvas } from '../game/bridge/OnlineGameCanvas';
-import type { PlayerId } from '../game/core/types';
 import type { OnlineMatchClient } from '../game/network/OnlineMatchClient';
 import { ensureRoomConnection } from '../game/network/RoomConnection';
 import { useOnlineClientState } from '../game/network/useOnlineClientState';
@@ -29,14 +28,6 @@ export function OnlineFightPage() {
       .catch(() => navigate(`/online/${roomCode}`));
   }, [client, navigate, roomCode]);
 
-  const characters = useMemo(
-    () => roomCharacters(state.room?.players ?? {}),
-    [
-      state.room?.players.player1?.characterId,
-      state.room?.players.player2?.characterId,
-    ],
-  );
-
   if (!client || !state.room) {
     return <main className="fight-page"><p className="route-loading">Восстанавливаем матч…</p></main>;
   }
@@ -50,7 +41,6 @@ export function OnlineFightPage() {
       </div>
       <OnlineGameCanvas
         client={client}
-        characters={characters}
         onExit={exit}
         onReturnToRoom={exit}
       />
@@ -89,13 +79,4 @@ export function OnlineFightPage() {
       )}
     </main>
   );
-}
-
-function roomCharacters(
-  players: Partial<Record<PlayerId, { characterId: string }>>,
-): Record<PlayerId, string> {
-  return {
-    player1: players.player1?.characterId ?? 'granite',
-    player2: players.player2?.characterId ?? 'shira',
-  };
 }

@@ -23,7 +23,7 @@ const oneHandedBindings = {
   player1: {
     MOVE_LEFT: 'KeyA', MOVE_RIGHT: 'KeyD', JUMP: 'KeyW', LIGHT_ATTACK: 'KeyF',
     HEAVY_ATTACK: 'KeyG', SPECIAL_ATTACK: 'KeyR', DEFENSE: 'KeyS',
-    ASSIST: 'KeyZ', TAG_SWITCH: 'KeyX', BURST_ASSIST: 'KeyC', PAUSE: 'KeyQ',
+    ASSIST: 'Digit1', TAG_SWITCH: 'Digit2', BURST_ASSIST: 'Digit3', PAUSE: 'KeyQ',
   },
   player2: {
     MOVE_LEFT: 'Numpad4', MOVE_RIGHT: 'Numpad6', JUMP: 'Numpad8',

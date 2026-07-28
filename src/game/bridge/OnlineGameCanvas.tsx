@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { useEffect, useRef, useState } from 'react';
-import type { PlayerId } from '../core/types';
 import type { OnlineMatchClient } from '../network/OnlineMatchClient';
 import { useGameBridge } from '../../app/gameBridgeContext';
 import { createOnlineGameConfig } from '../config/onlineGameConfig';
@@ -8,7 +7,6 @@ import { GameEvents } from './GameEvents';
 
 type OnlineGameCanvasProps = {
   client: OnlineMatchClient;
-  characters: Record<PlayerId, string>;
   onExit: () => void;
   onReturnToRoom: () => void;
 };
@@ -18,7 +16,7 @@ export function OnlineGameCanvas(props: OnlineGameCanvasProps) {
   const gameRef = useRef<Phaser.Game | null>(null);
   const bridge = useGameBridge();
   const [isReady, setIsReady] = useState(false);
-  const { client, characters, onExit, onReturnToRoom } = props;
+  const { client, onExit, onReturnToRoom } = props;
 
   useEffect(() => {
     const parent = parentRef.current;
@@ -27,7 +25,7 @@ export function OnlineGameCanvas(props: OnlineGameCanvasProps) {
     const stopExit = bridge.on(GameEvents.exitRequested, onExit);
     const stopRoom = bridge.on(GameEvents.returnToSetupRequested, onReturnToRoom);
     const game = new Phaser.Game(
-      createOnlineGameConfig(parent, bridge, client, characters),
+      createOnlineGameConfig(parent, bridge, client),
     );
     gameRef.current = game;
     const refresh = () => game.scale.refresh();
@@ -47,7 +45,7 @@ export function OnlineGameCanvas(props: OnlineGameCanvasProps) {
       game.destroy(true);
       parent.replaceChildren();
     };
-  }, [bridge, characters, client, onExit, onReturnToRoom]);
+  }, [bridge, client, onExit, onReturnToRoom]);
 
   return (
     <section className="game-canvas" aria-label="Онлайн-арена Circle Clash">
