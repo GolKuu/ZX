@@ -11,6 +11,7 @@ export type LocalPvpMatchConfig = {
   assignments: Record<PlayerId, PlayerInputAssignment>;
   characters: Record<PlayerId, string>;
   ready: Record<PlayerId, boolean>;
+  aiPlayerId?: PlayerId;
 };
 
 let activeMatch: LocalPvpMatchConfig | null = null;

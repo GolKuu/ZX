@@ -15,13 +15,14 @@ export function FightPage() {
   const [, navigate] = useLocation();
   const bridge = useGameBridge();
   const matchConfig = localPvpStore.get();
+  const aiPlayerId = matchConfig?.aiPlayerId;
   const [deviceIssue, setDeviceIssue] = useState<DeviceIssue | null>(null);
   const [result, setResult] = useState<MatchResult | null>(null);
   const exitToMenu = useCallback(() => navigate('/'), [navigate]);
   const returnToSetup = useCallback(() => {
     localPvpStore.clear();
-    navigate('/local-pvp');
-  }, [navigate]);
+    navigate(aiPlayerId ? '/vs-ai' : '/local-pvp');
+  }, [aiPlayerId, navigate]);
 
   useEffect(() => {
     const stopDisconnected = bridge.on(GameEvents.deviceDisconnected, setDeviceIssue);
@@ -54,6 +55,11 @@ export function FightPage() {
   function rematch() {
     setResult(null);
     bridge.emit(GameEvents.rematchRequested, undefined);
+  }
+
+  function fighterLabel(playerId: PlayerId) {
+    if (aiPlayerId) return playerId === aiPlayerId ? 'ИИ' : 'Игрок';
+    return playerLabels[playerId];
   }
 
   return (
@@ -92,7 +98,7 @@ export function FightPage() {
         <div className="match-overlay" role="dialog" aria-modal="true">
           <div>
             <p className="eyebrow">Матч завершён</p>
-            <h2>{playerLabels[result.winner]} побеждает!</h2>
+            <h2>{fighterLabel(result.winner)} побеждает!</h2>
             <p>
               Счёт по раундам: {result.wins.player1} : {result.wins.player2}
             </p>

@@ -13,6 +13,7 @@ import { TrainingPage } from '../pages/TrainingPage';
 import { TeamModesPage } from '../pages/TeamModesPage';
 import { TeamOnlineLobbyPage } from '../pages/TeamOnlineLobbyPage';
 import { VisualStyleGuidePage } from '../pages/VisualStyleGuidePage';
+import { AiFightSetupPage } from '../pages/AiFightSetupPage';
 
 const FightPage = lazy(() =>
   import('../pages/FightPage').then((module) => ({ default: module.FightPage })),
@@ -70,6 +71,7 @@ export function AppRouter() {
     <Switch>
       <Route path="/" component={HomePage} />
       <Route path="/local-pvp" component={LocalPvpPage} />
+      <Route path="/vs-ai" component={AiFightSetupPage} />
       <Route path="/fight" component={FightRoute} />
       <Route path="/team-modes" component={TeamModesPage} />
       <Route path="/team-fight" component={TeamFightRoute} />

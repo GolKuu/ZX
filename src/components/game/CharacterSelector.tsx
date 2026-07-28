@@ -9,15 +9,17 @@ export function CharacterSelector({
   value,
   opponentCharacterId,
   onChange,
+  label,
 }: {
   playerId: PlayerId;
   value: string;
   opponentCharacterId: string;
   onChange: (characterId: string) => void;
+  label?: string;
 }) {
   return (
     <fieldset className="character-picker">
-      <legend>{playerLabels[playerId]}</legend>
+      <legend>{label ?? playerLabels[playerId]}</legend>
       <div className="character-picker__roster">
         {circleFighters.map((fighter) => (
           <label

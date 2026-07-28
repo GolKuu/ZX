@@ -17,11 +17,13 @@ import { PerformanceMonitor } from '../../diagnostics/PerformanceMonitor';
 import { createSceneButton } from './createSceneButton';
 import { VictoryCutsceneRenderer } from '../victory/VictoryCutsceneRenderer';
 import { VICTORY_CUTSCENE_MS } from '../victory/victoryScenes';
+import { SoloAiController } from '../../ai/SoloAiController';
 import { CartoonParticlePool } from '../effects/CartoonParticlePool';
 
 export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpMatchConfig) {
   return class FightScene extends Phaser.Scene {
     private readonly simulation = new CombatSimulation(matchConfig.characters);
+    private readonly ai = matchConfig.aiPlayerId ? new SoloAiController() : null;
     private readonly loop = new FixedStepLoop();
     private readonly inputManager = new InputManager(matchConfig.assignments, {
       onDeviceDisconnected: (playerId, label) => this.handleDisconnect(playerId, label),
@@ -76,6 +78,12 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
     update(_time: number, deltaMs: number) {
       this.loop.advance(deltaMs / 1_000, () => {
         const input = this.inputManager.snapshot();
+        if (this.ai && matchConfig.aiPlayerId) {
+          input[matchConfig.aiPlayerId] = this.ai.frame(
+            matchConfig.aiPlayerId,
+            this.simulation.getSnapshot(),
+          );
+        }
         if (this.inputManager.consumeGlobalPress('PAUSE')) this.togglePause();
         this.simulation.step(input, FIXED_STEP_SECONDS);
         this.inputManager.endTick();
