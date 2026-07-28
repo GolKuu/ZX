@@ -120,6 +120,11 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
           this.inputManager.switchToKeyboard(playerId, profiles);
           this.handleReconnect(playerId, 'Клавиатура');
         }),
+        bridge.on(GameEvents.mobileAction, ({ playerId, action, pressed }) => {
+          // accept mobile button events and forward to input manager
+          if (pressed) this.inputManager.pressAction(playerId, action as any);
+          else this.inputManager.releaseAction(playerId, action as any);
+        }),
       ];
     }
 
