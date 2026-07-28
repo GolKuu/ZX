@@ -48,6 +48,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
         settingsStore.load().showCombatHints,
       );
       this.traps = new ArenaTrapRenderer(this);
+      this.performance.attach(this);
       this.pauseButton = createSceneButton(this, 24, 492, 'Ⅱ Пауза', () => this.togglePause());
       createSceneButton(this, 132, 492, '← Выбор', () =>
         bridge.emit(GameEvents.returnToSetupRequested, undefined),

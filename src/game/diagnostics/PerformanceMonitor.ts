@@ -16,8 +16,24 @@ export class PerformanceMonitor {
   private minObjects = Number.POSITIVE_INFINITY;
   private maxObjects = 0;
   private readonly hitboxes = validateHitboxAlignment();
+  private label: Phaser.GameObjects.Text | null = null;
+  private frames = 0;
+
+  attach(scene: Phaser.Scene) {
+    this.label = scene.add
+      .text(936, 512, 'PERF: прогрев…', {
+        fontFamily: 'Arial',
+        fontSize: '10px',
+        color: '#ffffff',
+        backgroundColor: '#252b38aa',
+        padding: { x: 7, y: 4 },
+      })
+      .setOrigin(1, 0)
+      .setDepth(40);
+  }
 
   record(scene: Phaser.Scene, deltaMs: number) {
+    this.frames += 1;
     this.frameTimes.push(deltaMs);
     if (this.frameTimes.length > 180) this.frameTimes.shift();
     const objects = scene.children.length;
@@ -35,9 +51,17 @@ export class PerformanceMonitor {
       hitboxErrors: this.hitboxes.errors.length,
     };
     window.__ZX_DIAGNOSTICS__ = diagnostics;
+    if (this.frames % 30 === 0) {
+      this.label?.setText(
+        `${diagnostics.fps} FPS · OBJ ${diagnostics.liveObjects} · ` +
+        `HIT ${diagnostics.hitboxesChecked - diagnostics.hitboxErrors}/${diagnostics.hitboxesChecked}`,
+      );
+    }
   }
 
   destroy() {
+    this.label?.destroy();
+    this.label = null;
     delete window.__ZX_DIAGNOSTICS__;
   }
 }
