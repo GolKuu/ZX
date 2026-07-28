@@ -87,10 +87,10 @@ export type BalanceReport = {
   fixedSeeds: true;
   characterIds: CharacterId[];
   targets: {
-    neutral: [48, 52];
-    advantage: [52, 57];
-    pairFloor: [40, 60];
-    character: [47, 53];
+    neutral: [number, number];
+    advantage: [number, number];
+    pairFloor: [number, number];
+    character: [number, number];
   };
   pairs: PairSummary[];
   characters: CharacterSummary[];

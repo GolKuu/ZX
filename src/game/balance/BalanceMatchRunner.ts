@@ -132,12 +132,12 @@ function applyTiebreak(
 }
 
 function stateView(simulation: CombatSimulation) {
-  let current: SimulationSnapshot | null = null;
+  const holder: { current?: SimulationSnapshot } = {};
   simulation.updateState((state) => {
-    current = state;
+    holder.current = state;
   });
-  if (!current) throw new Error('Simulation state is unavailable');
-  return current;
+  if (!holder.current) throw new Error('Simulation state is unavailable');
+  return holder.current;
 }
 
 function checksum(

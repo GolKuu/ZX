@@ -68,5 +68,5 @@ function csv(header: string[], rows: Array<Array<string | number>>) {
 
 function cell(value: string | number) {
   const text = String(value);
-  return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }

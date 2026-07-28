@@ -53,7 +53,8 @@ export class BalanceAiController {
       return { held, pressed: [], released: [] };
     }
 
-    this.nextAttackTick = snapshot.tick + this.random.integer(...profile.delay);
+    this.nextAttackTick =
+      snapshot.tick + this.random.integer(profile.delay[0], profile.delay[1]);
     const attack = this.chooseAttack(fighter.energy);
     return { held: [...held, attack], pressed: [attack], released: [] };
   }
