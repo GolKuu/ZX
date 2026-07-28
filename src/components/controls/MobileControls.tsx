@@ -1,4 +1,4 @@
-import React from 'react';
+// Mobile controls use hooks from React runtime via JSX automatic runtime
 import { useGameBridge } from '../../app/gameBridgeContext';
 import { GameEvents } from '../../game/bridge/GameEvents';
 
