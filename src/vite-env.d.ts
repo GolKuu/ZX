@@ -11,6 +11,11 @@ interface ImportMeta {
 interface Window {
   __ZX_DIAGNOSTICS__?: {
     fps: number;
+    cpuMs: number;
+    gpuMs: number | null;
+    memoryMb: number | null;
+    drawCalls: number;
+    renderer: string;
     maxFrameMs: number;
     liveObjects: number;
     objectDrift: number;

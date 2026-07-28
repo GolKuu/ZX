@@ -11,6 +11,7 @@ import {
 } from '../game/network/RoomConnection';
 import { useOnlineClientState } from '../game/network/useOnlineClientState';
 import { onlineRoomStore } from '../stores/onlineRoomStore';
+import { isMatchServerConfigured } from '../game/network/matchServerUrl';
 
 export function TeamOnlineLobbyPage() {
   const params = useParams<{ roomCode?: string }>();
@@ -80,6 +81,7 @@ export function TeamOnlineLobbyPage() {
           error={error}
           onCreate={createRoom}
           onJoin={(code) => navigate(`/online-team/${code}`)}
+          serverConfigured={isMatchServerConfigured()}
         />
       )}
       {routeCode && busy && !state.room && (

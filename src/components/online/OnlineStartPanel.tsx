@@ -1,15 +1,18 @@
 import { useState } from 'react';
+import { Link } from 'wouter';
 
 export function OnlineStartPanel({
   busy,
   error,
   onCreate,
   onJoin,
+  serverConfigured,
 }: {
   busy: boolean;
   error: string;
   onCreate: () => void;
   onJoin: (code: string) => void;
+  serverConfigured: boolean;
 }) {
   const [code, setCode] = useState('');
 
@@ -22,7 +25,7 @@ export function OnlineStartPanel({
         <button
           type="button"
           className="button button--primary button--large"
-          disabled={busy}
+          disabled={busy || !serverConfigured}
           onClick={onCreate}
         >
           {busy ? 'Создаём…' : 'Создать приватную комнату'}
@@ -44,10 +47,25 @@ export function OnlineStartPanel({
           value={code}
           onChange={(event) => setCode(event.target.value.toUpperCase())}
         />
-        <button type="submit" className="button button--secondary" disabled={busy}>
+        <button
+          type="submit"
+          className="button button--secondary"
+          disabled={busy || !serverConfigured}
+        >
           Подключиться
         </button>
       </form>
+      {!serverConfigured && (
+        <div className="online-fallback" role="status">
+          <div>
+            <strong>Онлайн-сервер пока не подключён</strong>
+            <p>Локальный бой против ИИ доступен сразу и не требует сервера.</p>
+          </div>
+          <Link href="/vs-ai" className="button button--primary">
+            Играть против ИИ
+          </Link>
+        </div>
+      )}
       {error && <p className="setup-error" role="alert">{error}</p>}
     </section>
   );

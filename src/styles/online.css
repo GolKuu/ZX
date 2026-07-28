@@ -8,6 +8,24 @@
   grid-column: 1 / -1;
 }
 
+.online-fallback {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 2px solid #d2c8fa;
+  border-radius: 18px;
+  color: var(--ink);
+  background: #f2efff;
+}
+
+.online-fallback p {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
 .online-join {
   align-content: center;
 }
@@ -176,5 +194,10 @@
   .online-player {
     width: 100%;
     min-width: 0;
+  }
+
+  .online-fallback {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

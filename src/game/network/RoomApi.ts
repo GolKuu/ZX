@@ -1,5 +1,8 @@
 import type { RoomApiError, RoomCredentials } from './protocol';
-import { matchServerHttpUrl } from './matchServerUrl';
+import {
+  MatchServerConfigurationError,
+  matchServerHttpUrl,
+} from './matchServerUrl';
 
 export async function createPrivateRoom() {
   return roomRequest('/rooms', { method: 'POST', body: '{}' });
@@ -30,10 +33,13 @@ async function roomRequest(path: string, init: RequestInit): Promise<RoomCredent
       ...init,
       headers: { 'content-type': 'application/json', ...init.headers },
     });
-  } catch {
+  } catch (reason) {
+    if (reason instanceof MatchServerConfigurationError) {
+      throw new OnlineRoomApiError(reason.code, reason.message);
+    }
     throw new OnlineRoomApiError(
       'SERVER_UNAVAILABLE',
-      'Сервер матчей недоступен. Проверьте VITE_MATCH_SERVER_URL.',
+      'Сервер матчей временно недоступен. Попробуйте позже или сыграйте против ИИ.',
     );
   }
   const body: unknown = await response.json().catch(() => null);

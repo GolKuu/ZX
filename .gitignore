@@ -19,4 +19,5 @@ vitest.config.d.ts
 
 .vercel
 .env*
+!.env.example
 !match-server/.env.example

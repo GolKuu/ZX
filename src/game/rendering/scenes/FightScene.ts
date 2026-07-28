@@ -76,6 +76,7 @@ export function createFightScene(bridge: ReactGameBridge, matchConfig: LocalPvpM
     }
 
     update(_time: number, deltaMs: number) {
+      this.performance.beginFrame();
       this.loop.advance(deltaMs / 1_000, () => {
         const input = this.inputManager.snapshot();
         if (this.ai && matchConfig.aiPlayerId) {
