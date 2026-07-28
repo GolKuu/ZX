@@ -37,11 +37,16 @@ export class AttackVisualRenderer {
   }
 
   private drawGranite(x: number, y: number, width: number, height: number, active: boolean) {
+    const centerY = y + height / 2;
     this.graphics
-      .fillStyle(this.character.accentColor, active ? 0.5 : 0.22)
-      .fillRoundedRect(x, y, width, height, Math.min(18, height / 2))
-      .lineStyle(active ? 7 : 4, 0xffe2a2, 0.78)
-      .strokeRoundedRect(x, y, width, height, Math.min(18, height / 2));
+      .fillStyle(this.character.accentColor, active ? 0.48 : 0.18)
+      .fillTriangle(x, centerY + height * 0.3, x + width * 0.68, y, x + width, centerY)
+      .lineStyle(active ? 8 : 4, 0xffe2a2, 0.82)
+      .beginPath()
+      .moveTo(x, centerY + height * 0.32)
+      .lineTo(x + width * 0.7, y + height * 0.08)
+      .lineTo(x + width, centerY)
+      .strokePath();
     if (height <= 40) {
       this.graphics.beginPath().moveTo(x, y + height).lineTo(x + width, y + height).strokePath();
     }
@@ -50,9 +55,9 @@ export class AttackVisualRenderer {
   private drawShira(x: number, y: number, width: number, height: number, frame: number) {
     const inset = frame % 2 === 0 ? 3 : 8;
     this.graphics
-      .lineStyle(7, this.character.accentColor, 0.96)
+      .lineStyle(9, this.character.accentColor, 0.9)
       .beginPath().moveTo(x, y + inset).lineTo(x + width, y + height - inset).strokePath()
-      .lineStyle(4, 0xffffff, 0.82)
+      .lineStyle(5, 0xffffff, 0.88)
       .beginPath().moveTo(x + 8, y + height - inset).lineTo(x + width, y + inset).strokePath();
   }
 }

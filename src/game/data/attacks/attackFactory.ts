@@ -28,6 +28,7 @@ type AttackOptions = {
   hitStop?: number;
   movementSpeed?: number;
   armor?: boolean;
+  verticalLift?: number;
 };
 
 export function makeAttack(
@@ -39,6 +40,8 @@ export function makeAttack(
   const activeStart = options.startup;
   const cancelStart = activeStart + active;
   const cancelInto = options.cancelInto ?? [];
+  const verticalLift = options.verticalLift ??
+    (options.level === 'low' ? 0 : options.level === 'air' ? 16 : 24);
   return {
     id: `${characterId}-${slot}`,
     name: options.name,
@@ -62,7 +65,7 @@ export function makeAttack(
         startFrame: activeStart,
         endFrame: activeStart + active - 1,
         offsetX: 24,
-        offsetY: -(options.height ?? 58),
+        offsetY: -(options.height ?? 58) - verticalLift,
         width: options.reach ?? 74,
         height: options.height ?? 44,
       },

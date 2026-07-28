@@ -6,7 +6,11 @@ const assetName = (await readdir(new URL('../dist/assets/', import.meta.url)))
 
 if (!assetName) throw new Error('Built application bundle was not found');
 
-const source = (await readFile(new URL(`../dist/assets/${assetName}`, import.meta.url), 'utf8'))
+const remoteUrl = process.argv[2];
+const rawSource = remoteUrl
+  ? await (await fetch(remoteUrl)).text()
+  : await readFile(new URL(`../dist/assets/${assetName}`, import.meta.url), 'utf8');
+const source = rawSource
   .replaceAll(
     'import.meta',
     `({ url: 'http://127.0.0.1:5173/assets/${assetName}' })`,
@@ -35,8 +39,11 @@ Object.assign(dom.window, {
 });
 
 dom.window.addEventListener('error', (event) => errors.push(event.error ?? event.message));
+console.error('before bundle');
 dom.window.eval(source);
+console.error('after bundle');
 await new Promise((resolve) => setTimeout(resolve, 100));
+console.error('after wait');
 
 const root = dom.window.document.querySelector('#root');
 console.log(JSON.stringify({
@@ -45,3 +52,5 @@ console.log(JSON.stringify({
   renderedText: root?.textContent?.slice(0, 120),
   childCount: root?.childElementCount,
 }));
+dom.window.close();
+process.exit(0);
