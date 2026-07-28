@@ -8,8 +8,8 @@ export function useAuthEmail() {
     if (!isSupabaseConfigured) return;
 
     let active = true;
-    void supabase.auth.getUser().then(({ data }) => {
-      if (active) setEmail(data.user?.email ?? null);
+    void supabase.auth.getSession().then(({ data }) => {
+      if (active) setEmail(data.session?.user.email ?? null);
     });
     const {
       data: { subscription },

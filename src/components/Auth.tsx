@@ -62,7 +62,9 @@ export function Auth() {
           {message}
         </p>
       )}
-      <p className="auth-privacy">Без пароля. Мы отправим одноразовую ссылку для входа.</p>
+      <p className="auth-privacy">
+        Без пароля. После ссылки вход сохранится на этом устройстве.
+      </p>
     </section>
   );
 }
