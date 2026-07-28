@@ -7,9 +7,9 @@ export function AuthPage() {
   return (
     <AppShell compact>
       <PageHeader
-        eyebrow="Supabase Auth"
-        title="Вход в Circle Clash"
-        description="Одна кнопка — и ссылка для безопасного входа уже в почте."
+        eyebrow="Аккаунт Circle Clash"
+        title="Играй как гость или войди"
+        description="Регистрация, подтверждение email и восстановление доступа работают через Supabase."
       />
       <div className="auth-layout">
         <AuthIntro />

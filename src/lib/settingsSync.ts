@@ -9,7 +9,9 @@ const controls = new ControlStorage();
 export async function loadAndApplyCloudSettings(userId: string) {
   try {
     const cloud = await loadCloudSettings(userId);
-    settingsStore.save(settingsFromCloud(cloud));
+    const settings = settingsFromCloud(cloud);
+    settingsStore.save(settings);
+    applyLocalAccessibility(settings);
     controls.importCloud(cloud.control_layout);
   } catch {
     // Offline play continues with the last safe local copy.
@@ -37,7 +39,15 @@ export async function syncCurrentSettings(userId: string) {
 
 export function applySettings(settings: GameSettings, profiles?: KeyboardProfiles) {
   settingsStore.save(settings);
+  applyLocalAccessibility(settings);
   if (profiles) controls.save(profiles);
+}
+
+export function applyLocalAccessibility(settings: GameSettings) {
+  if (typeof document === 'undefined') return;
+  document.documentElement.classList.toggle('reduced-motion', settings.reducedMotion);
+  document.documentElement.classList.toggle('high-contrast', settings.highContrast);
+  document.documentElement.classList.toggle('large-text', settings.largeText);
 }
 
 function settingsFromCloud(cloud: CloudPlayerSettings): GameSettings {

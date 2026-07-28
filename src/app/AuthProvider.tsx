@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { loadAndApplyCloudSettings } from '../lib/settingsSync';
+import { applyLocalAccessibility, loadAndApplyCloudSettings } from '../lib/settingsSync';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { settingsStore } from '../stores/settingsStore';
 import { AuthContext, type AuthStatus } from './authContext';
 
 const GUEST_KEY = 'circle-clash-guest-session';
@@ -24,6 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    applyLocalAccessibility(settingsStore.load());
     if (!isSupabaseConfigured) {
       setStatus(readGuestStatus());
       return;

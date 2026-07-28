@@ -33,7 +33,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -53,6 +54,24 @@ input:focus-visible,
 [tabindex]:focus-visible {
   outline: 4px solid var(--yellow);
   outline-offset: 4px;
+}
+
+html.large-text {
+  font-size: 112.5%;
+}
+
+html.high-contrast {
+  --ink: #130c25;
+  --muted: #3f3655;
+  --line: #6c5d88;
+}
+
+html.reduced-motion *,
+html.reduced-motion *::before,
+html.reduced-motion *::after {
+  scroll-behavior: auto !important;
+  transition: none !important;
+  animation: none !important;
 }
 
 h1,

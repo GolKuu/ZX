@@ -78,6 +78,9 @@ language plpgsql
 set search_path = ''
 as $$
 begin
+  if tg_table_name = 'profiles' then
+    new.created_at = old.created_at;
+  end if;
   new.updated_at = now();
   return new;
 end;

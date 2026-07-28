@@ -37,7 +37,12 @@ set local role anon;
 select is((select count(*) from public.profiles), 2::bigint, 'public profiles are readable');
 select is((select count(*) from public.player_statistics), 2::bigint, 'public statistics are readable');
 select is((select count(*) from public.player_achievements), 1::bigint, 'public achievements are readable');
-select is((select count(*) from public.player_settings), 0::bigint, 'anonymous users cannot read settings');
+select throws_ok(
+  $$select count(*) from public.player_settings$$,
+  '42501',
+  null,
+  'anonymous users cannot read settings'
+);
 
 reset role;
 select set_config('request.jwt.claim.sub', '11111111-1111-4111-8111-111111111111', true);
@@ -82,23 +87,26 @@ select is(
 select throws_ok(
   $$insert into public.player_settings (user_id)
     values ('33333333-3333-4333-8333-333333333333')$$,
-  '23503',
+  '42501',
   null,
-  'settings require a real auth user'
+  'player cannot insert settings for another id'
 );
 
-update public.player_statistics set rating = 9999
-where user_id = '11111111-1111-4111-8111-111111111111';
-select is(
-  (select rating from public.player_statistics
-   where user_id = '11111111-1111-4111-8111-111111111111'),
-  1000,
+select throws_ok(
+  $$update public.player_statistics set rating = 9999
+    where user_id = '11111111-1111-4111-8111-111111111111'$$,
+  '42501',
+  null,
   'players cannot change rating'
 );
 
-delete from public.player_achievements
-where user_id = '22222222-2222-4222-8222-222222222222';
-select is((select count(*) from public.player_achievements), 1::bigint, 'players cannot remove achievements');
+select throws_ok(
+  $$delete from public.player_achievements
+    where user_id = '22222222-2222-4222-8222-222222222222'$$,
+  '42501',
+  null,
+  'players cannot remove achievements'
+);
 
 select is(
   (select count(*) from public.profiles where nickname in ('one@example.com', 'two@example.com')),

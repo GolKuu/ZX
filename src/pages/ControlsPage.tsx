@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useAuth } from '../app/authContext';
 import { KeyBindingEditor } from '../components/controls/KeyBindingEditor';
 import { CombinationGuide } from '../components/controls/CombinationGuide';
 import { ControlGuide } from '../components/controls/ControlGuide';
@@ -10,10 +11,12 @@ import { applyControlScheme } from '../game/input/controlSchemes';
 import type { ControlScheme, PlayerId } from '../game/core/types';
 import { findKeyboardConflicts } from '../game/input/inputValidation';
 import { settingsStore } from '../stores/settingsStore';
+import { syncCurrentSettings } from '../lib/settingsSync';
 
 const storage = new ControlStorage();
 
 export function ControlsPage() {
+  const { user } = useAuth();
   const [profiles, setProfiles] = useState(() => storage.load());
   const [showCombatHints, setShowCombatHints] = useState(
     () => settingsStore.load().showCombatHints,
@@ -21,14 +24,23 @@ export function ControlsPage() {
   const [message, setMessage] = useState('');
   const conflicts = useMemo(() => findKeyboardConflicts(profiles), [profiles]);
 
-  function save() {
+  async function save() {
     if (conflicts.length > 0) {
       setMessage('Сначала устраните конфликты клавиш.');
       return;
     }
     storage.save(profiles);
     settingsStore.save({ ...settingsStore.load(), showCombatHints });
-    setMessage('Настройки сохранены на этом устройстве.');
+    if (!user) {
+      setMessage('Настройки сохранены на этом устройстве.');
+      return;
+    }
+    try {
+      await syncCurrentSettings(user.id);
+      setMessage('Раскладка и настройки синхронизированы.');
+    } catch {
+      setMessage('Сохранено локально. Облако сейчас недоступно.');
+    }
   }
 
   function reset() {
@@ -78,7 +90,7 @@ export function ControlsPage() {
         Показывать важные боевые подсказки
       </label>
       <div className="controls-actions">
-        <button type="button" className="button button--primary" onClick={save}>
+        <button type="button" className="button button--primary" onClick={() => void save()}>
           Сохранить
         </button>
         <button type="button" className="button button--secondary" onClick={reset}>
