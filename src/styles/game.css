@@ -50,3 +50,29 @@
   font-weight: 900;
   transform: translate(-50%, -50%);
 }
+
+.game-canvas__error,
+.app-error {
+  display: grid;
+  z-index: 3;
+  gap: 16px;
+  place-items: center;
+  text-align: center;
+}
+
+.game-canvas__error {
+  position: absolute;
+  inset: 0;
+  padding: 24px;
+  color: white;
+  background: #241d3de8;
+}
+
+.app-error {
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.app-error > p {
+  max-width: 560px;
+}
