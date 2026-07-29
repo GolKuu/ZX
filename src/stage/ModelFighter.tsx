@@ -19,6 +19,7 @@ import {
   type FighterZones,
   type LoadedFighterModel,
 } from './model/loadFighterModel';
+import { applyArmSilhouette } from './model/armSilhouette';
 import { applyFighterPose } from './model/modelPose';
 
 /**
@@ -121,6 +122,11 @@ export function ModelFighter({
     group.rotation.y = fighter.facing === 1 ? 0 : Math.PI;
 
     applyFighterPose(loaded.joints, loaded.rest, fighter, clock.elapsedTime);
+    applyArmSilhouette(
+      loaded.joints,
+      loaded.rest.rotations,
+      fighter.facing,
+    );
 
     const opponent = readCombatFighter(opponentId);
     const self = { x: group.position.x, z: group.position.z };
