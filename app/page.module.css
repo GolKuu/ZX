@@ -1,0 +1,141 @@
+.page {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  padding: 28px clamp(24px, 5vw, 76px);
+  background:
+    linear-gradient(120deg, rgb(6 9 20 / 30%), rgb(6 9 20 / 96%)),
+    radial-gradient(circle at 18% 45%, #16384a 0, #080e1b 38%, #050711 70%);
+}
+
+.page::before {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgb(113 220 255 / 4%) 1px, transparent 1px);
+  background-size: 100% 48px;
+  content: "";
+  mask-image: linear-gradient(to right, black, transparent 70%);
+}
+
+.glow {
+  position: absolute;
+  top: 18%;
+  left: 62%;
+  width: 36vw;
+  aspect-ratio: 1;
+  border: 1px solid rgb(113 220 255 / 14%);
+  border-radius: 50%;
+  box-shadow: 0 0 120px rgb(31 142 181 / 18%);
+}
+
+.header,
+.features {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand,
+.status,
+.eyebrow,
+.note,
+.features {
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+}
+
+.status,
+.note,
+.features {
+  color: #8091a8;
+}
+
+.hero {
+  position: relative;
+  z-index: 1;
+  align-self: center;
+  width: min(780px, 90vw);
+  padding: 80px 0;
+}
+
+.eyebrow {
+  color: #71dcff;
+}
+
+.hero h1 {
+  max-width: 760px;
+  margin: 16px 0 24px;
+  color: #f7f9ff;
+  font-size: clamp(3.4rem, 8vw, 7.5rem);
+  font-weight: 830;
+  letter-spacing: -0.075em;
+  line-height: 0.88;
+}
+
+.hero h1 span {
+  display: block;
+  color: #71dcff;
+}
+
+.description {
+  max-width: 580px;
+  margin: 0 0 34px;
+  color: #a5b0c1;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.7;
+}
+
+.cta {
+  display: inline-flex;
+  min-height: 54px;
+  align-items: center;
+  gap: 36px;
+  padding: 0 22px;
+  color: #071018;
+  background: #71dcff;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.cta:hover {
+  background: #a2eaff;
+}
+
+.note {
+  margin-top: 16px;
+  letter-spacing: 0.08em;
+}
+
+.features {
+  justify-content: flex-start;
+  gap: clamp(20px, 5vw, 70px);
+  padding-bottom: 10px;
+}
+
+.features span {
+  display: flex;
+  gap: 10px;
+}
+
+.features b {
+  color: #71dcff;
+}
+
+@media (max-width: 680px) {
+  .features {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .status {
+    display: none;
+  }
+}

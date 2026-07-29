@@ -1,0 +1,28 @@
+.loading {
+  display: grid;
+  min-height: 100svh;
+  place-content: center;
+  place-items: center;
+  gap: 18px;
+  color: #8d9cb0;
+  background: #060914;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.loading span {
+  width: 42px;
+  height: 42px;
+  border: 2px solid rgb(113 220 255 / 20%);
+  border-top-color: #71dcff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,21 @@
+'use client';
+
+import dynamic from 'next/dynamic';
+import styles from './play.module.css';
+
+const RenderExperience = dynamic(
+  () => import('@/src/stage/RenderExperience').then((module) => module.RenderExperience),
+  {
+    ssr: false,
+    loading: () => (
+      <div className={styles.loading}>
+        <span />
+        <p>Compiling render pipeline…</p>
+      </div>
+    ),
+  },
+);
+
+export function PlayRoute() {
+  return <RenderExperience />;
+}
