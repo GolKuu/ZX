@@ -64,8 +64,23 @@ const ZONE_KEYWORDS: readonly (readonly [ZoneName, readonly string[]])[] = [
   ['eye', ['eye', 'cornea', 'iris', 'sclera', 'pupil']],
   ['boot', ['boot', 'shoe', 'foot', 'sole', 'sandal']],
   ['trousers', ['trouser', 'pant', 'leg', 'short', 'skirt', 'hakama']],
-  ['coat', ['coat', 'jacket', 'cloth', 'shirt', 'top', 'robe', 'armor', 'armour', 'vest', 'collar', 'belt']],
-  ['skin', ['skin', 'body', 'face', 'head', 'hand', 'arm', 'flesh']],
+  [
+    'coat',
+    [
+      'coat', 'jacket', 'cloth', 'shirt', 'top', 'robe', 'armor', 'armour',
+      'vest', 'collar', 'belt', 'suit',
+      // Vendor names from the stock models currently in public/models/.
+      'visor', 'vanguard',
+    ],
+  ],
+  [
+    'skin',
+    [
+      'skin', 'body', 'face', 'head', 'hand', 'arm', 'flesh',
+      // Mixamo's mannequin rigs split into joint caps and limb shells.
+      'joint', 'limb', 'beta',
+    ],
+  ],
 ];
 
 function zoneFor(materialName: string, meshName: string): ZoneName {
