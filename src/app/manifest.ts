@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Circle Clash Ultimate',
     short_name: 'Circle Clash',
-    description: 'A fast browser-based 3D anime fighting game.',
+    description: 'A fast browser-based 3D cel-shaded fighting game.',
     start_url: '/',
     display: 'standalone',
     background_color: '#060914',

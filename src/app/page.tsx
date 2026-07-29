@@ -15,7 +15,7 @@ export default function HomePage() {
       </header>
 
       <section className={styles.hero}>
-        <p className={styles.eyebrow}>BROWSER-BASED 3D ANIME FIGHTER</p>
+        <p className={styles.eyebrow}>BROWSER-BASED 3D CEL-SHADED FIGHTER</p>
         <h1>
           Every hit should
           <span> stop time.</span>

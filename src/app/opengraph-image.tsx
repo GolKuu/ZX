@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const alt = 'Circle Clash Ultimate — browser-based 3D anime fighting';
+export const alt = 'Circle Clash Ultimate — browser-based 3D cel-shaded fighting';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -22,7 +22,7 @@ export default function OpenGraphImage() {
       >
         <div style={{ display: 'flex', flexDirection: 'column', width: 740 }}>
           <span style={{ color: '#71dcff', fontSize: 28, fontWeight: 700, letterSpacing: 8 }}>
-            BROWSER-BASED 3D ANIME FIGHTER
+            BROWSER-BASED 3D CEL-SHADED FIGHTER
           </span>
           <span style={{ fontSize: 82, fontWeight: 900, letterSpacing: -5, lineHeight: 0.95, marginTop: 34 }}>
             CIRCLE CLASH

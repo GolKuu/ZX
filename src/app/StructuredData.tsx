@@ -3,7 +3,7 @@ const applicationData = {
   '@type': 'VideoGame',
   name: 'Circle Clash Ultimate',
   description:
-    'A browser-based 3D anime fighting game with cel-shaded combat and cinematic impact effects.',
+    'A browser-based 3D fighting game with cel-shaded combat and cinematic impact effects.',
   applicationCategory: 'GameApplication',
   operatingSystem: 'Web browser',
   playMode: 'SinglePlayer',

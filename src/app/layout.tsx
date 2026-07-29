@@ -13,9 +13,9 @@ export const metadata: Metadata = {
     template: '%s | Circle Clash Ultimate',
   },
   description:
-    'A fast browser-based 3D anime fighting game with cel-shaded combat and cinematic impact effects.',
+    'A fast browser-based 3D fighting game with cel-shaded combat and cinematic impact effects.',
   category: 'games',
-  keywords: ['browser fighting game', '3D anime fighter', 'WebGL game', 'indie game'],
+  keywords: ['browser fighting game', 'cel-shaded fighter', 'WebGL game', 'indie game'],
   creator: 'Circle Clash Ultimate',
   publisher: 'Circle Clash Ultimate',
   alternates: {
