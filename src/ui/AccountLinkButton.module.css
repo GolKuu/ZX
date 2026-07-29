@@ -1,0 +1,57 @@
+.trigger {
+  display: inline-flex;
+  max-width: min(280px, 42vw);
+  min-height: 36px;
+  align-items: center;
+  gap: 9px;
+  padding: 0 13px;
+  color: #a7b5c7;
+  cursor: pointer;
+  background: rgb(8 14 24 / 58%);
+  border: 1px solid rgb(113 220 255 / 28%);
+  border-radius: 99px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.trigger:hover,
+.trigger:focus-visible,
+.trigger[data-connected="true"] {
+  color: #e9f9ff;
+  border-color: #71dcff;
+  outline: none;
+}
+
+.trigger i {
+  position: relative;
+  width: 13px;
+  height: 8px;
+  border: 2px solid currentcolor;
+  border-radius: 99px;
+  transform: rotate(-35deg);
+}
+
+.trigger i::after {
+  position: absolute;
+  width: 7px;
+  height: 2px;
+  background: currentcolor;
+  content: "";
+  transform: translate(8px, 1px);
+}
+
+.trigger span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .trigger {
+    max-width: 54vw;
+    min-height: 34px;
+    font-size: 0.6rem;
+  }
+}

@@ -1,0 +1,145 @@
+.scrim {
+  position: fixed;
+  z-index: 200;
+  inset: 0;
+  display: grid;
+  padding: 24px;
+  background: rgb(2 5 9 / 82%);
+  backdrop-filter: blur(10px);
+  place-items: center;
+}
+
+.dialog {
+  position: relative;
+  width: min(440px, 100%);
+  padding: 38px;
+  color: #f5f8fd;
+  background:
+    radial-gradient(circle at 100% 0, rgb(42 143 186 / 18%), transparent 48%),
+    #09101a;
+  border: 1px solid rgb(113 220 255 / 26%);
+  border-radius: 8px;
+  box-shadow: 0 28px 80px rgb(0 0 0 / 55%);
+}
+
+.close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  color: #8292a6;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  font-size: 1.45rem;
+}
+
+.close:hover,
+.close:focus-visible {
+  color: #fff;
+  outline: none;
+}
+
+.kicker {
+  color: #71dcff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+}
+
+.dialog h2 {
+  margin: 10px 0 12px;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  letter-spacing: -0.04em;
+}
+
+.dialog p {
+  margin: 0;
+  color: #91a0b3;
+  line-height: 1.6;
+}
+
+.dialog form {
+  display: grid;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.dialog label {
+  color: #a9b6c7;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dialog input {
+  min-height: 48px;
+  padding: 0 14px;
+  color: #fff;
+  background: #050a11;
+  border: 1px solid #29394c;
+  border-radius: 4px;
+  font: inherit;
+}
+
+.dialog input:focus {
+  border-color: #71dcff;
+  box-shadow: 0 0 0 3px rgb(113 220 255 / 10%);
+  outline: none;
+}
+
+.dialog form > button,
+.connected button {
+  min-height: 48px;
+  margin-top: 4px;
+  color: #071018;
+  cursor: pointer;
+  background: #71dcff;
+  border: 0;
+  border-radius: 4px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.dialog form > button:hover,
+.connected button:hover {
+  background: #a2eaff;
+}
+
+.dialog form > button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.dialog small {
+  color: #ff8179;
+  line-height: 1.4;
+}
+
+.sent,
+.connected {
+  display: grid;
+}
+
+.sent strong,
+.connected strong {
+  color: #dff7ff;
+}
+
+.connected button {
+  margin-top: 24px;
+}
+
+@media (max-width: 560px) {
+  .dialog {
+    padding: 30px 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim {
+    backdrop-filter: none;
+  }
+}

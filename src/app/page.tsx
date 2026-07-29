@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { AccountLinkButton } from '@/src/ui/AccountLinkButton';
 import { StructuredData } from './StructuredData';
 import styles from './page.module.css';
 
@@ -11,7 +12,10 @@ export default function HomePage() {
       <div className={styles.glow} aria-hidden="true" />
       <header className={styles.header}>
         <span className={styles.brand}>CC//ULTIMATE</span>
-        <span className={styles.status}>RENDER SLICE 01</span>
+        <div className={styles.headerActions}>
+          <span className={styles.status}>RENDER SLICE 01</span>
+          <AccountLinkButton />
+        </div>
       </header>
 
       <section className={styles.hero}>

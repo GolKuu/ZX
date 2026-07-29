@@ -55,6 +55,12 @@
   color: #8091a8;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
 .hero {
   position: relative;
   z-index: 1;
