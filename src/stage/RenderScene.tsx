@@ -12,11 +12,11 @@ import { VoidWalkerFighter } from './VoidWalkerFighter';
 export function RenderScene() {
   return (
     <>
-      <color attach="background" args={['#050814']} />
-      <fog attach="fog" args={['#050814', 8, 17]} />
-      <ambientLight color="#7895c9" intensity={1.25} />
+      <color attach="background" args={['#10071b']} />
+      <fog attach="fog" args={['#1c0b2d', 9, 23]} />
+      <ambientLight color="#9a73ca" intensity={1.18} />
       <directionalLight color="#fff4dd" intensity={3.2} position={[-3, 7, 5]} />
-      <directionalLight color="#4fcfff" intensity={1.5} position={[5, 3, -2]} />
+      <directionalLight color="#b05cff" intensity={1.65} position={[5, 4, -4]} />
 
       <SpeedLines />
       <Arena />
