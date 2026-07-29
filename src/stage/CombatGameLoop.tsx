@@ -8,13 +8,17 @@ import {
 } from '@/src/game/combatRuntime';
 import {
   AANG_COMMANDS,
+  IDOL_COMMANDS,
   KADE_COMMANDS,
   KeyboardInputSource,
   PLAYER_TWO_BINDINGS,
 } from '@/src/input';
 import { useControlStore } from '@/src/store/controlStore';
 import { useHudStore } from '@/src/store/hudStore';
-import type { CharacterSelection } from '@/src/data/characterRoster';
+import type {
+  CharacterId,
+  CharacterSelection,
+} from '@/src/data/characterRoster';
 
 export function CombatGameLoop({
   fighterSelection,
@@ -24,14 +28,14 @@ export function CombatGameLoop({
   const keyboard = useMemo(
     () => new KeyboardInputSource({
       bindings: useControlStore.getState().bindings,
-      commands: fighterSelection[0] === 'aang' ? AANG_COMMANDS : KADE_COMMANDS,
+      commands: commandsFor(fighterSelection[0]),
     }),
     [fighterSelection],
   );
   const secondKeyboard = useMemo(
     () => new KeyboardInputSource({
       bindings: PLAYER_TWO_BINDINGS,
-      commands: fighterSelection[1] === 'aang' ? AANG_COMMANDS : KADE_COMMANDS,
+      commands: commandsFor(fighterSelection[1]),
     }),
     [fighterSelection],
   );
@@ -78,4 +82,10 @@ export function CombatGameLoop({
   }, -100);
 
   return null;
+}
+
+function commandsFor(characterId: CharacterId) {
+  if (characterId === 'aang') return AANG_COMMANDS;
+  if (characterId === 'idol') return IDOL_COMMANDS;
+  return KADE_COMMANDS;
 }

@@ -26,7 +26,7 @@ const ROUND_FRAMES = 99 * 60;
 
 export class CombatSession {
   private engine = createCombatEngine();
-  private ai = createCombatAi();
+  private ai;
   private hud = createCombatHud();
   private readonly runner = new FixedStepRunner(() => this.tick());
   private lastEvents: readonly CombatEvent[] = [];
@@ -41,8 +41,9 @@ export class CombatSession {
   public constructor(
     private readonly playerOne: KeyboardInputSource,
     private readonly playerTwo: KeyboardInputSource,
-    fighterSelection: CharacterSelection,
+    private readonly fighterSelection: CharacterSelection,
   ) {
+    this.ai = createCombatAi(fighterSelection[1]);
     this.aangCombat = new AangCombatLoadout(fighterSelection);
     this.publishInitialState();
   }
@@ -54,7 +55,7 @@ export class CombatSession {
 
   public reset(): void {
     this.engine = createCombatEngine();
-    this.ai = createCombatAi();
+    this.ai = createCombatAi(this.fighterSelection[1]);
     this.hud = createCombatHud();
     this.runner.reset();
     this.hud.reset();

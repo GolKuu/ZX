@@ -42,6 +42,10 @@ export {
 } from './aangCommands.js';
 
 export {
+  IDOL_COMMANDS,
+} from './idolCommands.js';
+
+export {
   DEFAULT_CONTEXT,
   KADE_COMMANDS,
   isGuarding,

@@ -72,6 +72,17 @@ const ELEMENT_SAGE: CharacterPalette = {
   body: zone('#c97a24', '#8c3a2e'),
 };
 
+/** Idol — performance pink, stage gold and clean white. */
+const IDOL: CharacterPalette = {
+  hair: zone('#f04f91', '#9d3e8d', 1.0, 0.76),
+  skin: zone('#efc3aa', '#a76686', 0.62, 0.7),
+  coat: zone('#f04f91', '#a73d86'),
+  trousers: zone('#fff8f1', '#c48ab1', 0.72, 0.76),
+  boot: zone('#fffaf3', '#b77ca8', 1.0, 0.72),
+  eye: zone('#fff8d7', '#d6a237', 0, 0),
+  body: zone('#f04f91', '#a73d86'),
+};
+
 /** Velocity King — bleached bone and hot magenta, the fastest read. */
 const VELOCITY_KING: CharacterPalette = {
   hair: zone('#e8e4dc', '#a06a94', 1.0, 0.78),
@@ -97,6 +108,7 @@ const ELASTIC_BRAWLER: CharacterPalette = {
 const PALETTES: Record<CharacterId, CharacterPalette> = {
   zoro: BLADE_PHANTOM,
   aang: ELEMENT_SAGE,
+  idol: IDOL,
   'void-walker': VOID_WALKER,
   'velocity-king': VELOCITY_KING,
   'elastic-brawler': ELASTIC_BRAWLER,

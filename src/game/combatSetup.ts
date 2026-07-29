@@ -1,9 +1,14 @@
 import { CombatAiAgent } from '@/src/ai';
 import { KADE_AI_LOADOUT } from '@/src/data/combat-ai';
-import { getCharacterDefinition } from '@/src/data/characterRoster';
+import {
+  getCharacterDefinition,
+  type CharacterId,
+} from '@/src/data/characterRoster';
 import { KADE_HURTBOXES, KADE_MOVES } from '@/src/data/combat-moves';
 import { AANG_NORMAL_MOVES } from '@/src/data/aang-combat-moves';
 import { AANG_SPECIAL_MOVES } from '@/src/data/aang-special-moves';
+import { IDOL_AI_LOADOUT } from '@/src/data/idol-ai';
+import { IDOL_MOVES } from '@/src/data/idol-combat-moves';
 import { ROSTER_ADDITION_MOVES } from '@/src/data/roster-moves';
 import { HudBridge } from '@/src/hud';
 import {
@@ -23,6 +28,7 @@ export const ALL_COMBAT_MOVES = [
   ...ROSTER_ADDITION_MOVES,
   ...AANG_NORMAL_MOVES,
   ...AANG_SPECIAL_MOVES,
+  ...IDOL_MOVES,
 ];
 
 export function createCombatEngine(): CombatEngine {
@@ -36,13 +42,13 @@ export function createCombatEngine(): CombatEngine {
   });
 }
 
-export function createCombatAi(): CombatAiAgent {
+export function createCombatAi(characterId: CharacterId = 'zoro'): CombatAiAgent {
   return new CombatAiAgent({
     fighterId: 'p2',
     opponentId: 'p1',
     difficulty: 'normal',
     moves: ALL_COMBAT_MOVES,
-    loadout: KADE_AI_LOADOUT,
+    loadout: characterId === 'idol' ? IDOL_AI_LOADOUT : KADE_AI_LOADOUT,
     seed: 29,
   });
 }
