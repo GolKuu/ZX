@@ -76,14 +76,12 @@ const ZONE_KEYWORDS: readonly (readonly [ZoneName, readonly string[]])[] = [
       'visor', 'vanguard',
     ],
   ],
-  [
-    'skin',
-    [
-      'skin', 'body', 'face', 'head', 'hand', 'arm', 'flesh',
-      // Mixamo's mannequin rigs split into joint caps and limb shells.
-      'joint', 'limb', 'beta',
-    ],
-  ],
+  ['skin', ['skin', 'body', 'face', 'head', 'hand', 'arm', 'flesh']],
+  // Mixamo's mannequin shells (`Beta_Joints`, `Beta_HighLimbs`) are a
+  // placeholder *dummy*, not anatomy. Tinting them as skin is what made the
+  // Void Walker read as an undressed art doll; falling through to `body` lets
+  // the character palette dress it as the construct it is meant to be.
+  ['body', ['joint', 'limb', 'beta', 'mannequin', 'dummy']],
 ];
 
 function zoneFor(materialName: string, meshName: string): ZoneName {
