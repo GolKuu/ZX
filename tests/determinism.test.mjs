@@ -54,5 +54,6 @@ test('production move table carries the authored frame data', () => {
     '2L': [5, 2, 14],
     '2M': [8, 3, 23],
     overtake: [16, 3, 33],
+    xray: [18, 4, 158],
   });
 });

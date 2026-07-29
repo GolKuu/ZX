@@ -49,10 +49,10 @@ test('HUD bridge maps health, ultimate charge, sides, timer, and rounds', () => 
   assert.equal(snapshot.timerFrames, 3210);
   assert.equal(snapshot.fighters[0].id, 'alpha');
   assert.equal(snapshot.fighters[0].side, 'left');
-  assert.equal(snapshot.fighters[0].superCharge, 25);
+  assert.equal(snapshot.fighters[0].superCharge, 33);
   assert.equal(snapshot.fighters[0].roundWins, 1);
   assert.equal(snapshot.fighters[1].id, 'bravo');
-  assert.equal(snapshot.fighters[1].superCharge, 50);
+  assert.equal(snapshot.fighters[1].superCharge, 67);
   assert.equal(snapshot.fighters[1].roundWins, 2);
 });
 
