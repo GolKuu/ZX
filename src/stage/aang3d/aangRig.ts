@@ -1,6 +1,7 @@
 import type { RefObject } from 'react';
 import type { FighterSnapshot } from '@/src/sim';
 import type { Group } from 'three';
+import { combatAnimationProgress } from '../combatAnimationProgress';
 
 export interface AangRigRefs {
   readonly root: RefObject<Group | null>;
@@ -16,15 +17,6 @@ export interface AangRigRefs {
 
 export type AangRig = {
   readonly [Key in keyof AangRigRefs]: Group;
-};
-
-const ACTION_FRAMES: Readonly<Record<string, number>> = {
-  '5L': 16,
-  '5M': 26,
-  '5H': 39,
-  '2L': 16,
-  '2M': 26,
-  overtake: 39,
 };
 
 export function readAangRig(refs: AangRigRefs): AangRig | null {
@@ -75,10 +67,7 @@ export function applyAangCombatAnimation(
   }
   const action = fighter.action;
   if (action === null) return;
-  const progress = Math.min(
-    1,
-    action.frame / (ACTION_FRAMES[action.moveId] ?? 24),
-  );
+  const progress = combatAnimationProgress(action.moveId, action.frame);
   const strike = Math.sin(progress * Math.PI);
   rig.effect.visible = progress > 0.12 && progress < 0.74;
   rig.effect.scale.setScalar(0.35 + strike * 0.75);

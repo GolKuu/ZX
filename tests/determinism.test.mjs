@@ -48,11 +48,11 @@ test('production move table carries the authored frame data', () => {
     ]),
   );
   assert.deepEqual(frameData, {
-    '5L': [6, 2, 8],
-    '5M': [9, 3, 14],
-    '5H': [13, 4, 22],
-    '2L': [5, 2, 9],
-    '2M': [8, 3, 15],
-    overtake: [16, 3, 20],
+    '5L': [6, 2, 13],
+    '5M': [9, 3, 22],
+    '5H': [13, 4, 34],
+    '2L': [5, 2, 14],
+    '2M': [8, 3, 23],
+    overtake: [16, 3, 33],
   });
 });

@@ -1,4 +1,5 @@
 import type { FighterSnapshot } from '@/src/sim';
+import { combatAnimationProgress } from '../combatAnimationProgress';
 import { applyZoroAnimation } from './zoroAnimation';
 import type { ZoroActionId } from './zoroActions';
 import type { ZoroRig } from './zoroRig';
@@ -6,16 +7,15 @@ import { setRotation } from './zoroRig';
 
 interface CombatAnimation {
   readonly action: ZoroActionId;
-  readonly frames: number;
 }
 
 const COMBAT_ANIMATIONS: Readonly<Record<string, CombatAnimation>> = {
-  '5L': { action: 'lightPunch', frames: 16 },
-  '5M': { action: 'lightKick', frames: 26 },
-  '5H': { action: 'heavyPunch', frames: 39 },
-  '2L': { action: 'lightPunch', frames: 16 },
-  '2M': { action: 'heavyKick', frames: 26 },
-  overtake: { action: 'lionSong', frames: 39 },
+  '5L': { action: 'lightPunch' },
+  '5M': { action: 'lightKick' },
+  '5H': { action: 'heavyPunch' },
+  '2L': { action: 'lightPunch' },
+  '2M': { action: 'heavyKick' },
+  overtake: { action: 'lionSong' },
 };
 
 export function applyZoroCombatAnimation(
@@ -29,7 +29,7 @@ export function applyZoroCombatAnimation(
     applyZoroAnimation(
       rig,
       active.action,
-      Math.min(0.999, fighter.action.frame / active.frames),
+      combatAnimationProgress(fighter.action.moveId, fighter.action.frame),
     );
     return;
   }
