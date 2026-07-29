@@ -106,7 +106,7 @@ export function ModelFighter({
     for (const material of Object.values(zones)) material.dispose();
   }, [gradient, outline, zones]);
 
-  useFrame(({ camera: activeCamera, clock }, delta) => {
+  useFrame(({ camera: activeCamera, clock }) => {
     const loaded = model.current;
     const group = outer.current;
     const fighter = readCombatFighter(fighterId);

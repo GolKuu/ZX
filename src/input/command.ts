@@ -7,6 +7,7 @@
  */
 
 import type { Button, Direction } from './bindings.js';
+import { XRAY_MOVE_ID } from '../data/combat-moves.js';
 import { hasButton, isCrouching } from './bindings.js';
 import { INPUT_LEEWAY_FRAMES, type InputBuffer } from './buffer.js';
 import { matchesMotion, type MotionId } from './motion.js';
@@ -48,6 +49,13 @@ export const DEFAULT_CONTEXT: CommandContext = {
  * project settles on the L/M/H/S scheme instead, only this table changes.
  */
 export const KADE_COMMANDS: readonly CommandRow[] = [
+  {
+    moveId: XRAY_MOVE_ID,
+    motion: 'none',
+    button: 'special',
+    stance: 'any',
+    available: ({ superMeter }) => superMeter >= 100,
+  },
   { moveId: 'overtake', motion: 'none', button: 'special', stance: 'any' },
   // Specials first — they share buttons with the normals below.
   { moveId: 'overtake', motion: 'qcf', button: 'hp', stance: 'any' },

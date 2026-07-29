@@ -22,6 +22,8 @@ interface StrikeRow {
   readonly cancels?: readonly string[];
 }
 
+export const XRAY_MOVE_ID = 'xray';
+
 export const KADE_HURTBOXES: readonly FixedBox[] = [
   {
     offset: { x: 0, y: fixed(0.95) },
@@ -125,6 +127,25 @@ const moveRows: readonly StrikeRow[] = [
       minimumHitstun: 16,
     },
   },
+  {
+    id: XRAY_MOVE_ID,
+    startup: 18,
+    active: 4,
+    recovery: 158,
+    damage: 400,
+    hitstop: [18, 24],
+    hitstun: 90,
+    blockstun: 0,
+    blockPushback: 0,
+    box: attackBox(1.05, 1.02, 0.82, 0.72),
+    knockback: { x: fixed(0.42), y: fixed(0.28) },
+    wallBounce: {
+      count: 1,
+      horizontalSpeed: fixed(0.24),
+      verticalSpeed: fixed(0.22),
+      minimumHitstun: 40,
+    },
+  },
 ];
 
 export const KADE_MOVES: readonly MoveFrameData[] = moveRows.map((row) => ({
@@ -145,11 +166,14 @@ export const KADE_MOVES: readonly MoveFrameData[] = moveRows.map((row) => ({
         hitstop: { attacker: row.hitstop[0], defender: row.hitstop[1] },
         hitstun: row.hitstun,
         knockback: row.knockback,
-        block: {
-          blockstun: row.blockstun,
-          hitstop: { attacker: row.hitstop[0], defender: row.hitstop[1] },
-          knockback: { x: row.blockPushback, y: 0 },
-        },
+        block:
+          row.id === XRAY_MOVE_ID
+            ? undefined
+            : {
+                blockstun: row.blockstun,
+                hitstop: { attacker: row.hitstop[0], defender: row.hitstop[1] },
+                knockback: { x: row.blockPushback, y: 0 },
+              },
         wallBounce: row.wallBounce,
         groundBounce: row.groundBounce,
       },

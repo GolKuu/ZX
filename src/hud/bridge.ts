@@ -1,5 +1,6 @@
 import type { CombatEvent } from '../sim/events.js';
 import type { FighterSnapshot, WorldSnapshot } from '../sim/state.js';
+import { ultimateChargeFromHealth } from './ultimateCharge.js';
 import {
   HUD_PUBLISH_INTERVAL_FRAMES,
   type HudComboSnapshot,
@@ -107,12 +108,14 @@ export class HudBridge {
     }
     const maxHealth = positiveInteger(fighter.maxHealth, 'maxHealth');
     const health = Math.max(0, Math.min(maxHealth, fighter.health));
-    const lostHealthRatio = 1 - health / maxHealth;
+    const ultimateSpent = match.ultimateSpent?.[fighter.id] === true;
     return {
       ...identity,
       health,
       maxHealth,
-      superCharge: Math.round(lostHealthRatio * 100),
+      superCharge: ultimateSpent
+        ? 0
+        : ultimateChargeFromHealth(health, maxHealth),
       roundWins: Math.min(2, nonNegativeInteger(match.roundWins[fighter.id] ?? 0, 'roundWins')),
     };
   }

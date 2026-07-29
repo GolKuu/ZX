@@ -9,3 +9,7 @@ export {
   type HudSnapshot,
   type PlayerSide,
 } from './types.js';
+export {
+  isXrayReady,
+  ultimateChargeFromHealth,
+} from './ultimateCharge.js';
