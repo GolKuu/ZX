@@ -29,8 +29,8 @@ export function LocalPvpPage() {
     player2: keyboardDevice,
   });
   const [characters, setCharacters] = useState<Record<PlayerId, string>>({
-    player1: 'granite',
-    player2: 'shira',
+    player1: 'comet',
+    player2: 'pulse',
   });
   const [ready, setReady] = useState<Record<PlayerId, boolean>>({
     player1: false,
@@ -51,7 +51,17 @@ export function LocalPvpPage() {
   }
 
   function updateCharacter(playerId: PlayerId, characterId: string) {
-    setCharacters((current) => ({ ...current, [playerId]: characterId }));
+    const opponentId = playerId === 'player1' ? 'player2' : 'player1';
+    setCharacters((current) => {
+      if (current[opponentId] !== characterId) {
+        return { ...current, [playerId]: characterId };
+      }
+      return {
+        ...current,
+        [playerId]: characterId,
+        [opponentId]: current[playerId],
+      };
+    });
     setReady({ player1: false, player2: false });
     setError('');
   }
@@ -102,7 +112,6 @@ export function LocalPvpPage() {
           <CharacterSelector
             playerId="player1"
             value={characters.player1}
-            opponentCharacterId={characters.player2}
             onChange={(characterId) => updateCharacter('player1', characterId)}
           />
         </SetupStep>
@@ -110,7 +119,6 @@ export function LocalPvpPage() {
           <CharacterSelector
             playerId="player2"
             value={characters.player2}
-            opponentCharacterId={characters.player1}
             onChange={(characterId) => updateCharacter('player2', characterId)}
           />
         </SetupStep>

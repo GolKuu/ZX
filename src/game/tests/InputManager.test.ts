@@ -68,36 +68,10 @@ describe('InputManager', () => {
     expect(disconnected).toHaveBeenCalledWith('player1', 'Test Pad');
     expect(buffer.snapshot().player1.held).toEqual([]);
 
-    pads = [makeGamepad({ pressedButtons: [2] })];
+    pads = [makeGamepad({ pressedButtons: [0] })];
     provider.poll();
     expect(reconnected).toHaveBeenCalledTimes(2);
     expect(buffer.snapshot().player1.held).toContain('JUMP');
-  });
-
-  it('uses the simplified standard gamepad face-button layout', () => {
-    const config = createTestMatchConfig();
-    config.assignments.player1.device = {
-      kind: 'gamepad',
-      id: 'pad-0',
-      gamepadIndex: 0,
-      gamepadLabel: 'Test Pad',
-    };
-    let pressedButtons = [0];
-    Object.defineProperty(navigator, 'getGamepads', {
-      configurable: true,
-      value: () => [makeGamepad({ pressedButtons })],
-    });
-    const manager = new InputManager(config.assignments);
-    manager.attach();
-
-    expect(manager.snapshot().player1.held).toContain('LIGHT_ATTACK');
-    pressedButtons = [1];
-    expect(manager.snapshot().player1.held).toContain('HEAVY_ATTACK');
-    pressedButtons = [3];
-    expect(manager.snapshot().player1.held).toContain('SPECIAL_ATTACK');
-    pressedButtons = [4];
-    expect(manager.snapshot().player1.held).toContain('DEFENSE');
-    manager.detach();
   });
 
   it('makes a gamepad pause press consumable in the polled frame', () => {

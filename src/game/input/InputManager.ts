@@ -1,6 +1,6 @@
 import { defaultGamepadProfile } from '../config/defaultControls';
 import { InputBuffer } from '../core/InputBuffer';
-import type { GameAction, InputFrame, PlayerId, CombatAction } from '../core/types';
+import type { GameAction, InputFrame, PlayerId } from '../core/types';
 import { GamepadProvider } from './GamepadProvider';
 import { KeyboardProvider } from './KeyboardProvider';
 import type { KeyboardProfiles, PlayerInputAssignment } from './InputProfile';
@@ -45,20 +45,6 @@ export class InputManager {
   snapshot(): InputFrame {
     this.gamepads.poll();
     return this.buffer.snapshot();
-  }
-
-  // Programmatic input helpers for external controllers (mobile UI)
-  pressAction(playerId: PlayerId, action: CombatAction) {
-    // forward to internal buffer
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore access buffer internals via exposed API
-    this.buffer.press(playerId, action as any);
-  }
-
-  releaseAction(playerId: PlayerId, action: CombatAction) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    this.buffer.release(playerId, action as any);
   }
 
   consumeGlobalPress(action: GameAction) {

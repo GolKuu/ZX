@@ -20,10 +20,20 @@
   transform: rotate(-4deg);
 }
 
-.hero-fighters .character-art {
-  width: min(44%, 180px);
-  overflow: visible;
-  filter: drop-shadow(8px 12px 0 #30264f);
+.hero-fighter {
+  position: relative;
+  font-size: clamp(8rem, 12vw, 11rem);
+  line-height: 1;
+  -webkit-text-stroke: 8px white;
+  filter: drop-shadow(10px 14px 0 #30264f);
+}
+
+.hero-fighter--comet {
+  color: var(--coral);
+}
+
+.hero-fighter--pulse {
+  color: var(--mint);
 }
 
 .hero-versus {

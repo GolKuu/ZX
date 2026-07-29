@@ -1,9 +1,5 @@
 import { InputBuffer } from '../core/InputBuffer';
-import {
-  GAME_ACTIONS,
-  type CombatAction,
-  type PlayerId,
-} from '../core/types';
+import { GAME_ACTIONS, type GameAction, type PlayerId } from '../core/types';
 import type {
   GamepadBinding,
   GamepadInputProfile,
@@ -14,7 +10,7 @@ type ConnectionListener = (playerId: PlayerId, gamepadLabel: string) => void;
 
 export class GamepadProvider {
   private assignments = new Map<PlayerId, PlayerInputAssignment>();
-  private previousActions = new Map<PlayerId, Set<CombatAction>>();
+  private previousActions = new Map<PlayerId, Set<GameAction>>();
   private connectionState = new Map<PlayerId, boolean>();
   private attached = false;
 
@@ -87,21 +83,14 @@ export class GamepadProvider {
     gamepad: Gamepad | null,
     profile: GamepadInputProfile,
   ) {
-    const previous = this.previousActions.get(playerId) ?? new Set<CombatAction>();
-    const current = new Set<CombatAction>();
+    const previous = this.previousActions.get(playerId) ?? new Set<GameAction>();
+    const current = new Set<GameAction>();
     if (gamepad) {
       GAME_ACTIONS.forEach((action) => {
         if (profile.bindings[action].some((binding) => this.isActive(gamepad, binding))) {
           current.add(action);
         }
       });
-      if (profile.scheme === 'CLASSIC') {
-        Object.entries(profile.classicBindings ?? {}).forEach(([action, bindings]) => {
-          if (bindings?.some((binding) => this.isActive(gamepad, binding))) {
-            current.add(action as CombatAction);
-          }
-        });
-      }
     }
 
     current.forEach((action) => this.buffer.press(playerId, action));

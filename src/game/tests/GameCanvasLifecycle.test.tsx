@@ -7,7 +7,7 @@ import { AppProviders } from '../../app/providers';
 import { GameCanvas } from '../bridge/GameCanvas';
 import { createTestMatchConfig } from './testFixtures';
 
-const lifecycle = vi.hoisted(() => ({ created: 0, destroyed: 0, failCreation: false }));
+const lifecycle = vi.hoisted(() => ({ created: 0, destroyed: 0 }));
 
 vi.mock('phaser', () => ({
   default: {
@@ -16,7 +16,6 @@ vi.mock('phaser', () => ({
       private readonly canvas = document.createElement('canvas');
 
       constructor(config: { parent: HTMLElement }) {
-        if (lifecycle.failCreation) throw new Error('WebGL is unavailable');
         lifecycle.created += 1;
         config.parent.append(this.canvas);
       }
@@ -43,7 +42,6 @@ describe('GameCanvas lifecycle', () => {
   beforeEach(() => {
     lifecycle.created = 0;
     lifecycle.destroyed = 0;
-    lifecycle.failCreation = false;
     globalThis.ResizeObserver = ResizeObserverMock;
     Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
   });
@@ -94,50 +92,5 @@ describe('GameCanvas lifecycle', () => {
     expect(host.querySelectorAll('canvas')).toHaveLength(0);
     expect(lifecycle.destroyed).toBe(lifecycle.created);
     expect(consoleError).not.toHaveBeenCalled();
-  });
-
-  it('falls back when ResizeObserver is unavailable', async () => {
-    Reflect.deleteProperty(globalThis, 'ResizeObserver');
-    const host = document.createElement('div');
-    document.body.append(host);
-    const root = createRoot(host);
-
-    await act(async () => {
-      root.render(
-        <AppProviders>
-          <GameCanvas
-            matchConfig={createTestMatchConfig()}
-            onExit={() => undefined}
-            onReturnToSetup={() => undefined}
-          />
-        </AppProviders>,
-      );
-    });
-
-    expect(host.querySelectorAll('canvas')).toHaveLength(1);
-    await act(async () => root.unmount());
-  });
-
-  it('shows recovery controls when Phaser cannot start', async () => {
-    lifecycle.failCreation = true;
-    const host = document.createElement('div');
-    document.body.append(host);
-    const root = createRoot(host);
-
-    await act(async () => {
-      root.render(
-        <AppProviders>
-          <GameCanvas
-            matchConfig={createTestMatchConfig()}
-            onExit={() => undefined}
-            onReturnToSetup={() => undefined}
-          />
-        </AppProviders>,
-      );
-    });
-
-    expect(host.textContent).toContain('Арена не успела');
-    expect(host.querySelectorAll('button')).toHaveLength(2);
-    await act(async () => root.unmount());
   });
 });

@@ -1,5 +1,4 @@
 @import './styles/base.css';
-@import './styles/fullscreen.css';
 @import './styles/layout.css';
 @import './styles/cards.css';
 @import './styles/hero.css';
@@ -7,18 +6,6 @@
 @import './styles/game.css';
 @import './styles/controls.css';
 @import './styles/local-pvp.css';
-@import './styles/online.css';
 @import './styles/character-picker.css';
-@import './styles/character-details.css';
 @import './styles/bindings.css';
 @import './styles/auth.css';
-@import './styles/account.css';
-@import './styles/training.css';
-@import './styles/character-art.css';
-@import './styles/style-guide.css';
-@import './styles/moveset-guide.css';
-@import './styles/character-viewer.css';
-@import './styles/arena-viewer.css';
-@import './styles/effects-gallery.css';
-@import './styles/particle-gallery.css';
-@import './styles/status.css';

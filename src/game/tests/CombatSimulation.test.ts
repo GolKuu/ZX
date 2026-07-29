@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { balanceConfig, FIXED_STEP_SECONDS } from '../config/balanceConfig';
 import { CombatSimulation } from '../core/CombatSimulation';
+import type { GameAction } from '../core/types';
 import { emptyInputFrame, inputFrame } from './testFixtures';
-import { getCharacter } from '../data/characters/circleFighters';
 
 function activate(simulation: CombatSimulation) {
   const snapshot = simulation.getSnapshot();
@@ -21,10 +21,7 @@ describe('CombatSimulation', () => {
     }
 
     const snapshot = simulation.getSnapshot();
-    expect(snapshot.fighters.player1.x).toBeCloseTo(
-      250 + getCharacter('granite').stats.walkSpeed,
-      4,
-    );
+    expect(snapshot.fighters.player1.x).toBeCloseTo(250 + balanceConfig.walkSpeed, 4);
     expect(() => JSON.stringify(snapshot)).not.toThrow();
   });
 
@@ -37,6 +34,27 @@ describe('CombatSimulation', () => {
     snapshot.fighters.player1.x = 0;
 
     expect(simulation.getSnapshot().fighters.player1.x).toBe(410);
+  });
+
+  it('applies an attack only after startup and deals chip damage while blocking', () => {
+    const simulation = new CombatSimulation();
+    const close = simulation.getSnapshot();
+    close.roundPhase = 'ACTIVE';
+    close.phaseTicksRemaining = 0;
+    close.fighters.player1.x = 430;
+    close.fighters.player2.x = 500;
+    simulation.restore(close);
+
+    simulation.step(combatFrame(['LIGHT_ATTACK'], ['LIGHT_ATTACK'], ['BLOCK']), FIXED_STEP_SECONDS);
+    expect(simulation.getSnapshot().fighters.player2.health).toBe(100);
+    for (let frame = 0; frame < 4; frame += 1) {
+      simulation.step(combatFrame([], [], ['BLOCK']), FIXED_STEP_SECONDS);
+    }
+
+    const defender = simulation.getSnapshot().fighters.player2;
+    expect(defender.health).toBe(99);
+    expect(defender.mode).toBe('blockstun');
+    expect(defender.blockMeter).toBeLessThan(defender.maxBlockMeter);
   });
 
   it('locks movement during 3, 2, 1, FIGHT countdown', () => {
@@ -73,26 +91,6 @@ describe('CombatSimulation', () => {
     }
     simulation.step(inputFrame('player1', ['MOVE_RIGHT'], ['MOVE_RIGHT']), FIXED_STEP_SECONDS);
     expect(simulation.getSnapshot().fighters.player1.mode).toBe('dashing');
-  });
-
-  it('turns rapid attack mashing into a deterministic punish window', () => {
-    const simulation = new CombatSimulation();
-    activate(simulation);
-
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      simulation.step(
-        inputFrame('player1', ['LIGHT_ATTACK'], ['LIGHT_ATTACK']),
-        FIXED_STEP_SECONDS,
-      );
-      for (let gap = 0; gap < 2; gap += 1) {
-        simulation.step(emptyInputFrame(), FIXED_STEP_SECONDS);
-      }
-    }
-
-    const fighter = simulation.getSnapshot().fighters.player1;
-    expect(fighter.rhythmPressure).toBeGreaterThan(95);
-    expect(fighter.rhythmLockTicks).toBeGreaterThan(0);
-    expect(fighter.vulnerableTicksRemaining).toBeGreaterThan(0);
   });
 
   it('lets an airborne fighter cross over the opponent and turns both fighters', () => {
@@ -149,4 +147,15 @@ function forceRoundWin(simulation: CombatSimulation, winner: 'player1' | 'player
   snapshot.fighters[winner === 'player1' ? 'player2' : 'player1'].health = 0;
   simulation.restore(snapshot);
   simulation.step(emptyInputFrame(), FIXED_STEP_SECONDS);
+}
+
+function combatFrame(
+  playerOneHeld: GameAction[],
+  playerOnePressed: GameAction[],
+  playerTwoHeld: GameAction[],
+) {
+  const frame = emptyInputFrame();
+  frame.player1 = { held: playerOneHeld, pressed: playerOnePressed, released: [] };
+  frame.player2 = { held: playerTwoHeld, pressed: [], released: [] };
+  return frame;
 }

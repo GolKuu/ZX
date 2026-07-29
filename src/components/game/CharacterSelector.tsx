@@ -1,26 +1,21 @@
 import { playerLabels } from '../../game/config/defaultControls';
 import type { PlayerId } from '../../game/core/types';
 import { circleFighters } from '../../game/data/characters/circleFighters';
-import { CharacterPortrait } from '../characters/CharacterPortrait';
-import { CharacterDetails } from './CharacterDetails';
+import type { CSSProperties } from 'react';
 
 export function CharacterSelector({
   playerId,
   value,
-  opponentCharacterId,
   onChange,
-  label,
 }: {
   playerId: PlayerId;
   value: string;
-  opponentCharacterId: string;
   onChange: (characterId: string) => void;
-  label?: string;
 }) {
   return (
     <fieldset className="character-picker">
-      <legend>{label ?? playerLabels[playerId]}</legend>
-      <div className="character-picker__roster">
+      <legend>{playerLabels[playerId]}</legend>
+      <div>
         {circleFighters.map((fighter) => (
           <label
             className={value === fighter.id ? 'fighter-choice fighter-choice--selected' : 'fighter-choice'}
@@ -33,16 +28,18 @@ export function CharacterSelector({
               checked={value === fighter.id}
               onChange={() => onChange(fighter.id)}
             />
-            <CharacterPortrait character={fighter} />
+            <span
+              className={`fighter-choice__portrait fighter-choice__portrait--${fighter.visualKind}`}
+              style={{
+                '--fighter-color': fighter.cssColor,
+                '--fighter-accent': `#${fighter.accentColor.toString(16).padStart(6, '0')}`,
+              } as CSSProperties}
+              aria-hidden="true"
+            />
             <strong>{fighter.name}</strong>
-            <small>{fighter.force}</small>
           </label>
         ))}
       </div>
-      <CharacterDetails
-        characterId={value}
-        opponentCharacterId={opponentCharacterId}
-      />
     </fieldset>
   );
 }

@@ -9,20 +9,6 @@
   background: #241d3d;
 }
 
-.fight-toolbar {
-  position: fixed;
-  z-index: 30;
-  top: max(12px, env(safe-area-inset-top));
-  right: max(12px, env(safe-area-inset-right));
-}
-
-.fight-toolbar .fullscreen-button {
-  color: white;
-  border-color: #ffffff42;
-  background: #241d3dbd;
-  backdrop-filter: blur(10px);
-}
-
 .route-loading {
   display: grid;
   min-height: 100vh;
@@ -52,13 +38,6 @@
   display: block;
 }
 
-@media (max-width: 620px) {
-  .fight-toolbar {
-    top: 8px;
-    right: 8px;
-  }
-}
-
 .game-canvas__loading {
   position: absolute;
   z-index: 2;
@@ -70,30 +49,4 @@
   background: #30264fd9;
   font-weight: 900;
   transform: translate(-50%, -50%);
-}
-
-.game-canvas__error,
-.app-error {
-  display: grid;
-  z-index: 3;
-  gap: 16px;
-  place-items: center;
-  text-align: center;
-}
-
-.game-canvas__error {
-  position: absolute;
-  inset: 0;
-  padding: 24px;
-  color: white;
-  background: #241d3de8;
-}
-
-.app-error {
-  min-height: 100vh;
-  padding: 32px;
-}
-
-.app-error > p {
-  max-width: 560px;
 }

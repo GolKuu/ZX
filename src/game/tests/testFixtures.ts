@@ -2,7 +2,7 @@ import {
   cloneKeyboardProfiles,
   defaultGamepadProfile,
 } from '../config/defaultControls';
-import type { CombatAction, InputFrame, PlayerId, PlayerInputFrame } from '../core/types';
+import type { GameAction, InputFrame, PlayerId, PlayerInputFrame } from '../core/types';
 import type { LocalPvpMatchConfig } from '../../stores/localPvpStore';
 
 export const emptyPlayerInput = (): PlayerInputFrame => ({
@@ -13,8 +13,8 @@ export const emptyPlayerInput = (): PlayerInputFrame => ({
 
 export function inputFrame(
   playerId: PlayerId,
-  held: CombatAction[] = [],
-  pressed: CombatAction[] = held,
+  held: GameAction[] = [],
+  pressed: GameAction[] = held,
 ): InputFrame {
   return {
     player1:
@@ -45,7 +45,7 @@ export function createTestMatchConfig(): LocalPvpMatchConfig {
         gamepadProfile: defaultGamepadProfile,
       },
     },
-    characters: { player1: 'granite', player2: 'shira' },
+    characters: { player1: 'comet', player2: 'pulse' },
     ready: { player1: true, player2: true },
   };
 }

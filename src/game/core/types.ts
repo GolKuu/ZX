@@ -1,60 +1,23 @@
-import type { DefenseSnapshot } from './DefenseTypes';
-
-export type {
-  DefenseEffect,
-  DefenseSnapshot,
-  DefenseTimingFeedback,
-} from './DefenseTypes';
-
 export type PlayerId = 'player1' | 'player2';
 export type Facing = -1 | 1;
-export type AttackIntentKind = 'light' | 'heavy' | 'special' | 'throw';
 
 export const GAME_ACTIONS = [
   'MOVE_LEFT',
   'MOVE_RIGHT',
   'JUMP',
+  'CROUCH',
   'LIGHT_ATTACK',
   'HEAVY_ATTACK',
   'SPECIAL_ATTACK',
-  'DEFENSE',
-  'ASSIST',
-  'TAG_SWITCH',
-  'BURST_ASSIST',
-  'PAUSE',
-] as const;
-
-export const CONTEXT_ACTIONS = [
-  'CROUCH',
   'BLOCK',
   'GRAB',
   'SUPER_ATTACK',
   'COMBO_ESCAPE',
-  'COMBO_BREAK',
   'MOMENTUM_REVERSAL',
-  'PRECISE_BLOCK',
-  'PERFECT_BLOCK',
-  'DASH_LEFT',
-  'DASH_RIGHT',
-  'DIRECTIONAL_LIGHT',
-  'RETREAT_LIGHT',
-  'AIR_LIGHT',
-  'DASH_LIGHT',
-  'DIRECTIONAL_HEAVY',
-  'RETREAT_HEAVY',
-  'AIR_HEAVY',
-  'DASH_HEAVY',
-  'DIRECTIONAL_SPECIAL',
-  'RETREAT_SPECIAL',
-  'AIR_SPECIAL',
-  'ENHANCED_SPECIAL',
-  'PERFECT_REVERSAL',
+  'PAUSE',
 ] as const;
 
 export type GameAction = (typeof GAME_ACTIONS)[number];
-export type ContextAction = (typeof CONTEXT_ACTIONS)[number];
-export type CombatAction = GameAction | ContextAction;
-export type ControlScheme = 'CLASSIC' | 'SIMPLIFIED' | 'ONE_HANDED';
 
 export type FighterMode =
   | 'idle'
@@ -95,7 +58,6 @@ export type FighterSnapshot = {
   blockMeter: number;
   maxBlockMeter: number;
   guard: 'standing' | 'crouching' | null;
-  defense: DefenseSnapshot;
   mode: FighterMode;
   modeTicksRemaining: number;
   attack: AttackRuntimeSnapshot | null;
@@ -104,17 +66,6 @@ export type FighterSnapshot = {
   lastMoveTapAction: 'MOVE_LEFT' | 'MOVE_RIGHT' | null;
   lastMoveTapTick: number;
   grounded: boolean;
-  passiveValue: number;
-  maxPassiveValue: number;
-  armorPlates: number;
-  maxArmorPlates: number;
-  vulnerableTicksRemaining: number;
-  landedTicksRemaining: number;
-  rhythmPressure: number;
-  maxRhythmPressure: number;
-  rhythmLockTicks: number;
-  lastAttackIntent: AttackIntentKind | null;
-  lastAttackIntentTick: number;
 };
 
 export type ComboSnapshot = {
@@ -122,32 +73,20 @@ export type ComboSnapshot = {
   damage: number;
   targetId: PlayerId | null;
   remainingTicks: number;
-  escapeWindowStartsInTicks: number | null;
-  escapeWindowTicksRemaining: number;
-  breakWindowTicksRemaining: number;
-  breakAllowed: boolean;
 };
 
 export type PlayerInputFrame = {
-  held: readonly CombatAction[];
-  pressed: readonly CombatAction[];
-  released: readonly CombatAction[];
+  held: readonly GameAction[];
+  pressed: readonly GameAction[];
+  released: readonly GameAction[];
 };
 
 export type InputFrame = Record<PlayerId, PlayerInputFrame>;
 
 export type RoundPhase = 'COUNTDOWN' | 'ACTIVE' | 'ROUND_OVER' | 'MATCH_OVER';
 
-export type ArenaTrapSnapshot = {
-  id: string;
-  x: number;
-  active: boolean;
-  cuttable: boolean;
-};
-
 export type SimulationSnapshot = {
   tick: number;
-  hitStopTicks: number;
   paused: boolean;
   roundNumber: number;
   roundPhase: RoundPhase;
@@ -158,5 +97,4 @@ export type SimulationSnapshot = {
   roundTicksRemaining: number;
   fighters: Record<PlayerId, FighterSnapshot>;
   combos: Record<PlayerId, ComboSnapshot>;
-  traps: ArenaTrapSnapshot[];
 };

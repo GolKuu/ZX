@@ -2,12 +2,6 @@ import { balanceConfig } from '../config/balanceConfig';
 import { FighterStateMachine } from '../core/FighterStateMachine';
 import type { FighterSnapshot, PlayerInputFrame } from '../core/types';
 import type { AttackDefinition } from './AttackDefinition';
-import { setDefenseEffect, setDefenseFeedback } from './DefenseState';
-
-export type BlockKind = 'none' | 'normal' | 'precise' | 'perfect';
-export type BlockResult = { kind: BlockKind; blocked: boolean };
-
-const NO_BLOCK: BlockResult = { kind: 'none', blocked: false };
 
 export class BlockSystem {
   private readonly states = new FighterStateMachine();
@@ -36,53 +30,19 @@ export class BlockSystem {
     defender: FighterSnapshot,
     input: PlayerInputFrame,
     attack: AttackDefinition,
-    blockDamageMultiplier = 1,
-  ): BlockResult {
-    if (attack.hitLevel === 'throw') return NO_BLOCK;
-    if (!input.held.includes('BLOCK')) {
-      setDefenseFeedback(defender, 'too-late');
-      return NO_BLOCK;
-    }
+  ) {
+    if (!input.held.includes('BLOCK') || attack.hitLevel === 'throw') return false;
     const correctGuard =
       attack.hitLevel === 'low'
         ? defender.guard === 'crouching'
         : attack.hitLevel === 'overhead' || attack.hitLevel === 'air'
           ? defender.guard === 'standing'
           : defender.guard !== null;
-    if (!correctGuard) {
-      setDefenseFeedback(defender, 'too-late');
-      return NO_BLOCK;
-    }
+    if (!correctGuard) return false;
 
-    const kind = this.blockKind(input);
-    const gaugeMultiplier =
-      kind === 'perfect'
-        ? 0
-        : kind === 'precise'
-          ? balanceConfig.preciseBlockGaugeMultiplier
-          : 1;
-    defender.blockMeter = Math.max(
-      0,
-      defender.blockMeter - attack.blockDamage * gaugeMultiplier * blockDamageMultiplier,
-    );
-    if (defender.blockMeter > 0 || kind === 'perfect') {
-      this.recordSuccess(defender, kind);
-      return { kind, blocked: true };
-    }
+    defender.blockMeter = Math.max(0, defender.blockMeter - attack.blockDamage);
+    if (defender.blockMeter > 0) return true;
     defender.guard = null;
-    setDefenseFeedback(defender, 'too-late');
-    return NO_BLOCK;
-  }
-
-  private blockKind(input: PlayerInputFrame): BlockKind {
-    if (input.held.includes('PERFECT_BLOCK')) return 'perfect';
-    if (input.held.includes('PRECISE_BLOCK')) return 'precise';
-    return 'normal';
-  }
-
-  private recordSuccess(defender: FighterSnapshot, kind: BlockKind) {
-    setDefenseFeedback(defender, kind === 'normal' ? 'too-early' : 'success');
-    if (kind === 'precise') setDefenseEffect(defender, 'precise-block');
-    if (kind === 'perfect') setDefenseEffect(defender, 'perfect-block');
+    return false;
   }
 }

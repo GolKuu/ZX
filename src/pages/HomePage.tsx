@@ -1,46 +1,20 @@
 import { AppShell } from '../components/layout/AppShell';
 import { MenuOption } from '../components/menu/MenuOption';
-import { CharacterArt } from '../components/characters/CharacterArt';
 
 const menuItems = [
   {
-    title: 'Локальный 2 на 2',
-    description: 'Две команды и смена активного бойца',
+    title: 'Игрок против игрока',
+    description: 'Два игрока, одна клавиатура',
     icon: '⚔',
-    href: '/team-modes',
+    href: '/local-pvp',
     primary: true,
   },
-  {
-    title: 'Онлайн 1 на 1',
-    description: 'Приватный бой по ссылке на авторитетном сервере',
-    icon: '◎',
-    href: '/online',
-  },
-  {
-    title: 'Игрок против ИИ',
-    description: 'Одиночный бой с локальным компьютерным соперником',
-    icon: '◎',
-    href: '/vs-ai',
-  },
-  {
-    title: 'Два игрока против ИИ',
-    description: 'Два союзника против команды ботов',
-    icon: '◆',
-    href: '/team-modes',
-  },
-  {
-    title: 'Игрок и ИИ против двух',
-    description: 'ИИ управляет союзником и соперниками',
-    icon: '♣',
-    href: '/team-modes',
-  },
+  { title: 'Онлайн-бой', description: 'Соперники со всего мира', icon: '◎' },
+  { title: 'Игрок против компьютера', description: 'Бой с умным ботом', icon: '◆' },
+  { title: 'Кооператив', description: 'Сражайтесь в одной команде', icon: '♣' },
   { title: 'Тренировка', description: 'Отработка приёмов и таймингов', icon: '◉' },
-  { title: 'Character Viewer', description: 'Силуэты и ключевые позы', icon: '●', href: '/character-viewer' },
-  { title: 'Arena Viewer', description: 'Три оригинальные сцены', icon: '▰', href: '/arena-viewer' },
-  { title: 'Effects Gallery', description: 'Атаки, защита и частицы', icon: '✹', href: '/effects-gallery' },
-  { title: 'Visual Style Guide', description: 'Анимации, палитры и приёмы', icon: '✦', href: '/visual-style-guide' },
+  { title: 'Персонажи', description: 'Познакомиться с бойцами', icon: '●', href: '/characters' },
   { title: 'Управление', description: 'Клавиши обоих игроков', icon: '⌨', href: '/controls' },
-  { title: 'Настройки', description: 'Экран, арена, тряска и частицы', icon: '⚙', href: '/settings' },
   { title: 'Профиль', description: 'Аккаунт и будущая статистика', icon: '☺', href: '/profile' },
 ] as const;
 
@@ -49,21 +23,20 @@ export function HomePage() {
     <AppShell>
       <section className="hero">
         <div>
-          <p className="eyebrow">Тактический файтинг на реакцию</p>
+          <p className="eyebrow">Локальная арена для друзей</p>
           <h1>
-            Читай соперника.
+            Простые круги.
             <br />
-            Отвечай точно.
+            Большое столкновение.
           </h1>
           <p className="hero__description">
-            Circle Clash — бой 15 необычных существ, где точный блок, смена дистанции
-            и своевременный контрудар сильнее беспорядочного нажатия кнопок.
+            Circle Clash — яркий браузерный файтинг для двух игроков за одной клавиатурой.
           </p>
         </div>
         <div className="hero-fighters" aria-hidden="true">
-          <CharacterArt characterId="granite" />
+          <span className="hero-fighter hero-fighter--comet">●</span>
           <span className="hero-versus">VS</span>
-          <CharacterArt characterId="shira" />
+          <span className="hero-fighter hero-fighter--pulse">●</span>
         </div>
       </section>
 

@@ -89,12 +89,12 @@ describe('LOCAL_PVP user flow', () => {
     await act(async () => findButton(host, 'KeyA').click());
     await act(async () =>
       window.dispatchEvent(
-        new KeyboardEvent('keydown', { code: 'KeyQ', bubbles: true, cancelable: true }),
+        new KeyboardEvent('keydown', { code: 'KeyZ', bubbles: true, cancelable: true }),
       ),
     );
-    expect(host.textContent).toContain('KeyQ');
+    expect(host.textContent).toContain('KeyZ');
 
-    await act(async () => findButton(host, 'KeyQ').click());
+    await act(async () => findButton(host, 'KeyZ').click());
     await act(async () =>
       window.dispatchEvent(
         new KeyboardEvent('keydown', { code: 'KeyD', bubbles: true, cancelable: true }),
@@ -104,13 +104,13 @@ describe('LOCAL_PVP user flow', () => {
     await act(async () => findButton(host, 'Заменить').click());
     await act(async () => findButton(host, 'Сохранить').click());
 
-    const saved = localStorage.getItem('circle-clash-controls-v3');
+    const saved = localStorage.getItem('circle-clash-controls-v2');
     expect(saved).toContain('"MOVE_LEFT":"KeyD"');
-    expect(saved).toContain('"MOVE_RIGHT":"KeyQ"');
+    expect(saved).toContain('"MOVE_RIGHT":"KeyZ"');
     await act(async () => root.unmount());
   });
 
-  it('allows both players to select the same fighter for a neutral mirror', async () => {
+  it('swaps characters instead of assigning the same fighter to both players', async () => {
     const location = memoryLocation({ path: '/local-pvp' });
     const host = document.createElement('div');
     document.body.append(host);
@@ -125,23 +125,22 @@ describe('LOCAL_PVP user flow', () => {
       );
     });
 
-    const playerOneShira = host.querySelector<HTMLInputElement>(
-      'input[name="character-player1"][value="shira"]',
+    const playerOnePulse = host.querySelector<HTMLInputElement>(
+      'input[name="character-player1"][value="pulse"]',
     );
-    if (!playerOneShira) throw new Error('Player 1 Shira option not found');
-    await act(async () => playerOneShira.click());
+    if (!playerOnePulse) throw new Error('Player 1 Pulse option not found');
+    await act(async () => playerOnePulse.click());
 
     expect(
       host.querySelector<HTMLInputElement>(
-        'input[name="character-player1"][value="shira"]',
+        'input[name="character-player1"][value="pulse"]',
       )?.checked,
     ).toBe(true);
     expect(
       host.querySelector<HTMLInputElement>(
-        'input[name="character-player2"][value="shira"]',
+        'input[name="character-player2"][value="comet"]',
       )?.checked,
     ).toBe(true);
-    expect(host.querySelectorAll('.matchup-info--neutral')).toHaveLength(2);
     await act(async () => root.unmount());
   });
 });

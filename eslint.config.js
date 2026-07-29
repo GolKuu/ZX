@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', 'match-server/dist/**', '.tools/**', 'node_modules/**'],
+    ignores: ['dist/**', '.tools/**', 'node_modules/**'],
   },
   {
     files: ['**/*.{js,mjs,ts,tsx}'],
@@ -32,7 +32,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['scripts/**/*.{mjs,ts}'],
+    files: ['scripts/**/*.mjs'],
     languageOptions: {
       globals: globals.node,
     },

@@ -1,119 +1,92 @@
 import Phaser from 'phaser';
-import type { CharacterDefinition } from '../../data/characters/circleFighters';
-import { findCharacterAttack } from '../../data/attacks/characterAttacks';
-import type { FighterSnapshot, PlayerId } from '../../core/types';
-import type { AttackVisualShape } from '../../combat/AttackDefinition';
-import { drawPowerAccent } from './AttackPowerAccents';
-import { CHARACTER_MOTION } from '../animation/CharacterMotionProfiles';
+import type { FighterSnapshot } from '../../core/types';
 
 export class AttackVisualRenderer {
   readonly graphics: Phaser.GameObjects.Graphics;
-  private lingerFrames = 0;
 
-  constructor(
-    scene: Phaser.Scene,
-    private readonly ownerId: PlayerId,
-    private readonly character: CharacterDefinition,
-  ) {
-    this.graphics = scene.add.graphics().setDepth(9).setVisible(false);
+  constructor(scene: Phaser.Scene, private readonly color: number) {
+    this.graphics = scene.add.graphics().setDepth(8).setVisible(false);
   }
 
   sync(snapshot: FighterSnapshot) {
-    const attack = ownsAttackVisual(this.ownerId, snapshot) ? snapshot.attack : null;
-    if (!attack) {
-      if (this.lingerFrames > 0) {
-        this.lingerFrames -= 1;
-        this.graphics
-          .setVisible(true)
-          .setAlpha(this.lingerFrames / CHARACTER_MOTION[this.character.id].lingerFrames * .18);
-      } else {
-        this.graphics.clear().setVisible(false);
-      }
-      return;
-    }
+    const attack = snapshot.attack;
     this.graphics.clear();
-    const definition = findCharacterAttack(snapshot.characterId, attack.id);
-    const hitbox = definition?.hitboxes[0];
-    if (!definition || !hitbox) return;
-    const alpha = attack.phase === 'active' ? 0.88 : attack.phase === 'startup' ? 0.28 : 0.13;
-    this.graphics.setVisible(true).setAlpha(alpha).setScale(snapshot.facing, 1);
-    this.lingerFrames = CHARACTER_MOTION[this.character.id].lingerFrames;
-    const x = hitbox.offsetX;
-    const y = hitbox.offsetY + 38;
-    this.drawShape(
-      definition.visualShape,
-      x,
-      y,
-      hitbox.width,
-      hitbox.height,
-      attack.phase === 'active',
-      attack.frame,
-    );
-    drawPowerAccent(
-      this.graphics,
-      this.character,
-      x,
-      y,
-      hitbox.width,
-      hitbox.height,
-      attack.frame,
-    );
-  }
-
-  private drawShape(
-    shape: AttackVisualShape,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    active: boolean,
-    frame: number,
-  ) {
-    const color = this.character.accentColor;
-    const lineWidth = active ? 10 : 6;
-    const centerY = y + height / 2;
-    this.graphics.lineStyle(lineWidth, color, 0.9);
-    if (shape === 'line') {
-      this.graphics
-        .fillStyle(color, active ? 0.34 : 0.15)
-        .fillRoundedRect(x, centerY - height * 0.18, width, height * 0.36, 12)
-        .beginPath().moveTo(x, centerY).lineTo(x + width, centerY).strokePath();
+    if (!attack) {
+      this.graphics.setVisible(false);
       return;
     }
-    if (shape === 'arc') {
-      this.graphics
-        .beginPath()
-        .arc(x + width * 0.42, centerY, width * 0.62, -1.1, 1.08)
-        .strokePath()
-        .lineStyle(Math.max(2, lineWidth / 2), 0xffffff, 0.72)
-        .beginPath()
-        .arc(x + width * 0.38, centerY, width * 0.48, -1, 0.98)
+    const moveId = attack.id.slice(snapshot.characterId.length + 1);
+    const alpha = attack.phase === 'active' ? 1 : attack.phase === 'startup' ? 0.42 : 0.2;
+    this.graphics.setAlpha(alpha).setScale(1 + (attack.frame % 3) * 0.04).setVisible(true);
+    this.graphics.lineStyle(6, this.color, 1).fillStyle(this.color, 0.72);
+    this.draw(moveId);
+  }
+
+  private draw(moveId: string) {
+    switch (moveId) {
+      case 'light-1': return this.graphics.fillCircle(55, -5, 13);
+      case 'light-2': return this.drawSlash();
+      case 'light-3': return this.drawBurst();
+      case 'heavy-1': return this.graphics.fillRoundedRect(42, -18, 62, 34, 12);
+      case 'heavy-2': return this.drawShockwave();
+      case 'low': return this.drawLowSweep();
+      case 'air': return this.graphics.fillTriangle(25, -2, 88, 28, 48, 42);
+      case 'special': return this.drawSpecial();
+      case 'grab': return this.drawGrab();
+      case 'throw-forward': return this.drawArrow(1);
+      case 'throw-back': return this.drawArrow(-1);
+      case 'super': return this.drawSuper();
+      default: return this.graphics.fillCircle(52, 0, 10);
+    }
+  }
+
+  private drawSlash() {
+    this.graphics.beginPath().moveTo(28, -34).lineTo(88, 24).strokePath();
+    this.graphics.beginPath().moveTo(45, -40).lineTo(101, 12).strokePath();
+  }
+
+  private drawBurst() {
+    for (let index = 0; index < 8; index += 1) {
+      const angle = (Math.PI * index) / 4;
+      this.graphics.beginPath()
+        .moveTo(65 + Math.cos(angle) * 12, Math.sin(angle) * 12)
+        .lineTo(65 + Math.cos(angle) * 36, Math.sin(angle) * 36)
         .strokePath();
-      return;
     }
-    if (shape === 'ground') {
-      this.graphics
-        .fillStyle(color, active ? 0.42 : 0.16)
-        .fillTriangle(x, y + height, x + width * 0.58, y, x + width, y + height)
-        .beginPath().moveTo(x, y + height).lineTo(x + width, y + height).strokePath();
-      return;
-    }
-    if (shape === 'projectile') {
-      const pulse = 1 + (frame % 3) * 0.08;
-      this.graphics
-        .fillStyle(color, active ? 0.56 : 0.2)
-        .fillEllipse(x + width * 0.72, centerY, width * 0.52 * pulse, height * 0.72)
-        .beginPath().moveTo(x, centerY).lineTo(x + width * 0.62, centerY).strokePath();
-      return;
-    }
-    this.graphics
-      .fillStyle(color, active ? 0.48 : 0.18)
-      .fillCircle(x + width * 0.55, centerY, Math.max(height, width * 0.42) / 2)
-      .lineStyle(Math.max(2, lineWidth / 2), 0xffffff, 0.75)
-      .strokeCircle(x + width * 0.55, centerY, Math.max(height, width * 0.42) / 2);
   }
-}
 
-export function ownsAttackVisual(ownerId: PlayerId, snapshot: FighterSnapshot) {
-  return snapshot.id === ownerId;
+  private drawShockwave() {
+    this.graphics.strokeCircle(64, 0, 24).lineStyle(4, this.color, 0.7);
+    this.graphics.strokeCircle(64, 0, 39).lineStyle(3, this.color, 0.45);
+    this.graphics.strokeCircle(64, 0, 54);
+  }
+
+  private drawLowSweep() {
+    this.graphics.fillRoundedRect(22, 20, 98, 14, 7);
+    this.graphics.fillCircle(116, 27, 13);
+  }
+
+  private drawSpecial() {
+    this.graphics.strokeCircle(58, 0, 18);
+    this.graphics.strokeCircle(78, 0, 27);
+    this.graphics.fillCircle(100, 0, 15);
+  }
+
+  private drawGrab() {
+    this.graphics.strokeRoundedRect(42, -27, 58, 54, 14);
+    this.graphics.fillCircle(101, -18, 7).fillCircle(101, 18, 7);
+  }
+
+  private drawArrow(direction: 1 | -1) {
+    const start = direction === 1 ? 30 : 92;
+    const end = direction === 1 ? 98 : 24;
+    this.graphics.beginPath().moveTo(start, 0).lineTo(end, 0).strokePath();
+    this.graphics.fillTriangle(end, 0, end - direction * 22, -14, end - direction * 22, 14);
+  }
+
+  private drawSuper() {
+    this.graphics.fillCircle(75, 0, 34).lineStyle(5, 0xffffff, 0.85);
+    this.graphics.strokeCircle(75, 0, 48);
+    this.graphics.strokeCircle(75, 0, 62);
+  }
 }

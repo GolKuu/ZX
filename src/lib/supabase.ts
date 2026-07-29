@@ -14,15 +14,8 @@ const hasValidKey =
 
 export const isSupabaseConfigured = Boolean(hasValidUrl && hasValidKey);
 
-export const authSessionOptions = {
-  persistSession: true,
-  autoRefreshToken: true,
-  detectSessionInUrl: true,
-} as const;
-
 // Запасные значения позволяют показать понятную подсказку в интерфейсе вместо белого экрана.
 export const supabase = createClient(
   isSupabaseConfigured ? url! : 'https://not-configured.supabase.co',
   isSupabaseConfigured ? anonKey! : 'not-configured',
-  { auth: authSessionOptions },
 );

@@ -6,14 +6,11 @@ import type {
   PlayerInputAssignment,
 } from '../game/input/InputProfile';
 import { findKeyboardConflicts, validateAssignments } from '../game/input/inputValidation';
-import type { AiDifficulty } from '../game/ai/AiDifficulty';
 
 export type LocalPvpMatchConfig = {
   assignments: Record<PlayerId, PlayerInputAssignment>;
   characters: Record<PlayerId, string>;
   ready: Record<PlayerId, boolean>;
-  aiPlayerId?: PlayerId;
-  aiDifficulty?: AiDifficulty;
 };
 
 let activeMatch: LocalPvpMatchConfig | null = null;
@@ -41,6 +38,10 @@ export function createMatchConfig(
 }
 
 export function validateMatchConfig(config: LocalPvpMatchConfig) {
+  if (config.characters.player1 === config.characters.player2) {
+    return 'Игрокам нужны разные персонажи.';
+  }
+
   if (!config.ready.player1) return 'Player 1 ещё не подтвердил готовность.';
   if (!config.ready.player2) return 'Player 2 ещё не подтвердил готовность.';
 

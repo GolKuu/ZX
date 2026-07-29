@@ -1,5 +1,3 @@
-import { Link } from 'wouter';
-import { CharacterArt } from '../components/characters/CharacterArt';
 import { AppShell } from '../components/layout/AppShell';
 import { PageHeader } from '../components/layout/PageHeader';
 import { circleFighters } from '../game/data/characters/circleFighters';
@@ -8,28 +6,24 @@ export function CharactersPage() {
   return (
     <AppShell compact>
       <PageHeader
-        eyebrow="Первый оригинальный состав"
+        eyebrow="Первый состав"
         title="Персонажи"
-        description="15 существ с разными силуэтами, стойками, ритмом движения и собственными наборами атак."
+        description="Для каркаса доступны только два оригинальных временных бойца."
       />
       <div className="character-grid">
         {circleFighters.map((fighter) => (
-          <article className={`character-card character-card--${fighter.id}`} key={fighter.id}>
-            <div className="character-card__art">
-              <CharacterArt characterId={fighter.id} />
-            </div>
+          <article className="character-card" key={fighter.id}>
+            <span className="character-card__portrait" style={{ background: fighter.cssColor }}>
+              ●
+            </span>
             <div>
-              <p className="eyebrow">{fighter.force} · {fighter.archetype}</p>
+              <p className="eyebrow">Временный боец</p>
               <h2>{fighter.name}</h2>
               <p>{fighter.tagline}</p>
-              <strong>{fighter.passiveName}</strong>
             </div>
           </article>
         ))}
       </div>
-      <Link href="/visual-style-guide" className="button button--primary character-guide-link">
-        Открыть visual-style-guide
-      </Link>
     </AppShell>
   );
 }

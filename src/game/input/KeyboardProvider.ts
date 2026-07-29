@@ -1,8 +1,8 @@
 import { InputBuffer } from '../core/InputBuffer';
-import type { CombatAction, GameAction, PlayerId } from '../core/types';
+import type { GameAction, PlayerId } from '../core/types';
 import type { PlayerInputAssignment } from './InputProfile';
 
-type Binding = { playerId: PlayerId; action: CombatAction };
+type Binding = { playerId: PlayerId; action: GameAction };
 
 export class KeyboardProvider {
   private readonly bindings = new Map<string, Binding[]>();
@@ -20,15 +20,10 @@ export class KeyboardProvider {
           string,
         ][];
         entries.forEach(([action, code]) => {
-          this.addBinding(code, assignment.playerId, action);
+          const bindings = this.bindings.get(code) ?? [];
+          bindings.push({ playerId: assignment.playerId, action });
+          this.bindings.set(code, bindings);
         });
-        if (assignment.keyboardProfile.scheme === 'CLASSIC') {
-          Object.entries(assignment.keyboardProfile.classicBindings ?? {}).forEach(
-            ([action, code]) => {
-              if (code) this.addBinding(code, assignment.playerId, action as CombatAction);
-            },
-          );
-        }
       });
   }
 
@@ -64,10 +59,4 @@ export class KeyboardProvider {
   };
 
   private readonly handleBlur = () => this.buffer.clear();
-
-  private addBinding(code: string, playerId: PlayerId, action: CombatAction) {
-    const bindings = this.bindings.get(code) ?? [];
-    bindings.push({ playerId, action });
-    this.bindings.set(code, bindings);
-  }
 }

@@ -12,13 +12,7 @@ desktop.ini
 supabase/.temp
 supabase/.branches
 *.tsbuildinfo
-artifacts/
 vite.config.js
 vite.config.d.ts
 vitest.config.js
 vitest.config.d.ts
-
-.vercel
-.env*
-!.env.example
-!match-server/.env.example

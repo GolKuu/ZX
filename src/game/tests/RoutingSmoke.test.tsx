@@ -15,17 +15,10 @@ vi.mock('../bridge/GameCanvas', () => ({
 const routes = [
   ['/', 'Выбери режим'],
   ['/local-pvp', 'Подготовка LOCAL_PVP'],
-  ['/vs-ai', 'Игрок против ИИ'],
   ['/fight', 'Готовим арену…'],
-  ['/online', 'Приватная комната'],
-  ['/training', 'Точный блок'],
+  ['/training', 'В разработке'],
   ['/characters', 'Персонажи'],
-  ['/character-viewer', 'Ключевые позы'],
-  ['/arena-viewer', 'Три спокойных мира'],
-  ['/effects-gallery', 'Атака видна сразу'],
   ['/controls', 'Управление'],
-  ['/settings', 'Масштаб интерфейса'],
-  ['/status', 'Состояние Circle Clash'],
   ['/profile', 'Профиль'],
   ['/auth', 'Вход в Circle Clash'],
 ] as const;
@@ -61,7 +54,7 @@ describe('application routes', () => {
 
     await act(async () => location.navigate('/'));
     expect(host.textContent).toContain('Выбери режим');
-    expect(host.querySelectorAll('button:disabled')).toHaveLength(1);
+    expect(host.querySelectorAll('button:disabled')).toHaveLength(4);
     expect(consoleError).not.toHaveBeenCalled();
     await act(async () => root.unmount());
   });

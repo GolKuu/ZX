@@ -19,14 +19,7 @@ export function InputCheckPanel({
     const onKeyDown = (event: KeyboardEvent) => {
       (['player1', 'player2'] as const).forEach((playerId) => {
         if (devices[playerId].kind !== 'keyboard') return;
-        const profile = profiles[playerId];
-        const entries = [
-          ...Object.entries(profile.bindings),
-          ...(profile.scheme === 'CLASSIC'
-            ? Object.entries(profile.classicBindings ?? {})
-            : []),
-        ];
-        const entry = entries.find(
+        const entry = Object.entries(profiles[playerId].bindings).find(
           ([, code]) => code === event.code,
         );
         if (entry) {

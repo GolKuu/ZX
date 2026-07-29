@@ -1,6 +1,5 @@
 import { Link } from 'wouter';
 import type { ReactNode } from 'react';
-import { FullscreenButton } from './FullscreenButton';
 
 export function AppShell({
   children,
@@ -19,14 +18,9 @@ export function AppShell({
           <span>Circle Clash</span>
         </Link>
         <nav className="site-header__nav" aria-label="Основная навигация">
-          <Link href="/character-viewer">Персонажи</Link>
-          <Link href="/arena-viewer">Арены</Link>
-          <Link href="/effects-gallery">Эффекты</Link>
-          <Link href="/settings">Настройки</Link>
-          <Link href="/status">Статус</Link>
+          <Link href="/controls">Управление</Link>
           <Link href="/profile">Профиль</Link>
         </nav>
-        <FullscreenButton compact />
       </header>
       <main className="page-content">{children}</main>
     </div>

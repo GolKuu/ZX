@@ -9,7 +9,6 @@
   --coral: #ff5d73;
   --mint: #3fd1c4;
   --yellow: #ffdc62;
-  --ui-scale: 1;
   font-family: Inter, ui-rounded, 'Nunito Sans', system-ui, -apple-system, sans-serif;
   color: var(--ink);
   background: #f7f1ff;
@@ -24,7 +23,6 @@
 html {
   min-width: 320px;
   min-height: 100%;
-  font-size: calc(100% * var(--ui-scale));
 }
 
 body {
@@ -35,8 +33,7 @@ body {
 }
 
 button,
-input,
-select {
+input {
   font: inherit;
 }
 
@@ -56,24 +53,6 @@ input:focus-visible,
 [tabindex]:focus-visible {
   outline: 4px solid var(--yellow);
   outline-offset: 4px;
-}
-
-html.large-text {
-  font-size: calc(112.5% * var(--ui-scale));
-}
-
-html.high-contrast {
-  --ink: #130c25;
-  --muted: #3f3655;
-  --line: #6c5d88;
-}
-
-html.reduced-motion *,
-html.reduced-motion *::before,
-html.reduced-motion *::after {
-  scroll-behavior: auto !important;
-  transition: none !important;
-  animation: none !important;
 }
 
 h1,

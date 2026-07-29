@@ -4,8 +4,6 @@ import type { FighterSnapshot, PlayerInputFrame } from '../core/types';
 import { AttackSelector } from './AttackSelector';
 import { EnergyComponent } from './EnergyComponent';
 import type { AttackDefinition } from './AttackDefinition';
-import { CharacterPassiveSystem } from './CharacterPassiveSystem';
-import { setDefenseEffect } from './DefenseState';
 
 export type AttackContact = {
   definition: AttackDefinition;
@@ -17,7 +15,6 @@ export class AttackSystem {
   private readonly energy = new EnergyComponent();
   private readonly states = new FighterStateMachine();
   private readonly selector: AttackSelector;
-  private readonly passive = new CharacterPassiveSystem();
 
   constructor() {
     this.selector = new AttackSelector();
@@ -25,9 +22,7 @@ export class AttackSystem {
 
   prepare(fighter: FighterSnapshot, input: PlayerInputFrame) {
     const requested = this.selector.select(fighter, input);
-    if (requested && this.canStart(fighter, requested)) {
-      this.start(fighter, requested, input.pressed.includes('PERFECT_REVERSAL'));
-    }
+    if (requested && this.canStart(fighter, requested)) this.start(fighter, requested);
     const definition = this.currentDefinition(fighter);
     if (!definition || !fighter.attack) return;
 
@@ -71,11 +66,6 @@ export class AttackSystem {
     runtime.frame += 1;
     const total = definition.startupFrames + definition.activeFrames + definition.recoveryFrames;
     if (runtime.frame < total) return;
-    const finishedDash = fighter.characterId === 'shira' && definition.id.includes('dash');
-    if (finishedDash) {
-      fighter.vulnerableTicksRemaining = runtime.connected ? 0 : 14;
-      fighter.dashTicksRemaining = 0;
-    }
     fighter.attack = null;
     fighter.velocityX = 0;
     if (fighter.mode.startsWith('attack')) {
@@ -89,11 +79,7 @@ export class AttackSystem {
 
   private canStart(fighter: FighterSnapshot, requested: AttackDefinition) {
     if (!fighter.attack) {
-      const wakeupReversal =
-        requested.action === 'MOMENTUM_REVERSAL' &&
-        fighter.mode === 'wakeup' &&
-        fighter.modeTicksRemaining <= 1;
-      return (this.states.canStartAttack(fighter) || wakeupReversal) &&
+      return this.states.canStartAttack(fighter) &&
         this.energy.canSpend(fighter, requested.energyCost);
     }
     const current = this.currentDefinition(fighter);
@@ -108,16 +94,8 @@ export class AttackSystem {
     ) && this.energy.canSpend(fighter, requested.energyCost);
   }
 
-  private start(
-    fighter: FighterSnapshot,
-    definition: AttackDefinition,
-    perfectReversal = false,
-  ) {
+  private start(fighter: FighterSnapshot, definition: AttackDefinition) {
     if (!this.energy.spend(fighter, definition.energyCost)) return;
-    if (perfectReversal) {
-      this.energy.gain(fighter, 15);
-      setDefenseEffect(fighter, 'perfect-reversal');
-    }
     fighter.velocityX = 0;
     fighter.attack = {
       id: definition.id,
@@ -128,7 +106,6 @@ export class AttackSystem {
     };
     fighter.guard = null;
     fighter.mode = 'attackStartup';
-    this.passive.spendEnhanced(fighter, definition);
   }
 
   private phaseAt(definition: AttackDefinition, frame: number) {

@@ -4,84 +4,47 @@ import { HealthComponent } from './HealthComponent';
 import { FighterStateMachine } from '../core/FighterStateMachine';
 import type { AttackDefinition } from './AttackDefinition';
 import type { ComboSnapshot, FighterSnapshot } from '../core/types';
-import { balanceConfig } from '../config/balanceConfig';
-import type { BlockResult } from './BlockSystem';
-import { CharacterPassiveSystem } from './CharacterPassiveSystem';
-import { matchupBonuses } from '../data/forceMatchups';
 
-export type DamageResult = { damage: number; block: BlockResult };
+export type DamageResult = { damage: number; blocked: boolean };
 
 export class DamageSystem {
   private readonly combos = new ComboSystem();
   private readonly energy = new EnergyComponent();
   private readonly health = new HealthComponent();
   private readonly states = new FighterStateMachine();
-  private readonly passive = new CharacterPassiveSystem();
 
   apply(
     attacker: FighterSnapshot,
     defender: FighterSnapshot,
     definition: AttackDefinition,
     combo: ComboSnapshot,
-    block: BlockResult,
+    blocked: boolean,
   ): DamageResult {
-    const blocked = block.blocked;
-    const attackerBonuses = matchupBonuses(attacker.characterId, defender.characterId);
-    const defenderBonuses = matchupBonuses(defender.characterId, attacker.characterId);
-    const armoredReaction = !blocked && this.passive.absorbsReaction(defender, definition);
     if (definition.sideSwitch && !blocked) this.switchSides(attacker, defender);
     const direction = attacker.x <= defender.x ? 1 : -1;
-    const baseDamage =
-      block.kind === 'perfect'
-        ? 0
-        : blocked
-          ? definition.chipDamage
-          : this.combos.scaledDamage(combo, definition);
-    const matchupDamage = baseDamage * attackerBonuses.damageMultiplier;
     const rawDamage = blocked
-      ? matchupDamage
-      : this.passive.incomingDamage(defender, definition, matchupDamage);
-    const counterDamage = defender.rhythmLockTicks > 0 ? rawDamage * 1.15 : rawDamage;
-    const damage = this.health.damage(defender, counterDamage);
+      ? definition.chipDamage
+      : this.combos.scaledDamage(combo, definition);
+    const damage = this.health.damage(defender, rawDamage);
 
-    this.energy.gain(attacker, definition.energyGain * attackerBonuses.energyGainMultiplier);
-    if (!blocked) this.passive.recordHit(attacker, definition);
-    if (damage > 0) {
-      const defenderEnergy = Math.max(1, Math.round(damage * 0.35));
-      this.energy.gain(defender, defenderEnergy * defenderBonuses.energyGainMultiplier);
-    }
-    const pushScale = block.kind === 'perfect' ? 0 : block.kind === 'precise' ? 0.14 :
-      blocked ? 0.28 : 1;
-    defender.velocityX = definition.knockbackX * direction * pushScale;
-    defender.velocityY = -definition.knockbackY * pushScale;
+    this.energy.gain(attacker, definition.energyGain);
+    this.energy.gain(defender, Math.max(1, Math.round(damage * 0.35)));
+    defender.velocityX = definition.knockbackX * direction * (blocked ? 0.28 : 1);
+    defender.velocityY = -definition.knockbackY * (blocked ? 0.2 : 1);
     if (defender.velocityY < 0) defender.grounded = false;
 
     if (this.health.isDepleted(defender)) {
       defender.attack = null;
       defender.mode = 'knockout';
       defender.modeTicksRemaining = 0;
-    } else if (block.kind === 'perfect') {
-      if (attacker.attack) {
-        attacker.attack.frame = Math.max(
-          0,
-          attacker.attack.frame - balanceConfig.perfectBlockAdvantageFrames,
-        );
-      }
-    } else if (armoredReaction) {
-      defender.modeTicksRemaining = 0;
-    } else if (block.kind === 'precise') {
-      this.states.enterBlockstun(
-        defender,
-        Math.max(1, Math.round(definition.blockStun * balanceConfig.preciseBlockStunMultiplier)),
-      );
     } else if (blocked) {
       this.states.enterBlockstun(defender, definition.blockStun);
     } else {
-      this.combos.register(combo, defender.id, damage, definition);
+      this.combos.register(combo, defender.id, damage);
       if (definition.knockdown) this.states.enterKnockdown(defender);
       else this.states.enterHitstun(defender, definition.hitStun);
     }
-    return { damage, block };
+    return { damage, blocked };
   }
 
   private switchSides(attacker: FighterSnapshot, defender: FighterSnapshot) {

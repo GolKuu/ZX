@@ -1,31 +1,23 @@
 import Phaser from 'phaser';
 import { balanceConfig } from '../../config/balanceConfig';
-import type { ArenaId } from '../../data/arenas/arenaCatalog';
-import { settingsStore } from '../../../stores/settingsStore';
-import {
-  paintMoonNursery,
-  paintPaperHarbor,
-  paintQuietCanopy,
-} from './ArenaPainters';
 
-export function createArena(
-  scene: Phaser.Scene,
-  arenaId: ArenaId = settingsStore.load().arenaId,
-) {
+export function createArena(scene: Phaser.Scene) {
   const graphics = scene.add.graphics();
-  if (arenaId === 'moon-nursery') paintMoonNursery(graphics);
-  else if (arenaId === 'paper-harbor') paintPaperHarbor(graphics);
-  else paintQuietCanopy(graphics);
+  graphics.fillStyle(0x8bd8ff).fillRect(0, 0, balanceConfig.arenaWidth, balanceConfig.arenaHeight);
+  graphics.fillStyle(0xfff2a8).fillCircle(790, 100, 58);
 
-  graphics.fillGradientStyle(0x596273, 0x596273, 0x343c4a, 0x343c4a, 1);
-  graphics.fillRect(0, balanceConfig.groundY, balanceConfig.arenaWidth, 90);
-  graphics.fillStyle(accentFor(arenaId))
-    .fillRect(0, balanceConfig.groundY, balanceConfig.arenaWidth, 7);
+  graphics.fillStyle(0xffffff, 0.75);
+  graphics.fillCircle(170, 112, 36);
+  graphics.fillCircle(215, 98, 52);
+  graphics.fillCircle(270, 115, 34);
+
+  graphics.fillStyle(0xb69cff).fillRect(0, 320, balanceConfig.arenaWidth, 130);
+  graphics.fillStyle(0x7457d9).fillRect(0, balanceConfig.groundY, balanceConfig.arenaWidth, 90);
+  graphics.fillStyle(0xffdc62).fillRect(0, balanceConfig.groundY, balanceConfig.arenaWidth, 12);
+
+  for (let x = 40; x < balanceConfig.arenaWidth; x += 90) {
+    graphics.fillStyle(0xffffff, 0.12).fillCircle(x, 382 + (x % 3) * 8, 22);
+  }
+
   return graphics;
-}
-
-function accentFor(arenaId: ArenaId) {
-  if (arenaId === 'moon-nursery') return 0x75e0ce;
-  if (arenaId === 'paper-harbor') return 0xff7185;
-  return 0xffb95a;
 }

@@ -32,14 +32,9 @@
     transform 160ms ease,
     box-shadow 160ms ease,
     border-color 160ms ease;
-  animation: menu-card-in 360ms cubic-bezier(.2, .8, .2, 1) both;
 }
 
-.menu-option:nth-child(2n) { animation-delay: 45ms; }
-.menu-option:nth-child(3n) { animation-delay: 90ms; }
-
-.menu-option[href]:hover,
-button.menu-option:hover {
+.menu-option[href]:hover {
   border-color: #b9a7ff;
   box-shadow: 0 16px 38px #6349c71f;
   transform: translateY(-4px);
@@ -114,12 +109,5 @@ button.menu-option:hover {
 
   .menu-option--primary {
     grid-column: auto;
-  }
-}
-
-@keyframes menu-card-in {
-  from {
-    opacity: 0;
-    transform: translateY(18px) scale(.97);
   }
 }
