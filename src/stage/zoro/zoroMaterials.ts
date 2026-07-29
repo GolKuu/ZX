@@ -72,6 +72,11 @@ export function disposeZoroMaterials(materials: ZoroMaterials): void {
   Object.values(materials).forEach((material: Material) => material.dispose());
 }
 
+/** Flat, light-independent. Used for every drawn element on the face. */
+function unlit(color: string): MeshBasicMaterial {
+  return new MeshBasicMaterial({ color, toneMapped: false });
+}
+
 function toon(
   color: string,
   gradientMap: DataTexture,
