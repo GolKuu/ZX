@@ -757,6 +757,54 @@
   text-align: center;
 }
 
+.bindingRow > button {
+  justify-self: start;
+  min-width: 4.8cqw;
+  height: 2.2cqw;
+  padding: 0 0.7cqw;
+  color: #071018;
+  cursor: pointer;
+  background: var(--hud-blue);
+  border: 1px solid transparent;
+  border-radius: 0.35cqw;
+  font: 850 0.76cqw/2.1cqw ui-monospace, SFMono-Regular, Consolas, monospace;
+  text-align: center;
+}
+
+.bindingRow > button:hover,
+.bindingRow > button:focus-visible,
+.bindingRow > button[data-editing="true"] {
+  color: #fff;
+  background: rgb(159 216 255 / 12%);
+  border-color: var(--hud-blue);
+  outline: none;
+}
+
+.bindingRow > span {
+  color: #728197;
+  font-size: 0.78cqw;
+}
+
+.controlActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1cqw;
+  margin-top: 1.4cqw;
+}
+
+.controlActions button {
+  min-height: 3.2cqw;
+  padding: 0 1.2cqw;
+  color: #fff;
+  cursor: pointer;
+  background: rgb(159 216 255 / 7%);
+  border: 1px solid var(--hud-blue);
+  font-size: 0.78cqw;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .backButton {
   min-height: 3.2cqw;
   margin-top: 1.4cqw;
