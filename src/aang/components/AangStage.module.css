@@ -1,0 +1,192 @@
+.stage {
+  --element: #92e8ff;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--element) 45%, #26313f);
+  background:
+    linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px),
+    radial-gradient(circle at 32% 42%, color-mix(in srgb, var(--element) 18%, transparent), transparent 34%),
+    linear-gradient(155deg, #111927, #070a11 70%);
+  background-size: 28px 28px, 28px 28px, auto, auto;
+  clip-path: polygon(0 0, 100% 0, 100% 94%, 95% 100%, 0 100%);
+}
+
+.stage[data-element="fire"] { --element: #ff644b; }
+.stage[data-element="earth"] { --element: #91b968; }
+.stage[data-element="water"] { --element: #5ebeff; }
+.stage[data-element="avatar"] { --element: #ffffff; }
+
+.topline,
+.caption {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topline {
+  padding: 0.75rem 0.9rem 0;
+  color: var(--element);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+}
+
+.scene {
+  display: block;
+  width: 100%;
+  max-height: 440px;
+  overflow: visible;
+}
+
+.floor {
+  stroke: #364354;
+  stroke-width: 2;
+}
+
+.staff,
+.body,
+.head,
+.frontArm,
+.backArm,
+.frontLeg,
+.backLeg,
+.opponent,
+.effect {
+  transform-box: view-box;
+}
+
+.staff { transform-origin: 88px 132px; }
+.body { transform-origin: 96px 149px; }
+.head { transform-origin: 96px 82px; }
+.frontArm { transform-origin: 117px 96px; }
+.backArm { transform-origin: 74px 96px; }
+.frontLeg { transform-origin: 101px 163px; }
+.backLeg { transform-origin: 87px 163px; }
+.opponent { transform-origin: 315px 224px; }
+.effect { transform-origin: 150px 128px; opacity: 0; }
+
+.staff path {
+  fill: none;
+  stroke: #bd8b4f;
+  stroke-linecap: round;
+  stroke-width: 7;
+}
+
+.robe {
+  fill: url("#robeGradient");
+  stroke: #ff8e57;
+  stroke-width: 1;
+}
+
+.collar,
+.sash,
+.pants {
+  fill: url("#pantsGradient");
+  stroke: #f2c86d;
+  stroke-width: 1;
+}
+
+.sleeve { fill: #c83e29; }
+.boot { fill: #522b27; stroke: #9c574a; }
+.skin, .neck { fill: #efc18d; }
+.ear { fill: none; stroke: #efc18d; stroke-width: 5; stroke-linecap: round; }
+.arrow { fill: none; stroke: var(--element); stroke-width: 5; stroke-linecap: round; }
+.eyes { fill: none; stroke: #29333e; stroke-width: 3; stroke-linecap: round; }
+.smile { fill: none; stroke: #9c654f; stroke-width: 2; stroke-linecap: round; }
+
+.air {
+  fill: none;
+  stroke: #b7f1ff;
+  stroke-width: 4;
+}
+
+.fire path:first-child { fill: #ff5a35; }
+.fire path:last-child { fill: #ffd056; }
+.earth { fill: #7b915a; stroke: #c5d487; stroke-width: 2; }
+.water { fill: none; stroke: #65c9ff; stroke-linecap: round; stroke-width: 8; }
+
+.wall {
+  transform-origin: 202px 224px;
+  fill: #61744d;
+  stroke: #c1d086;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.elements { transform-origin: 99px 132px; fill: none; stroke-width: 6; }
+.airRing { stroke: #b9f3ff; }
+.fireRing { stroke: #ff6748; }
+.earthRing { stroke: #9ebd6d; }
+.waterRing { stroke: #62bfff; }
+
+.avatar {
+  transform-origin: 98px 145px;
+  fill: none;
+  stroke: white;
+  stroke-width: 3;
+}
+
+.opponent {
+  fill: #1c2836;
+  stroke: #718298;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 8;
+}
+
+.opponent .target {
+  fill: none;
+  stroke: #e15b56;
+  stroke-width: 2;
+}
+
+.timeline {
+  height: 3px;
+  margin: 0 0.9rem;
+  overflow: hidden;
+  background: #26313f;
+}
+
+.timeline span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--element);
+  box-shadow: 0 0 16px var(--element);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.caption { gap: 1rem; padding: 0.85rem 0.9rem 1rem; }
+.caption div:first-child { display: grid; gap: 0.1rem; }
+.caption small { color: #718094; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.caption strong { font-size: 0.88rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.controls { display: flex; gap: 0.4rem; }
+
+.controls button {
+  min-height: 34px;
+  border: 1px solid #344357;
+  padding: 0 0.65rem;
+  color: #dce6f2;
+  background: #101824;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.controls button:hover,
+.controls button:focus-visible {
+  border-color: var(--element);
+  color: var(--element);
+  outline: none;
+}
+
+@media (max-width: 560px) {
+  .caption { align-items: flex-start; flex-direction: column; }
+}
