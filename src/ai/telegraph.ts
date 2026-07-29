@@ -1,5 +1,5 @@
 import type {
-  AiEvent,
+  AiTelegraph,
   TelegraphProgress,
   TelegraphRequest,
   TelegraphCancelledEvent,
