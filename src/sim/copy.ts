@@ -84,6 +84,7 @@ export function createFighterState(
     guarding: false,
     hitstop: 0,
     hitstun: 0,
+    recoveryPercent: 100,
     action: null,
     bounce: {
       wallRemaining: 0,

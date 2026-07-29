@@ -28,6 +28,9 @@
     "src/input/core.ts",
     "src/game/attackInputPolicy.ts",
     "src/data/combat-moves.ts",
+    "src/data/roster-moves.ts",
+    "src/input/rosterCommands.ts",
+    "src/game/mechanics/*.ts",
     "src/data/combat-ai.ts"
   ]
 }

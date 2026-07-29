@@ -11,7 +11,7 @@ import {
   readWorld,
 } from './engine-read.js';
 import type { CombatEvent, FighterDebugFrame } from './events.js';
-import { totalMoveFrames, type MoveFrameData } from './frame-data.js';
+import { effectiveMoveFrames, type MoveFrameData } from './frame-data.js';
 import { integrateFighter } from './physics.js';
 import { resolveHit } from './resolve.js';
 import type {
@@ -148,7 +148,12 @@ export class CombatEngine {
       }
       action.frame += 1;
       const move = this.moves.get(action.moveId);
-      if (move !== undefined && action.frame >= totalMoveFrames(move)) {
+      // Frame Inertia and anything else that shortens recovery lands here, so
+      // the move genuinely ends earlier rather than merely looking like it.
+      const length = move === undefined
+        ? 0
+        : effectiveMoveFrames(move, fighter.recoveryPercent);
+      if (move !== undefined && action.frame >= length) {
         fighter.action = null;
         events.push({
           type: 'moveEnded',

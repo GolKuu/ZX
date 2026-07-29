@@ -73,6 +73,29 @@ export function totalMoveFrames(move: MoveFrameData): number {
   return move.startup + move.active + move.recovery;
 }
 
+/**
+ * Move length with a recovery modifier applied.
+ *
+ * `recoveryPercent` is an integer where 100 is unmodified, so the arithmetic
+ * stays exact — a float scale here would desync two clients running the same
+ * inputs. Startup and active are never scaled: shortening those would change
+ * what the move *is*, not how quickly the character gets back to neutral.
+ *
+ * Recovery never drops below one frame, so a move can never become
+ * instantaneous no matter how many stacks are held.
+ */
+export function effectiveMoveFrames(
+  move: MoveFrameData,
+  recoveryPercent: number,
+): number {
+  if (recoveryPercent >= 100) {
+    return totalMoveFrames(move);
+  }
+  const scaled = Math.ceil((move.recovery * recoveryPercent) / 100);
+  const recovery = move.recovery === 0 ? 0 : Math.max(1, scaled);
+  return move.startup + move.active + recovery;
+}
+
 export function movePhaseAt(move: MoveFrameData, frame: number): MovePhase | null {
   if (frame < 0 || frame >= totalMoveFrames(move)) {
     return null;

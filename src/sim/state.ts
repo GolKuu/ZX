@@ -59,6 +59,12 @@ export interface MutableFighterState {
   guarding: boolean;
   hitstop: number;
   hitstun: number;
+  /**
+   * Recovery-length modifier as an integer percentage; 100 is unmodified.
+   * Driven by character passives (Frame Inertia). Integer so the simulation
+   * stays exact.
+   */
+  recoveryPercent: number;
   action: ActiveMoveState | null;
   bounce: BounceState;
 }
