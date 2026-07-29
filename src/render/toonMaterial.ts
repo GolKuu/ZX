@@ -73,6 +73,20 @@ export interface ToonMaterialOptions {
   readonly detailBands?: number;
   /** Contrast applied to the detail luminance before banding. */
   readonly detailContrast?: number;
+  /**
+   * How far to push the surface from *rendered* toward *illustrated* (0…1).
+   *
+   * At 0 the shaded band is the lit result multiplied by the shadow hue, which
+   * is what the material always did — and what crushed every character to a
+   * black cut-out, because multiplying an already-dim result by a dark tint has
+   * no floor. At 1 the two bands are simply the zone's own lit and shade
+   * colours, flat, exactly as the character sheets are drawn: shade is a hue,
+   * never a darkness (ART-CCU-400 §A2 / VIS-CCU-800 §A1–A2).
+   *
+   * Characters want this high. The stage wants it low — it is lit scenery, not
+   * a drawn figure, and flattening it would throw away the arena's form.
+   */
+  readonly flatten?: number;
 }
 
 export interface ToonUniforms {
@@ -89,6 +103,7 @@ export interface ToonUniforms {
   uZoneRange: IUniform<[number, number]>;
   uDetailBands: IUniform<number>;
   uDetailContrast: IUniform<number>;
+  uFlatten: IUniform<number>;
 }
 
 export type ToonMaterial = MeshToonMaterial & { readonly toon: ToonUniforms };
@@ -125,6 +140,7 @@ export function createToonMaterial(options: ToonMaterialOptions): ToonMaterial {
     uZoneRange: { value: [options.heightRange?.[0] ?? 0, options.heightRange?.[1] ?? 1] },
     uDetailBands: { value: options.detailBands ?? 4 },
     uDetailContrast: { value: options.detailContrast ?? 1.6 },
+    uFlatten: { value: options.flatten ?? 0 },
   };
 
   const material = new MeshToonMaterial({
@@ -172,6 +188,7 @@ export function createToonMaterial(options: ToonMaterialOptions): ToonMaterial {
         uniform vec3  uRimColor;
         uniform float uRimStrength;
         uniform vec3  uRimAxis;
+        uniform float uFlatten;
         ${useZones ? /* glsl */ `
         varying float vZoneY;
         uniform float uZoneEdge[ ${String(MAX_HEIGHT_ZONES)} ];
@@ -245,11 +262,21 @@ export function createToonMaterial(options: ToonMaterialOptions): ToonMaterial {
         float litLuma  = dot( outgoingLight, LUMA );
         float baseLuma = max( dot( diffuseColor.rgb, LUMA ), 0.001 );
         float shade    = 1.0 - clamp( litLuma / baseLuma, 0.0, 1.0 );
-        outgoingLight  = mix(
+
+        // Rendered: the lit result tinted by the shadow hue. Has no floor, so a
+        // dim key plus a dark tint bottoms out at black.
+        vec3 ccuRendered = mix(
           outgoingLight,
           outgoingLight * uShadowTint * 1.9,
           shade * uShadowStrength
         );
+
+        // Illustrated: two flat bands straight from the palette, which is how
+        // the character sheets are drawn. Value survives however dim the stage
+        // gets, so the costume still reads as its own colour.
+        vec3 ccuIllustrated = mix( ccuLit, ccuShade, shade * uShadowStrength );
+
+        outgoingLight = mix( ccuRendered, ccuIllustrated, uFlatten );
 
         // --- axis-gated rim --------------------------------------------------
         float fres = 1.0 - clamp( dot( toonNormal, toonView ), 0.0, 1.0 );
@@ -260,8 +287,12 @@ export function createToonMaterial(options: ToonMaterialOptions): ToonMaterial {
       );
   };
 
-  // Force a recompile if this material is cloned or the defines change.
-  material.customProgramCacheKey = () => 'ccu-toon-v1';
+  // Force a recompile if this material is cloned or the defines change. The
+  // variant flags are part of the key: `onBeforeCompile` rewrites the source
+  // differently for each, and three cannot see that, so a constant key let a
+  // zoned character reuse the unzoned stage program.
+  const variant = `${useZones ? 'z' : '-'}${useDetail ? 'd' : '-'}`;
+  material.customProgramCacheKey = () => `ccu-toon-v2-${variant}`;
 
   return material;
 }

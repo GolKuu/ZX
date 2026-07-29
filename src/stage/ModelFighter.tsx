@@ -196,6 +196,8 @@ function createFighterZones(
       rimStrength: rim,
       heightZones: bands,
       heightRange: [0, 1],
+      // Fighters are drawn figures, not lit scenery. See `flatten`.
+      flatten: 0.88,
     });
 
   return {

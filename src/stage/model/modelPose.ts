@@ -401,7 +401,7 @@ function aangSharedMoveId(moveId: string): string | null {
  */
 function straightPunch(
   joints: HumanoidJoints,
-  _rest: RestPose,
+  rest: RestPose,
   windup: number,
   strike: number,
   settle: number,
@@ -411,42 +411,47 @@ function straightPunch(
   const rebound = recoveryArc(strike, settle);
   const back = rebound * 0.3;
 
-  turn(joints, 'hips', 0, 0.42 - reach * 0.5 + coil * 0.16, 0);
-  turn(joints, 'spine', 0.05 * coil, -0.18 + reach * -0.34, 0);
-  turn(joints, 'chest', 0.04, -0.14 - reach * 0.42 + coil * 0.2, 0);
+  // Sheet silhouette (`LP` on every character sheet): lead arm horizontal and
+  // fully out, rear elbow pinned back at the ribs, front knee deep, rear leg
+  // long behind, torso pitched forward over the front foot.
+  turn(joints, 'hips', 0.06 * reach, 0.42 - reach * 0.62 + coil * 0.2, 0);
+  turn(joints, 'spine', 0.08 * coil - 0.16 * reach, -0.18 + reach * -0.4, 0);
+  turn(joints, 'chest', 0.04 - 0.1 * reach, -0.14 - reach * 0.5 + coil * 0.24, 0);
   turn(
     joints,
     'neck',
-    0,
-    -0.08 - coil * 0.05 - reach * 0.12 + rebound * 0.04,
+    0.06 * reach,
+    -0.08 - coil * 0.05 - reach * 0.14 + rebound * 0.04,
     0,
   );
   turn(
     joints,
     'head',
     -reach * 0.025,
-    -0.1 - coil * 0.1 - reach * 0.2 + rebound * 0.06,
+    -0.1 - coil * 0.1 - reach * 0.22 + rebound * 0.06,
     0,
   );
 
   // Lead arm fires, rear arm retracts to the ribs as counterweight.
-  turn(joints, 'shoulderL', 0, -reach * 0.34, -0.12 - reach * 0.1);
-  turn(joints, 'upperArmL', -1.5 - coil * 0.2 + reach * 0.05, 0.18, 0.3);
-  turn(joints, 'forearmL', -1.4 + coil * 0.35 + reach * 1.32 - back * 0.3, 0, 0);
+  turn(joints, 'shoulderL', 0, -reach * 0.42, -0.12 - reach * 0.14);
+  turn(joints, 'upperArmL', -1.62 - coil * 0.24 + reach * 0.06, 0.18, 0.3);
+  turn(joints, 'forearmL', -1.5 + coil * 0.4 + reach * 1.62 - back * 0.3, 0, 0);
   turn(joints, 'handL', 0, 0, -0.18);
 
-  turn(joints, 'upperArmR', -0.3 - reach * 0.34, -0.14, -0.5);
-  turn(joints, 'forearmR', -1.5 - reach * 0.4, 0, 0);
+  turn(joints, 'upperArmR', -0.24 - reach * 0.5, -0.14, -0.52);
+  turn(joints, 'forearmR', -1.62 - reach * 0.55, 0, 0);
 
-  turn(joints, 'thighL', -0.24 - reach * 0.16, 0.1, 0.12);
-  turn(joints, 'shinL', 0.36, 0, 0);
-  turn(joints, 'thighR', 0.2 + reach * 0.26, -0.12, -0.14);
-  turn(joints, 'shinR', 0.28, 0, 0);
+  turn(joints, 'thighL', -0.44 - reach * 0.3, 0.1, 0.16);
+  turn(joints, 'shinL', 0.58, 0, 0);
+  turn(joints, 'thighR', 0.32 + reach * 0.42, -0.12, -0.18);
+  turn(joints, 'shinR', 0.2, 0, 0);
+
+  lift(joints, rest, -0.06 - reach * 0.05);
 }
 
 function heavyPunch(
   joints: HumanoidJoints,
-  _rest: RestPose,
+  rest: RestPose,
   windup: number,
   strike: number,
   settle: number,
@@ -455,38 +460,41 @@ function heavyPunch(
   const reach = recoveredStrike(strike, settle);
   const rebound = recoveryArc(strike, settle);
 
-  // Bigger rotation through the hips — a heavy reads as the whole body turning
-  // over, not a longer arm.
-  turn(joints, 'hips', 0, 0.5 + coil * 0.44 - reach * 0.96, 0);
-  turn(joints, 'spine', 0.08 * coil, -0.16 + coil * 0.3 - reach * 0.6, 0);
-  turn(joints, 'chest', 0.06, -0.12 + coil * 0.36 - reach * 0.74, 0);
+  // Sheet silhouette (`HP`): the whole body turns over, the striking arm sweeps
+  // a wide arc well outside the body outline, and the stance opens into a deep
+  // lunge. A heavy reads as the torso rotating, never as a longer arm.
+  turn(joints, 'hips', 0, 0.5 + coil * 0.62 - reach * 1.38, 0);
+  turn(joints, 'spine', 0.1 * coil - 0.12 * reach, -0.16 + coil * 0.4 - reach * 0.84, 0);
+  turn(joints, 'chest', 0.06 - 0.1 * reach, -0.12 + coil * 0.48 - reach * 1.02, 0);
   turn(
     joints,
     'neck',
     0.04,
-    -coil * 0.08 - reach * 0.2 + rebound * 0.06,
+    -coil * 0.08 - reach * 0.24 + rebound * 0.06,
     0,
   );
   turn(
     joints,
     'head',
     -0.04 - reach * 0.04,
-    -0.1 - coil * 0.14 - reach * 0.28 + rebound * 0.09,
+    -0.1 - coil * 0.16 - reach * 0.34 + rebound * 0.09,
     0,
   );
 
-  turn(joints, 'shoulderR', 0, -reach * 0.4, 0.1 - reach * 0.24);
-  turn(joints, 'upperArmR', -1.42 - coil * 0.3 + reach * 0.1, -0.16, -0.34);
-  turn(joints, 'forearmR', -1.7 + coil * 0.2 + reach * 1.66, 0, 0);
+  turn(joints, 'shoulderR', 0, -reach * 0.5, 0.1 - reach * 0.34);
+  turn(joints, 'upperArmR', -1.58 - coil * 0.42 + reach * 0.12, -0.16, -0.34 - reach * 0.3);
+  turn(joints, 'forearmR', -1.82 + coil * 0.24 + reach * 1.92, 0, 0);
   turn(joints, 'handR', 0, 0, 0.2);
 
-  turn(joints, 'upperArmL', -0.5 - reach * 0.3, 0.2, 0.52);
-  turn(joints, 'forearmL', -1.34 - reach * 0.5, 0, 0);
+  turn(joints, 'upperArmL', -0.44 - reach * 0.46, 0.2, 0.6 + reach * 0.34);
+  turn(joints, 'forearmL', -1.34 - reach * 0.6, 0, 0);
 
-  turn(joints, 'thighL', -0.3 - reach * 0.2, 0.1, 0.14);
-  turn(joints, 'shinL', 0.44, 0, 0);
-  turn(joints, 'thighR', 0.24 + reach * 0.32, -0.12, -0.16);
-  turn(joints, 'shinR', 0.34, 0, 0);
+  turn(joints, 'thighL', -0.52 - reach * 0.34, 0.1, 0.18);
+  turn(joints, 'shinL', 0.66, 0, 0);
+  turn(joints, 'thighR', 0.36 + reach * 0.5, -0.12, -0.2);
+  turn(joints, 'shinR', 0.24, 0, 0);
+
+  lift(joints, rest, -0.1 - reach * 0.09);
 }
 
 function roundKick(
@@ -519,21 +527,23 @@ function roundKick(
   );
 
   // Arms swing opposite the kicking leg or the pose has no balance.
-  turn(joints, 'upperArmL', -0.5 + reach * 0.5, 0.3, 0.7 + reach * 0.5);
+  turn(joints, 'upperArmL', -0.5 + reach * 0.62, 0.3, 0.78 + reach * 0.66);
   turn(joints, 'forearmL', -1.2, 0, 0);
-  turn(joints, 'upperArmR', -0.4 - reach * 0.7, -0.3, -0.6 - reach * 0.4);
+  turn(joints, 'upperArmR', -0.4 - reach * 0.86, -0.3, -0.66 - reach * 0.52);
   turn(joints, 'forearmR', -1.3, 0, 0);
 
-  // Chambered knee, then the shin whips out. Kicking from a straight leg is
-  // the most common tell of procedural animation.
-  turn(joints, 'thighR', -0.4 - coil * 0.7 - reach * 0.9, -0.2 - reach * 0.5, -0.2 - reach * 0.6);
-  turn(joints, 'shinR', 1.5 * (coil + 0.3) - reach * 1.6, 0, 0);
-  turn(joints, 'footR', -0.2 - reach * 0.2, 0, 0);
+  // Sheet silhouette (`HK`): the foot finishes at head height with the torso
+  // counter-leaning away from it. Chambered knee first, then the shin whips
+  // out — kicking from a straight leg is the classic tell of procedural
+  // animation, and the sheets never draw one.
+  turn(joints, 'thighR', -0.5 - coil * 0.86 - reach * 1.5, -0.2 - reach * 0.6, -0.24 - reach * 0.78);
+  turn(joints, 'shinR', 1.62 * (coil + 0.3) - reach * 2.05, 0, 0);
+  turn(joints, 'footR', -0.24 - reach * 0.28, 0, 0);
 
-  turn(joints, 'thighL', -0.16, 0.12, 0.16);
-  turn(joints, 'shinL', 0.34, 0, 0);
+  turn(joints, 'thighL', -0.16 + reach * 0.16, 0.12, 0.16);
+  turn(joints, 'shinL', 0.34 - reach * 0.18, 0, 0);
 
-  lift(joints, rest, -0.03 * reach);
+  lift(joints, rest, -0.05 * reach);
 }
 
 function lowStrike(
@@ -586,31 +596,35 @@ function sweep(
   const rebound = recoveryArc(strike, settle);
   const crouch = Math.max(coil * 0.7, reach * 0.85);
 
-  turn(joints, 'hips', 0.5 * crouch, 0.42 - reach * 0.4, 0);
-  turn(joints, 'spine', 0.24 * crouch, -0.16, -0.14 * reach);
-  turn(joints, 'chest', 0.1, -0.12, -0.1 * reach);
-  turn(joints, 'neck', -0.14 * crouch, -0.08 - reach * 0.1, 0.03 * reach);
+  // Sheet silhouette (`LK`): the body drops almost to the floor, the support
+  // hand is planted flat on the ground and the sweeping leg runs out along it,
+  // nearly straight. The height drop is what sells it — a sweep played from a
+  // standing crouch reads as a low kick.
+  turn(joints, 'hips', 0.72 * crouch, 0.42 - reach * 0.46, 0);
+  turn(joints, 'spine', 0.34 * crouch, -0.16, -0.18 * reach);
+  turn(joints, 'chest', 0.14, -0.12, -0.14 * reach);
+  turn(joints, 'neck', -0.2 * crouch, -0.08 - reach * 0.1, 0.03 * reach);
   turn(
     joints,
     'head',
-    -0.28 * crouch + rebound * 0.06,
+    -0.38 * crouch + rebound * 0.06,
     -0.1 - coil * 0.08 - reach * 0.18 + rebound * 0.08,
     0.06 * reach,
   );
 
   // The supporting hand goes to the floor. It is the pose element that makes a
   // sweep read as a sweep rather than a low kick.
-  turn(joints, 'upperArmL', 0.6 + reach * 0.5, 0.4, 0.9);
-  turn(joints, 'forearmL', -0.5, 0, 0);
-  turn(joints, 'upperArmR', -0.4 - reach * 0.5, -0.3, -0.7);
+  turn(joints, 'upperArmL', 1.05 + reach * 0.62, 0.4, 1.05);
+  turn(joints, 'forearmL', -0.34, 0, 0);
+  turn(joints, 'upperArmR', -0.4 - reach * 0.66, -0.3, -0.78);
   turn(joints, 'forearmR', -1.2, 0, 0);
 
-  turn(joints, 'thighL', -1.0 * crouch, 0.14, 0.24);
-  turn(joints, 'shinL', 1.7 * crouch, 0, 0);
-  turn(joints, 'thighR', -0.3 - reach * 0.5, -0.3 - reach * 0.9, -0.3 - reach * 0.5);
-  turn(joints, 'shinR', 1.4 * (1 - reach), 0, 0);
+  turn(joints, 'thighL', -1.34 * crouch, 0.14, 0.28);
+  turn(joints, 'shinL', 2.05 * crouch, 0, 0);
+  turn(joints, 'thighR', -0.24 - reach * 0.44, -0.3 - reach * 1.15, -0.3 - reach * 0.62);
+  turn(joints, 'shinR', 1.4 * (1 - reach * 0.94), 0, 0);
 
-  lift(joints, rest, -0.42 * crouch);
+  lift(joints, rest, -0.62 * crouch);
 }
 
 function overtake(
