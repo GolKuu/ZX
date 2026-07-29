@@ -7,7 +7,7 @@ import type {
 import { modelUrlFor } from '@/src/data/characterModels';
 import { AangFighter } from './AangFighter';
 import { Arena } from './Arena';
-import { ModelFighter } from './ModelFighter';
+import { LazyModelFighter } from './LazyModelFighter';
 import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
 import { FrameProfiler } from './FrameProfiler';
@@ -64,7 +64,7 @@ function SelectedFighter({
   // untracked assets, and a missing file must never blank the scene.
   if (url === null) return blockout;
   return (
-    <ModelFighter
+    <LazyModelFighter
       auraColor={auraColor}
       fallback={blockout}
       fighterId={fighterId}
