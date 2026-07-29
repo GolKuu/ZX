@@ -9,8 +9,8 @@ the DOM, render delta, or hidden mutable combat state.
 | Level | Reaction | Telegraph | Decisions | Defense | Combo depth |
 |---|---:|---:|---:|---:|---:|
 | Easy | 18f | 24f | every 12f | 35% | 1 follow-up |
-| Normal | 10f | 14f | every 7f | 68% | 3 follow-ups |
-| Hard | 4f | 6f | every 3f | 92% | 4 follow-ups |
+| Normal | 12f | 14f | every 7f | 68% | 3 follow-ups |
+| Hard | 7f | 6f | every 3f | 92% | 4 follow-ups |
 
 Difficulty changes observation delay, decision cadence, error rate, defense and
 punish consistency, combo depth, and telegraph duration. It does not change

@@ -67,23 +67,12 @@ export class ActionController {
   ): AiDecision | null {
     const request = this.telegraph.request();
     if (request === null) return null;
-    if (self.hitstun > 0 || self.health === 0) {
-      this.cancel(frame, self.id, 'hit', events);
-      this.combo.clear();
-      return createDecision({}, 'idle', null, events);
-    }
-    if (request.intent === 'combo' && opponent.hitstun === 0) {
-      this.cancel(frame, self.id, 'targetRecovered', events);
-      this.combo.clear();
-      return createDecision({}, 'idle', null, events);
-    }
-    if (!sourceStateIsValid(self, request)) {
-      this.cancel(frame, self.id, 'stateChanged', events);
-      return createDecision({}, 'idle', null, events);
-    }
-
-    const progress = this.telegraph.advance(frame, self.id, self.hitstop > 0);
+    const progress = this.telegraph.evaluate(frame, self.id, self, opponent);
     events.push(...progress.events);
+    if (progress.cancelledReason !== undefined) {
+      if (request.intent === 'combo') this.combo.clear();
+      return createDecision({}, 'idle', null, events);
+    }
     if (progress.committed === null) {
       return createDecision(
         {},
@@ -136,16 +125,4 @@ export class ActionController {
     const event = this.telegraph.cancel(frame, fighterId, reason);
     if (event !== null) events.push(event);
   }
-}
-
-function sourceStateIsValid(
-  self: FighterSnapshot,
-  request: TelegraphRequest,
-): boolean {
-  if (request.intent !== 'combo') return self.action === null;
-  return (
-    request.sourceActionSerial === null
-    || self.action === null
-    || self.action.serial === request.sourceActionSerial
-  );
 }
