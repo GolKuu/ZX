@@ -7,6 +7,8 @@ import { RenderCanvas } from './RenderCanvas';
 import styles from './RenderExperience.module.css';
 
 export function RenderExperience() {
+  const fighterSelection = useHudStore((state) => state.fighterSelection);
+
   useEffect(() => {
     useHudStore.getState().openModeMenu();
   }, []);
@@ -14,7 +16,7 @@ export function RenderExperience() {
   return (
     <main className={styles.experience}>
       <div className={styles.canvas}>
-        <RenderCanvas />
+        <RenderCanvas fighterSelection={fighterSelection} />
       </div>
       <PlayOverlay />
       <div className={styles.scanlines} aria-hidden="true" />

@@ -109,9 +109,10 @@ function CharacterPortrait({
 }: {
   readonly fighter: HudFighterSnapshot;
 }) {
+  const portraitMark = fighter.displayName === 'Void Walker' ? 'V' : 'Z';
   return (
     <figure className={styles.portrait}>
-      <span className={styles.portraitMark} aria-hidden="true">Z</span>
+      <span className={styles.portraitMark} aria-hidden="true">{portraitMark}</span>
       <i aria-hidden="true" />
       <figcaption>{fighter.playerTag}</figcaption>
     </figure>

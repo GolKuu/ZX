@@ -1,8 +1,14 @@
 import { create } from 'zustand';
+import {
+  DEFAULT_CHARACTER_SELECTION,
+  getCharacterDefinition,
+  type CharacterSelection,
+} from '@/src/data/characterRoster';
 import type { HudSnapshot } from '@/src/hud/types';
 
 export type HudScreen =
   | 'mode'
+  | 'character'
   | 'fight'
   | 'pause'
   | 'controls'
@@ -23,6 +29,7 @@ type HudState = {
   snapshot: HudSnapshot;
   screen: HudScreen;
   mode: MatchMode | null;
+  fighterSelection: CharacterSelection;
   menuFocus: number;
   result: MatchResult;
   publishSnapshot: (snapshot: HudSnapshot) => void;
@@ -32,18 +39,23 @@ type HudState = {
   openControls: () => void;
   openResult: (result: MatchResult) => void;
   openModeMenu: () => void;
+  openCharacterSelect: () => void;
   selectMode: (mode: MatchMode) => void;
+  startMatch: (selection: CharacterSelection) => void;
   setMenuFocus: (index: number) => void;
 };
 
-const initialSnapshot = (mode: MatchMode = 'local'): HudSnapshot => ({
+const initialSnapshot = (
+  mode: MatchMode = 'local',
+  selection: CharacterSelection = DEFAULT_CHARACTER_SELECTION,
+): HudSnapshot => ({
   frame: 0,
   round: 1,
   timerFrames: 99 * 60,
   fighters: [
     {
       id: 'p1',
-      displayName: 'Roronoa Zoro',
+      displayName: getCharacterDefinition(selection[0]).displayName,
       playerTag: 'P1',
       side: 'left',
       health: 1000,
@@ -53,7 +65,7 @@ const initialSnapshot = (mode: MatchMode = 'local'): HudSnapshot => ({
     },
     {
       id: 'p2',
-      displayName: 'Roronoa Zoro',
+      displayName: getCharacterDefinition(selection[1]).displayName,
       playerTag: mode === 'ai' ? 'CPU' : 'P2',
       side: 'right',
       health: 1000,
@@ -77,12 +89,16 @@ export const useHudStore = create<HudState>((set) => ({
   snapshot: initialSnapshot(),
   screen: 'mode',
   mode: null,
+  fighterSelection: DEFAULT_CHARACTER_SELECTION,
   menuFocus: 0,
   result: initialResult,
   publishSnapshot: (snapshot) => set({ snapshot }),
   resetMatchUi: () =>
     set((state) => ({
-      snapshot: initialSnapshot(state.mode ?? 'local'),
+      snapshot: initialSnapshot(
+        state.mode ?? 'local',
+        state.fighterSelection,
+      ),
       screen: 'fight',
       menuFocus: 0,
     })),
@@ -91,13 +107,21 @@ export const useHudStore = create<HudState>((set) => ({
   openControls: () => set({ screen: 'controls', menuFocus: 0 }),
   openResult: (result) => set({ screen: 'result', menuFocus: 0, result }),
   openModeMenu: () => set({ screen: 'mode', menuFocus: 0 }),
+  openCharacterSelect: () => set({ screen: 'character', menuFocus: 0 }),
   selectMode: (mode) =>
-    set({
+    set((state) => ({
       mode,
-      screen: mode === 'online' ? 'online' : 'fight',
-      snapshot: initialSnapshot(mode),
+      screen: mode === 'online' ? 'online' : 'character',
+      snapshot: initialSnapshot(mode, state.fighterSelection),
       menuFocus: 0,
-    }),
+    })),
+  startMatch: (fighterSelection) =>
+    set((state) => ({
+      fighterSelection: [...fighterSelection],
+      screen: 'fight',
+      snapshot: initialSnapshot(state.mode ?? 'local', fighterSelection),
+      menuFocus: 0,
+    })),
   setMenuFocus: (menuFocus) => set({ menuFocus }),
 }));
 
@@ -106,6 +130,7 @@ export function resetHudStore(): void {
     snapshot: initialSnapshot(),
     screen: 'mode',
     mode: null,
+    fighterSelection: DEFAULT_CHARACTER_SELECTION,
     menuFocus: 0,
     result: initialResult,
   });

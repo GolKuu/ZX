@@ -2,9 +2,14 @@
 
 import { Canvas } from '@react-three/fiber';
 import { ACESFilmicToneMapping, SRGBColorSpace } from 'three';
+import type { CharacterSelection } from '@/src/data/characterRoster';
 import { RenderScene } from './RenderScene';
 
-export function RenderCanvas() {
+export function RenderCanvas({
+  fighterSelection,
+}: {
+  readonly fighterSelection: CharacterSelection;
+}) {
   return (
     <Canvas
       camera={{ fov: 42, far: 40, near: 0.1, position: [0, 3.25, 8.2] }}
@@ -24,7 +29,7 @@ export function RenderCanvas() {
       }}
       shadows={false}
     >
-      <RenderScene />
+      <RenderScene fighterSelection={fighterSelection} />
     </Canvas>
   );
 }

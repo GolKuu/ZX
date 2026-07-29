@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { requestCombatReset } from '@/src/game/combatRuntime';
 import { useHudStore, type HudScreen } from '@/src/store/hudStore';
 import { ControlsMenu } from './ControlsMenu';
+import { CharacterSelectMenu } from './CharacterSelectMenu';
 import { ModeMenu } from './ModeMenu';
 import { OnlineNotice } from './OnlineNotice';
 import styles from './CombatHud.module.css';
@@ -18,6 +19,7 @@ interface MenuItem {
 export function MatchMenus() {
   const screen = useHudStore((state) => state.screen);
   if (screen === 'mode') return <ModeMenu />;
+  if (screen === 'character') return <CharacterSelectMenu />;
   if (screen === 'online') return <OnlineNotice />;
   return <InMatchMenus />;
 }
@@ -29,6 +31,7 @@ function InMatchMenus() {
   const result = useHudStore((state) => state.result);
   const resume = useHudStore((state) => state.resume);
   const openControls = useHudStore((state) => state.openControls);
+  const openCharacterSelect = useHudStore((state) => state.openCharacterSelect);
   const openModeMenu = useHudStore((state) => state.openModeMenu);
   const setMenuFocus = useHudStore((state) => state.setMenuFocus);
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -38,6 +41,11 @@ function InMatchMenus() {
     { label: 'Restart match', detail: 'Reset the current set', action: requestCombatReset },
     { label: 'Controls', detail: 'View every binding', action: openControls },
     {
+      label: 'Change fighters',
+      detail: 'Start a new match with another pair',
+      action: openCharacterSelect,
+    },
+    {
       label: 'Change mode',
       detail: 'Leave the current match',
       action: openModeMenu,
@@ -45,6 +53,7 @@ function InMatchMenus() {
   ];
   const resultItems: readonly MenuItem[] = [
     { label: 'Rematch', action: requestCombatReset },
+    { label: 'Change fighters', action: openCharacterSelect },
     { label: 'Change mode', action: openModeMenu },
     { label: 'Main menu', action: () => router.push('/') },
   ];

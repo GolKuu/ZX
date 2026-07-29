@@ -1,5 +1,6 @@
 import { CombatAiAgent } from '@/src/ai';
 import { KADE_AI_LOADOUT } from '@/src/data/combat-ai';
+import { getCharacterDefinition } from '@/src/data/characterRoster';
 import { KADE_HURTBOXES, KADE_MOVES } from '@/src/data/combat-moves';
 import { HudBridge } from '@/src/hud';
 import {
@@ -32,13 +33,19 @@ export function createCombatAi(): CombatAiAgent {
 }
 
 export function createCombatHud(): HudBridge {
-  const opponentTag = useHudStore.getState().mode === 'ai' ? 'CPU' : 'P2';
+  const { fighterSelection, mode } = useHudStore.getState();
+  const opponentTag = mode === 'ai' ? 'CPU' : 'P2';
   return new HudBridge(
     [
-      { id: 'p1', displayName: 'Roronoa Zoro', playerTag: 'P1', side: 'left' },
+      {
+        id: 'p1',
+        displayName: getCharacterDefinition(fighterSelection[0]).displayName,
+        playerTag: 'P1',
+        side: 'left',
+      },
       {
         id: 'p2',
-        displayName: 'Roronoa Zoro',
+        displayName: getCharacterDefinition(fighterSelection[1]).displayName,
         playerTag: opponentTag,
         side: 'right',
       },

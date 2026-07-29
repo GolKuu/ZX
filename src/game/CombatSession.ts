@@ -1,4 +1,5 @@
 import type { KeyboardInputSource } from '@/src/input';
+import { getCharacterDefinition } from '@/src/data/characterRoster';
 import {
   FixedStepRunner,
   type CombatEvent,
@@ -110,8 +111,12 @@ export class CombatSession {
     this.ended = true;
     const [first, second] = world.fighters;
     const winner = (first?.health ?? 0) >= (second?.health ?? 0) ? 'P1' : 'P2';
+    const winnerIndex = winner === 'P1' ? 0 : 1;
+    const winnerCharacter = getCharacterDefinition(
+      useHudStore.getState().fighterSelection[winnerIndex],
+    );
     useHudStore.getState().openResult({
-      winner: `${winner} · Roronoa Zoro`,
+      winner: `${winner} · ${winnerCharacter.displayName}`,
       rounds: '1–0',
       maxCombo: this.maxCombo,
       clashes: 0,

@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { requestCombatReset } from '@/src/game/combatRuntime';
 import { useHudStore, type MatchMode } from '@/src/store/hudStore';
 import { useMenuNavigation } from './useMenuNavigation';
 import styles from './ModeMenu.module.css';
@@ -49,11 +48,7 @@ export function ModeMenu() {
   const selected = MODES[menuFocus] ?? MODES[0];
 
   const startMode = useCallback((mode: MatchMode) => {
-    const previousMode = useHudStore.getState().mode;
     selectMode(mode);
-    if (mode !== 'online' && previousMode === mode) {
-      requestCombatReset();
-    }
   }, [selectMode]);
   const confirm = useCallback(() => {
     const mode = MODES[useHudStore.getState().menuFocus];
@@ -110,7 +105,7 @@ export function ModeMenu() {
           <h1>{selected.label}</h1>
           <p>{selected.description}</p>
           <dl>
-            <div><dt>Персонаж</dt><dd>Ророноа Зоро</dd></div>
+            <div><dt>Ростер</dt><dd>2 готовых бойца</dd></div>
             <div><dt>Арена</dt><dd>Null Circle</dd></div>
           </dl>
         </aside>

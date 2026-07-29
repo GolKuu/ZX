@@ -1,5 +1,9 @@
 'use client';
 
+import type {
+  CharacterId,
+  CharacterSelection,
+} from '@/src/data/characterRoster';
 import { Arena } from './Arena';
 import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
@@ -8,8 +12,13 @@ import { ImpactBurst } from './ImpactBurst';
 import { LazyPostEffects } from './LazyPostEffects';
 import { SpeedLines } from './SpeedLines';
 import { VoidWalkerFighter } from './VoidWalkerFighter';
+import { ZoroFighter } from './ZoroFighter';
 
-export function RenderScene() {
+export function RenderScene({
+  fighterSelection,
+}: {
+  readonly fighterSelection: CharacterSelection;
+}) {
   return (
     <>
       <color attach="background" args={['#10071b']} />
@@ -21,12 +30,14 @@ export function RenderScene() {
       <SpeedLines />
       <Arena />
       <CombatGameLoop />
-      <VoidWalkerFighter
+      <SelectedFighter
         auraColor="#5cd8ff"
+        characterId={fighterSelection[0]}
         fighterId="p1"
       />
-      <VoidWalkerFighter
+      <SelectedFighter
         auraColor="#b07cff"
+        characterId={fighterSelection[1]}
         fighterId="p2"
       />
       <ImpactBurst />
@@ -35,4 +46,19 @@ export function RenderScene() {
       <FrameProfiler />
     </>
   );
+}
+
+function SelectedFighter({
+  auraColor,
+  characterId,
+  fighterId,
+}: {
+  readonly auraColor: string;
+  readonly characterId: CharacterId;
+  readonly fighterId: 'p1' | 'p2';
+}) {
+  if (characterId === 'zoro') {
+    return <ZoroFighter auraColor={auraColor} fighterId={fighterId} />;
+  }
+  return <VoidWalkerFighter auraColor={auraColor} fighterId={fighterId} />;
 }
