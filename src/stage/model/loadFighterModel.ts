@@ -76,12 +76,13 @@ const ZONE_KEYWORDS: readonly (readonly [ZoneName, readonly string[]])[] = [
       'visor', 'vanguard',
     ],
   ],
+  // Mixamo's mannequin shells (`Beta_Joints`, `Beta_Surface`, `Beta_HighLimbs`)
+  // are a placeholder *dummy*, not anatomy. Tinting them as skin is what made
+  // the Void Walker read as an undressed art doll; `body` lets the character
+  // palette dress it as the construct it is meant to be. Checked ahead of
+  // `skin` because `Beta_Surface` contains the substring "face".
+  ['body', ['beta', 'mannequin', 'dummy', 'joint', 'limb']],
   ['skin', ['skin', 'body', 'face', 'head', 'hand', 'arm', 'flesh']],
-  // Mixamo's mannequin shells (`Beta_Joints`, `Beta_HighLimbs`) are a
-  // placeholder *dummy*, not anatomy. Tinting them as skin is what made the
-  // Void Walker read as an undressed art doll; falling through to `body` lets
-  // the character palette dress it as the construct it is meant to be.
-  ['body', ['joint', 'limb', 'beta', 'mannequin', 'dummy']],
 ];
 
 function zoneFor(materialName: string, meshName: string): ZoneName {
@@ -136,6 +137,14 @@ export async function loadFighterModel(
   const gltf = await loader.loadAsync(options.url);
   const root = gltf.scene;
   const warnings: string[] = [];
+
+  // --- orientation before anything captures a reference frame ---
+  //
+  // The stock rigs are authored facing −Z; the camera sits at +Z. Left alone,
+  // every fighter played the match with its back to the player, and the pose
+  // tables — which are written in character space, so "+Y turns toward the
+  // opponent" — turned each character away from the one it was fighting.
+  root.rotation.y = Math.PI;
 
   // --- scale before anything reads a world position ---
   const bounds = new Box3().setFromObject(root);

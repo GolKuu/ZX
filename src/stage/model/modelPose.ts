@@ -25,8 +25,13 @@
  * poses are additive and never accumulate drift.
  */
 
-import { Euler, Quaternion, type Bone } from 'three';
-import { captureBoneSpace, relaxArm, rotateInCharacterSpace } from './boneSpace';
+import { Quaternion, type Bone } from 'three';
+import {
+  captureBoneSpace,
+  relaxArm,
+  setPoseMirror,
+  turnJointInCharacterSpace,
+} from './boneSpace';
 import type { FighterSnapshot } from '@/src/sim';
 import { FIXED_SCALE } from '@/src/sim';
 import { combatAnimationProgress } from '../combatAnimationProgress';
@@ -64,11 +69,6 @@ export function captureRestPose(joints: HumanoidJoints): RestPose {
   return { rotations, hipsHeight: joints.hips?.position.y ?? 0 };
 }
 
-// Scratch objects. Allocating inside a 60 Hz loop is the one optimisation
-// that is never premature.
-const scratchEuler = new Euler();
-const scratchQuaternion = new Quaternion();
-
 function reset(joints: HumanoidJoints, rest: RestPose): void {
   for (const name of HUMANOID_JOINTS) {
     const bone = joints[name];
@@ -87,12 +87,7 @@ function turn(
   y: number,
   z: number,
 ): void {
-  const bone = joints[name];
-  if (bone === null) return;
-  if (x === 0 && y === 0 && z === 0) return;
-  scratchEuler.set(x, y, z);
-  scratchQuaternion.setFromEuler(scratchEuler);
-  rotateInCharacterSpace(bone, scratchQuaternion);
+  turnJointInCharacterSpace(joints, name, x, y, z);
 }
 
 function lift(joints: HumanoidJoints, rest: RestPose, offset: number): void {
@@ -115,9 +110,22 @@ export function applyFighterPose(
   /** Per-character choreographed overrides; falls through when absent. */
   choreography?: Readonly<Record<string, AttackPose>>,
 ): void {
+  // Every pose below is authored for a fighter facing right. Facing left is the
+  // same pose mirrored, which keeps both characters turned toward the camera.
+  setPoseMirror(fighter.facing === -1);
   reset(joints, rest);
   lift(joints, rest, 0);
+  poseByState(joints, rest, fighter, time, choreography);
+  setPoseMirror(false);
+}
 
+function poseByState(
+  joints: HumanoidJoints,
+  rest: RestPose,
+  fighter: FighterSnapshot,
+  time: number,
+  choreography?: Readonly<Record<string, AttackPose>>,
+): void {
   if (!fighter.grounded) {
     poseAirborne(joints, rest, fighter);
     return;

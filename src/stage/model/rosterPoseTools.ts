@@ -1,5 +1,4 @@
-import { Euler, Quaternion } from 'three';
-import { rotateInCharacterSpace } from './boneSpace.js';
+import { turnJointInCharacterSpace } from './boneSpace.js';
 import type { HumanoidJointName, HumanoidJoints } from './humanoidBones.js';
 
 export interface PoseRest {
@@ -14,9 +13,6 @@ export type RosterAttackPose = (
   settle: number,
 ) => void;
 
-const scratchEuler = new Euler();
-const scratchQuaternion = new Quaternion();
-
 /** Add an animation rotation in character space. See `boneSpace.ts`. */
 export function turnJoint(
   joints: HumanoidJoints,
@@ -25,11 +21,7 @@ export function turnJoint(
   y: number,
   z: number,
 ): void {
-  const bone = joints[name];
-  if (bone === null || (x === 0 && y === 0 && z === 0)) return;
-  scratchEuler.set(x, y, z);
-  scratchQuaternion.setFromEuler(scratchEuler);
-  rotateInCharacterSpace(bone, scratchQuaternion);
+  turnJointInCharacterSpace(joints, name, x, y, z);
 }
 
 export function liftHips(

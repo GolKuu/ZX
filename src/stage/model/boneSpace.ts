@@ -21,7 +21,8 @@
  *      canonical hang before anything is captured.
  */
 
-import { Quaternion, Vector3, type Bone, type Object3D } from 'three';
+import { Euler, Quaternion, Vector3, type Bone, type Object3D } from 'three';
+import type { HumanoidJointName, HumanoidJoints } from './humanoidBones';
 
 /** Parent orientation in character space, captured from the rest pose. */
 const PARENT_REST = new WeakMap<Bone, Quaternion>();
@@ -29,12 +30,11 @@ const PARENT_REST = new WeakMap<Bone, Quaternion>();
 /** Canonical hang: how far the upper arm sits out from straight down. */
 const ARM_DROP = 0.24;
 
+const scratchEuler = new Euler();
 const scratchRotation = new Quaternion();
 const scratchBasis = new Quaternion();
 const scratchParent = new Quaternion();
 const scratchWhole = new Quaternion();
-const scratchDelta = new Quaternion();
-const scratchRestInverse = new Quaternion();
 const measured = new Vector3();
 const horizontal = new Vector3();
 const target = new Vector3();
@@ -98,38 +98,51 @@ export function rotateInCharacterSpace(
 }
 
 /**
- * Mirror a bone's *animation delta* across the character's XY plane.
+ * Left/right mirror for the fighter facing the other way.
  *
- * Used when the fighter group is turned 180°: the pose should keep its arms on
- * the camera side rather than swinging them behind the body. The reflection has
- * to happen in character space for the same reason the rotations do.
+ * The old approach spun the whole group 180°, which pointed the character's
+ * back at the camera and then tried to rescue the arms with a second
+ * correction. A fighting game mirrors instead: both fighters face the viewer
+ * and turn *into* each other.
+ *
+ * With rotations already in character space the mirror is exact. Reflecting the
+ * plane x = 0 maps an authored rotation (x, y, z) to (x, −y, −z), and the joint
+ * it drives swaps sides.
  */
-export function mirrorDepthDelta(
-  bone: Bone,
-  restRotation: Quaternion,
+let mirrored = false;
+
+const MIRROR_PAIRS: Readonly<Partial<Record<HumanoidJointName, HumanoidJointName>>> = {
+  shoulderL: 'shoulderR', shoulderR: 'shoulderL',
+  upperArmL: 'upperArmR', upperArmR: 'upperArmL',
+  forearmL: 'forearmR', forearmR: 'forearmL',
+  handL: 'handR', handR: 'handL',
+  thighL: 'thighR', thighR: 'thighL',
+  shinL: 'shinR', shinR: 'shinL',
+  footL: 'footR', footR: 'footL',
+};
+
+export function setPoseMirror(enabled: boolean): void {
+  mirrored = enabled;
+}
+
+/**
+ * The one entry point every pose table goes through. Resolves the joint,
+ * applies the mirror when the fighter is facing left, and conjugates the
+ * rotation into the bone's parent space.
+ */
+export function turnJointInCharacterSpace(
+  joints: HumanoidJoints,
+  name: HumanoidJointName,
+  x: number,
+  y: number,
+  z: number,
 ): void {
-  const parentRest = PARENT_REST.get(bone);
-  scratchRestInverse.copy(restRotation).invert();
-  scratchDelta.copy(bone.quaternion).multiply(scratchRestInverse);
-
-  if (parentRest !== undefined) {
-    scratchDelta
-      .premultiply(parentRest)
-      .multiply(scratchParent.copy(parentRest).invert());
-  }
-
-  // Reflecting the plane z = 0 maps an axial rotation (x, y, z) to (−x, −y, z).
-  scratchDelta
-    .set(-scratchDelta.x, -scratchDelta.y, scratchDelta.z, scratchDelta.w)
-    .normalize();
-
-  if (parentRest !== undefined) {
-    scratchDelta
-      .premultiply(scratchParent.copy(parentRest).invert())
-      .multiply(parentRest);
-  }
-
-  bone.quaternion.copy(scratchDelta).multiply(restRotation);
+  if (x === 0 && y === 0 && z === 0) return;
+  const bone = joints[mirrored ? MIRROR_PAIRS[name] ?? name : name];
+  if (bone === null) return;
+  scratchEuler.set(x, mirrored ? -y : y, mirrored ? -z : z);
+  scratchRotation.setFromEuler(scratchEuler);
+  rotateInCharacterSpace(bone, scratchRotation);
 }
 
 /**

@@ -1,20 +1,9 @@
-import { Euler, Quaternion, type Bone } from 'three';
-import { mirrorDepthDelta, rotateInCharacterSpace } from './boneSpace';
+import { Euler, Quaternion } from 'three';
+import { rotateInCharacterSpace } from './boneSpace';
 import {
   type HumanoidJointName,
   type HumanoidJoints,
 } from './humanoidBones';
-
-const ARM_JOINTS: readonly HumanoidJointName[] = [
-  'shoulderL',
-  'upperArmL',
-  'forearmL',
-  'handL',
-  'shoulderR',
-  'upperArmR',
-  'forearmR',
-  'handR',
-];
 
 const SHOULDERS: readonly HumanoidJointName[] = ['shoulderL', 'shoulderR'];
 const CAMERA_BIAS = 0.14;
@@ -23,29 +12,20 @@ const scratchEuler = new Euler();
 const scratchBias = new Quaternion();
 
 /**
- * Keeps both arm chains on the camera side of the torso.
+ * Rolls both shoulders a few degrees toward the viewer.
  *
- * The second fighter is turned 180° as one group. Without this correction the
- * same local arm pose also flips behind the body. Mirroring only the arm
- * rotation deltas preserves the attack silhouette while the small shoulder
- * bias gives elbows and hands enough depth separation to remain readable.
+ * Fighters are posed side-on to each other but read to a camera in front of
+ * them, so elbows and hands sit almost in the torso's own depth plane. The bias
+ * buys the arm chain enough separation to stay legible without changing the
+ * pose the frame data authored.
+ *
+ * This used to also mirror every arm delta, because the second fighter was spun
+ * 180° and its arms ended up behind its back. Poses are mirrored properly now
+ * (`boneSpace.setPoseMirror`), so only the depth bias is left — and it applies
+ * to both fighters identically, since a left/right mirror leaves forward alone.
  */
-export function applyArmSilhouette(
-  joints: HumanoidJoints,
-  restRotations: ReadonlyMap<Bone, Quaternion>,
-  facing: -1 | 1,
-): void {
-  if (facing === -1) {
-    for (const name of ARM_JOINTS) {
-      const bone = joints[name];
-      if (bone === null) continue;
-      const rest = restRotations.get(bone);
-      if (rest === undefined) continue;
-      mirrorDepthDelta(bone, rest);
-    }
-  }
-
-  scratchEuler.set(-CAMERA_BIAS * facing, 0, 0);
+export function applyArmSilhouette(joints: HumanoidJoints): void {
+  scratchEuler.set(-CAMERA_BIAS, 0, 0);
   scratchBias.setFromEuler(scratchEuler);
   for (const name of SHOULDERS) {
     const bone = joints[name];

@@ -140,7 +140,6 @@ export function ModelFighter({
       + (fighter.position.x - fighter.previousPosition.x) * alpha
     ) / FIXED_SCALE;
     group.position.y = fighter.position.y / FIXED_SCALE;
-    group.rotation.y = fighter.facing === 1 ? 0 : Math.PI;
 
     applyFighterPose(
       loaded.joints,
@@ -149,11 +148,7 @@ export function ModelFighter({
       clock.elapsedTime,
       choreography,
     );
-    applyArmSilhouette(
-      loaded.joints,
-      loaded.rest.rotations,
-      fighter.facing,
-    );
+    applyArmSilhouette(loaded.joints);
 
     const opponent = readCombatFighter(opponentId);
     const self = { x: group.position.x, z: group.position.z };
