@@ -6,7 +6,11 @@ import { CombatSession } from '@/src/game/CombatSession';
 import {
   readCombatResetVersion,
 } from '@/src/game/combatRuntime';
-import { KADE_COMMANDS, KeyboardInputSource } from '@/src/input';
+import {
+  KADE_COMMANDS,
+  KeyboardInputSource,
+  PLAYER_TWO_BINDINGS,
+} from '@/src/input';
 import { useControlStore } from '@/src/store/controlStore';
 import { useHudStore } from '@/src/store/hudStore';
 
@@ -18,13 +22,25 @@ export function CombatGameLoop() {
     }),
     [],
   );
-  const session = useMemo(() => new CombatSession(keyboard), [keyboard]);
+  const secondKeyboard = useMemo(
+    () => new KeyboardInputSource({
+      bindings: PLAYER_TWO_BINDINGS,
+      commands: KADE_COMMANDS,
+    }),
+    [],
+  );
+  const session = useMemo(
+    () => new CombatSession(keyboard, secondKeyboard),
+    [keyboard, secondKeyboard],
+  );
   const handledReset = useRef(readCombatResetVersion());
+  const handledMode = useRef(useHudStore.getState().mode);
 
   useEffect(() => {
     useControlStore.getState().hydrate();
     keyboard.updateBindings(useControlStore.getState().bindings);
     keyboard.attach(window);
+    secondKeyboard.attach(window);
     const unsubscribe = useControlStore.subscribe((state, previous) => {
       if (state.bindings !== previous.bindings) {
         keyboard.updateBindings(state.bindings);
@@ -33,8 +49,9 @@ export function CombatGameLoop() {
     return () => {
       unsubscribe();
       keyboard.detach(window);
+      secondKeyboard.detach(window);
     };
-  }, [keyboard]);
+  }, [keyboard, secondKeyboard]);
 
   useFrame((_, delta) => {
     const resetVersion = readCombatResetVersion();
@@ -43,7 +60,12 @@ export function CombatGameLoop() {
       useHudStore.getState().resetPreview();
       session.reset();
     }
-    if (useHudStore.getState().screen === 'fight') {
+    const hud = useHudStore.getState();
+    if (hud.mode !== handledMode.current) {
+      handledMode.current = hud.mode;
+      if (hud.mode !== null && hud.mode !== 'online') session.reset();
+    }
+    if (hud.screen === 'fight') {
       session.advance(Math.min(delta, 0.1) * 1_000);
     }
   }, -100);

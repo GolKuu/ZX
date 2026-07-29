@@ -19,7 +19,7 @@ const ROUND_FRAMES = 99 * 60;
 export class CombatSession {
   private engine = createEngine();
   private ai = createAi();
-  private readonly hud = createHudBridge();
+  private hud = createHudBridge();
   private readonly runner = new FixedStepRunner(() => this.tick());
   private lastEvents: readonly CombatEvent[] = [];
   private timerFrames = ROUND_FRAMES;
@@ -27,7 +27,10 @@ export class CombatSession {
   private comboHits = 0;
   private maxCombo = 0;
 
-  public constructor(private readonly keyboard: KeyboardInputSource) {
+  public constructor(
+    private readonly playerOne: KeyboardInputSource,
+    private readonly playerTwo: KeyboardInputSource,
+  ) {
     this.publishInitialState();
   }
 
@@ -39,6 +42,7 @@ export class CombatSession {
   public reset(): void {
     this.engine = createEngine();
     this.ai = createAi();
+    this.hud = createHudBridge();
     this.runner.reset();
     this.hud.reset();
     this.lastEvents = [];
@@ -53,10 +57,13 @@ export class CombatSession {
     if (this.ended) return;
     const before = this.engine.read();
     const player = fighter(before, 'p1');
-    const aiDecision = this.ai.decide(before, this.lastEvents);
+    const mode = useHudStore.getState().mode;
+    const opponentInput = mode === 'local'
+      ? this.playerTwo.sample(fighter(before, 'p2').facing)
+      : this.ai.decide(before, this.lastEvents).input;
     const result = this.engine.tick({
-      p1: this.keyboard.sample(player.facing),
-      p2: aiDecision.input,
+      p1: this.playerOne.sample(player.facing),
+      p2: opponentInput,
     });
     this.timerFrames = Math.max(0, this.timerFrames - 1);
     this.lastEvents = result.events;
@@ -147,10 +154,11 @@ function fighterDefinition(id: string, team: number, x: number, facing: -1 | 1) 
 }
 
 function createHudBridge(): HudBridge {
+  const opponentTag = useHudStore.getState().mode === 'ai' ? 'CPU' : 'P2';
   return new HudBridge(
     [
       { id: 'p1', displayName: 'Roronoa Zoro', playerTag: 'P1', side: 'left' },
-      { id: 'p2', displayName: 'Roronoa Zoro', playerTag: 'P2', side: 'right' },
+      { id: 'p2', displayName: 'Roronoa Zoro', playerTag: opponentTag, side: 'right' },
     ],
     (snapshot) => useHudStore.getState().publishSnapshot(snapshot),
   );
