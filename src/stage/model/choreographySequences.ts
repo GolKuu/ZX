@@ -22,9 +22,9 @@ import {
   liftHips,
   turnJoint as turn,
   type PoseRest,
-} from './rosterPoseTools';
-import type { Choreography } from './choreography';
-import type { HumanoidJoints } from './humanoidBones';
+} from './rosterPoseTools.js';
+import type { Choreography } from './choreography.js';
+import type { HumanoidJoints } from './humanoidBones.js';
 
 /** Every sequence in this file poses a resolved humanoid rig. */
 export type Sequence = Choreography<HumanoidJoints, PoseRest>;

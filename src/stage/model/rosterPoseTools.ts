@@ -1,5 +1,5 @@
 import { Euler, Quaternion } from 'three';
-import type { HumanoidJointName, HumanoidJoints } from './humanoidBones';
+import type { HumanoidJointName, HumanoidJoints } from './humanoidBones.js';
 
 export interface PoseRest {
   readonly hipsHeight: number;
