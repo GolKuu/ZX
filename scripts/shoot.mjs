@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* global document, requestAnimationFrame */
 // Render-critique harness. Drives the running dev server with a real Chrome so
 // the WebGL context gets the machine's GPU, walks the menu flow into a fight
 // and writes PNGs the art-direction pass can be judged against.

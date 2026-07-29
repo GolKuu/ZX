@@ -9,12 +9,13 @@ import type { CommandRow } from './command.js';
  * command rows precede the normals that use those same buttons.
  */
 export const GLITCH_COMMANDS: readonly CommandRow[] = [
+  // DP must come before QCF because the longer motion contains the shorter one.
+  { moveId: GLITCH_MOVE_IDS.desyncJump, motion: 'dp', button: 'lp', stance: 'any' },
+  { moveId: GLITCH_MOVE_IDS.desyncJump, motion: 'dp', button: 'hp', stance: 'any' },
   { moveId: GLITCH_MOVE_IDS.packetLoss, motion: 'qcf', button: 'lp', stance: 'any' },
   { moveId: GLITCH_MOVE_IDS.packetLoss, motion: 'qcf', button: 'hp', stance: 'any' },
   { moveId: GLITCH_MOVE_IDS.corruptedZone, motion: 'qcb', button: 'lp', stance: 'any' },
   { moveId: GLITCH_MOVE_IDS.corruptedZone, motion: 'qcb', button: 'hp', stance: 'any' },
-  { moveId: GLITCH_MOVE_IDS.desyncJump, motion: 'dp', button: 'lp', stance: 'any' },
-  { moveId: GLITCH_MOVE_IDS.desyncJump, motion: 'dp', button: 'hp', stance: 'any' },
   { moveId: GLITCH_MOVE_IDS.lp, motion: 'none', button: 'lp', stance: 'any' },
   { moveId: GLITCH_MOVE_IDS.hp, motion: 'none', button: 'hp', stance: 'any' },
   { moveId: GLITCH_MOVE_IDS.lk, motion: 'none', button: 'lk', stance: 'any' },

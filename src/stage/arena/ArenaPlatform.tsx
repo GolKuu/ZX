@@ -47,6 +47,8 @@ export function ArenaPlatform({ stoneMaterial }: ArenaPlatformProps) {
   );
 
   useFrame(({ clock }) => {
+    // Three.js uniforms are intentionally mutable render state.
+    // eslint-disable-next-line react-hooks/immutability
     floorMaterial.arena.uTime.value = clock.elapsedTime;
   });
 

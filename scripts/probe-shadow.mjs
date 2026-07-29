@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* global window */
 // Isolates the shadow pass: shoots the same frame with the composite chain on
 // and off, and reports what the shadow camera actually resolved to.
 

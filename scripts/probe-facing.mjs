@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* global window */
 // One-off diagnostic: which way is each fighter actually pointing?
 //
 // Derives facing from the skeleton itself rather than from any bone's local

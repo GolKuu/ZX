@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* global window */
 // Decisive shadow test: at runtime, bleach the floor, kill its emissive, and
 // move the key light straight overhead. If nothing darkens under the fighters
 // after that, the casters are not reaching the shadow pass at all.

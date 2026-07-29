@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* global window */
 // One-off diagnostic: walks into a fight, then reports what the renderer and
 // scene graph actually believe about shadows, lights and materials.
 
