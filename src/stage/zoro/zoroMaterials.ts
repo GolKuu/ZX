@@ -37,6 +37,16 @@ export function createZoroMaterials(
     sash: toon('#8f2850', gradientMap, '#5a1d63', auraColor),
     skin: toon('#d79c71', gradientMap, '#9c5a70', auraColor, 0.7, 0.62),
     trousers: toon('#18231d', gradientMap, '#1b3352', auraColor, 0.8),
+
+    // --- eyes ---
+    // Unlit on purpose. Eyes are drawn elements, not surfaces: they take no
+    // ramp, no rim and no shadow, so the face keeps the same read at every
+    // light angle and never loses the gaze in a dark stage.
+    eyeWhite: unlit('#f7fbff'),
+    iris: unlit('#2f9c8a'),
+    pupil: unlit('#0d1418'),
+    catchlight: unlit('#ffffff'),
+    lineArt: unlit('#241a1e'),
   };
 }
 
