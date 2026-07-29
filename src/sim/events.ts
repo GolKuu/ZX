@@ -1,0 +1,54 @@
+import type { FixedVector } from './math.js';
+import type { MovePhase } from './frame-data.js';
+
+interface CombatEventBase {
+  readonly frame: number;
+}
+
+export interface MoveStartedEvent extends CombatEventBase {
+  readonly type: 'moveStarted';
+  readonly fighterId: string;
+  readonly moveId: string;
+}
+
+export interface MoveEndedEvent extends CombatEventBase {
+  readonly type: 'moveEnded';
+  readonly fighterId: string;
+  readonly moveId: string;
+}
+
+export interface HitEvent extends CombatEventBase {
+  readonly type: 'hit';
+  readonly attackerId: string;
+  readonly defenderId: string;
+  readonly moveId: string;
+  readonly hitId: string;
+  readonly damage: number;
+  readonly position: FixedVector;
+}
+
+export interface BounceEvent extends CombatEventBase {
+  readonly type: 'wallBounce' | 'groundBounce';
+  readonly fighterId: string;
+  readonly remaining: number;
+}
+
+export type CombatEvent =
+  | MoveStartedEvent
+  | MoveEndedEvent
+  | HitEvent
+  | BounceEvent;
+
+export interface FighterDebugFrame {
+  readonly fighterId: string;
+  readonly moveId: string | null;
+  readonly moveFrame: number | null;
+  readonly phase: MovePhase | null;
+  readonly hitboxes: readonly WorldBox[];
+  readonly hurtboxes: readonly WorldBox[];
+}
+
+export interface WorldBox {
+  readonly center: FixedVector;
+  readonly halfSize: FixedVector;
+}
