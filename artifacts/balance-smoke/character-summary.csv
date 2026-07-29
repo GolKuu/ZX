@@ -1,0 +1,3 @@
+character,matches,wins,win_rate,average_damage,average_combo_length,max_combo_length,auto_combo_per_match,blocks_per_match,perfect_blocks_per_match,combo_escape_per_match,combo_break_per_match,momentum_reversal_per_match,specials_per_match
+granite,6,4,66.667,178,3.667,5,0.333,3,0,0.333,3,0.667,3
+shira,6,2,33.333,130,4.667,9,2,9,0.667,2.333,3.667,1.333,3

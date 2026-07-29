@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-28T09:55:59.640Z",
+  "baseSeed": 3249283110,
+  "difficulty": "HARD",
+  "matchesPerPair": 2,
+  "totalMatches": 6,
+  "sideSwitching": true,
+  "fixedSeeds": true,
+  "characterIds": [
+    "granite",
+    "shira"
+  ],
+  "targets": {
+    "neutral": [
+      48,
+      52
+    ],
+    "advantage": [
+      52,
+      57
+    ],
+    "pairFloor": [
+      40,
+      60
+    ],
+    "character": [
+      47,
+      53
+    ]
+  },
+  "pairs": [
+    {
+      "characterA": "granite",
+      "characterB": "granite",
+      "relationA": "NEUTRAL",
+      "matches": 2,
+      "sideOneMatches": 1,
+      "sideTwoMatches": 1,
+      "winsA": 2,
+      "winsB": 0,
+      "trackedWinRate": 100,
+      "advantageCharacter": null,
+      "advantageWinRate": null,
+      "averageDurationSeconds": 23.283,
+      "metricsA": {
+        "averageDamage": 264,
+        "averageComboLength": 5,
+        "maxComboLength": 5,
+        "autoCombosPerMatch": 0,
+        "blocksPerMatch": 5,
+        "perfectBlocksPerMatch": 0,
+        "comboEscapesPerMatch": 0,
+        "comboBreaksPerMatch": 2,
+        "momentumReversalsPerMatch": 0,
+        "specialMovesPerMatch": 5
+      },
+      "metricsB": {
+        "averageDamage": 86,
+        "averageComboLength": 2,
+        "maxComboLength": 2,
+        "autoCombosPerMatch": 0,
+        "blocksPerMatch": 1,
+        "perfectBlocksPerMatch": 0,
+        "comboEscapesPerMatch": 0,
+        "comboBreaksPerMatch": 3,
+        "momentumReversalsPerMatch": 2,
+        "specialMovesPerMatch": 0
+      }
+    },
+    {
+      "characterA": "granite",
+      "characterB": "shira",
+      "relationA": "DISADVANTAGE",
+      "matches": 2,
+      "sideOneMatches": 1,
+      "sideTwoMatches": 1,
+      "winsA": 2,
+      "winsB": 0,
+      "trackedWinRate": 100,
+      "advantageCharacter": "shira",
+      "advantageWinRate": 0,
+      "averageDurationSeconds": 19.75,
+      "metricsA": {
+        "averageDamage": 184,
+        "averageComboLength": 4,
+        "maxComboLength": 4,
+        "autoCombosPerMatch": 1,
+        "blocksPerMatch": 3,
+        "perfectBlocksPerMatch": 0,
+        "comboEscapesPerMatch": 1,
+        "comboBreaksPerMatch": 4,
+        "momentumReversalsPerMatch": 0,
+        "specialMovesPerMatch": 4
+      },
+      "metricsB": {
+        "averageDamage": 114,
+        "averageComboLength": 3,
+        "maxComboLength": 3,
+        "autoCombosPerMatch": 1,
+        "blocksPerMatch": 8,
+        "perfectBlocksPerMatch": 0,
+        "comboEscapesPerMatch": 0,
+        "comboBreaksPerMatch": 3,
+        "momentumReversalsPerMatch": 0,
+        "specialMovesPerMatch": 2
+      }
+    },
+    {
+      "characterA": "shira",
+      "characterB": "shira",
+      "relationA": "NEUTRAL",
+      "matches": 2,
+      "sideOneMatches": 1,
+      "sideTwoMatches": 1,
+      "winsA": 2,
+      "winsB": 0,
+      "trackedWinRate": 100,
+      "advantageCharacter": null,
+      "advantageWinRate": null,
+      "averageDurationSeconds": 23.117,
+      "metricsA": {
+        "averageDamage": 184,
+        "averageComboLength": 9,
+        "maxComboLength": 9,
+        "autoCombosPerMatch": 2,
+        "blocksPerMatch": 12,
+        "perfectBlocksPerMatch": 1,
+        "comboEscapesPerMatch": 0,
+        "comboBreaksPerMatch": 4,
+        "momentumReversalsPerMatch": 2,
+        "specialMovesPerMatch": 3
+      },
+      "metricsB": {
+        "averageDamage": 92,
+        "averageComboLength": 2,
+        "maxComboLength": 2,
+        "autoCombosPerMatch": 3,
+        "blocksPerMatch": 7,
+        "perfectBlocksPerMatch": 1,
+        "comboEscapesPerMatch": 7,
+        "comboBreaksPerMatch": 4,
+        "momentumReversalsPerMatch": 2,
+        "specialMovesPerMatch": 4
+      }
+    }
+  ],
+  "characters": [
+    {
+      "character": "granite",
+      "matches": 6,
+      "wins": 4,
+      "winRate": 66.667,
+      "metrics": {
+        "averageDamage": 178,
+        "averageComboLength": 3.667,
+        "maxComboLength": 5,
+        "autoCombosPerMatch": 0.333,
+        "blocksPerMatch": 3,
+        "perfectBlocksPerMatch": 0,
+        "comboEscapesPerMatch": 0.333,
+        "comboBreaksPerMatch": 3,
+        "momentumReversalsPerMatch": 0.667,
+        "specialMovesPerMatch": 3
+      }
+    },
+    {
+      "character": "shira",
+      "matches": 6,
+      "wins": 2,
+      "winRate": 33.333,
+      "metrics": {
+        "averageDamage": 130,
+        "averageComboLength": 4.667,
+        "maxComboLength": 9,
+        "autoCombosPerMatch": 2,
+        "blocksPerMatch": 9,
+        "perfectBlocksPerMatch": 0.667,
+        "comboEscapesPerMatch": 2.333,
+        "comboBreaksPerMatch": 3.667,
+        "momentumReversalsPerMatch": 1.333,
+        "specialMovesPerMatch": 3
+      }
+    }
+  ],
+  "violations": [
+    {
+      "scope": "pair",
+      "id": "granite-vs-granite",
+      "target": "48–52%",
+      "actual": 100,
+      "message": "Нейтральный матч вне 48–52%."
+    },
+    {
+      "scope": "pair",
+      "id": "granite-vs-granite",
+      "target": "40–60%",
+      "actual": 100,
+      "message": "Пара стабильно выходит за пределы 60–40%."
+    },
+    {
+      "scope": "pair",
+      "id": "granite-vs-shira",
+      "target": "52–57%",
+      "actual": 0,
+      "message": "Матч с преимуществом вне 52–57%."
+    },
+    {
+      "scope": "pair",
+      "id": "granite-vs-shira",
+      "target": "40–60%",
+      "actual": 100,
+      "message": "Пара стабильно выходит за пределы 60–40%."
+    },
+    {
+      "scope": "pair",
+      "id": "shira-vs-shira",
+      "target": "48–52%",
+      "actual": 100,
+      "message": "Нейтральный матч вне 48–52%."
+    },
+    {
+      "scope": "pair",
+      "id": "shira-vs-shira",
+      "target": "40–60%",
+      "actual": 100,
+      "message": "Пара стабильно выходит за пределы 60–40%."
+    },
+    {
+      "scope": "character",
+      "id": "granite",
+      "target": "47–53%",
+      "actual": 66.667,
+      "message": "Общий win rate персонажа вне 47–53%."
+    },
+    {
+      "scope": "character",
+      "id": "shira",
+      "target": "47–53%",
+      "actual": 33.333,
+      "message": "Общий win rate персонажа вне 47–53%."
+    }
+  ]
+}
