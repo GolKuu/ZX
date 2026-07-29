@@ -1,0 +1,535 @@
+/**
+ * Our own animation, applied to somebody else's skeleton.
+ *
+ * The model is bought or downloaded; the motion is not. Nothing here plays a
+ * clip that shipped inside the GLB — every pose below is authored against the
+ * simulation's frame data (`src/data/combat-moves.ts`), which is what keeps
+ * rule R4 true: the simulation owns the timeline and animation reads it. A
+ * baked clip would own its own timeline and drift out of the frame data on the
+ * first balance change.
+ *
+ * ## How the rotations are applied
+ *
+ * Rigs disagree about bone axes. Mixamo's arm bones run down +Y with an
+ * arbitrary roll; another vendor's run down +X. Rotating in *bone-local* space
+ * therefore means something different in every file, which is why naive
+ * procedural posing produces limbs that fold sideways on one model and
+ * correctly on another.
+ *
+ * So every rotation here is applied in **parent space** (`premultiply`), not
+ * local space. Near the root of a humanoid, parent space is close to character
+ * space in any rig, so X reads as forward/back swing, Y as twist and Z as
+ * raise-to-the-side, on every model. It is not a true retarget — a full one
+ * needs per-bone reference frames — but it is stable across rigs and it is what
+ * makes "swap the GLB, change nothing else" actually hold.
+ *
+ * Each frame every joint is reset to its captured rest orientation first, so
+ * poses are additive and never accumulate drift.
+ */
+
+import { Euler, Quaternion, type Bone } from 'three';
+import type { FighterSnapshot } from '@/src/sim';
+import { FIXED_SCALE } from '@/src/sim';
+import { combatAnimationProgress } from '../combatAnimationProgress';
+import {
+  HUMANOID_JOINTS,
+  type HumanoidJointName,
+  type HumanoidJoints,
+} from './humanoidBones';
+
+/** Phase boundaries, matching `combatAnimationProgress`. */
+const WINDUP_END = 0.34;
+const ACTIVE_END = 0.58;
+
+export interface RestPose {
+  readonly rotations: ReadonlyMap<Bone, Quaternion>;
+  readonly hipsHeight: number;
+}
+
+export function captureRestPose(joints: HumanoidJoints): RestPose {
+  const rotations = new Map<Bone, Quaternion>();
+  for (const name of HUMANOID_JOINTS) {
+    const bone = joints[name];
+    if (bone === null) continue;
+    rotations.set(bone, bone.quaternion.clone());
+  }
+  return { rotations, hipsHeight: joints.hips?.position.y ?? 0 };
+}
+
+// Scratch objects. Allocating inside a 60 Hz loop is the one optimisation
+// that is never premature.
+const scratchEuler = new Euler();
+const scratchQuaternion = new Quaternion();
+
+function reset(joints: HumanoidJoints, rest: RestPose): void {
+  for (const name of HUMANOID_JOINTS) {
+    const bone = joints[name];
+    if (bone === null) continue;
+    const restRotation = rest.rotations.get(bone);
+    if (restRotation === undefined) continue;
+    bone.quaternion.copy(restRotation);
+  }
+}
+
+/** Additive rotation in parent space. See the module note. */
+function turn(
+  joints: HumanoidJoints,
+  name: HumanoidJointName,
+  x: number,
+  y: number,
+  z: number,
+): void {
+  const bone = joints[name];
+  if (bone === null) return;
+  if (x === 0 && y === 0 && z === 0) return;
+  scratchEuler.set(x, y, z);
+  scratchQuaternion.setFromEuler(scratchEuler);
+  bone.quaternion.premultiply(scratchQuaternion);
+}
+
+function lift(joints: HumanoidJoints, rest: RestPose, offset: number): void {
+  const hips = joints.hips;
+  if (hips === null) return;
+  hips.position.y = rest.hipsHeight + offset;
+}
+
+/**
+ * Drive one fighter for one rendered frame.
+ *
+ * `time` is wall-clock seconds and is used only for the idle texture; every
+ * pose that matters to gameplay is a pure function of the simulation state.
+ */
+export function applyFighterPose(
+  joints: HumanoidJoints,
+  rest: RestPose,
+  fighter: FighterSnapshot,
+  time: number,
+): void {
+  reset(joints, rest);
+  lift(joints, rest, 0);
+
+  if (!fighter.grounded) {
+    poseAirborne(joints, rest, fighter);
+    return;
+  }
+
+  if (fighter.action !== null) {
+    const progress = combatAnimationProgress(
+      fighter.action.moveId,
+      fighter.action.frame,
+    );
+    poseAttack(joints, rest, fighter.action.moveId, progress, fighter.facing);
+    return;
+  }
+
+  if (fighter.hitstun > 0) {
+    poseHitstun(joints, rest, fighter);
+    return;
+  }
+
+  if (fighter.guarding) {
+    poseGuard(joints, time);
+    return;
+  }
+
+  poseLocomotion(joints, fighter, time);
+}
+
+/* ------------------------------------------------------------------ */
+/* Neutral                                                             */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Idle is stepped in feel rather than smooth: the breath curve is shallow and
+ * slow, and the arms carry a slight counter-phase so the character never looks
+ * like a single sine wave (VIS-CCU-800 §8.2).
+ */
+function poseLocomotion(
+  joints: HumanoidJoints,
+  fighter: FighterSnapshot,
+  time: number,
+): void {
+  const speed = Math.abs(fighter.velocity.x) / FIXED_SCALE;
+  const moving = Math.min(1, speed / 3.5);
+  const breath = Math.sin(time * 2.2);
+
+  // Fighting stance: side-on, knees bent, guard hand forward. This is the
+  // read the whole match is spent looking at, so it gets the most attention.
+  turn(joints, 'hips', 0.06, 0.34, 0);
+  turn(joints, 'spine', -0.04 + breath * 0.012, -0.12, 0);
+  turn(joints, 'chest', 0.02 + breath * 0.016, -0.1, 0);
+  turn(joints, 'neck', 0.02, -0.12, 0);
+  turn(joints, 'head', -0.04, -0.1, 0);
+
+  // Lead arm high and forward, rear arm tucked at the ribs.
+  turn(joints, 'shoulderL', 0, 0, -0.12);
+  turn(joints, 'upperArmL', -0.62, 0.18, 0.32 + breath * 0.02);
+  turn(joints, 'forearmL', -1.15, 0, 0);
+  turn(joints, 'handL', 0, 0, -0.2);
+
+  turn(joints, 'shoulderR', 0, 0, 0.1);
+  turn(joints, 'upperArmR', -0.34, -0.14, -0.46 + breath * 0.02);
+  turn(joints, 'forearmR', -1.42, 0, 0);
+  turn(joints, 'handR', 0, 0, 0.2);
+
+  // Stance legs, widened and bent.
+  turn(joints, 'thighL', -0.2, 0.1, 0.12);
+  turn(joints, 'shinL', 0.34, 0, 0);
+  turn(joints, 'footL', -0.14, 0, 0);
+
+  turn(joints, 'thighR', 0.16, -0.12, -0.14);
+  turn(joints, 'shinR', 0.3, 0, 0);
+  turn(joints, 'footR', -0.12, 0, 0);
+
+  if (moving < 0.02) return;
+
+  // Walk: legs counter-swing, torso counter-rotates against the hips. A step
+  // cycle that does not counter-rotate the shoulders reads as a shuffle.
+  const cycle = time * 7.4;
+  const swing = Math.sin(cycle) * moving;
+  const lead = fighter.velocity.x >= 0 ? 1 : -1;
+
+  turn(joints, 'thighL', swing * 0.52 * lead, 0, 0);
+  turn(joints, 'shinL', Math.max(0, -swing * lead) * 0.6, 0, 0);
+  turn(joints, 'thighR', -swing * 0.52 * lead, 0, 0);
+  turn(joints, 'shinR', Math.max(0, swing * lead) * 0.6, 0, 0);
+
+  turn(joints, 'hips', 0, 0, swing * 0.05);
+  turn(joints, 'chest', 0, -swing * 0.12 * lead, 0);
+  turn(joints, 'upperArmL', -swing * 0.18 * lead, 0, 0);
+  turn(joints, 'upperArmR', swing * 0.18 * lead, 0, 0);
+}
+
+function poseGuard(joints: HumanoidJoints, time: number): void {
+  const shake = Math.sin(time * 26) * 0.012;
+
+  // Both arms in tight, shoulders raised, chin down, weight back. Guard has to
+  // read as a distinct silhouette from idle at a glance — that is a gameplay
+  // requirement, not a style one.
+  turn(joints, 'hips', 0.1, 0.42, 0);
+  turn(joints, 'spine', 0.14, -0.16, 0);
+  turn(joints, 'chest', 0.12, -0.12, 0);
+  turn(joints, 'neck', 0.16, 0, 0);
+  turn(joints, 'head', 0.1, -0.08, 0);
+
+  turn(joints, 'shoulderL', 0, 0, -0.3);
+  turn(joints, 'upperArmL', -1.28 + shake, 0.3, 0.44);
+  turn(joints, 'forearmL', -1.72, 0, 0);
+  turn(joints, 'shoulderR', 0, 0, 0.28);
+  turn(joints, 'upperArmR', -1.2 + shake, -0.26, -0.5);
+  turn(joints, 'forearmR', -1.8, 0, 0);
+
+  turn(joints, 'thighL', -0.3, 0.1, 0.14);
+  turn(joints, 'shinL', 0.5, 0, 0);
+  turn(joints, 'thighR', 0.2, -0.12, -0.16);
+  turn(joints, 'shinR', 0.46, 0, 0);
+}
+
+function poseHitstun(
+  joints: HumanoidJoints,
+  rest: RestPose,
+  fighter: FighterSnapshot,
+): void {
+  // Decays over the stun so recovery is visible rather than a snap back.
+  const force = Math.min(1, fighter.hitstun / 14);
+
+  turn(joints, 'hips', -0.16 * force, 0.3, 0);
+  turn(joints, 'spine', -0.34 * force, -0.1, 0);
+  turn(joints, 'chest', -0.3 * force, 0, 0);
+  turn(joints, 'neck', -0.36 * force, 0, 0);
+  turn(joints, 'head', -0.42 * force, 0.1 * force, 0);
+
+  // Arms go slack and trail the torso — the single clearest signal that the
+  // character is not in control.
+  turn(joints, 'shoulderL', 0, 0, -0.2 * force);
+  turn(joints, 'upperArmL', 0.5 * force, 0.2, 0.6 * force);
+  turn(joints, 'forearmL', -0.5, 0, 0);
+  turn(joints, 'shoulderR', 0, 0, 0.2 * force);
+  turn(joints, 'upperArmR', 0.44 * force, -0.2, -0.64 * force);
+  turn(joints, 'forearmR', -0.44, 0, 0);
+
+  turn(joints, 'thighL', 0.22 * force, 0, 0.1);
+  turn(joints, 'shinL', 0.3, 0, 0);
+  turn(joints, 'thighR', -0.1 * force, 0, -0.12);
+  turn(joints, 'shinR', 0.42, 0, 0);
+
+  lift(joints, rest, -0.05 * force);
+}
+
+function poseAirborne(
+  joints: HumanoidJoints,
+  rest: RestPose,
+  fighter: FighterSnapshot,
+): void {
+  const rising = fighter.velocity.y > 0;
+  const tuck = rising ? 1 : 0.45;
+
+  turn(joints, 'hips', 0.12 * tuck, 0.3, 0);
+  turn(joints, 'spine', 0.2 * tuck, -0.1, 0);
+  turn(joints, 'chest', 0.14 * tuck, 0, 0);
+
+  turn(joints, 'upperArmL', -0.9, 0.24, 0.5);
+  turn(joints, 'forearmL', -1.3, 0, 0);
+  turn(joints, 'upperArmR', -0.7, -0.22, -0.56);
+  turn(joints, 'forearmR', -1.1, 0, 0);
+
+  // Knees up on the rise, legs reaching down on the fall. Reading the arc off
+  // the pose is what lets a player time an anti-air.
+  turn(joints, 'thighL', -1.1 * tuck, 0.08, 0.14);
+  turn(joints, 'shinL', 1.5 * tuck, 0, 0);
+  turn(joints, 'thighR', -0.7 * tuck, -0.08, -0.16);
+  turn(joints, 'shinR', 1.1 * tuck, 0, 0);
+
+  lift(joints, rest, rising ? -0.04 : 0.02);
+}
+
+/* ------------------------------------------------------------------ */
+/* Attacks                                                             */
+/* ------------------------------------------------------------------ */
+
+type AttackPose = (
+  joints: HumanoidJoints,
+  rest: RestPose,
+  windup: number,
+  strike: number,
+  settle: number,
+) => void;
+
+/**
+ * Splits `combatAnimationProgress` into the three beats the pose functions
+ * want, each normalised to 0..1:
+ *
+ *   windup  compression before the extreme
+ *   strike  the extreme itself — this is the frame that sells the hit
+ *   settle  overshoot and recovery
+ */
+function beats(progress: number): [number, number, number] {
+  const windup = Math.min(1, progress / WINDUP_END);
+  const strike = progress < WINDUP_END
+    ? 0
+    : Math.min(1, (progress - WINDUP_END) / (ACTIVE_END - WINDUP_END));
+  const settle = progress < ACTIVE_END
+    ? 0
+    : Math.min(1, (progress - ACTIVE_END) / (1 - ACTIVE_END));
+  return [windup, strike, settle];
+}
+
+function poseAttack(
+  joints: HumanoidJoints,
+  rest: RestPose,
+  moveId: string,
+  progress: number,
+  facing: -1 | 1,
+): void {
+  const pose = ATTACKS[moveId] ?? straightPunch;
+  const [windup, strike, settle] = beats(progress);
+  pose(joints, rest, windup, strike, settle);
+  void facing;
+}
+
+/**
+ * The extreme is over-extended and the recovery pulls back past neutral. An
+ * attack that returns directly to neutral reads as an animation stopping
+ * rather than a body recovering (VIS-CCU-800 §8.3).
+ */
+function straightPunch(
+  joints: HumanoidJoints,
+  _rest: RestPose,
+  windup: number,
+  strike: number,
+  settle: number,
+): void {
+  const coil = windup * (1 - strike);
+  const reach = strike * (1 - settle * 0.82);
+  const back = settle * 0.3;
+
+  turn(joints, 'hips', 0, 0.42 - reach * 0.5 + coil * 0.16, 0);
+  turn(joints, 'spine', 0.05 * coil, -0.18 + reach * -0.34, 0);
+  turn(joints, 'chest', 0.04, -0.14 - reach * 0.42 + coil * 0.2, 0);
+  turn(joints, 'head', 0, -0.1 - reach * 0.18, 0);
+
+  // Lead arm fires, rear arm retracts to the ribs as counterweight.
+  turn(joints, 'shoulderL', 0, -reach * 0.34, -0.12 - reach * 0.1);
+  turn(joints, 'upperArmL', -1.5 - coil * 0.2 + reach * 0.05, 0.18, 0.3);
+  turn(joints, 'forearmL', -1.4 + coil * 0.35 + reach * 1.32 - back * 0.3, 0, 0);
+  turn(joints, 'handL', 0, 0, -0.18);
+
+  turn(joints, 'upperArmR', -0.3 - reach * 0.34, -0.14, -0.5);
+  turn(joints, 'forearmR', -1.5 - reach * 0.4, 0, 0);
+
+  turn(joints, 'thighL', -0.24 - reach * 0.16, 0.1, 0.12);
+  turn(joints, 'shinL', 0.36, 0, 0);
+  turn(joints, 'thighR', 0.2 + reach * 0.26, -0.12, -0.14);
+  turn(joints, 'shinR', 0.28, 0, 0);
+}
+
+function heavyPunch(
+  joints: HumanoidJoints,
+  _rest: RestPose,
+  windup: number,
+  strike: number,
+  settle: number,
+): void {
+  const coil = windup * (1 - strike);
+  const reach = strike * (1 - settle * 0.7);
+
+  // Bigger rotation through the hips — a heavy reads as the whole body turning
+  // over, not a longer arm.
+  turn(joints, 'hips', 0, 0.5 + coil * 0.44 - reach * 0.96, 0);
+  turn(joints, 'spine', 0.08 * coil, -0.16 + coil * 0.3 - reach * 0.6, 0);
+  turn(joints, 'chest', 0.06, -0.12 + coil * 0.36 - reach * 0.74, 0);
+  turn(joints, 'neck', 0.04, -reach * 0.2, 0);
+  turn(joints, 'head', -0.04, -0.1 - reach * 0.24, 0);
+
+  turn(joints, 'shoulderR', 0, -reach * 0.4, 0.1 - reach * 0.24);
+  turn(joints, 'upperArmR', -1.42 - coil * 0.3 + reach * 0.1, -0.16, -0.34);
+  turn(joints, 'forearmR', -1.7 + coil * 0.2 + reach * 1.66, 0, 0);
+  turn(joints, 'handR', 0, 0, 0.2);
+
+  turn(joints, 'upperArmL', -0.5 - reach * 0.3, 0.2, 0.52);
+  turn(joints, 'forearmL', -1.34 - reach * 0.5, 0, 0);
+
+  turn(joints, 'thighL', -0.3 - reach * 0.2, 0.1, 0.14);
+  turn(joints, 'shinL', 0.44, 0, 0);
+  turn(joints, 'thighR', 0.24 + reach * 0.32, -0.12, -0.16);
+  turn(joints, 'shinR', 0.34, 0, 0);
+}
+
+function roundKick(
+  joints: HumanoidJoints,
+  rest: RestPose,
+  windup: number,
+  strike: number,
+  settle: number,
+): void {
+  const coil = windup * (1 - strike);
+  const reach = strike * (1 - settle * 0.75);
+
+  turn(joints, 'hips', -0.1 * reach, 0.44 + coil * 0.3 - reach * 0.88, 0.14 * reach);
+  turn(joints, 'spine', 0.14 * reach, -0.16 - reach * 0.3, -0.16 * reach);
+  turn(joints, 'chest', 0.1 * reach, -0.12 - reach * 0.28, -0.12 * reach);
+
+  // Arms swing opposite the kicking leg or the pose has no balance.
+  turn(joints, 'upperArmL', -0.5 + reach * 0.5, 0.3, 0.7 + reach * 0.5);
+  turn(joints, 'forearmL', -1.2, 0, 0);
+  turn(joints, 'upperArmR', -0.4 - reach * 0.7, -0.3, -0.6 - reach * 0.4);
+  turn(joints, 'forearmR', -1.3, 0, 0);
+
+  // Chambered knee, then the shin whips out. Kicking from a straight leg is
+  // the most common tell of procedural animation.
+  turn(joints, 'thighR', -0.4 - coil * 0.7 - reach * 0.9, -0.2 - reach * 0.5, -0.2 - reach * 0.6);
+  turn(joints, 'shinR', 1.5 * (coil + 0.3) - reach * 1.6, 0, 0);
+  turn(joints, 'footR', -0.2 - reach * 0.2, 0, 0);
+
+  turn(joints, 'thighL', -0.16, 0.12, 0.16);
+  turn(joints, 'shinL', 0.34, 0, 0);
+
+  lift(joints, rest, -0.03 * reach);
+}
+
+function lowStrike(
+  joints: HumanoidJoints,
+  rest: RestPose,
+  windup: number,
+  strike: number,
+  settle: number,
+): void {
+  const coil = windup * (1 - strike);
+  const reach = strike * (1 - settle * 0.8);
+  const crouch = Math.max(coil * 0.6, reach);
+
+  turn(joints, 'hips', 0.4 * crouch, 0.4, 0);
+  turn(joints, 'spine', 0.2 * crouch, -0.14, 0);
+  turn(joints, 'chest', 0.1 * crouch, -0.12, 0);
+  turn(joints, 'head', -0.24 * crouch, -0.1, 0);
+
+  turn(joints, 'upperArmL', -1.0 - reach * 0.5, 0.2, 0.3);
+  turn(joints, 'forearmL', -1.3 + reach * 1.1, 0, 0);
+  turn(joints, 'upperArmR', -0.5, -0.2, -0.5);
+  turn(joints, 'forearmR', -1.5, 0, 0);
+
+  turn(joints, 'thighL', -0.9 * crouch, 0.12, 0.2);
+  turn(joints, 'shinL', 1.5 * crouch, 0, 0);
+  turn(joints, 'footL', -0.4 * crouch, 0, 0);
+  turn(joints, 'thighR', -0.6 * crouch + reach * 0.3, -0.14, -0.22);
+  turn(joints, 'shinR', 1.2 * crouch, 0, 0);
+
+  lift(joints, rest, -0.34 * crouch);
+}
+
+function sweep(
+  joints: HumanoidJoints,
+  rest: RestPose,
+  windup: number,
+  strike: number,
+  settle: number,
+): void {
+  const coil = windup * (1 - strike);
+  const reach = strike * (1 - settle * 0.8);
+  const crouch = Math.max(coil * 0.7, 0.85);
+
+  turn(joints, 'hips', 0.5 * crouch, 0.42 - reach * 0.4, 0);
+  turn(joints, 'spine', 0.24 * crouch, -0.16, -0.14 * reach);
+  turn(joints, 'chest', 0.1, -0.12, -0.1 * reach);
+
+  // The supporting hand goes to the floor. It is the pose element that makes a
+  // sweep read as a sweep rather than a low kick.
+  turn(joints, 'upperArmL', 0.6 + reach * 0.5, 0.4, 0.9);
+  turn(joints, 'forearmL', -0.5, 0, 0);
+  turn(joints, 'upperArmR', -0.4 - reach * 0.5, -0.3, -0.7);
+  turn(joints, 'forearmR', -1.2, 0, 0);
+
+  turn(joints, 'thighL', -1.0 * crouch, 0.14, 0.24);
+  turn(joints, 'shinL', 1.7 * crouch, 0, 0);
+  turn(joints, 'thighR', -0.3 - reach * 0.5, -0.3 - reach * 0.9, -0.3 - reach * 0.5);
+  turn(joints, 'shinR', 1.4 * (1 - reach), 0, 0);
+
+  lift(joints, rest, -0.42 * crouch);
+}
+
+function overtake(
+  joints: HumanoidJoints,
+  rest: RestPose,
+  windup: number,
+  strike: number,
+  settle: number,
+): void {
+  const coil = windup * (1 - strike);
+  const reach = strike * (1 - settle * 0.6);
+
+  // The signature. Full body commitment: deep coil, then a rotation the
+  // character cannot recover from quickly, which is what earns the frame data.
+  turn(joints, 'hips', -0.2 * reach, 0.5 + coil * 0.9 - reach * 1.8, 0.2 * reach);
+  turn(joints, 'spine', 0.1 - reach * 0.2, -0.16 + coil * 0.5 - reach * 0.9, -0.2 * reach);
+  turn(joints, 'chest', 0.08, -0.12 + coil * 0.5 - reach * 1.0, -0.16 * reach);
+  turn(joints, 'neck', 0.06, -reach * 0.3, 0);
+  turn(joints, 'head', -0.1 * reach, -0.1 - reach * 0.4, 0);
+
+  turn(joints, 'shoulderR', 0, -reach * 0.5, 0.1 - reach * 0.5);
+  turn(joints, 'upperArmR', -1.9 - coil * 0.5 + reach * 0.4, -0.2, -0.3 - reach * 0.3);
+  turn(joints, 'forearmR', -1.5 + coil * 0.3 + reach * 1.5, 0, 0);
+
+  turn(joints, 'upperArmL', -0.6 - reach * 0.6, 0.3, 0.6 + reach * 0.4);
+  turn(joints, 'forearmL', -1.4, 0, 0);
+
+  turn(joints, 'thighL', -0.4 - reach * 0.3, 0.14, 0.2);
+  turn(joints, 'shinL', 0.6 + reach * 0.3, 0, 0);
+  turn(joints, 'thighR', 0.3 + reach * 0.5, -0.14, -0.22);
+  turn(joints, 'shinR', 0.4, 0, 0);
+
+  lift(joints, rest, -0.12 * coil - 0.06 * reach);
+}
+
+/**
+ * Move id → pose. Adding a move means adding a row, never an `if` (rule R6).
+ * Unmapped ids fall through to `straightPunch` so a new move is always visible
+ * rather than silently frozen in idle.
+ */
+const ATTACKS: Readonly<Record<string, AttackPose>> = {
+  '5L': straightPunch,
+  '5M': roundKick,
+  '5H': heavyPunch,
+  '2L': lowStrike,
+  '2M': sweep,
+  overtake,
+};

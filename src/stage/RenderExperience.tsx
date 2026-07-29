@@ -19,7 +19,6 @@ export function RenderExperience() {
         <RenderCanvas fighterSelection={fighterSelection} />
       </div>
       <PlayOverlay />
-      <div className={styles.scanlines} aria-hidden="true" />
     </main>
   );
 }

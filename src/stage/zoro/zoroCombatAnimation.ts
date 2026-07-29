@@ -30,6 +30,7 @@ export function applyZoroCombatAnimation(
       rig,
       active.action,
       combatAnimationProgress(fighter.action.moveId, fighter.action.frame),
+      fighter.facing,
     );
     return;
   }

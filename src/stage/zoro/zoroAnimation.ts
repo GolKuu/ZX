@@ -17,7 +17,11 @@ import {
   threeThousandWorlds,
 } from './zoroSuperAnimations';
 
-type ZoroAnimation = (rig: ZoroRig, progress: number) => void;
+type ZoroAnimation = (
+  rig: ZoroRig,
+  progress: number,
+  facing: -1 | 1,
+) => void;
 
 const ANIMATIONS: Readonly<Record<ZoroActionId, ZoroAnimation>> = {
   lightPunch,
@@ -36,6 +40,11 @@ export function applyZoroAnimation(
   rig: ZoroRig,
   action: ZoroActionId,
   progress: number,
+  facing: -1 | 1,
 ): void {
-  ANIMATIONS[action](rig, Math.max(0, Math.min(1, progress)));
+  ANIMATIONS[action](
+    rig,
+    Math.max(0, Math.min(1, progress)),
+    facing,
+  );
 }

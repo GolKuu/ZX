@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/refs -- R3F refs are attached here, never read during render. */
-import type { RefObject } from 'react';
-import type { Group, Material } from 'three';
+import type { Material } from 'three';
 import { FighterPart } from '../FighterPart';
 import type { ZoroRigRefs } from '../zoro/zoroRigRefs';
 import { VoidWalkerEffects } from './VoidWalkerEffects';
@@ -127,73 +126,18 @@ export function VoidWalkerBody({
         scale={[1.08, 1, 0.82]}
       />
 
-      <HandCharge
-        ref={refs.rightSword}
-        materials={materials}
-        resources={resources}
-      />
-      <HandCharge
-        ref={refs.leftSword}
-        materials={materials}
-        resources={resources}
-      />
+      <group ref={refs.rightSword} />
+      <group ref={refs.leftSword} />
 
       {/* Sits where the rig puts the off-hand prop — here, a rune that spins
           up in front of the face while a super is charging. */}
-      <group ref={refs.mouthSword}>
-        <mesh
-          geometry={resources.ring}
-          material={materials.aura}
-          scale={0.55}
-        />
-        <mesh
-          geometry={resources.ring}
-          material={materials.phantom}
-          rotation={[0.9, 0, 0]}
-          scale={0.42}
-        />
-      </group>
+      <group ref={refs.mouthSword} />
 
       <VoidWalkerEffects
         materials={materials}
         refs={refs}
         resources={resources}
       />
-    </group>
-  );
-}
-
-/**
- * Void charge around a hand. Parented to the rig's prop socket and pushed down
- * to the palm, so every swing carries it without extra animation code.
- */
-function HandCharge({
-  materials,
-  ref,
-  resources,
-}: Pick<VoidWalkerBodyProps, 'materials' | 'resources'> & {
-  readonly ref: RefObject<Group | null>;
-}) {
-  return (
-    <group ref={ref}>
-      <group position={[0, -0.18, 0]}>
-        <mesh
-          geometry={resources.orb}
-          material={materials.voidCore}
-          scale={0.62}
-        />
-        <mesh
-          geometry={resources.orb}
-          material={materials.aura}
-          scale={0.86}
-        />
-        <mesh
-          geometry={resources.ring}
-          material={materials.aura}
-          rotation={[Math.PI / 2, 0, 0]}
-          scale={0.34}
-        />
-      </group>
     </group>
   );
 }

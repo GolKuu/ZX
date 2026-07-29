@@ -5,13 +5,11 @@ import type {
   CharacterSelection,
 } from '@/src/data/characterRoster';
 import { AangFighter } from './AangFighter';
-import { AttackCue } from './AttackCue';
 import { Arena } from './Arena';
 import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
 import { FrameProfiler } from './FrameProfiler';
 import { LazyPostEffects } from './LazyPostEffects';
-import { SpeedLines } from './SpeedLines';
 import { VoidWalkerFighter } from './VoidWalkerFighter';
 import { ZoroFighter } from './ZoroFighter';
 
@@ -28,7 +26,6 @@ export function RenderScene({
       <directionalLight color="#fff4dd" intensity={3.2} position={[-3, 7, 5]} />
       <directionalLight color="#b05cff" intensity={1.65} position={[5, 4, -4]} />
 
-      <SpeedLines />
       <Arena />
       <CombatGameLoop />
       <SelectedFighter
@@ -41,7 +38,6 @@ export function RenderScene({
         characterId={fighterSelection[1]}
         fighterId="p2"
       />
-      <AttackCue />
       <CameraRig />
       <LazyPostEffects />
       <FrameProfiler />
