@@ -1,34 +1,19 @@
-import js from '@eslint/js';
-import reactHooks from 'eslint-plugin-react-hooks';
+import { FlatCompat } from '@eslint/eslintrc';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-export default tseslint.config(
+const baseDirectory = dirname(fileURLToPath(import.meta.url));
+const compat = new FlatCompat({ baseDirectory });
+
+export default [
   {
     ignores: ['.next/**', 'dist/**', '.tools/**', 'node_modules/**', 'next-env.d.ts'],
   },
+  ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
-    files: ['**/*.{js,mjs,ts,tsx}'],
-    extends: [js.configs.recommended],
-  },
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [...tseslint.configs.recommended],
-  },
-  {
-    files: ['app/**/*.{ts,tsx}', 'src/**/*.{ts,tsx}'],
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
-    },
-    plugins: {
-      'react-hooks': reactHooks,
-    },
     rules: {
-      ...reactHooks.configs.flat.recommended.rules,
-      'react-hooks/set-state-in-effect': 'off',
+      'react/no-unknown-property': 'off',
     },
   },
   {
@@ -45,4 +30,4 @@ export default tseslint.config(
       },
     },
   },
-);
+];
