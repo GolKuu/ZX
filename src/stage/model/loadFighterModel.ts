@@ -26,6 +26,10 @@ import {
   type Material,
   type Object3D,
 } from 'three';
+// Static import on purpose. The whole module is already behind one dynamic
+// boundary (`LazyModelFighter`); adding a second one inside it made webpack
+// emit the loader twice, once per route that reaches it.
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { ToonMaterial } from '@/src/render/toonMaterial';
 import type { SkinnedOutlineMaterial } from '@/src/render/skinnedOutlineMaterial';
 import {
@@ -130,12 +134,6 @@ function isMesh(object: Object3D): object is Mesh {
 export async function loadFighterModel(
   options: FighterModelOptions,
 ): Promise<LoadedFighterModel> {
-  // Imported on demand, not at module scope. The loader is only needed when a
-  // model file actually exists, and at module scope it lands in the initial
-  // bundle for every player — including those on the primitive fallback.
-  const { GLTFLoader } = await import(
-    'three/examples/jsm/loaders/GLTFLoader.js'
-  );
   const loader = new GLTFLoader();
   const gltf = await loader.loadAsync(options.url);
   const root = gltf.scene;
