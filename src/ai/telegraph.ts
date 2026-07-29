@@ -1,26 +1,13 @@
 import type {
   AiEvent,
-  AiTelegraph,
+  TelegraphProgress,
+  TelegraphRequest,
   TelegraphCancelledEvent,
   TelegraphCommittedEvent,
   TelegraphStartedEvent,
 } from './types.js';
 import type { FighterSnapshot } from '../sim/state.js';
-
-export interface TelegraphRequest {
-  readonly moveId: string;
-  readonly intent: AiTelegraph['intent'];
-  readonly cue: string;
-  readonly durationFrames: number;
-  readonly consumeCombo: boolean;
-  readonly sourceActionSerial: number | null;
-}
-
-export interface TelegraphProgress {
-  readonly committed: TelegraphRequest | null;
-  readonly events: readonly AiEvent[];
-  readonly cancelledReason?: TelegraphCancelledEvent['reason'];
-}
+import { telegraphSourceChanged } from './telegraph-rules.js';
 
 export class TelegraphController {
   private pending: (TelegraphRequest & {
@@ -96,7 +83,7 @@ export class TelegraphController {
         ? 'hit'
         : request.intent === 'combo' && opponent.hitstun === 0
           ? 'targetRecovered'
-          : sourceChanged(self, request)
+          : telegraphSourceChanged(self, request)
             ? 'stateChanged'
             : null;
     if (reason !== null) {
@@ -151,18 +138,4 @@ export class TelegraphController {
   public reset(): void {
     this.pending = null;
   }
-}
-
-function sourceChanged(
-  self: FighterSnapshot,
-  request: TelegraphRequest,
-): boolean {
-  if (request.intent !== 'combo') {
-    return self.action !== null;
-  }
-  return (
-    request.sourceActionSerial !== null
-    && self.action !== null
-    && self.action.serial !== request.sourceActionSerial
-  );
 }

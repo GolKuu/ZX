@@ -1,6 +1,5 @@
 import type { FighterInput } from '../sim/state.js';
-import type { TelegraphRequest } from './telegraph.js';
-import type { AiIntent } from './types.js';
+import type { AiIntent, TelegraphRequest } from './types.js';
 
 export interface ImmediatePlan {
   readonly kind: 'input';

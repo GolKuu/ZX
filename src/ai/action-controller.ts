@@ -3,14 +3,12 @@ import type { MoveFrameData } from '../sim/frame-data.js';
 import type { FighterSnapshot } from '../sim/state.js';
 import { ComboPlanner } from './combo-planner.js';
 import { createDecision } from './decision.js';
-import {
-  TelegraphController,
-  type TelegraphRequest,
-} from './telegraph.js';
+import { TelegraphController } from './telegraph.js';
 import type {
   AiDecision,
   AiEvent,
   AiLoadout,
+  TelegraphRequest,
 } from './types.js';
 
 interface CombatSignals {

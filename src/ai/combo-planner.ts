@@ -1,7 +1,6 @@
 import type { MoveFrameData } from '../sim/frame-data.js';
 import type { FighterSnapshot } from '../sim/state.js';
-import type { TelegraphRequest } from './telegraph.js';
-import type { AiLoadout } from './types.js';
+import type { AiLoadout, TelegraphRequest } from './types.js';
 
 export class ComboPlanner {
   private queue: string[] = [];

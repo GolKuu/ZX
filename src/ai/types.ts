@@ -55,6 +55,15 @@ export interface AiTelegraph {
   readonly remainingFrames: number;
 }
 
+export interface TelegraphRequest {
+  readonly moveId: string;
+  readonly intent: AiTelegraph['intent'];
+  readonly cue: string;
+  readonly durationFrames: number;
+  readonly consumeCombo: boolean;
+  readonly sourceActionSerial: number | null;
+}
+
 interface AiEventBase {
   readonly frame: number;
   readonly fighterId: string;
@@ -81,6 +90,12 @@ export type AiEvent =
   | TelegraphStartedEvent
   | TelegraphCommittedEvent
   | TelegraphCancelledEvent;
+
+export interface TelegraphProgress {
+  readonly committed: TelegraphRequest | null;
+  readonly events: readonly AiEvent[];
+  readonly cancelledReason?: TelegraphCancelledEvent['reason'];
+}
 
 export interface AiDecision {
   readonly input: FighterInput;

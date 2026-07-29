@@ -1,25 +1,18 @@
 import type { CombatEvent } from '../sim/events.js';
 import type { MoveFrameData } from '../sim/frame-data.js';
-import type {
-  FighterSnapshot,
-  WorldSnapshot,
-} from '../sim/state.js';
+import type { WorldSnapshot } from '../sim/state.js';
 import { ActionController } from './action-controller.js';
 import { createAiSeed, createDecision } from './decision.js';
 import { DefensePlanner } from './defense-planner.js';
 import { NeutralPlanner } from './neutral-planner.js';
-import {
-  findFighter,
-  findOpponent,
-} from './perception.js';
-import type { PlannedAction } from './planning.js';
+import { findFighter, resolveOpponent } from './perception.js';
+import { executePlan } from './plan-execution.js';
 import { AI_DIFFICULTY_PROFILES } from './profiles.js';
 import { ReactionHistory } from './reaction-history.js';
 import { DeterministicRandom } from './rng.js';
 import type {
   AiDecision,
   AiDifficulty,
-  AiEvent,
   AiLoadout,
 } from './types.js';
 import { validateAiLoadout } from './validation.js';
@@ -68,7 +61,7 @@ export class CombatAiAgent {
     this.history.remember(world);
 
     const self = findFighter(world, this.options.fighterId);
-    const opponent = this.currentOpponent(world, self);
+    const opponent = resolveOpponent(world, self, this.options.opponentId);
     const profile = AI_DIFFICULTY_PROFILES[this.options.difficulty];
     const signals = this.actions.processCombatEvents(
       world.frame,
@@ -132,7 +125,13 @@ export class CombatAiAgent {
       this.moves,
       this.random,
     );
-    return this.executePlan(world.frame, self, plan, signals.events);
+    return executePlan(
+      this.actions,
+      world.frame,
+      self,
+      plan,
+      signals.events,
+    );
   }
 
   public reset(seed = this.initialSeed): void {
@@ -144,23 +143,4 @@ export class CombatAiAgent {
     this.lastWorldFrame = -1;
   }
 
-  private executePlan(
-    frame: number,
-    self: FighterSnapshot,
-    plan: PlannedAction,
-    events: AiEvent[],
-  ): AiDecision {
-    return plan.kind === 'input'
-      ? createDecision(plan.input, plan.intent, null, events)
-      : this.actions.begin(frame, self, plan.request, events);
-  }
-
-  private currentOpponent(
-    world: WorldSnapshot,
-    self: FighterSnapshot,
-  ): FighterSnapshot {
-    return this.options.opponentId === undefined
-      ? findOpponent(world, self)
-      : findFighter(world, this.options.opponentId);
-  }
 }

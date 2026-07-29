@@ -25,6 +25,16 @@ export function findOpponent(
   return opponent;
 }
 
+export function resolveOpponent(
+  world: WorldSnapshot,
+  fighter: FighterSnapshot,
+  opponentId?: string,
+): FighterSnapshot {
+  return opponentId === undefined
+    ? findOpponent(world, fighter)
+    : findFighter(world, opponentId);
+}
+
 export function distanceBetween(
   first: FighterSnapshot,
   second: FighterSnapshot,
