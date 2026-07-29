@@ -21,27 +21,33 @@ const MODELS_DIR = 'public/models';
 const GLB_MAGIC = 0x46546c67; // 'glTF'
 const JSON_CHUNK = 0x4e4f534a; // 'JSON'
 
-// Mirrors ALIASES in src/stage/model/humanoidBones.ts.
+// Copied verbatim from ALIASES in src/stage/model/humanoidBones.ts. It is a
+// duplicate because this script deliberately runs without a build step; if you
+// add an alias there, add it here too or a rig will pass one and fail the other.
 const ALIASES = {
-  hips: ['hips', 'pelvis', 'root', 'bip01pelvis', 'cchips'],
-  spine: ['spine', 'spine01', 'spine1', 'abdomen', 'waist'],
-  chest: ['chest', 'spine2', 'spine02', 'spine03', 'upperchest', 'torso'],
-  neck: ['neck', 'neck01', 'neck1'],
-  head: ['head'],
-  shoulderL: ['leftshoulder', 'shoulderl', 'lshoulder', 'leftclavicle', 'claviclel'],
-  upperArmL: ['leftarm', 'upperarml', 'larm', 'leftupperarm', 'upperarmleft'],
-  forearmL: ['leftforearm', 'forearml', 'lforearm', 'leftlowerarm', 'lowerarml'],
-  handL: ['lefthand', 'handl', 'lhand'],
-  shoulderR: ['rightshoulder', 'shoulderr', 'rshoulder', 'rightclavicle', 'clavicler'],
-  upperArmR: ['rightarm', 'upperarmr', 'rarm', 'rightupperarm', 'upperarmright'],
-  forearmR: ['rightforearm', 'forearmr', 'rforearm', 'rightlowerarm', 'lowerarmr'],
-  handR: ['righthand', 'handr', 'rhand'],
-  thighL: ['leftupleg', 'thighl', 'lefthip', 'leftthigh', 'upperlegl', 'lupleg'],
-  shinL: ['leftleg', 'shinl', 'leftknee', 'leftcalf', 'lowerlegl', 'calfl'],
-  footL: ['leftfoot', 'footl', 'lfoot', 'leftankle'],
-  thighR: ['rightupleg', 'thighr', 'righthip', 'rightthigh', 'upperlegr', 'rupleg'],
-  shinR: ['rightleg', 'shinr', 'rightknee', 'rightcalf', 'lowerlegr', 'calfr'],
-  footR: ['rightfoot', 'footr', 'rfoot', 'rightankle'],
+  hips: ['hips', 'pelvis', 'root', 'bip01pelvis', 'cchips', 'jbipchips'],
+  spine: ['spine', 'spine01', 'spine1', 'abdomen', 'waist', 'jbipcspine'],
+  chest: ['chest', 'spine2', 'spine02', 'spine03', 'upperchest', 'torso', 'jbipcchest', 'jbipcupperchest'],
+  neck: ['neck', 'neck01', 'neck1', 'jbipcneck', 'defneck'],
+  head: ['head', 'jbipchead', 'defhead'],
+
+  shoulderL: ['leftshoulder', 'shoulderl', 'lshoulder', 'leftclavicle', 'claviclel', 'jbiplshoulder', 'bip01lclavicle'],
+  upperArmL: ['leftarm', 'upperarml', 'larm', 'leftupperarm', 'upperarmleft', 'jbiplupperarm', 'defupperarml', 'bip01lupperarm'],
+  forearmL: ['leftforearm', 'forearml', 'lforearm', 'leftlowerarm', 'lowerarml', 'jbipllowerarm', 'defforearml', 'bip01lforearm'],
+  handL: ['lefthand', 'handl', 'lhand', 'jbiplhand', 'defhandl', 'bip01lhand'],
+
+  shoulderR: ['rightshoulder', 'shoulderr', 'rshoulder', 'rightclavicle', 'clavicler', 'jbiprshoulder', 'bip01rclavicle'],
+  upperArmR: ['rightarm', 'upperarmr', 'rarm', 'rightupperarm', 'upperarmright', 'jbiprupperarm', 'defupperarmr', 'bip01rupperarm'],
+  forearmR: ['rightforearm', 'forearmr', 'rforearm', 'rightlowerarm', 'lowerarmr', 'jbiprlowerarm', 'defforearmr', 'bip01rforearm'],
+  handR: ['righthand', 'handr', 'rhand', 'jbiprhand', 'defhandr', 'bip01rhand'],
+
+  thighL: ['leftupleg', 'thighl', 'lefthip', 'leftthigh', 'upperlegl', 'lupleg', 'jbiplupperleg', 'defthighl', 'bip01lthigh'],
+  shinL: ['leftleg', 'shinl', 'leftknee', 'leftcalf', 'lowerlegl', 'calfl', 'jbipllowerleg', 'defshinl', 'bip01lcalf'],
+  footL: ['leftfoot', 'footl', 'lfoot', 'leftankle', 'jbiplfoot', 'deffootl', 'bip01lfoot'],
+
+  thighR: ['rightupleg', 'thighr', 'righthip', 'rightthigh', 'upperlegr', 'rupleg', 'jbiprupperleg', 'defthighr', 'bip01rthigh'],
+  shinR: ['rightleg', 'shinr', 'rightknee', 'rightcalf', 'lowerlegr', 'calfr', 'jbiprlowerleg', 'defshinr', 'bip01rcalf'],
+  footR: ['rightfoot', 'footr', 'rfoot', 'rightankle', 'jbiprfoot', 'deffootr', 'bip01rfoot'],
 };
 
 const REQUIRED = [
@@ -95,6 +101,9 @@ function inspect(gltf) {
   return {
     skins: skins.length,
     joints: jointIndices.size,
+    jointNames: [...jointIndices]
+      .map((index) => nodes[index]?.name)
+      .filter((name) => typeof name === 'string'),
     meshes: (gltf.meshes ?? []).length,
     materials: (gltf.materials ?? []).map((material) => material.name ?? '(unnamed)'),
     animations: (gltf.animations ?? []).length,
@@ -130,7 +139,10 @@ for (const file of files) {
   console.log(`  materials: ${report.materials.join(', ')}`);
 
   if (report.skins === 0) {
-    console.log('  ✗ no skin — this model is not rigged and cannot be animated');
+    console.log('  ✗ no skin — the mesh is not rigged, so it will render as a');
+    console.log('    motionless statue. Generators (Tripo, Meshy, Rodin) output an');
+    console.log('    unrigged mesh by default: run their rigging step, or upload the');
+    console.log('    mesh to mixamo.com/#/?page=rigging and re-export.');
     failed = true;
     continue;
   }
@@ -141,7 +153,13 @@ for (const file of files) {
 
   if (missingRequired.length > 0) {
     console.log(`  ✗ required joints unresolved: ${missingRequired.join(', ')}`);
-    console.log('    add aliases to src/stage/model/humanoidBones.ts');
+    console.log('    add aliases to src/stage/model/humanoidBones.ts. This rig names');
+    console.log('    its joints:');
+    // Printing the real names is the whole point — it turns "the character does
+    // not move" into a one-line alias fix instead of a guessing game.
+    for (let index = 0; index < report.jointNames.length; index += 6) {
+      console.log(`      ${report.jointNames.slice(index, index + 6).join('  ')}`);
+    }
     failed = true;
   } else {
     console.log('  ✓ every required joint resolves');

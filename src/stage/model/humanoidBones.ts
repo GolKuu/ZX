@@ -47,29 +47,29 @@ export type HumanoidJoints = {
  * `leftupleg` and match the same entry.
  */
 const ALIASES: Readonly<Record<HumanoidJointName, readonly string[]>> = {
-  hips: ['hips', 'pelvis', 'root', 'bip01pelvis', 'cchips'],
-  spine: ['spine', 'spine01', 'spine1', 'abdomen', 'waist'],
-  chest: ['chest', 'spine2', 'spine02', 'spine03', 'upperchest', 'torso'],
-  neck: ['neck', 'neck01', 'neck1'],
-  head: ['head'],
+  hips: ['hips', 'pelvis', 'root', 'bip01pelvis', 'cchips', 'jbipchips'],
+  spine: ['spine', 'spine01', 'spine1', 'abdomen', 'waist', 'jbipcspine'],
+  chest: ['chest', 'spine2', 'spine02', 'spine03', 'upperchest', 'torso', 'jbipcchest', 'jbipcupperchest'],
+  neck: ['neck', 'neck01', 'neck1', 'jbipcneck', 'defneck'],
+  head: ['head', 'jbipchead', 'defhead'],
 
-  shoulderL: ['leftshoulder', 'shoulderl', 'lshoulder', 'leftclavicle', 'claviclel'],
-  upperArmL: ['leftarm', 'upperarml', 'larm', 'leftupperarm', 'upperarmleft'],
-  forearmL: ['leftforearm', 'forearml', 'lforearm', 'leftlowerarm', 'lowerarml'],
-  handL: ['lefthand', 'handl', 'lhand'],
+  shoulderL: ['leftshoulder', 'shoulderl', 'lshoulder', 'leftclavicle', 'claviclel', 'jbiplshoulder', 'bip01lclavicle'],
+  upperArmL: ['leftarm', 'upperarml', 'larm', 'leftupperarm', 'upperarmleft', 'jbiplupperarm', 'defupperarml', 'bip01lupperarm'],
+  forearmL: ['leftforearm', 'forearml', 'lforearm', 'leftlowerarm', 'lowerarml', 'jbipllowerarm', 'defforearml', 'bip01lforearm'],
+  handL: ['lefthand', 'handl', 'lhand', 'jbiplhand', 'defhandl', 'bip01lhand'],
 
-  shoulderR: ['rightshoulder', 'shoulderr', 'rshoulder', 'rightclavicle', 'clavicler'],
-  upperArmR: ['rightarm', 'upperarmr', 'rarm', 'rightupperarm', 'upperarmright'],
-  forearmR: ['rightforearm', 'forearmr', 'rforearm', 'rightlowerarm', 'lowerarmr'],
-  handR: ['righthand', 'handr', 'rhand'],
+  shoulderR: ['rightshoulder', 'shoulderr', 'rshoulder', 'rightclavicle', 'clavicler', 'jbiprshoulder', 'bip01rclavicle'],
+  upperArmR: ['rightarm', 'upperarmr', 'rarm', 'rightupperarm', 'upperarmright', 'jbiprupperarm', 'defupperarmr', 'bip01rupperarm'],
+  forearmR: ['rightforearm', 'forearmr', 'rforearm', 'rightlowerarm', 'lowerarmr', 'jbiprlowerarm', 'defforearmr', 'bip01rforearm'],
+  handR: ['righthand', 'handr', 'rhand', 'jbiprhand', 'defhandr', 'bip01rhand'],
 
-  thighL: ['leftupleg', 'thighl', 'lefthip', 'leftthigh', 'upperlegl', 'lupleg'],
-  shinL: ['leftleg', 'shinl', 'leftknee', 'leftcalf', 'lowerlegl', 'calfl'],
-  footL: ['leftfoot', 'footl', 'lfoot', 'leftankle'],
+  thighL: ['leftupleg', 'thighl', 'lefthip', 'leftthigh', 'upperlegl', 'lupleg', 'jbiplupperleg', 'defthighl', 'bip01lthigh'],
+  shinL: ['leftleg', 'shinl', 'leftknee', 'leftcalf', 'lowerlegl', 'calfl', 'jbipllowerleg', 'defshinl', 'bip01lcalf'],
+  footL: ['leftfoot', 'footl', 'lfoot', 'leftankle', 'jbiplfoot', 'deffootl', 'bip01lfoot'],
 
-  thighR: ['rightupleg', 'thighr', 'righthip', 'rightthigh', 'upperlegr', 'rupleg'],
-  shinR: ['rightleg', 'shinr', 'rightknee', 'rightcalf', 'lowerlegr', 'calfr'],
-  footR: ['rightfoot', 'footr', 'rfoot', 'rightankle'],
+  thighR: ['rightupleg', 'thighr', 'righthip', 'rightthigh', 'upperlegr', 'rupleg', 'jbiprupperleg', 'defthighr', 'bip01rthigh'],
+  shinR: ['rightleg', 'shinr', 'rightknee', 'rightcalf', 'lowerlegr', 'calfr', 'jbiprlowerleg', 'defshinr', 'bip01rcalf'],
+  footR: ['rightfoot', 'footr', 'rfoot', 'rightankle', 'jbiprfoot', 'deffootr', 'bip01rfoot'],
 };
 
 /**
@@ -81,6 +81,20 @@ function normalise(name: string): string {
     .toLowerCase()
     .replace(/mixamorig/g, '')
     .replace(/[\s:_.\-|]/g, '');
+}
+
+/**
+ * Every joint name in the file, normalised. Used by the model checker to print
+ * what a rig actually contains when a required joint fails to resolve — the
+ * fastest route from "the character does not move" to the one alias that fixes
+ * it.
+ */
+export function listJointNames(root: Object3D): readonly string[] {
+  const names: string[] = [];
+  root.traverse((object) => {
+    if (isBone(object)) names.push(object.name);
+  });
+  return names;
 }
 
 function isBone(object: Object3D): object is Bone {
