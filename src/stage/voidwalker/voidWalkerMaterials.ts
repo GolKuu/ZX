@@ -66,7 +66,7 @@ export function createVoidWalkerMaterials(
 
 export type VoidWalkerMaterials = ReturnType<typeof createVoidWalkerMaterials>;
 
-/** Toon materials only — the ones the rim axis and impact flash drive. */
+/** Toon materials whose rim axis follows the combat spacing direction. */
 export function toonMaterialsOf(
   materials: VoidWalkerMaterials,
 ): readonly ToonMaterial[] {

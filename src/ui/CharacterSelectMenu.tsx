@@ -1,14 +1,15 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   CHARACTER_ROSTER,
-  getCharacterDefinition,
   type CharacterId,
   type CharacterSelection,
 } from '@/src/data/characterRoster';
 import { requestCombatReset } from '@/src/game/combatRuntime';
 import { useHudStore } from '@/src/store/hudStore';
+import { CharacterPanel } from './CharacterPanel';
+import { CharacterRoster } from './CharacterRoster';
 import { useMenuNavigation } from './useMenuNavigation';
 import styles from './CharacterSelectMenu.module.css';
 
@@ -23,7 +24,6 @@ export function CharacterSelectMenu() {
   const startMatch = useHudStore((state) => state.startMatch);
   const [activeSlot, setActiveSlot] = useState<PlayerSlot>(0);
   const [draft, setDraft] = useState<CharacterSelection>(savedSelection);
-  const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const focusedCharacter = CHARACTER_ROSTER[menuFocus] ?? CHARACTER_ROSTER[0];
   const preview: CharacterSelection = activeSlot === 0
     ? [focusedCharacter.id, draft[1]]
@@ -67,10 +67,6 @@ export function CharacterSelectMenu() {
     setFocus: setMenuFocus,
   });
 
-  useEffect(() => {
-    buttonRefs.current[menuFocus]?.focus();
-  }, [menuFocus]);
-
   const opponentTag = mode === 'ai' ? 'CPU' : 'P2';
 
   return (
@@ -93,35 +89,14 @@ export function CharacterSelectMenu() {
           playerTag="P1"
         />
 
-        <section className={styles.roster}>
-          <div className={styles.prompt} aria-live="polite">
-            <span>ШАГ {activeSlot + 1} / 2</span>
-            <h1>{activeSlot === 0 ? 'P1' : opponentTag} выбирает бойца</h1>
-          </div>
-          <nav aria-label="Готовые персонажи" className={styles.characterList}>
-            {CHARACTER_ROSTER.map((character, index) => (
-              <button
-                key={character.id}
-                ref={(element) => {
-                  buttonRefs.current[index] = element;
-                }}
-                type="button"
-                data-character={character.id}
-                data-focused={index === menuFocus}
-                onClick={() => chooseCharacter(character.id)}
-                onFocus={() => setMenuFocus(index)}
-                onPointerEnter={() => setMenuFocus(index)}
-              >
-                <i aria-hidden="true">{character.mark}</i>
-                <span>
-                  <strong>{character.displayName}</strong>
-                  <small>{character.archetype}</small>
-                </span>
-              </button>
-            ))}
-          </nav>
-          <p className={styles.description}>{focusedCharacter.description}</p>
-        </section>
+        <CharacterRoster
+          activeSlot={activeSlot}
+          focus={menuFocus}
+          focusedCharacter={focusedCharacter}
+          opponentTag={opponentTag}
+          onChoose={chooseCharacter}
+          onFocus={setMenuFocus}
+        />
 
         <CharacterPanel
           active={activeSlot === 1}
@@ -138,41 +113,5 @@ export function CharacterSelectMenu() {
         <span><kbd>←→</kbd> Выбрать бойца</span>
       </footer>
     </div>
-  );
-}
-
-function CharacterPanel({
-  active,
-  characterId,
-  confirmed,
-  playerTag,
-  right = false,
-}: {
-  readonly active: boolean;
-  readonly characterId: CharacterId;
-  readonly confirmed: boolean;
-  readonly playerTag: string;
-  readonly right?: boolean;
-}) {
-  const character = getCharacterDefinition(characterId);
-  return (
-    <section
-      className={`${styles.fighterPanel} ${right ? styles.fighterPanelRight : ''}`}
-      data-active={active}
-      data-character={character.id}
-    >
-      <div className={styles.playerState}>
-        <b>{playerTag}</b>
-        <span>{confirmed ? 'ГОТОВ' : active ? 'ВЫБИРАЕТ' : 'ОЖИДАНИЕ'}</span>
-      </div>
-      <div className={styles.portrait} aria-hidden="true">
-        <strong>{character.mark}</strong>
-        <i />
-      </div>
-      <div className={styles.identity}>
-        <span>{character.archetype}</span>
-        <h2>{character.displayName}</h2>
-      </div>
-    </section>
   );
 }

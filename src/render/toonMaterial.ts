@@ -40,8 +40,6 @@ export interface ToonUniforms {
   uRimStrength: IUniform<number>;
   /** View-space direction perpendicular to the combat axis. */
   uRimAxis: IUniform<Vector3>;
-  /** Flashes to 1 for a couple of frames on impact. */
-  uFlash: IUniform<number>;
 }
 
 export type ToonMaterial = MeshToonMaterial & { readonly toon: ToonUniforms };
@@ -56,7 +54,6 @@ export function createToonMaterial(options: ToonMaterialOptions): ToonMaterial {
     uRimColor: { value: new Color(options.rimColor ?? '#9fd8ff') },
     uRimStrength: { value: options.rimStrength ?? 0.85 },
     uRimAxis: { value: new Vector3(1, 0, 0) },
-    uFlash: { value: 0 },
   };
 
   const material = new MeshToonMaterial({
@@ -79,7 +76,6 @@ export function createToonMaterial(options: ToonMaterialOptions): ToonMaterial {
         uniform vec3  uRimColor;
         uniform float uRimStrength;
         uniform vec3  uRimAxis;
-        uniform float uFlash;
         `,
       )
       .replace(
@@ -108,9 +104,6 @@ export function createToonMaterial(options: ToonMaterialOptions): ToonMaterial {
         float rim  = smoothstep( ${RIM_INNER.toFixed(2)}, ${RIM_OUTER.toFixed(2)}, fres );
         float gate = pow( clamp( abs( dot( toonNormal, normalize( uRimAxis ) ) ), 0.0, 1.0 ), 1.6 );
         outgoingLight += uRimColor * rim * gate * uRimStrength;
-
-        // --- impact flash ----------------------------------------------------
-        outgoingLight = mix( outgoingLight, vec3( 1.0 ), clamp( uFlash, 0.0, 1.0 ) );
         `,
       );
   };
@@ -150,22 +143,4 @@ export function updateRimAxis(
     (e[1] ?? 0) * AXIS.x + (e[5] ?? 1) * AXIS.y + (e[9] ?? 0) * AXIS.z,
     (e[2] ?? 0) * AXIS.x + (e[6] ?? 0) * AXIS.y + (e[10] ?? 1) * AXIS.z,
   );
-}
-
-/** Frames the white impact flash takes to fall off. */
-export const FLASH_DECAY_FRAMES = 4;
-
-export function decayFlash(material: ToonMaterial, deltaFrames: number): void {
-  const current = material.toon.uFlash.value;
-  if (current <= 0) {
-    return;
-  }
-  material.toon.uFlash.value = Math.max(
-    0,
-    current - deltaFrames / FLASH_DECAY_FRAMES,
-  );
-}
-
-export function triggerFlash(material: ToonMaterial, intensity = 0.85): void {
-  material.toon.uFlash.value = intensity;
 }

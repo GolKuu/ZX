@@ -52,7 +52,7 @@ export function createZoroMaterials(
 
 export type ZoroMaterials = ReturnType<typeof createZoroMaterials>;
 
-/** Toon materials only — the ones the rim axis and impact flash drive. */
+/** Toon materials whose rim axis follows the combat spacing direction. */
 export function toonMaterialsOf(
   materials: ZoroMaterials,
 ): readonly ToonMaterial[] {

@@ -1,0 +1,158 @@
+.panel {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  align-content: end;
+  padding: 7cqw 4cqw 5.8cqw;
+  overflow: hidden;
+  opacity: 0.58;
+  transition: opacity 160ms ease, filter 160ms ease;
+}
+
+.panelRight {
+  text-align: right;
+}
+
+.panel[data-active="true"] {
+  opacity: 1;
+  filter: saturate(1.14);
+}
+
+.panel::after {
+  position: absolute;
+  right: 0;
+  bottom: 5cqw;
+  left: 0;
+  height: 0.24cqw;
+  background: var(--select-blue);
+  box-shadow: 0 0 2cqw rgb(92 195 255 / 40%);
+  content: "";
+}
+
+.panelRight::after {
+  background: var(--select-gold);
+  box-shadow: 0 0 2cqw rgb(242 184 75 / 32%);
+}
+
+.playerState {
+  position: absolute;
+  z-index: 2;
+  top: 7cqw;
+  left: 4cqw;
+  display: flex;
+  align-items: center;
+  gap: 0.7cqw;
+}
+
+.panelRight .playerState {
+  right: 4cqw;
+  left: auto;
+  flex-direction: row-reverse;
+}
+
+.playerState b {
+  padding: 0.45cqw 0.65cqw;
+  color: #071018;
+  background: var(--select-blue);
+  font-size: 0.85cqw;
+}
+
+.panelRight .playerState b {
+  background: var(--select-gold);
+}
+
+.playerState span {
+  color: #71859c;
+  font-size: 0.7cqw;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+.portrait {
+  position: absolute;
+  top: 9cqw;
+  right: 1cqw;
+  bottom: 5cqw;
+  left: 1cqw;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.portrait strong {
+  position: absolute;
+  color: rgb(141 216 255 / 8%);
+  font-size: 35cqw;
+  line-height: 0.8;
+}
+
+.panelRight .portrait strong {
+  color: rgb(242 184 75 / 7%);
+}
+
+.portrait i {
+  position: absolute;
+  bottom: -3cqw;
+  width: 18cqw;
+  height: 34cqw;
+  background:
+    radial-gradient(circle at 50% 17%, #c6d4df 0 8%, transparent 8.4%),
+    linear-gradient(105deg, transparent 32%, #52677e 32.5% 47%, transparent 47.5%),
+    linear-gradient(255deg, transparent 32%, #26384c 32.5% 47%, transparent 47.5%);
+  filter: drop-shadow(0 1cqw 2cqw rgb(0 0 0 / 70%));
+  transform: skew(-3deg);
+}
+
+.panel[data-character="void-walker"] .portrait i {
+  background:
+    radial-gradient(circle at 50% 16%, #9fc9dc 0 8%, transparent 8.4%),
+    linear-gradient(105deg, transparent 29%, #493768 29.5% 49%, transparent 49.5%),
+    linear-gradient(255deg, transparent 29%, #151b32 29.5% 49%, transparent 49.5%);
+  transform: skew(3deg);
+}
+
+.identity {
+  position: relative;
+  z-index: 2;
+}
+
+.identity span {
+  color: #8398ae;
+  font-size: 0.72cqw;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.identity h2 {
+  max-width: 18cqw;
+  margin: 0.55cqw 0 0;
+  font-size: 3.1cqw;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.panelRight .identity h2 {
+  margin-left: auto;
+}
+
+@container (max-width: 760px) {
+  .panel {
+    padding-right: 2cqw;
+    padding-left: 2cqw;
+  }
+
+  .playerState {
+    left: 2cqw;
+  }
+
+  .panelRight .playerState {
+    right: 2cqw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    transition: none;
+  }
+}

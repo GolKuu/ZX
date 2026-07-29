@@ -1,0 +1,107 @@
+.roster {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  align-content: center;
+  padding: 6cqw 1.8cqw 4.8cqw;
+  background: rgb(4 7 11 / 76%);
+  border-right: 1px solid var(--select-line);
+  border-left: 1px solid var(--select-line);
+  backdrop-filter: blur(0.8cqw);
+}
+
+.prompt {
+  margin-bottom: 1.4cqw;
+  text-align: center;
+}
+
+.prompt span {
+  color: var(--select-blue);
+  font-size: 0.7cqw;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+}
+
+.prompt h1 {
+  margin: 0.55cqw 0 0;
+  font-size: 1.45cqw;
+  text-transform: uppercase;
+}
+
+.characterList {
+  display: grid;
+  gap: 0.7cqw;
+}
+
+.characterList button {
+  display: grid;
+  min-height: 6.1cqw;
+  align-items: center;
+  gap: 0.9cqw;
+  padding: 0.75cqw;
+  color: #66778b;
+  cursor: pointer;
+  text-align: left;
+  background: rgb(17 24 34 / 72%);
+  border: 1px solid var(--select-line);
+  grid-template-columns: 4.5cqw 1fr;
+}
+
+.characterList button > i {
+  display: grid;
+  height: 4.5cqw;
+  place-items: center;
+  color: #9bdcff;
+  background: linear-gradient(145deg, #263e52, #101820);
+  font-size: 2.2cqw;
+  font-style: normal;
+  font-weight: 950;
+}
+
+.characterList button[data-character="void-walker"] > i {
+  color: #d0a8ff;
+  background: linear-gradient(145deg, #382c50, #141323);
+}
+
+.characterList button > span {
+  display: grid;
+  min-width: 0;
+  gap: 0.3cqw;
+}
+
+.characterList strong {
+  color: #dce8f5;
+  font-size: 1.15cqw;
+  text-transform: uppercase;
+}
+
+.characterList small {
+  color: #66778b;
+  font-size: 0.65cqw;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.characterList button[data-focused="true"],
+.characterList button:focus-visible {
+  background: rgb(39 67 88 / 78%);
+  border-color: var(--select-blue);
+  box-shadow: 0 0 0 0.2cqw rgb(143 216 255 / 10%);
+  outline: none;
+  transform: translateX(0.35cqw);
+}
+
+.description {
+  min-height: 3.8cqw;
+  margin: 1.2cqw 0 0;
+  color: #718298;
+  font-size: 0.75cqw;
+  line-height: 1.55;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .characterList button {
+    transition: none;
+  }
+}

@@ -12,7 +12,7 @@ import {
   createOutlineMaterial,
   updateOutlineProjection,
 } from '@/src/render/outlineMaterial';
-import { decayFlash, updateRimAxis } from '@/src/render/toonMaterial';
+import { updateRimAxis } from '@/src/render/toonMaterial';
 import { FIXED_SCALE } from '@/src/sim';
 import { useRenderStore } from '@/src/store/renderStore';
 import { ZoroBody } from './zoro/ZoroBody';
@@ -71,7 +71,7 @@ export function ZoroFighter({
     outline.dispose();
   }, [gradient, materials, outline, resources]);
 
-  useFrame(({ camera: activeCamera, clock }, delta) => {
+  useFrame(({ camera: activeCamera, clock }) => {
     rig.current ??= readZoroRig(refs);
     const currentRig = rig.current;
     const fighter = readCombatFighter(fighterId);
@@ -95,10 +95,8 @@ export function ZoroFighter({
     const other = opponent === null
       ? { x: self.x + fighter.facing, z: self.z }
       : { x: opponent.position.x / FIXED_SCALE, z: self.z };
-    const deltaFrames = delta * 60;
     for (const material of toonMaterials) {
       updateRimAxis(material, self, other, activeCamera.matrixWorldInverse);
-      decayFlash(material, deltaFrames);
     }
   });
 

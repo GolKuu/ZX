@@ -68,10 +68,17 @@ export function useMenuNavigation({
     let animationFrame = 0;
     const poll = () => {
       const gamepad = navigator.getGamepads().find((candidate) => candidate !== null);
-      const axis = gamepad?.axes[1] ?? 0;
+      const verticalAxis = gamepad?.axes[1] ?? 0;
+      const horizontalAxis = gamepad?.axes[0] ?? 0;
       const current: PadEdges = {
-        up: (gamepad?.buttons[12]?.pressed ?? false) || axis < -0.65,
-        down: (gamepad?.buttons[13]?.pressed ?? false) || axis > 0.65,
+        up: (gamepad?.buttons[12]?.pressed ?? false)
+          || (gamepad?.buttons[14]?.pressed ?? false)
+          || verticalAxis < -0.65
+          || horizontalAxis < -0.65,
+        down: (gamepad?.buttons[13]?.pressed ?? false)
+          || (gamepad?.buttons[15]?.pressed ?? false)
+          || verticalAxis > 0.65
+          || horizontalAxis > 0.65,
         confirm: gamepad?.buttons[0]?.pressed ?? false,
         back: gamepad?.buttons[1]?.pressed ?? false,
       };

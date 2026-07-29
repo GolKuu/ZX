@@ -16,7 +16,6 @@ import {
 } from '@/src/render/outlineMaterial';
 import {
   createToonMaterial,
-  decayFlash,
   updateRimAxis,
   type ToonMaterial,
 } from '@/src/render/toonMaterial';
@@ -129,7 +128,7 @@ export function Fighter({
     ],
   );
 
-  useFrame(({ clock, camera: activeCamera }, delta) => {
+  useFrame(({ clock, camera: activeCamera }) => {
     const group = groupRef.current;
     if (!group) {
       return;
@@ -141,11 +140,9 @@ export function Fighter({
     const target = opponent ?? [position[0] + facing, 0, position[2]];
     const self = { x: position[0], z: position[2] };
     const other = { x: target[0] ?? 0, z: target[2] ?? 0 };
-    const deltaFrames = delta * 60;
     const materials: readonly ToonMaterial[] = [cloth, skin, coatMaterial];
     for (const material of materials) {
       updateRimAxis(material, self, other, activeCamera.matrixWorldInverse);
-      decayFlash(material, deltaFrames);
     }
   });
 
