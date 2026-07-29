@@ -26,11 +26,8 @@ type HudState = {
   menuFocus: number;
   touchControlsForced: boolean;
   result: MatchResult;
-  previewComboFrames: number;
   publishSnapshot: (snapshot: HudSnapshot) => void;
-  advancePreview: (frames: number) => void;
-  registerPreviewHit: () => void;
-  resetPreview: () => void;
+  resetMatchUi: () => void;
   openPause: () => void;
   resume: () => void;
   openControls: () => void;
@@ -54,7 +51,7 @@ const initialSnapshot = (mode: MatchMode = 'local'): HudSnapshot => ({
       health: 1000,
       maxHealth: 1000,
       superCharge: 0,
-      roundWins: 1,
+      roundWins: 0,
     },
     {
       id: 'p2',
@@ -85,64 +82,12 @@ export const useHudStore = create<HudState>((set) => ({
   menuFocus: 0,
   touchControlsForced: false,
   result: initialResult,
-  previewComboFrames: 0,
   publishSnapshot: (snapshot) => set({ snapshot }),
-  advancePreview: (frames) =>
-    set((state) => {
-      if (
-        state.screen !== 'fight'
-        || !Number.isInteger(frames)
-        || frames <= 0
-      ) {
-        return state;
-      }
-      const comboFrames = Math.max(0, state.previewComboFrames - frames);
-      return {
-        snapshot: {
-          ...state.snapshot,
-          frame: state.snapshot.frame + frames,
-          timerFrames: Math.max(0, state.snapshot.timerFrames - frames),
-          combo: comboFrames === 0 ? null : state.snapshot.combo,
-        },
-        previewComboFrames: comboFrames,
-      };
-    }),
-  registerPreviewHit: () =>
-    set((state) => {
-      const [left, right] = state.snapshot.fighters;
-      const damage = 74;
-      const nextHealth = Math.max(0, right.health - damage);
-      const previousCombo =
-        state.previewComboFrames > 0
-        && state.snapshot.combo?.attackerId === left.id
-          ? state.snapshot.combo
-          : null;
-      return {
-        snapshot: {
-          ...state.snapshot,
-          fighters: [
-            left,
-            {
-              ...right,
-              health: nextHealth,
-              superCharge: Math.round((1 - nextHealth / right.maxHealth) * 100),
-            },
-          ],
-          combo: {
-            attackerId: left.id,
-            hits: (previousCombo?.hits ?? 0) + 1,
-            damage: (previousCombo?.damage ?? 0) + damage,
-          },
-        },
-        previewComboFrames: 90,
-      };
-    }),
-  resetPreview: () =>
+  resetMatchUi: () =>
     set((state) => ({
       snapshot: initialSnapshot(state.mode ?? 'local'),
       screen: 'fight',
       menuFocus: 0,
-      previewComboFrames: 0,
     })),
   openPause: () => set({ screen: 'pause', menuFocus: 0 }),
   resume: () => set({ screen: 'fight', menuFocus: 0 }),
@@ -155,7 +100,6 @@ export const useHudStore = create<HudState>((set) => ({
       screen: mode === 'online' ? 'online' : 'fight',
       snapshot: initialSnapshot(mode),
       menuFocus: 0,
-      previewComboFrames: 0,
     }),
   setMenuFocus: (menuFocus) => set({ menuFocus }),
   toggleTouchControls: () =>

@@ -57,7 +57,7 @@ export function CombatGameLoop() {
     const resetVersion = readCombatResetVersion();
     if (resetVersion !== handledReset.current) {
       handledReset.current = resetVersion;
-      useHudStore.getState().resetPreview();
+      useHudStore.getState().resetMatchUi();
       session.reset();
     }
     const hud = useHudStore.getState();
