@@ -17,7 +17,14 @@ const FILE_BUDGETS = new Map([
 const UNCOMPRESSED_FORMATS = new Set(['.bmp', '.gltf', '.tif', '.tiff', '.wav']);
 
 async function collectFiles(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
+  let entries;
+  try {
+    entries = await readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if (error && typeof error === 'object' && error.code === 'ENOENT') return [];
+    throw error;
+  }
+
   const nested = await Promise.all(entries.map(async (entry) => {
     const target = path.join(directory, entry.name);
     return entry.isDirectory() ? collectFiles(target) : [target];
