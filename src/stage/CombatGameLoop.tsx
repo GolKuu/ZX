@@ -11,6 +11,7 @@ import {
   IDOL_COMMANDS,
   KADE_COMMANDS,
   KeyboardInputSource,
+  MIM_COMMANDS,
   PLAYER_TWO_BINDINGS,
 } from '@/src/input';
 import { useControlStore } from '@/src/store/controlStore';
@@ -87,5 +88,6 @@ export function CombatGameLoop({
 function commandsFor(characterId: CharacterId) {
   if (characterId === 'aang') return AANG_COMMANDS;
   if (characterId === 'idol') return IDOL_COMMANDS;
+  if (characterId === 'mim') return MIM_COMMANDS;
   return KADE_COMMANDS;
 }

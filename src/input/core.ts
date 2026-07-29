@@ -46,6 +46,10 @@ export {
 } from './idolCommands.js';
 
 export {
+  MIM_COMMANDS,
+} from './mimCommands.js';
+
+export {
   DEFAULT_CONTEXT,
   KADE_COMMANDS,
   isGuarding,

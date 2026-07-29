@@ -9,6 +9,7 @@ import { AANG_NORMAL_MOVES } from '@/src/data/aang-combat-moves';
 import { AANG_SPECIAL_MOVES } from '@/src/data/aang-special-moves';
 import { IDOL_AI_LOADOUT } from '@/src/data/idol-ai';
 import { IDOL_MOVES } from '@/src/data/idol-combat-moves';
+import { MIM_MOVES } from '@/src/data/mim-moves';
 import { ROSTER_ADDITION_MOVES } from '@/src/data/roster-moves';
 import { HudBridge } from '@/src/hud';
 import {
@@ -25,6 +26,7 @@ import { useHudStore } from '@/src/store/hudStore';
  */
 export const ALL_COMBAT_MOVES = [
   ...KADE_MOVES,
+  ...MIM_MOVES,
   ...ROSTER_ADDITION_MOVES,
   ...AANG_NORMAL_MOVES,
   ...AANG_SPECIAL_MOVES,
