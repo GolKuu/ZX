@@ -26,7 +26,6 @@ import {
   type Material,
   type Object3D,
 } from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { ToonMaterial } from '@/src/render/toonMaterial';
 import type { SkinnedOutlineMaterial } from '@/src/render/skinnedOutlineMaterial';
 import {
