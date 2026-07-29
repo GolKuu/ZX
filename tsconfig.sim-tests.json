@@ -15,5 +15,10 @@
     "declaration": false,
     "sourceMap": false
   },
-  "include": ["src/sim/**/*.ts", "src/data/combat-moves.ts"]
+  "include": [
+    "src/sim/**/*.ts",
+    "src/ai/**/*.ts",
+    "src/data/combat-moves.ts",
+    "src/data/combat-ai.ts"
+  ]
 }

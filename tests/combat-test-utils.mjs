@@ -28,12 +28,14 @@ export function makeMove(overrides = {}) {
           hitstop: overrides.hitstop ?? { attacker: 0, defender: 0 },
           hitstun: overrides.hitstun ?? 5,
           knockback: overrides.knockback ?? { x: 0, y: 0 },
+          block: overrides.block,
           wallBounce: overrides.wallBounce,
           groundBounce: overrides.groundBounce,
         },
       },
     ],
     hurtboxes: overrides.hurtboxes,
+    cancels: overrides.cancels,
   };
 }
 
