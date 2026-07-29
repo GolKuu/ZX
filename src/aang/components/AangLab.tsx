@@ -6,6 +6,7 @@ import { AANG_MOVES } from '../moves';
 import type { AangMove, AangElement } from '../types';
 import { AangStage } from './AangStage';
 import { MoveCard } from './MoveCard';
+import filterStyles from './AangFilters.module.css';
 import styles from './AangLab.module.css';
 
 type MoveFilter = Exclude<AangElement, 'avatar'> | 'specials';
@@ -75,7 +76,7 @@ export function AangLab() {
         </p>
       </section>
 
-      <nav className={styles.filters} aria-label="Группы приёмов">
+      <nav className={filterStyles.filters} aria-label="Группы приёмов">
         {FILTERS.map((item) => (
           <button
             type="button"

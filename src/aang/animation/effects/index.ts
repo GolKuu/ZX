@@ -1,9 +1,14 @@
 import type { EffectMotion } from '../../types';
+import { AIR_FIRE_EFFECTS } from './airFire';
+import { EARTH_WATER_EFFECTS } from './earthWater';
 import { SPECIAL_EFFECTS } from './special';
-import { STANDARD_EFFECTS } from './standard';
 import type { EffectAnimation } from './types';
 
-const EFFECTS = { ...STANDARD_EFFECTS, ...SPECIAL_EFFECTS };
+const EFFECTS = {
+  ...AIR_FIRE_EFFECTS,
+  ...EARTH_WATER_EFFECTS,
+  ...SPECIAL_EFFECTS,
+};
 
 export function getEffectAnimation(effect: EffectMotion): EffectAnimation {
   const animation = EFFECTS[effect];

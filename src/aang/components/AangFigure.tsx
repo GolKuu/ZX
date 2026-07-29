@@ -1,8 +1,8 @@
-import styles from './AangStage.module.css';
+import styles from './AangFigure.module.css';
 
 export function AangFigure() {
   return (
-    <g data-part="root">
+    <g data-part="root" className={styles.root}>
       <g data-part="staff" className={styles.staff}>
         <path d="M58 45 126 221" />
         <path d="m57 46-14-10m14 10 16-4" />

@@ -1,4 +1,4 @@
-import styles from './AangStage.module.css';
+import styles from './AangFigure.module.css';
 
 export function OpponentDummy() {
   return (
