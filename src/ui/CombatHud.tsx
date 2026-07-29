@@ -134,7 +134,7 @@ function CharacterPortrait({
 }) {
   return (
     <figure className={styles.portrait}>
-      <span className={styles.portraitMark} aria-hidden="true">K</span>
+      <span className={styles.portraitMark} aria-hidden="true">Z</span>
       <i aria-hidden="true" />
       <figcaption>{fighter.playerTag}</figcaption>
     </figure>

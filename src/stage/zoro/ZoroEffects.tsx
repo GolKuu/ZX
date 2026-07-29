@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs -- R3F refs are attached here, never read during render. */
 import type { ZoroRigRefs } from './zoroRigRefs';
 import type { ZoroMaterials } from './zoroMaterials';
 import type { ZoroResources } from './zoroResources';

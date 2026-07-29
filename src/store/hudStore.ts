@@ -37,7 +37,7 @@ const initialSnapshot = (): HudSnapshot => ({
   fighters: [
     {
       id: 'p1',
-      displayName: 'Kade Ruven',
+      displayName: 'Roronoa Zoro',
       playerTag: 'P1',
       side: 'left',
       health: 1000,
@@ -47,7 +47,7 @@ const initialSnapshot = (): HudSnapshot => ({
     },
     {
       id: 'p2',
-      displayName: 'Kade Ruven',
+      displayName: 'Roronoa Zoro',
       playerTag: 'P2',
       side: 'right',
       health: 1000,
@@ -60,7 +60,7 @@ const initialSnapshot = (): HudSnapshot => ({
 });
 
 const initialResult: MatchResult = {
-  winner: 'Kade Ruven',
+  winner: 'Roronoa Zoro',
   rounds: '2–1',
   maxCombo: 6,
   clashes: 2,

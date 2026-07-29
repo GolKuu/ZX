@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs -- R3F refs are attached here, never read during render. */
 import type { Material } from 'three';
 import { FighterPart } from '../FighterPart';
 import { ZoroEffects } from './ZoroEffects';

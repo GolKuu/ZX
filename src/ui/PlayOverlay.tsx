@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { CombatHud } from './CombatHud';
 import { useHudStore } from '@/src/store/hudStore';
 import { useRenderStore } from '@/src/store/renderStore';
+import { ZoroMoveList } from './ZoroMoveList';
 import styles from './PlayOverlay.module.css';
 
 const DevelopmentFpsMeter = dynamic(
@@ -25,6 +26,7 @@ export function PlayOverlay() {
   return (
     <div className={styles.overlay}>
       <CombatHud />
+      <ZoroMoveList />
       {process.env.NODE_ENV !== 'production' && (
         <aside className={styles.devTools} aria-label="Development tools">
           <span className={styles.fps}><DevelopmentFpsMeter /></span>

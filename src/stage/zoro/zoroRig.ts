@@ -77,7 +77,14 @@ export function setPosition(
 }
 
 export function pulse(value: number, peak = 0.5): number {
-  return Math.sin(Math.min(1, value / peak) * Math.PI);
+  if (value <= peak) {
+    return Math.sin((value / peak) * Math.PI * 0.5);
+  }
+  return Math.cos(
+    ((Math.min(1, value) - peak) / Math.max(0.001, 1 - peak))
+      * Math.PI
+      * 0.5,
+  );
 }
 
 export function smooth(value: number): number {
