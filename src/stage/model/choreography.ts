@@ -27,18 +27,16 @@
  * animation is not allowed to do (rule R4).
  */
 
-import type { HumanoidJoints } from './humanoidBones';
-import type { PoseRest, RosterAttackPose } from './rosterPoseTools';
-
-export interface ChoreographyBeat {
+/**
+ * Generic over the rig types on purpose. A scheduler does not need to know what
+ * a joint is, and keeping it ignorant means it carries no three.js dependency
+ * and can be unit-tested as pure timing logic.
+ */
+export interface ChoreographyBeat<TJoints, TRest> {
   /** Frames this key pose is held. Two and three are the useful values. */
   readonly hold: number;
   /** The key pose itself. Receives 0..1 across the beat for micro-drift only. */
-  readonly pose: (
-    joints: HumanoidJoints,
-    rest: PoseRest,
-    within: number,
-  ) => void;
+  readonly pose: (joints: TJoints, rest: TRest, within: number) => void;
   /**
    * Marks a one-frame over-extension. Held for exactly one frame regardless of
    * `hold`, because a smear that lingers stops being a smear and becomes a
@@ -49,13 +47,13 @@ export interface ChoreographyBeat {
   readonly name?: string;
 }
 
-export interface Choreography {
+export interface Choreography<TJoints = unknown, TRest = unknown> {
   readonly moveId: string;
-  readonly beats: readonly ChoreographyBeat[];
+  readonly beats: readonly ChoreographyBeat<TJoints, TRest>[];
 }
 
 /** Frames a sequence occupies. Smear beats always count as one. */
-export function sequenceLength(sequence: Choreography): number {
+export function sequenceLength(sequence: Choreography<never, never>): number {
   let total = 0;
   for (const beat of sequence.beats) {
     total += beat.smear === true ? 1 : Math.max(1, beat.hold);
@@ -63,8 +61,8 @@ export function sequenceLength(sequence: Choreography): number {
   return total;
 }
 
-export interface ResolvedBeat {
-  readonly beat: ChoreographyBeat;
+export interface ResolvedBeat<TJoints, TRest> {
+  readonly beat: ChoreographyBeat<TJoints, TRest>;
   readonly index: number;
   /** Progress inside this beat, 0..1. */
   readonly within: number;
@@ -76,10 +74,10 @@ export interface ResolvedBeat {
  * Past the end the final beat is held rather than falling back to idle — the
  * recovery of a move should settle from where the string ended, not snap.
  */
-export function beatAt(
-  sequence: Choreography,
+export function beatAt<TJoints, TRest>(
+  sequence: Choreography<TJoints, TRest>,
   frame: number,
-): ResolvedBeat | null {
+): ResolvedBeat<TJoints, TRest> | null {
   const beats = sequence.beats;
   if (beats.length === 0) return null;
 
@@ -102,10 +100,10 @@ export function beatAt(
 }
 
 /** Apply the beat showing on `frame`. Returns false if there is nothing to show. */
-export function applyChoreography(
-  joints: HumanoidJoints,
-  rest: PoseRest,
-  sequence: Choreography,
+export function applyChoreography<TJoints, TRest>(
+  joints: TJoints,
+  rest: TRest,
+  sequence: Choreography<TJoints, TRest>,
   frame: number,
 ): boolean {
   const resolved = beatAt(sequence, frame);
@@ -124,8 +122,16 @@ export function applyChoreography(
  * string has its own internal rhythm, and forcing it onto windup/strike/settle
  * is what flattens choreography back into a single swing.
  */
-export function asAttackPose(sequence: Choreography): RosterAttackPose {
-  const length = sequenceLength(sequence);
+export function asAttackPose<TJoints, TRest>(
+  sequence: Choreography<TJoints, TRest>,
+): (
+  joints: TJoints,
+  rest: TRest,
+  windup: number,
+  strike: number,
+  settle: number,
+) => void {
+  const length = sequenceLength(sequence as Choreography<never, never>);
   return (joints, rest, windup, strike, settle) => {
     const progress = combineProgress(windup, strike, settle);
     applyChoreography(joints, rest, sequence, progress * (length - 1));

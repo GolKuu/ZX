@@ -20,6 +20,9 @@ import {
 import type { Choreography } from './choreography';
 import type { HumanoidJoints } from './humanoidBones';
 
+/** Every sequence in this file poses a resolved humanoid rig. */
+export type Sequence = Choreography<HumanoidJoints, PoseRest>;
+
 /* ------------------------------------------------------------------ */
 /* Blade Phantom — three-blade string                                  */
 /* ------------------------------------------------------------------ */
@@ -29,7 +32,7 @@ import type { HumanoidJoints } from './humanoidBones';
  * a held finish. The character's identity is the *sequence*, so the string
  * spends its frames on distinct key poses rather than one long swing.
  */
-export const BLADE_PHANTOM_STRING: Choreography = {
+export const BLADE_PHANTOM_STRING: Sequence = {
   moveId: '5H',
   beats: [
     {
@@ -145,7 +148,7 @@ export const BLADE_PHANTOM_STRING: Choreography = {
  * the body. The stillness is the choreography — for a character whose whole
  * design pillar is composure, the held empty beat does more than a flourish.
  */
-export const VOID_WALKER_STRING: Choreography = {
+export const VOID_WALKER_STRING: Sequence = {
   moveId: 'overtake',
   beats: [
     {
@@ -247,10 +250,10 @@ function stance(joints: HumanoidJoints, rest: PoseRest, sink: number): void {
 }
 
 /** Sequences by move id, per character. */
-export const BLADE_PHANTOM_CHOREOGRAPHY: readonly Choreography[] = [
+export const BLADE_PHANTOM_CHOREOGRAPHY: readonly Sequence[] = [
   BLADE_PHANTOM_STRING,
 ];
 
-export const VOID_WALKER_CHOREOGRAPHY: readonly Choreography[] = [
+export const VOID_WALKER_CHOREOGRAPHY: readonly Sequence[] = [
   VOID_WALKER_STRING,
 ];
