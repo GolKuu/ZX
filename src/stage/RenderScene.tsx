@@ -4,11 +4,12 @@ import type {
   CharacterId,
   CharacterSelection,
 } from '@/src/data/characterRoster';
+import { AangFighter } from './AangFighter';
+import { AttackCue } from './AttackCue';
 import { Arena } from './Arena';
 import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
 import { FrameProfiler } from './FrameProfiler';
-import { ImpactBurst } from './ImpactBurst';
 import { LazyPostEffects } from './LazyPostEffects';
 import { SpeedLines } from './SpeedLines';
 import { VoidWalkerFighter } from './VoidWalkerFighter';
@@ -40,7 +41,7 @@ export function RenderScene({
         characterId={fighterSelection[1]}
         fighterId="p2"
       />
-      <ImpactBurst />
+      <AttackCue />
       <CameraRig />
       <LazyPostEffects />
       <FrameProfiler />
@@ -59,6 +60,9 @@ function SelectedFighter({
 }) {
   if (characterId === 'zoro') {
     return <ZoroFighter auraColor={auraColor} fighterId={fighterId} />;
+  }
+  if (characterId === 'aang') {
+    return <AangFighter auraColor={auraColor} fighterId={fighterId} />;
   }
   return <VoidWalkerFighter auraColor={auraColor} fighterId={fighterId} />;
 }

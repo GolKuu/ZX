@@ -144,3 +144,12 @@ export function updateRimAxis(
     (e[2] ?? 0) * AXIS.x + (e[6] ?? 0) * AXIS.y + (e[10] ?? 1) * AXIS.z,
   );
 }
+
+/**
+ * Compatibility shim for character branches created before hit flashes were
+ * removed. It intentionally does nothing; new fighters should not call it.
+ */
+export function decayFlash(
+  _material: ToonMaterial,
+  _deltaFrames: number,
+): void {}

@@ -1,4 +1,4 @@
-export type CharacterId = 'zoro' | 'void-walker';
+export type CharacterId = 'zoro' | 'aang' | 'void-walker';
 
 export type CharacterSelection = readonly [CharacterId, CharacterId];
 
@@ -18,6 +18,14 @@ export const CHARACTER_ROSTER = [
     description:
       'Точный боец с тремя клинками, быстрыми сериями и сильным давлением вблизи.',
     mark: 'Z',
+  },
+  {
+    id: 'aang',
+    displayName: 'Avatar Aang',
+    archetype: 'Аватар · контроль стихий',
+    description:
+      'Быстрый и мобильный мастер четырёх стихий с сильным контролем пространства и высоким комбо-потенциалом.',
+    mark: 'A',
   },
   {
     id: 'void-walker',

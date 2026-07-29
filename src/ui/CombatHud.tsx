@@ -6,6 +6,7 @@ import type {
   HudFighterSnapshot,
   HudSnapshot,
 } from '@/src/hud/types';
+import { CHARACTER_ROSTER } from '@/src/data/characterRoster';
 import { MatchMenus } from './MatchMenus';
 import styles from './CombatHud.module.css';
 
@@ -109,7 +110,9 @@ function CharacterPortrait({
 }: {
   readonly fighter: HudFighterSnapshot;
 }) {
-  const portraitMark = fighter.displayName === 'Void Walker' ? 'V' : 'Z';
+  const portraitMark = CHARACTER_ROSTER.find(
+    (character) => character.displayName === fighter.displayName,
+  )?.mark ?? '?';
   return (
     <figure className={styles.portrait}>
       <span className={styles.portraitMark} aria-hidden="true">{portraitMark}</span>
