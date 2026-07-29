@@ -9,7 +9,7 @@ import {
 import { useHudStore } from '@/src/store/hudStore';
 import { useRenderStore } from '@/src/store/renderStore';
 import { publishCombatFrame } from './combatRuntime';
-import { isAttackInputLocked } from './attackInputPolicy';
+import { AttackInputPolicy } from './attackInputPolicy';
 import {
   createCombatAi,
   createCombatEngine,
@@ -29,7 +29,7 @@ export class CombatSession {
   private ended = false;
   private comboHits = 0;
   private maxCombo = 0;
-  private readonly contactedActions = new Map<string, number>();
+  private readonly attackInput = new AttackInputPolicy(KADE_MOVES);
 
   public constructor(
     private readonly playerOne: KeyboardInputSource,
@@ -54,7 +54,7 @@ export class CombatSession {
     this.ended = false;
     this.comboHits = 0;
     this.maxCombo = 0;
-    this.contactedActions.clear();
+    this.attackInput.reset();
     this.publishInitialState();
   }
 
@@ -67,19 +67,19 @@ export class CombatSession {
     const opponentInput = mode === 'local'
       ? this.playerTwo.sample(
           opponent.facing,
-          this.attacksLockedFor(opponent),
+          this.attackInput.isLocked(opponent),
         )
       : this.ai.decide(before, this.lastEvents).input;
     const result = this.engine.tick({
       p1: this.playerOne.sample(
         player.facing,
-        this.attacksLockedFor(player),
+        this.attackInput.isLocked(player),
       ),
       p2: opponentInput,
     });
     this.timerFrames = Math.max(0, this.timerFrames - 1);
     this.lastEvents = result.events;
-    this.rememberContacts(result.state, result.events);
+    this.attackInput.accept(result.state, result.events);
     publishCombatFrame(result.state, 0);
     this.publishHud(result.state, result.events);
     this.handleImpact(result.events);
@@ -117,30 +117,6 @@ export class CombatSession {
     this.comboHits += hits;
     this.maxCombo = Math.max(this.maxCombo, this.comboHits);
     useRenderStore.getState().triggerImpact();
-  }
-
-  private attacksLockedFor(fighter: WorldSnapshot['fighters'][number]): boolean {
-    return isAttackInputLocked(
-      fighter,
-      KADE_MOVES,
-      this.contactedActions.get(fighter.id),
-    );
-  }
-
-  private rememberContacts(
-    world: WorldSnapshot,
-    events: readonly CombatEvent[],
-  ): void {
-    for (const event of events) {
-      if (event.type === 'hit' || event.type === 'block') {
-        const attacker = readFighter(world, event.attackerId);
-        if (attacker.action !== null) {
-          this.contactedActions.set(attacker.id, attacker.action.serial);
-        }
-      } else if (event.type === 'moveEnded') {
-        this.contactedActions.delete(event.fighterId);
-      }
-    }
   }
 
   private finish(world: WorldSnapshot): void {
