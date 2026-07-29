@@ -131,6 +131,13 @@ function validateHit(hit: HitData, label: string): void {
       hit.wallBounce.verticalSpeed,
       `${label}.wallBounce.verticalSpeed`,
     );
+    assertNonNegativeInteger(
+      hit.wallBounce.minimumHitstun,
+      `${label}.wallBounce.minimumHitstun`,
+    );
+    if (hit.wallBounce.count > 0 && hit.wallBounce.horizontalSpeed === 0) {
+      throw new Error(`${label}.wallBounce.horizontalSpeed must be positive`);
+    }
   }
   if (hit.groundBounce !== undefined) {
     assertNonNegativeInteger(hit.groundBounce.count, `${label}.groundBounce.count`);
@@ -139,6 +146,13 @@ function validateHit(hit: HitData, label: string): void {
       `${label}.groundBounce.verticalSpeed`,
     );
     assertRatio(hit.groundBounce.horizontalScale, `${label}.groundBounce.horizontalScale`);
+    assertNonNegativeInteger(
+      hit.groundBounce.minimumHitstun,
+      `${label}.groundBounce.minimumHitstun`,
+    );
+    if (hit.groundBounce.count > 0 && hit.groundBounce.verticalSpeed === 0) {
+      throw new Error(`${label}.groundBounce.verticalSpeed must be positive`);
+    }
   }
 }
 

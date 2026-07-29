@@ -11,6 +11,7 @@ desktop.ini
 *.log
 .vercel
 .tools
+.sim-test-build
 supabase/.temp
 supabase/.branches
 *.tsbuildinfo

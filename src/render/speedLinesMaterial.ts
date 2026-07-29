@@ -1,0 +1,47 @@
+import { Color, ShaderMaterial } from 'three';
+
+const vertexShader = /* glsl */ `
+  varying vec2 vUv;
+
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const fragmentShader = /* glsl */ `
+  uniform float uTime;
+  uniform float uIntensity;
+  uniform vec3 uAccent;
+  varying vec2 vUv;
+
+  void main() {
+    vec2 point = vUv - 0.5;
+    point.x *= 1.72;
+    float radius = length(point);
+    float angle = atan(point.y, point.x);
+    float sectors = abs(sin(angle * 38.0 + sin(angle * 7.0) * 2.0));
+    float spokes = pow(sectors, 28.0);
+    float motion = pow(1.0 - fract(radius * 8.0 - uTime * 1.9), 5.0);
+    float outerMask = smoothstep(0.1, 0.38, radius);
+    float edgeFade = 1.0 - smoothstep(0.42, 0.72, radius);
+    float lines = spokes * motion * outerMask * edgeFade * uIntensity;
+    float glow = (1.0 - smoothstep(0.0, 0.8, radius)) * 0.08;
+    vec3 base = mix(vec3(0.018, 0.027, 0.065), vec3(0.008, 0.012, 0.03), vUv.y);
+    gl_FragColor = vec4(base + uAccent * (lines * 1.8 + glow), 1.0);
+  }
+`;
+
+export function createSpeedLinesMaterial() {
+  return new ShaderMaterial({
+    uniforms: {
+      uAccent: { value: new Color('#41cfff') },
+      uIntensity: { value: 0.85 },
+      uTime: { value: 0 },
+    },
+    vertexShader,
+    fragmentShader,
+    depthWrite: false,
+    toneMapped: false,
+  });
+}
