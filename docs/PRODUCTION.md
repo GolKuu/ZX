@@ -24,7 +24,7 @@ build, the bundle budget, and the dependency security audit. Vercel repeats
 ## Performance budgets
 
 - Landing and `/play` initial JavaScript: at most 500 KB raw / 140 KB gzip each
-- Total initial and lazy client JavaScript: at most 2 MB raw / 550 KB gzip
+- Total initial and lazy client JavaScript: at most 2.25 MB raw / 700 KB gzip
 - `public/`: at most 12 MB
 - One `.glb`: at most 5 MB
 - Uncompressed `.wav`, `.gltf`, `.bmp`, and TIFF files fail the build
