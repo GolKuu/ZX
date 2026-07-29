@@ -1,5 +1,5 @@
 import type { MoveFrameData } from '../sim/frame-data.js';
-import type { FighterSnapshot } from '../sim/state.js';
+import type { FighterInput, FighterSnapshot } from '../sim/state.js';
 import {
   approachInput,
   distanceBetween,
@@ -68,9 +68,7 @@ export class NeutralPlanner {
 }
 
 function inputPlan(
-  input: PlannedAction extends infer _Unused ? {
-    movement?: -1 | 0 | 1;
-  } : never,
+  input: FighterInput,
   intent: 'approach' | 'retreat' | 'idle',
 ): PlannedAction {
   return { kind: 'input', input, intent };
