@@ -66,9 +66,9 @@ export function createArenaFloorMaterial(
   // dielectric surface with a real albedo gives the shadow something to remove,
   // and the low roughness keeps the polished sheen that made it worth doing.
   const material = new MeshStandardMaterial({
-    color: new Color(options.base ?? '#1d1530'),
-    metalness: 0.16,
-    roughness: 0.34,
+    color: new Color(options.base ?? '#3a2b58'),
+    metalness: 0.12,
+    roughness: 0.4,
     dithering: true,
   }) as ArenaFloorMaterial;
 
@@ -200,12 +200,13 @@ export function createArenaFloorMaterial(
           float streak = exp( -( vArenaXz.x * vArenaXz.x ) / ( width * width ) );
           float fade   = pow( 1.0 - depth, 1.5 );
           float wobble = 0.78 + arenaNoise( vArenaXz * 3.1 + vec2( 0.0, uTime * 0.25 ) ) * 0.44;
-          totalEmissiveRadiance += uReflection * streak * fade * wobble * 0.34;
+          totalEmissiveRadiance += uReflection * streak * fade * wobble * 0.34 * glow;
 
-          // Centre of the disc darkens — a cheap ambient occlusion read that
-          // survives even when the AO pass is off, and it keeps the ground
-          // directly under the fighters as the darkest part of the disc.
-          diffuseColor.rgb *= mix( 0.55, 1.04, t );
+          // Slight centre falloff. Deliberately gentle: the fighters stand in
+          // the middle of this disc, and darkening the ground they occupy is
+          // the same mistake as a black floor — it leaves their cast shadow
+          // nothing to be darker than.
+          diffuseColor.rgb *= mix( 0.82, 1.05, t );
         }
         `,
       );

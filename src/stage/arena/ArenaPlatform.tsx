@@ -24,7 +24,7 @@ export function ArenaPlatform({ stoneMaterial }: ArenaPlatformProps) {
   const floorMaterial: ArenaFloorMaterial = useMemo(
     () =>
       createArenaFloorMaterial({
-        base: '#1d1530',
+        base: '#3a2b58',
         edge: '#d78cff',
         line: '#7b46c8',
         radius: ARENA_RADIUS,
