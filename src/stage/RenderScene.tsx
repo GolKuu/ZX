@@ -7,7 +7,7 @@ import { FrameProfiler } from './FrameProfiler';
 import { ImpactBurst } from './ImpactBurst';
 import { LazyPostEffects } from './LazyPostEffects';
 import { SpeedLines } from './SpeedLines';
-import { ZoroFighter } from './ZoroFighter';
+import { VoidWalkerFighter } from './VoidWalkerFighter';
 
 export function RenderScene() {
   return (
@@ -21,12 +21,12 @@ export function RenderScene() {
       <SpeedLines />
       <Arena />
       <CombatGameLoop />
-      <ZoroFighter
-        auraColor="#3dff9a"
+      <VoidWalkerFighter
+        auraColor="#5cd8ff"
         fighterId="p1"
       />
-      <ZoroFighter
-        auraColor="#ff6d72"
+      <VoidWalkerFighter
+        auraColor="#b07cff"
         fighterId="p2"
       />
       <ImpactBurst />
