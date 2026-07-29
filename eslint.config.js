@@ -1,19 +1,32 @@
-import { FlatCompat } from '@eslint/eslintrc';
+import js from '@eslint/js';
+import nextPlugin from '@next/eslint-plugin-next';
+import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import tseslint from 'typescript-eslint';
 
-const baseDirectory = dirname(fileURLToPath(import.meta.url));
-const compat = new FlatCompat({ baseDirectory });
-
-export default [
+export default tseslint.config(
   {
     ignores: ['.next/**', 'dist/**', '.tools/**', 'node_modules/**', 'next-env.d.ts'],
   },
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
+    files: ['**/*.{js,mjs,ts,tsx}'],
+    extends: [js.configs.recommended],
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [...tseslint.configs.recommended],
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    plugins: {
+      '@next/next': nextPlugin,
+      'react-hooks': reactHooks,
+    },
     rules: {
-      'react/no-unknown-property': 'off',
+      ...reactHooks.configs.flat.recommended.rules,
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
+      'react-hooks/set-state-in-effect': 'off',
     },
   },
   {
@@ -30,4 +43,4 @@ export default [
       },
     },
   },
-];
+);
