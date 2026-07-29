@@ -5,6 +5,7 @@ import type {
   TelegraphCommittedEvent,
   TelegraphStartedEvent,
 } from './types.js';
+import type { FighterSnapshot } from '../sim/state.js';
 
 export interface TelegraphRequest {
   readonly moveId: string;
@@ -18,6 +19,7 @@ export interface TelegraphRequest {
 export interface TelegraphProgress {
   readonly committed: TelegraphRequest | null;
   readonly events: readonly AiEvent[];
+  readonly cancelledReason?: TelegraphCancelledEvent['reason'];
 }
 
 export class TelegraphController {
@@ -79,6 +81,35 @@ export class TelegraphController {
     return { committed, events: [event] };
   }
 
+  public evaluate(
+    frame: number,
+    fighterId: string,
+    self: FighterSnapshot,
+    opponent: FighterSnapshot,
+  ): TelegraphProgress {
+    const request = this.pending;
+    if (request === null) {
+      return { committed: null, events: [] };
+    }
+    const reason =
+      self.hitstun > 0 || self.health === 0
+        ? 'hit'
+        : request.intent === 'combo' && opponent.hitstun === 0
+          ? 'targetRecovered'
+          : sourceChanged(self, request)
+            ? 'stateChanged'
+            : null;
+    if (reason !== null) {
+      const event = this.cancel(frame, fighterId, reason);
+      return {
+        committed: null,
+        events: event === null ? [] : [event],
+        cancelledReason: reason,
+      };
+    }
+    return this.advance(frame, fighterId, self.hitstop > 0);
+  }
+
   public cancel(
     frame: number,
     fighterId: string,
@@ -120,4 +151,18 @@ export class TelegraphController {
   public reset(): void {
     this.pending = null;
   }
+}
+
+function sourceChanged(
+  self: FighterSnapshot,
+  request: TelegraphRequest,
+): boolean {
+  if (request.intent !== 'combo') {
+    return self.action !== null;
+  }
+  return (
+    request.sourceActionSerial !== null
+    && self.action !== null
+    && self.action.serial !== request.sourceActionSerial
+  );
 }
