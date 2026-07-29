@@ -1,4 +1,0 @@
-character_a,character_b,relation_a,matches,side_one_matches,side_two_matches,wins_a,wins_b,tracked_win_rate,advantage_character,advantage_win_rate,average_duration_seconds,a_average_damage,b_average_damage,a_average_combo,b_average_combo,a_auto_combo_per_match,b_auto_combo_per_match,a_blocks_per_match,b_blocks_per_match,a_perfect_blocks_per_match,b_perfect_blocks_per_match,a_combo_escape_per_match,b_combo_escape_per_match,a_combo_break_per_match,b_combo_break_per_match,a_momentum_reversal_per_match,b_momentum_reversal_per_match,a_specials_per_match,b_specials_per_match
-granite,granite,NEUTRAL,2,1,1,2,0,100,,,23.283,264,86,5,2,0,0,5,1,0,0,0,0,2,3,0,2,5,0
-granite,shira,DISADVANTAGE,2,1,1,2,0,100,shira,0,19.75,184,114,4,3,1,1,3,8,0,0,1,0,4,3,0,0,4,2
-shira,shira,NEUTRAL,2,1,1,2,0,100,,,23.117,184,92,9,2,2,3,12,7,1,1,0,7,4,4,2,2,3,4
