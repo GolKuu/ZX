@@ -65,6 +65,7 @@ function SelectedFighter({
   if (url === null) return blockout;
   return (
     <LazyModelFighter
+      characterId={characterId}
       auraColor={auraColor}
       fallback={blockout}
       fighterId={fighterId}

@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import type { ReactNode } from 'react';
+import type { CharacterId } from '@/src/data/characterRoster';
 
 /**
  * Defers the whole rigged-model layer out of the initial bundle.
@@ -22,18 +23,21 @@ interface LazyModelFighterProps {
   readonly url: string;
   readonly auraColor: string;
   readonly fighterId: 'p1' | 'p2';
+  readonly characterId: CharacterId;
   readonly fallback?: ReactNode;
 }
 
 export function LazyModelFighter({
   url,
   auraColor,
+  characterId,
   fighterId,
   fallback = null,
 }: LazyModelFighterProps) {
   return (
     <DeferredModelFighter
       auraColor={auraColor}
+      characterId={characterId}
       fallback={fallback}
       fighterId={fighterId}
       url={url}

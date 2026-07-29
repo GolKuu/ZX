@@ -106,6 +106,8 @@ export function applyFighterPose(
   rest: RestPose,
   fighter: FighterSnapshot,
   time: number,
+  /** Per-character choreographed overrides; falls through when absent. */
+  choreography?: Readonly<Record<string, AttackPose>>,
 ): void {
   reset(joints, rest);
   lift(joints, rest, 0);
@@ -120,7 +122,14 @@ export function applyFighterPose(
       fighter.action.moveId,
       fighter.action.frame,
     );
-    poseAttack(joints, rest, fighter.action.moveId, progress, fighter.facing);
+    poseAttack(
+      joints,
+      rest,
+      fighter.action.moveId,
+      progress,
+      fighter.facing,
+      choreography,
+    );
     return;
   }
 
@@ -338,8 +347,11 @@ function poseAttack(
   moveId: string,
   progress: number,
   facing: -1 | 1,
+  choreography?: Readonly<Record<string, AttackPose>>,
 ): void {
-  const pose = ATTACKS[moveId] ?? straightPunch;
+  // Character choreography wins over the shared pose table. Move ids are
+  // roster-wide, so the scoping has to happen here.
+  const pose = choreography?.[moveId] ?? ATTACKS[moveId] ?? straightPunch;
   const [windup, strike, settle] = beats(progress);
   pose(joints, rest, windup, strike, settle);
   void facing;

@@ -7,6 +7,12 @@ import {
   combatRenderFrame,
   readCombatFighter,
 } from '@/src/game/combatRuntime';
+import {
+  paletteFor,
+  type CharacterPalette,
+  type ZonePalette,
+} from '@/src/data/characterPalettes';
+import type { CharacterId } from '@/src/data/characterRoster';
 import { createCelGradient } from '@/src/render/celGradient';
 import {
   createSkinnedOutlineMaterial,
@@ -20,6 +26,7 @@ import {
   type LoadedFighterModel,
 } from './model/loadFighterModel';
 import { applyArmSilhouette } from './model/armSilhouette';
+import { choreographyFor } from './model/characterChoreography';
 import { applyFighterPose } from './model/modelPose';
 
 /**
@@ -39,6 +46,7 @@ interface ModelFighterProps {
   readonly url: string;
   readonly auraColor: string;
   readonly fighterId: 'p1' | 'p2';
+  readonly characterId: CharacterId;
   /** Rendered while the model is loading, or permanently if it fails. */
   readonly fallback?: ReactNode;
 }
@@ -46,6 +54,7 @@ interface ModelFighterProps {
 export function ModelFighter({
   url,
   auraColor,
+  characterId,
   fighterId,
   fallback = null,
 }: ModelFighterProps) {
@@ -56,8 +65,12 @@ export function ModelFighter({
   const gradient = useMemo(() => createCelGradient(), []);
   const outline = useMemo(() => createSkinnedOutlineMaterial(), []);
   const zones = useMemo(
-    () => createFighterZones(gradient, auraColor),
-    [auraColor, gradient],
+    () => createFighterZones(gradient, auraColor, paletteFor(characterId)),
+    [auraColor, characterId, gradient],
+  );
+  const choreography = useMemo(
+    () => choreographyFor(characterId),
+    [characterId],
   );
 
   const viewportHeight = useThree((state) => state.size.height);
@@ -121,7 +134,13 @@ export function ModelFighter({
     group.position.y = fighter.position.y / FIXED_SCALE;
     group.rotation.y = fighter.facing === 1 ? 0 : Math.PI;
 
-    applyFighterPose(loaded.joints, loaded.rest, fighter, clock.elapsedTime);
+    applyFighterPose(
+      loaded.joints,
+      loaded.rest,
+      fighter,
+      clock.elapsedTime,
+      choreography,
+    );
     applyArmSilhouette(
       loaded.joints,
       loaded.rest.rotations,
@@ -153,28 +172,25 @@ export function ModelFighter({
 function createFighterZones(
   gradient: ReturnType<typeof createCelGradient>,
   auraColor: string,
+  palette: CharacterPalette,
 ): FighterZones {
-  const zone = (
-    color: string,
-    shadowTint: string,
-    rimStrength: number,
-    shadowStrength: number,
-  ) => createToonMaterial({
-    color,
-    gradientMap: gradient,
-    shadowTint,
-    shadowStrength,
-    rimColor: auraColor,
-    rimStrength,
-  });
+  const zone = ({ lit, shade, rim, shadow }: ZonePalette) =>
+    createToonMaterial({
+      color: lit,
+      gradientMap: gradient,
+      shadowTint: shade,
+      shadowStrength: shadow,
+      rimColor: auraColor,
+      rimStrength: rim,
+    });
 
   return {
-    hair: zone('#f2f0fb', '#9b93d6', 1.0, 0.8),
-    skin: zone('#e8c3a4', '#9c6a8a', 0.62, 0.7),
-    coat: zone('#1c1938', '#4a2b8e', 0.85, 0.85),
-    trousers: zone('#161327', '#33265e', 0.7, 0.8),
-    boot: zone('#0e0c18', '#2a2140', 1.1, 0.75),
-    eye: zone('#f8fbff', '#8f9ac4', 0.0, 0.0),
-    body: zone('#1c1938', '#4a2b8e', 0.85, 0.85),
+    hair: zone(palette.hair),
+    skin: zone(palette.skin),
+    coat: zone(palette.coat),
+    trousers: zone(palette.trousers),
+    boot: zone(palette.boot),
+    eye: zone(palette.eye),
+    body: zone(palette.body),
   };
 }
