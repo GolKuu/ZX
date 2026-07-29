@@ -66,6 +66,7 @@ export class CombatEngine {
         frozen.add(fighter.id);
         continue;
       }
+      this.applyNeutralInput(fighter, inputs[fighter.id]);
       this.tryStartMove(fighter, inputs[fighter.id], events);
       integrateFighter(fighter, this.config, this.completedFrames, events);
     }
@@ -137,7 +138,31 @@ export class CombatEngine {
       if (moveId !== undefined && !this.moves.has(moveId)) {
         throw new Error(`Unknown move "${moveId}" for fighter "${fighter.id}"`);
       }
+      const movement = inputs[fighter.id]?.movement;
+      if (movement !== undefined && movement !== -1 && movement !== 0 && movement !== 1) {
+        throw new Error(`Invalid movement for fighter "${fighter.id}"`);
+      }
     }
+  }
+
+  private applyNeutralInput(
+    fighter: MutableFighterState,
+    input: CombatInputs[string],
+  ): void {
+    if (fighter.health === 0 || fighter.hitstun > 0 || fighter.action !== null) {
+      fighter.guarding = false;
+      return;
+    }
+    fighter.guarding = input?.guard ?? false;
+    if (!fighter.grounded) {
+      return;
+    }
+    const movement = fighter.guarding ? 0 : (input?.movement ?? 0);
+    const speed =
+      movement >= 0
+        ? fighter.movement.forwardPerFrame
+        : fighter.movement.backwardPerFrame;
+    fighter.velocity.x = movement * fighter.facing * speed;
   }
 
   private tryStartMove(
@@ -150,6 +175,7 @@ export class CombatEngine {
       || fighter.health === 0
       || fighter.hitstun > 0
       || fighter.action !== null
+      || fighter.guarding
     ) {
       return;
     }
@@ -215,6 +241,7 @@ function snapshotFighter(fighter: MutableFighterState): FighterSnapshot {
     velocity: { ...fighter.velocity },
     facing: fighter.facing,
     grounded: fighter.grounded,
+    guarding: fighter.guarding,
     hitstop: fighter.hitstop,
     hitstun: fighter.hitstun,
     action:

@@ -10,8 +10,38 @@ export function resolveHit(
 ): void {
   const { attacker, defender, hitbox } = candidate;
   const hit = hitbox.hit;
+  const attackerIsInFront =
+    (attacker.position.x - defender.position.x) * defender.facing >= 0;
+  if (defender.guarding && attackerIsInFront && hit.block !== undefined) {
+    defender.action = null;
+    defender.hitstun = Math.max(defender.hitstun, hit.block.blockstun);
+    defender.hitstop = Math.max(defender.hitstop, hit.block.hitstop.defender);
+    attacker.hitstop = Math.max(attacker.hitstop, hit.block.hitstop.attacker);
+    defender.velocity.x = clampInteger(
+      hit.block.knockback.x * attacker.facing,
+      -maximumVelocity,
+      maximumVelocity,
+    );
+    defender.velocity.y = clampInteger(
+      hit.block.knockback.y,
+      -maximumVelocity,
+      maximumVelocity,
+    );
+    events.push({
+      type: 'block',
+      frame,
+      attackerId: attacker.id,
+      defenderId: defender.id,
+      moveId: candidate.moveId,
+      hitId: hitbox.hitId,
+      position: candidate.impact,
+    });
+    return;
+  }
+
   defender.health = Math.max(0, defender.health - hit.damage);
   defender.action = null;
+  defender.guarding = false;
   defender.hitstun = Math.max(defender.hitstun, hit.hitstun);
   defender.hitstop = Math.max(defender.hitstop, hit.hitstop.defender);
   attacker.hitstop = Math.max(attacker.hitstop, hit.hitstop.attacker);

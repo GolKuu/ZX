@@ -63,7 +63,7 @@ Update this block after every completed task.
 
 ## 4. SCOPE — the complete feature list
 
-Exactly twenty items. Nothing else ships.
+Exactly twenty-one items. Nothing else ships.
 
 - [ ] **F01** Fixed-timestep sim loop (60 Hz) separated from render
 - [ ] **F02** One character (Kade Ruven), mirror match

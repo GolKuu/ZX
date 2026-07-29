@@ -10,6 +10,12 @@ export interface HitstopData {
   readonly defender: number;
 }
 
+export interface BlockData {
+  readonly blockstun: number;
+  readonly hitstop: HitstopData;
+  readonly knockback: FixedVector;
+}
+
 export interface WallBounceData {
   readonly count: number;
   readonly horizontalSpeed: number;
@@ -29,6 +35,7 @@ export interface HitData {
   readonly hitstop: HitstopData;
   readonly hitstun: number;
   readonly knockback: FixedVector;
+  readonly block?: BlockData;
   readonly wallBounce?: WallBounceData;
   readonly groundBounce?: GroundBounceData;
 }

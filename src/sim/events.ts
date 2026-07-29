@@ -27,6 +27,15 @@ export interface HitEvent extends CombatEventBase {
   readonly position: FixedVector;
 }
 
+export interface BlockEvent extends CombatEventBase {
+  readonly type: 'block';
+  readonly attackerId: string;
+  readonly defenderId: string;
+  readonly moveId: string;
+  readonly hitId: string;
+  readonly position: FixedVector;
+}
+
 export interface BounceEvent extends CombatEventBase {
   readonly type: 'wallBounce' | 'groundBounce';
   readonly fighterId: string;
@@ -37,6 +46,7 @@ export type CombatEvent =
   | MoveStartedEvent
   | MoveEndedEvent
   | HitEvent
+  | BlockEvent
   | BounceEvent;
 
 export interface FighterDebugFrame {

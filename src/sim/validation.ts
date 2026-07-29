@@ -68,6 +68,16 @@ export function validateFighters(
     if (fighter.facing !== -1 && fighter.facing !== 1) {
       throw new Error(`${fighter.id}.facing must be -1 or 1`);
     }
+    if (fighter.movement !== undefined) {
+      assertNonNegativeInteger(
+        fighter.movement.forwardPerFrame,
+        `${fighter.id}.movement.forwardPerFrame`,
+      );
+      assertNonNegativeInteger(
+        fighter.movement.backwardPerFrame,
+        `${fighter.id}.movement.backwardPerFrame`,
+      );
+    }
     validateBoxes(fighter.hurtboxes, `${fighter.id}.hurtboxes`);
   }
 }
@@ -121,6 +131,19 @@ function validateHit(hit: HitData, label: string): void {
   assertNonNegativeInteger(hit.hitstun, `${label}.hitstun`);
   assertInteger(hit.knockback.x, `${label}.knockback.x`);
   assertInteger(hit.knockback.y, `${label}.knockback.y`);
+  if (hit.block !== undefined) {
+    assertNonNegativeInteger(hit.block.blockstun, `${label}.block.blockstun`);
+    assertNonNegativeInteger(
+      hit.block.hitstop.attacker,
+      `${label}.block.hitstop.attacker`,
+    );
+    assertNonNegativeInteger(
+      hit.block.hitstop.defender,
+      `${label}.block.hitstop.defender`,
+    );
+    assertInteger(hit.block.knockback.x, `${label}.block.knockback.x`);
+    assertInteger(hit.block.knockback.y, `${label}.block.knockback.y`);
+  }
   if (hit.wallBounce !== undefined) {
     assertNonNegativeInteger(hit.wallBounce.count, `${label}.wallBounce.count`);
     assertNonNegativeInteger(

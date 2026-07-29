@@ -29,6 +29,14 @@ export function copyMove(move: MoveFrameData): MoveFrameData {
         hitstop: { ...hitbox.hit.hitstop },
         hitstun: hitbox.hit.hitstun,
         knockback: { ...hitbox.hit.knockback },
+        block:
+          hitbox.hit.block === undefined
+            ? undefined
+            : {
+                blockstun: hitbox.hit.block.blockstun,
+                hitstop: { ...hitbox.hit.block.hitstop },
+                knockback: { ...hitbox.hit.block.knockback },
+              },
         wallBounce:
           hitbox.hit.wallBounce === undefined
             ? undefined
@@ -58,12 +66,17 @@ export function createFighterState(
     team: definition.team,
     maxHealth: definition.maxHealth,
     defaultHurtboxes: copyBoxes(definition.hurtboxes),
+    movement: {
+      forwardPerFrame: definition.movement?.forwardPerFrame ?? 65,
+      backwardPerFrame: definition.movement?.backwardPerFrame ?? 53,
+    },
     health: definition.maxHealth,
     position: { ...definition.spawn },
     previousPosition: { ...definition.spawn },
     velocity: { x: 0, y: 0 },
     facing: definition.facing,
     grounded: definition.spawn.y === groundY,
+    guarding: false,
     hitstop: 0,
     hitstun: 0,
     action: null,

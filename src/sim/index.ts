@@ -6,6 +6,7 @@ export {
   totalMoveFrames,
   type AuthoredHitbox,
   type AuthoredHurtbox,
+  type BlockData,
   type GroundBounceData,
   type HitData,
   type MoveFrameData,
@@ -28,6 +29,7 @@ export type {
   CombatInputs,
   FighterDefinition,
   FighterInput,
+  FighterMovementData,
   FighterSnapshot,
   WorldSnapshot,
 } from './state.js';

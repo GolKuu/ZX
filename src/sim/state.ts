@@ -7,10 +7,18 @@ export interface FighterDefinition {
   readonly spawn: FixedVector;
   readonly facing: -1 | 1;
   readonly hurtboxes: readonly FixedBox[];
+  readonly movement?: FighterMovementData;
+}
+
+export interface FighterMovementData {
+  readonly forwardPerFrame: number;
+  readonly backwardPerFrame: number;
 }
 
 export interface FighterInput {
   readonly move?: string;
+  readonly movement?: -1 | 0 | 1;
+  readonly guard?: boolean;
 }
 
 export type CombatInputs = Readonly<Record<string, FighterInput | undefined>>;
@@ -39,12 +47,14 @@ export interface MutableFighterState {
   readonly team: number;
   readonly maxHealth: number;
   readonly defaultHurtboxes: readonly FixedBox[];
+  readonly movement: FighterMovementData;
   health: number;
   position: { x: number; y: number };
   previousPosition: { x: number; y: number };
   velocity: { x: number; y: number };
   facing: -1 | 1;
   grounded: boolean;
+  guarding: boolean;
   hitstop: number;
   hitstun: number;
   action: ActiveMoveState | null;
@@ -61,6 +71,7 @@ export interface FighterSnapshot {
   readonly velocity: FixedVector;
   readonly facing: -1 | 1;
   readonly grounded: boolean;
+  readonly guarding: boolean;
   readonly hitstop: number;
   readonly hitstun: number;
   readonly action: Readonly<Omit<ActiveMoveState, 'hitLedger'>> | null;
