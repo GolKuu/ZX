@@ -28,6 +28,10 @@ export default function HomePage() {
           Enter the render lab
           <span aria-hidden="true">↗</span>
         </Link>
+        <Link className={styles.secondaryCta} href="/aang">
+          Avatar Aang · 22 animated moves
+          <span aria-hidden="true">→</span>
+        </Link>
         <p className={styles.note}>Desktop only · keyboard or gamepad recommended</p>
       </section>
 

@@ -108,6 +108,26 @@
   background: #a2eaff;
 }
 
+.secondaryCta {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 18px;
+  margin-top: 12px;
+  padding: 9px 2px;
+  color: #a5b0c1;
+  border-bottom: 1px solid rgb(113 220 255 / 26%);
+  font-size: 0.72rem;
+  font-weight: 780;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.secondaryCta:hover {
+  color: #71dcff;
+  border-color: #71dcff;
+}
+
 .note {
   margin-top: 16px;
   letter-spacing: 0.08em;

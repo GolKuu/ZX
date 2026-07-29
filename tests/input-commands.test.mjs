@@ -11,7 +11,7 @@ import {
   toFacingRelative,
   resolveDirection,
   DEFAULT_BINDINGS,
-} from '../.sim-test-build/src/input/index.js';
+} from '../.sim-test-build/src/input/core.js';
 
 /** Feed a sequence of [direction, buttonNames[]] pairs, one per frame. */
 function feed(buffer, frames) {

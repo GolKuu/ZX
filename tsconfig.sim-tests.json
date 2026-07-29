@@ -20,6 +20,11 @@
     "src/ai/**/*.ts",
     "src/hud/**/*.ts",
     "src/input/mobile-controller.ts",
+    "src/input/bindings.ts",
+    "src/input/buffer.ts",
+    "src/input/motion.ts",
+    "src/input/command.ts",
+    "src/input/core.ts",
     "src/data/combat-moves.ts",
     "src/data/combat-ai.ts"
   ]
