@@ -85,6 +85,25 @@ Exactly twenty-one items. Nothing else ships.
 - [ ] **F18** ~12 sound effects + 1 music loop
 - [ ] **F19** Title → fight → result → rematch loop
 - [ ] **F20** Deployed to Vercel, publicly playable
+- [ ] **F21** Front-end screens: title, menu, difficulty, player setup, VS, pause, result, controls
+
+### 4.1 UI specification
+
+Screens, tokens and interaction rules are specified in [`docs/UI-CCU-700-ui-ux.md`](./docs/UI-CCU-700-ui-ux.md). Rendered mockups are in [`docs/ui-mockups.html`](./docs/ui-mockups.html) — **open it in a browser before implementing any UI.**
+
+Binding on implementation:
+
+- **Pad-first.** Nothing requires a mouse. One element always focused, `A` always confirms, `B` always goes back — every screen, no exceptions.
+- **Three presses** from title to fighting on the Local 2P path. Skip the difficulty screen in 2P.
+- Menu screens are **DOM overlays in `src/ui/`**, never inside the R3F canvas. The HUD is also DOM, over the canvas.
+- Screens use `container-type: inline-size` and `cqw` units. No media queries.
+- HUD reads sim state through a **throttled 15 Hz bridge**, never a per-frame React update (rule R3).
+- Health bars are angled divs with `clip-path` and a width-driven fill, plus a red ghost layer that trails by 300ms. No SVG.
+- The second bar is **ultimate charge**, not a meter system — the slice has no Circuit.
+- System font stacks only. No webfonts.
+- **Never colour alone.** P1/P2 carry colour *and* side *and* a printed tag.
+
+Build order: title, menu, setup and HUD in **T-05**; Clash overlay in **T-06**; difficulty, VS, pause, result and controls in **T-09**. Do not build any of it before combat feels right.
 
 ---
 
