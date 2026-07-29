@@ -107,16 +107,13 @@ const CHARACTER_DEFINITIONS = [
   },
 ] as const satisfies readonly CharacterDefinition[];
 
-const NEW_CHARACTER_IDS: readonly CharacterId[] = [
-  'mim',
-  'echo',
-  'glitch',
-  'idol',
-  'chrono',
-];
-
-export const CHARACTER_ROSTER: readonly CharacterDefinition[] =
-  CHARACTER_DEFINITIONS.filter(({ id }) => NEW_CHARACTER_IDS.includes(id));
+export const CHARACTER_ROSTER = [
+  requireCharacterDefinition('mim'),
+  requireCharacterDefinition('echo'),
+  requireCharacterDefinition('glitch'),
+  requireCharacterDefinition('idol'),
+  requireCharacterDefinition('chrono'),
+] as const satisfies readonly CharacterDefinition[];
 
 export const DEFAULT_CHARACTER_SELECTION: CharacterSelection = [
   'idol',
@@ -124,6 +121,12 @@ export const DEFAULT_CHARACTER_SELECTION: CharacterSelection = [
 ];
 
 export function getCharacterDefinition(
+  characterId: CharacterId,
+): CharacterDefinition {
+  return requireCharacterDefinition(characterId);
+}
+
+function requireCharacterDefinition(
   characterId: CharacterId,
 ): CharacterDefinition {
   const character = CHARACTER_DEFINITIONS.find(({ id }) => id === characterId);

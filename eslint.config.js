@@ -6,7 +6,14 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['.next/**', 'dist/**', '.tools/**', 'node_modules/**', 'next-env.d.ts'],
+    ignores: [
+      '.next/**',
+      '.next-corrupt-*/**',
+      'dist/**',
+      '.tools/**',
+      'node_modules/**',
+      'next-env.d.ts',
+    ],
   },
   {
     files: ['**/*.{js,mjs,ts,tsx}'],
