@@ -1,6 +1,7 @@
 export type CharacterId =
   | 'zoro'
   | 'aang'
+  | 'idol'
   | 'void-walker'
   | 'velocity-king'
   | 'elastic-brawler';
@@ -39,6 +40,14 @@ export const CHARACTER_ROSTER = [
     description:
       'Быстрый мастер четырёх стихий с превосходным контролем пространства и высоким комбо-потенциалом.',
     mark: 'E',
+  },
+  {
+    id: 'idol',
+    displayName: 'IDOL',
+    archetype: 'Перформер · сила аудитории',
+    description:
+      'Боевая поп-звезда: колет микрофоном, сбивает низким скольжением и завершает серию звёздным танцевальным вращением.',
+    mark: '★',
   },
   {
     id: 'void-walker',

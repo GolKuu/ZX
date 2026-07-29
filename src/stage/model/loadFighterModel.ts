@@ -138,14 +138,6 @@ export async function loadFighterModel(
   const root = gltf.scene;
   const warnings: string[] = [];
 
-  // --- orientation before anything captures a reference frame ---
-  //
-  // The stock rigs are authored facing −Z; the camera sits at +Z. Left alone,
-  // every fighter played the match with its back to the player, and the pose
-  // tables — which are written in character space, so "+Y turns toward the
-  // opponent" — turned each character away from the one it was fighting.
-  root.rotation.y = Math.PI;
-
   // --- scale before anything reads a world position ---
   const bounds = new Box3().setFromObject(root);
   const size = new Vector3();
@@ -213,6 +205,14 @@ export async function loadFighterModel(
 
   // --- skeleton ---
   const joints = resolveHumanoidJoints(root);
+
+  // Turn the asset to face the camera *before* the rest pose is captured, so
+  // the reference frame every authored rotation is conjugated through is the
+  // one the pose tables were written against. Vendors disagree about which way
+  // is forward — the two stock rigs here disagree with each other — so it is
+  // measured off the skeleton rather than assumed.
+  root.rotation.y = measureForwardYaw(joints) ?? 0;
+
   const report = reportJoints(joints);
   if (!report.usable) {
     warnings.push(
@@ -241,6 +241,46 @@ export async function loadFighterModel(
       root.removeFromParent();
     },
   };
+}
+
+const jointPosition = new Vector3();
+const modelUp = new Vector3();
+const modelRight = new Vector3();
+const modelForward = new Vector3();
+
+/**
+ * Yaw that would turn this rig to face +Z, read off the rest pose.
+ *
+ * Bone *axes* are arbitrary per vendor, so the facing is derived from the
+ * skeleton's shape instead: `up` runs hips → head, `right` runs left arm →
+ * right arm, and `forward = up × right`. In a T-pose or an A-pose both inputs
+ * are clean and symmetric, which is exactly the pose a file ships in.
+ *
+ * Returns null when the rig cannot answer, leaving the model as authored.
+ */
+function measureForwardYaw(joints: HumanoidJoints): number | null {
+  const { hips, head, upperArmL, upperArmR } = joints;
+  if (hips === null || head === null) return null;
+  if (upperArmL === null || upperArmR === null) return null;
+
+  hips.updateWorldMatrix(true, false);
+  head.updateWorldMatrix(true, false);
+  upperArmL.updateWorldMatrix(true, false);
+  upperArmR.updateWorldMatrix(true, false);
+
+  modelUp
+    .setFromMatrixPosition(head.matrixWorld)
+    .sub(jointPosition.setFromMatrixPosition(hips.matrixWorld));
+  modelRight
+    .setFromMatrixPosition(upperArmR.matrixWorld)
+    .sub(jointPosition.setFromMatrixPosition(upperArmL.matrixWorld));
+  modelForward.crossVectors(modelUp, modelRight);
+
+  if (modelForward.lengthSq() < 1e-8) return null;
+  if (Math.abs(modelForward.x) < 1e-4 && Math.abs(modelForward.z) < 1e-4) {
+    return null;
+  }
+  return Math.atan2(-modelForward.x, modelForward.z);
 }
 
 /**
