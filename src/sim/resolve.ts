@@ -13,6 +13,10 @@ export function resolveHit(
   const attackerIsInFront =
     (attacker.position.x - defender.position.x) * defender.facing >= 0;
   if (defender.guarding && attackerIsInFront && hit.block !== undefined) {
+    defender.health = Math.max(
+      0,
+      defender.health - (hit.block.chipDamage ?? 0),
+    );
     defender.action = null;
     defender.hitstun = Math.max(defender.hitstun, hit.block.blockstun);
     defender.hitstop = Math.max(defender.hitstop, hit.block.hitstop.defender);

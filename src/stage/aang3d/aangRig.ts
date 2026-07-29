@@ -2,6 +2,7 @@ import type { RefObject } from 'react';
 import type { FighterSnapshot } from '@/src/sim';
 import type { Group } from 'three';
 import { combatAnimationProgress } from '../combatAnimationProgress';
+import { elementFromMove } from '@/src/aang/combat/elements';
 
 export interface AangRigRefs {
   readonly root: RefObject<Group | null>;
@@ -75,21 +76,24 @@ export function applyAangCombatAnimation(
   const leg = facing === 1 ? rig.rightLeg : rig.leftLeg;
   const supportLeg = facing === 1 ? rig.leftLeg : rig.rightLeg;
 
-  if (action.moveId === '5L') {
+  const element = elementFromMove(action.moveId);
+  const attack = element === null ? null : action.moveId.slice(element.length + 1);
+
+  if (action.moveId === '5L' || attack === 'lp') {
     arm.position.x += facing * strike * 0.4;
     arm.position.y += strike * 0.12;
     arm.rotation.z -= facing * strike * 1.42;
     supportArm.rotation.z += facing * strike * 0.3;
     rig.torso.rotation.y += facing * strike * 0.28;
     rig.root.position.x += facing * strike * 0.2;
-  } else if (action.moveId === '5M') {
+  } else if (action.moveId === '5M' || attack === 'lk') {
     leg.position.x += facing * strike * 0.44;
     leg.position.y += strike * 0.3;
     leg.rotation.z -= facing * strike * 1.72;
     supportLeg.rotation.z += facing * strike * 0.18;
     rig.torso.rotation.z -= facing * strike * 0.2;
     rig.root.position.x += facing * strike * 0.24;
-  } else if (action.moveId === '5H') {
+  } else if (action.moveId === '5H' || attack === 'hp') {
     rig.staff.rotation.z -= facing * strike * 2.35;
     arm.rotation.z -= facing * strike * 1.2;
     supportArm.rotation.z += facing * strike * 0.72;
@@ -101,7 +105,7 @@ export function applyAangCombatAnimation(
     arm.position.x += facing * strike * 0.38;
     arm.position.y -= strike * 0.2;
     arm.rotation.z -= facing * strike * 1.15;
-  } else if (action.moveId === '2M') {
+  } else if (action.moveId === '2M' || attack === 'hk') {
     rig.root.position.y -= strike * 0.12;
     leg.position.x += facing * strike * 0.46;
     leg.position.y -= strike * 0.08;

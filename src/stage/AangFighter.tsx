@@ -15,6 +15,10 @@ import {
 import { updateRimAxis } from '@/src/render/toonMaterial';
 import { FIXED_SCALE } from '@/src/sim';
 import {
+  AANG_ELEMENT_INFO,
+} from '@/src/aang/combat/elements';
+import { useRenderStore } from '@/src/store/renderStore';
+import {
   applyWalkCycle,
   facingOpponent,
   turnTowardOpponent,
@@ -89,6 +93,10 @@ export function AangFighter({
     turnTowardOpponent(outerGroup, currentRig.head, visualFacing);
     applyWalkCycle(currentRig, fighter, clock.elapsedTime, visualFacing, 0.82);
     applyAangCombatAnimation(currentRig, fighter);
+    const element = useRenderStore.getState().aangElements[fighterId];
+    const elementColor = AANG_ELEMENT_INFO[element].color;
+    materials.glow.color.set(elementColor);
+    materials.effect.color.set(elementColor);
 
     const self = { x: outerGroup.position.x, z: outerGroup.position.z };
     const other = opponent === null

@@ -6,6 +6,7 @@ import type {
 } from '@/src/data/characterRoster';
 import { modelUrlFor } from '@/src/data/characterModels';
 import { AangFighter } from './AangFighter';
+import { AangElementVfx } from './AangElementVfx';
 import { Arena } from './Arena';
 import { LazyModelFighter } from './LazyModelFighter';
 import { CameraRig } from './CameraRig';
@@ -29,7 +30,7 @@ export function RenderScene({
       <directionalLight color="#b05cff" intensity={1.65} position={[5, 4, -4]} />
 
       <Arena />
-      <CombatGameLoop />
+      <CombatGameLoop fighterSelection={fighterSelection} />
       <SelectedFighter
         auraColor="#5cd8ff"
         characterId={fighterSelection[0]}
@@ -40,6 +41,8 @@ export function RenderScene({
         characterId={fighterSelection[1]}
         fighterId="p2"
       />
+      {fighterSelection[0] === 'aang' && <AangElementVfx fighterId="p1" />}
+      {fighterSelection[1] === 'aang' && <AangElementVfx fighterId="p2" />}
       <CameraRig />
       <LazyPostEffects />
       <FrameProfiler />

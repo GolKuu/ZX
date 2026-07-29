@@ -1,10 +1,15 @@
 import { create } from 'zustand';
 import type {
+  AangCombatElement,
+  CombatFighterId,
+} from '@/src/aang/combat/elements';
+import type {
   ZoroActionId,
   ZoroStance,
 } from '@/src/stage/zoro/zoroActions';
 
 type RenderState = {
+  aangElements: Readonly<Record<CombatFighterId, AangCombatElement>>;
   effectsEnabled: boolean;
   impactVersion: number;
   xrayFighterId: 'p1' | 'p2' | null;
@@ -13,12 +18,17 @@ type RenderState = {
   zoroActionVersion: number;
   zoroStance: ZoroStance;
   playZoroAction: (action: ZoroActionId) => void;
+  setAangElement: (
+    fighterId: CombatFighterId,
+    element: AangCombatElement,
+  ) => void;
   toggleEffects: () => void;
   triggerImpact: () => void;
   triggerXray: (fighterId: 'p1' | 'p2') => void;
 };
 
 export const useRenderStore = create<RenderState>((set) => ({
+  aangElements: { p1: 'air', p2: 'air' },
   effectsEnabled: true,
   impactVersion: 0,
   xrayFighterId: null,
@@ -34,6 +44,10 @@ export const useRenderStore = create<RenderState>((set) => ({
         action === 'swordStyles'
           ? state.zoroStance === 'three' ? 'one' : 'three'
           : state.zoroStance,
+    })),
+  setAangElement: (fighterId, element) =>
+    set((state) => ({
+      aangElements: { ...state.aangElements, [fighterId]: element },
     })),
   toggleEffects: () => set((state) => ({ effectsEnabled: !state.effectsEnabled })),
   triggerImpact: () => set((state) => ({ impactVersion: state.impactVersion + 1 })),

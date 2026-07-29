@@ -2,6 +2,8 @@ import { CombatAiAgent } from '@/src/ai';
 import { KADE_AI_LOADOUT } from '@/src/data/combat-ai';
 import { getCharacterDefinition } from '@/src/data/characterRoster';
 import { KADE_HURTBOXES, KADE_MOVES } from '@/src/data/combat-moves';
+import { AANG_NORMAL_MOVES } from '@/src/data/aang-combat-moves';
+import { AANG_SPECIAL_MOVES } from '@/src/data/aang-special-moves';
 import { ROSTER_ADDITION_MOVES } from '@/src/data/roster-moves';
 import { HudBridge } from '@/src/hud';
 import {
@@ -16,11 +18,16 @@ import { useHudStore } from '@/src/store/hudStore';
  * ids are globally unique; which character may use which move is decided by
  * the command tables in `src/input/`, not here.
  */
-const ALL_MOVES = [...KADE_MOVES, ...ROSTER_ADDITION_MOVES];
+export const ALL_COMBAT_MOVES = [
+  ...KADE_MOVES,
+  ...ROSTER_ADDITION_MOVES,
+  ...AANG_NORMAL_MOVES,
+  ...AANG_SPECIAL_MOVES,
+];
 
 export function createCombatEngine(): CombatEngine {
   return new CombatEngine({
-    moves: ALL_MOVES,
+    moves: ALL_COMBAT_MOVES,
     fighters: [
       fighterDefinition('p1', 1, -1.55, 1),
       fighterDefinition('p2', 2, 1.55, -1),
@@ -34,7 +41,7 @@ export function createCombatAi(): CombatAiAgent {
     fighterId: 'p2',
     opponentId: 'p1',
     difficulty: 'normal',
-    moves: ALL_MOVES,
+    moves: ALL_COMBAT_MOVES,
     loadout: KADE_AI_LOADOUT,
     seed: 29,
   });

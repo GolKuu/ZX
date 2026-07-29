@@ -36,6 +36,7 @@ export function copyMove(move: MoveFrameData): MoveFrameData {
                 blockstun: hitbox.hit.block.blockstun,
                 hitstop: { ...hitbox.hit.block.hitstop },
                 knockback: { ...hitbox.hit.block.knockback },
+                chipDamage: hitbox.hit.block.chipDamage,
               },
         wallBounce:
           hitbox.hit.wallBounce === undefined

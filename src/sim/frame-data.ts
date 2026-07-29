@@ -14,6 +14,8 @@ export interface BlockData {
   readonly blockstun: number;
   readonly hitstop: HitstopData;
   readonly knockback: FixedVector;
+  /** Damage dealt through guard. Fire attacks use this for chip damage. */
+  readonly chipDamage?: number;
 }
 
 export interface WallBounceData {

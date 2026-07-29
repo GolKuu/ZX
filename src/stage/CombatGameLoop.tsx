@@ -7,31 +7,37 @@ import {
   readCombatResetVersion,
 } from '@/src/game/combatRuntime';
 import {
+  AANG_COMMANDS,
   KADE_COMMANDS,
   KeyboardInputSource,
   PLAYER_TWO_BINDINGS,
 } from '@/src/input';
 import { useControlStore } from '@/src/store/controlStore';
 import { useHudStore } from '@/src/store/hudStore';
+import type { CharacterSelection } from '@/src/data/characterRoster';
 
-export function CombatGameLoop() {
+export function CombatGameLoop({
+  fighterSelection,
+}: {
+  readonly fighterSelection: CharacterSelection;
+}) {
   const keyboard = useMemo(
     () => new KeyboardInputSource({
       bindings: useControlStore.getState().bindings,
-      commands: KADE_COMMANDS,
+      commands: fighterSelection[0] === 'aang' ? AANG_COMMANDS : KADE_COMMANDS,
     }),
-    [],
+    [fighterSelection],
   );
   const secondKeyboard = useMemo(
     () => new KeyboardInputSource({
       bindings: PLAYER_TWO_BINDINGS,
-      commands: KADE_COMMANDS,
+      commands: fighterSelection[1] === 'aang' ? AANG_COMMANDS : KADE_COMMANDS,
     }),
-    [],
+    [fighterSelection],
   );
   const session = useMemo(
-    () => new CombatSession(keyboard, secondKeyboard),
-    [keyboard, secondKeyboard],
+    () => new CombatSession(keyboard, secondKeyboard, fighterSelection),
+    [fighterSelection, keyboard, secondKeyboard],
   );
   const handledReset = useRef(readCombatResetVersion());
   const handledMode = useRef(useHudStore.getState().mode);

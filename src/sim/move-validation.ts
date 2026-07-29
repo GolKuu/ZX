@@ -102,6 +102,7 @@ function validateBlock(hit: HitData, label: string): void {
     return;
   }
   assertNonNegativeInteger(hit.block.blockstun, `${label}.block.blockstun`);
+  assertNonNegativeInteger(hit.block.chipDamage ?? 0, `${label}.block.chipDamage`);
   assertNonNegativeInteger(hit.block.hitstop.attacker, `${label}.block.hitstop.attacker`);
   assertNonNegativeInteger(hit.block.hitstop.defender, `${label}.block.hitstop.defender`);
   assertInteger(hit.block.knockback.x, `${label}.block.knockback.x`);
