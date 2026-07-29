@@ -92,7 +92,7 @@ export function ZoroFighter({
     outerGroup.position.y = fighter.position.y / FIXED_SCALE;
     const opponent = readCombatFighter(opponentId);
     const visualFacing = facingOpponent(fighter, opponent);
-    turnTowardOpponent(outerGroup, visualFacing);
+    turnTowardOpponent(outerGroup, currentRig.head, visualFacing);
     applyWalkCycle(currentRig, fighter, time, visualFacing);
     applyZoroCombatAnimation(currentRig, fighter);
 

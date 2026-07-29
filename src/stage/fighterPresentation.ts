@@ -11,7 +11,8 @@ interface LocomotionRig {
   readonly rightLeg: Group;
 }
 
-const COMBAT_YAW = Math.PI * 0.29;
+const COMBAT_YAW = 0.55;
+const HEAD_YAW = 0.22;
 const WALK_SPEED = 8.4;
 const WALK_VELOCITY = 65;
 const WALK_THRESHOLD = 16;
@@ -26,8 +27,13 @@ export function facingOpponent(
   return distance > 0 ? 1 : -1;
 }
 
-export function turnTowardOpponent(group: Group, facing: -1 | 1): void {
+export function turnTowardOpponent(
+  group: Group,
+  head: Group,
+  facing: -1 | 1,
+): void {
   group.rotation.y = facing * COMBAT_YAW;
+  head.rotation.y = facing * HEAD_YAW;
 }
 
 export function applyWalkCycle(
@@ -59,17 +65,17 @@ export function applyWalkCycle(
   const landing = Math.abs(Math.sin(phase));
 
   rig.root.position.y += landing * 0.04 * bodyScale;
-  rig.root.rotation.z -= stride * 0.025;
-  rig.torso.rotation.z += stride * 0.055;
-  rig.head.rotation.z -= stride * 0.025;
+  rig.root.rotation.z -= stride * 0.018;
+  rig.torso.rotation.z += stride * 0.038;
+  rig.head.rotation.z -= stride * 0.018;
 
-  rig.leftLeg.rotation.x += stride * 0.28;
-  rig.leftLeg.rotation.z += stride * 0.34;
-  rig.rightLeg.rotation.x += counterStride * 0.28;
-  rig.rightLeg.rotation.z += counterStride * 0.34;
+  rig.leftLeg.rotation.x += stride * 0.18;
+  rig.leftLeg.rotation.z += stride * 0.2;
+  rig.rightLeg.rotation.x += counterStride * 0.18;
+  rig.rightLeg.rotation.z += counterStride * 0.2;
 
-  rig.leftArm.rotation.x += counterStride * 0.18;
-  rig.leftArm.rotation.z += counterStride * 0.3;
-  rig.rightArm.rotation.x += stride * 0.18;
-  rig.rightArm.rotation.z += stride * 0.3;
+  rig.leftArm.rotation.x += counterStride * 0.12;
+  rig.leftArm.rotation.z += counterStride * 0.16;
+  rig.rightArm.rotation.x += stride * 0.12;
+  rig.rightArm.rotation.z += stride * 0.16;
 }
