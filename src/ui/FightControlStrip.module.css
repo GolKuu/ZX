@@ -1,0 +1,66 @@
+.strip {
+  position: absolute;
+  z-index: 68;
+  bottom: 1rem;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem;
+  color: #eafff2;
+  background: rgb(5 15 11 / 88%);
+  border: 1px solid rgb(85 255 159 / 24%);
+  border-radius: 0.8rem;
+  box-shadow: 0 0.8rem 2.2rem rgb(0 0 0 / 32%);
+  pointer-events: auto;
+  transform: translateX(-50%);
+  backdrop-filter: blur(12px);
+}
+
+.strip > span {
+  display: grid;
+  min-width: 4.7rem;
+  padding: 0.35rem 0.55rem;
+  border-right: 1px solid rgb(255 255 255 / 8%);
+}
+
+.strip small {
+  color: #728b7f;
+  font-size: 0.48rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.strip b {
+  color: #fff;
+  font: 850 0.68rem/1.3 ui-monospace, Consolas, monospace;
+  letter-spacing: 0.08em;
+}
+
+.strip button {
+  min-height: 2.55rem;
+  padding: 0 0.8rem;
+  color: #07130d;
+  background: #55ff9f;
+  border: 0;
+  border-radius: 0.55rem;
+  cursor: pointer;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.strip button:hover,
+.strip button:focus-visible {
+  background: #fff;
+  outline: 2px solid #55ff9f;
+}
+
+@container play-overlay (width < 760px) {
+  .strip {
+    max-width: calc(100vw - 2rem);
+    overflow-x: auto;
+  }
+}

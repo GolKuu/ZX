@@ -1,0 +1,113 @@
+.scrim {
+  position: absolute;
+  z-index: 90;
+  inset: 0;
+  display: grid;
+  overflow: hidden;
+  place-items: center;
+  color: #f2f7fc;
+  background:
+    radial-gradient(circle at 50% 44%, rgb(56 142 180 / 18%), transparent 34cqw),
+    rgb(4 7 11 / 97%);
+  container-type: inline-size;
+  pointer-events: auto;
+}
+
+.radar {
+  position: absolute;
+  width: 46cqw;
+  aspect-ratio: 1;
+  border: 1px solid rgb(159 216 255 / 15%);
+  border-radius: 50%;
+}
+
+.radar::before,
+.radar::after,
+.radar i {
+  position: absolute;
+  inset: 12%;
+  border: 1px solid rgb(159 216 255 / 10%);
+  border-radius: 50%;
+  content: "";
+}
+
+.radar::after { inset: 28%; }
+.radar i { inset: 44%; background: #9fd8ff; box-shadow: 0 0 2cqw #9fd8ff; }
+.radar i:nth-child(2) { inset: 22% 68% 68% 22%; background: #9fd8ff; }
+.radar i:nth-child(3) { inset: 64% 28% 26% 62%; background: #9fd8ff; }
+
+.scrim section {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 48cqw;
+  justify-items: center;
+  text-align: center;
+}
+
+.scrim section > span {
+  color: #9fd8ff;
+  font-size: 0.9cqw;
+  font-weight: 850;
+  letter-spacing: 0.32em;
+}
+
+.scrim h1 {
+  margin: 1.2cqw 0 1.4cqw;
+  font-size: 4.7cqw;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.scrim p {
+  max-width: 42cqw;
+  margin: 0;
+  color: #718196;
+  font-size: 1.1cqw;
+  line-height: 1.6;
+}
+
+.scrim button {
+  min-height: 4cqw;
+  margin-top: 2.2cqw;
+  padding: 0 1.5cqw;
+  color: #061018;
+  cursor: pointer;
+  background: #9fd8ff;
+  border: 0;
+  font: inherit;
+  font-size: 0.9cqw;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.scrim button:hover,
+.scrim button:focus-visible {
+  background: #d5f2ff;
+  outline: 0.2cqw solid rgb(159 216 255 / 30%);
+  outline-offset: 0.3cqw;
+}
+
+.scrim footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  height: 5.2cqw;
+  align-items: center;
+  justify-content: center;
+  color: #8796a9;
+  background: rgb(5 7 10 / 76%);
+  border-top: 1px solid rgb(146 173 205 / 22%);
+  font-size: 0.85cqw;
+  text-transform: uppercase;
+}
+
+.scrim footer kbd { margin-right: 0.65cqw; color: #fff; font: inherit; }
+
+@media (prefers-reduced-motion: reduce) {
+  .radar i { box-shadow: none; }
+}

@@ -2,9 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import { CombatHud } from './CombatHud';
-import { useHudStore } from '@/src/store/hudStore';
 import { useRenderStore } from '@/src/store/renderStore';
-import { ZoroMoveList } from './ZoroMoveList';
+import { FightControlStrip } from './FightControlStrip';
 import styles from './PlayOverlay.module.css';
 
 const DevelopmentFpsMeter = dynamic(
@@ -15,24 +14,14 @@ const DevelopmentFpsMeter = dynamic(
 export function PlayOverlay() {
   const effectsEnabled = useRenderStore((state) => state.effectsEnabled);
   const toggleEffects = useRenderStore((state) => state.toggleEffects);
-  const triggerImpact = useRenderStore((state) => state.triggerImpact);
-  const registerPreviewHit = useHudStore((state) => state.registerPreviewHit);
-
-  const replayImpact = () => {
-    triggerImpact();
-    registerPreviewHit();
-  };
 
   return (
     <div className={styles.overlay}>
       <CombatHud />
-      <ZoroMoveList />
+      <FightControlStrip />
       {process.env.NODE_ENV !== 'production' && (
         <aside className={styles.devTools} aria-label="Development tools">
           <span className={styles.fps}><DevelopmentFpsMeter /></span>
-          <button type="button" onClick={replayImpact}>
-            <kbd>J</kbd> Impact
-          </button>
           <button
             aria-pressed={effectsEnabled}
             type="button"

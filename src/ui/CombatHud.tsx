@@ -22,13 +22,6 @@ export function CombatHud() {
   );
 
   useEffect(() => {
-    const timer = window.setInterval(() => {
-      useHudStore.getState().advancePreview(4);
-    }, 1000 / 15);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
     const keyDown = (event: KeyboardEvent) => {
       if (
         (event.code === 'Escape' || event.code === 'KeyP')

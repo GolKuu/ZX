@@ -3,7 +3,7 @@ import {
   DEFAULT_BINDINGS,
   type Button,
   type KeyBindings,
-} from '@/src/input';
+} from '@/src/input/bindings';
 
 export type ControlId = 'up' | 'down' | 'left' | 'right' | Button;
 
@@ -77,9 +77,13 @@ export function keyLabel(code: string): string {
   if (code.startsWith('Key')) return code.slice(3);
   if (code.startsWith('Digit')) return code.slice(5);
   if (code.startsWith('Numpad')) return `Num ${code.slice(6)}`;
-  return code.replace('Arrow', '↑↓←→'.charAt(
-    ['Up', 'Down', 'Left', 'Right'].indexOf(code.slice(5)),
-  ) || code);
+  const arrows: Readonly<Record<string, string>> = {
+    ArrowUp: '↑',
+    ArrowDown: '↓',
+    ArrowLeft: '←',
+    ArrowRight: '→',
+  };
+  return arrows[code] ?? code;
 }
 
 function withBinding(

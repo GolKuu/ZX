@@ -2,7 +2,11 @@
 
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { requestCombatReset } from '@/src/game/combatRuntime';
 import { useHudStore, type HudScreen } from '@/src/store/hudStore';
+import { ControlsMenu } from './ControlsMenu';
+import { ModeMenu } from './ModeMenu';
+import { OnlineNotice } from './OnlineNotice';
 import styles from './CombatHud.module.css';
 
 interface MenuItem {
@@ -22,29 +26,36 @@ const bindings = [
 ] as const;
 
 export function MatchMenus() {
+  const screen = useHudStore((state) => state.screen);
+  if (screen === 'mode') return <ModeMenu />;
+  if (screen === 'online') return <OnlineNotice />;
+  return <InMatchMenus />;
+}
+
+function InMatchMenus() {
   const router = useRouter();
   const screen = useHudStore((state) => state.screen);
   const menuFocus = useHudStore((state) => state.menuFocus);
   const result = useHudStore((state) => state.result);
   const resume = useHudStore((state) => state.resume);
   const openControls = useHudStore((state) => state.openControls);
-  const resetPreview = useHudStore((state) => state.resetPreview);
+  const openModeMenu = useHudStore((state) => state.openModeMenu);
   const setMenuFocus = useHudStore((state) => state.setMenuFocus);
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const pauseItems: readonly MenuItem[] = [
     { label: 'Resume', detail: 'Return to fight', action: resume },
-    { label: 'Restart match', detail: 'Reset the current set', action: resetPreview },
+    { label: 'Restart match', detail: 'Reset the current set', action: requestCombatReset },
     { label: 'Controls', detail: 'View every binding', action: openControls },
     {
-      label: 'Quit to menu',
+      label: 'Change mode',
       detail: 'Leave the current match',
-      action: () => router.push('/'),
+      action: openModeMenu,
     },
   ];
   const resultItems: readonly MenuItem[] = [
-    { label: 'Rematch', action: resetPreview },
-    { label: 'Change mode', action: () => router.push('/') },
+    { label: 'Rematch', action: requestCombatReset },
+    { label: 'Change mode', action: openModeMenu },
     { label: 'Main menu', action: () => router.push('/') },
   ];
   const items = screen === 'result' ? resultItems : pauseItems;

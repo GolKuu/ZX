@@ -1,0 +1,164 @@
+.scrim {
+  --menu-blue: #9fd8ff;
+  --menu-line: rgb(146 173 205 / 22%);
+  position: absolute;
+  z-index: 90;
+  inset: 0;
+  overflow: hidden;
+  color: #edf4fb;
+  background:
+    radial-gradient(circle at 78% 44%, rgb(40 115 151 / 18%), transparent 30cqw),
+    linear-gradient(110deg, rgb(4 7 11 / 98%) 0 57%, rgb(5 9 14 / 92%) 57%),
+    #05070a;
+  container-type: inline-size;
+  pointer-events: auto;
+}
+
+.scrim::before,
+.scrim::after {
+  position: absolute;
+  width: 62cqw;
+  aspect-ratio: 1;
+  border: 1px solid rgb(159 216 255 / 8%);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+.scrim::before { top: -20cqw; right: -8cqw; }
+.scrim::after { top: -11cqw; right: 1cqw; width: 44cqw; }
+
+.brand {
+  position: absolute;
+  z-index: 2;
+  top: 3.2cqw;
+  right: 4.2cqw;
+  left: 4.2cqw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 850;
+  letter-spacing: 0.18em;
+}
+
+.brand span { font-size: 1.15cqw; }
+.brand small { color: #687a90; font-size: 0.82cqw; }
+
+.layout {
+  display: grid;
+  height: calc(100% - 5.2cqw);
+  grid-template-columns: minmax(0, 58fr) minmax(0, 42fr);
+}
+
+.modeList {
+  display: grid;
+  align-content: center;
+  padding: 6cqw 7cqw 5cqw 9cqw;
+}
+
+.modeList > p {
+  margin: 0 0 1.8cqw;
+  color: #617187;
+  font-size: 1cqw;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.modeList button {
+  position: relative;
+  display: grid;
+  min-height: 7.4cqw;
+  align-items: center;
+  gap: 1.3cqw;
+  padding: 1.2cqw 1.4cqw 1.2cqw 3.3cqw;
+  color: #4a5768;
+  cursor: pointer;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--menu-line);
+  grid-template-columns: auto 1fr auto;
+}
+
+.modeList button:last-child { border-bottom: 1px solid var(--menu-line); }
+
+.modeList button::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -9cqw;
+  width: 0.3cqw;
+  background: transparent;
+  content: "";
+}
+
+.modeList button > i {
+  width: 1cqw;
+  aspect-ratio: 1;
+  background: #283545;
+  border-radius: 50%;
+}
+
+.modeList button > span { display: grid; gap: 0.35cqw; }
+.modeList strong { font-size: 2.65cqw; letter-spacing: 0.04em; text-transform: uppercase; }
+.modeList small { color: #344154; font-size: 0.9cqw; letter-spacing: 0.1em; text-transform: uppercase; }
+.modeList b { color: #3e4b5d; font-size: 0.7cqw; letter-spacing: 0.1em; }
+
+.modeList button[data-focused="true"],
+.modeList button:focus-visible {
+  color: #fff;
+  background: linear-gradient(90deg, rgb(159 216 255 / 10%), transparent 78%);
+  outline: none;
+}
+
+.modeList button[data-focused="true"]::before,
+.modeList button:focus-visible::before { background: var(--menu-blue); }
+
+.modeList button[data-focused="true"] > i,
+.modeList button:focus-visible > i {
+  background: var(--menu-blue);
+  box-shadow: 0 0 0 0.5cqw rgb(159 216 255 / 14%);
+}
+
+.modeList button[data-focused="true"] small { color: #75a6c4; }
+.modeList button[data-focused="true"] b { color: var(--menu-blue); }
+
+.description {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  align-content: center;
+  padding: 8cqw 6.5cqw 7cqw;
+  border-left: 1px solid var(--menu-line);
+}
+
+.description > span { color: var(--menu-blue); font-size: 0.85cqw; font-weight: 800; letter-spacing: 0.2em; }
+.description h1 { margin: 1.4cqw 0; font-size: 3.5cqw; line-height: 0.95; text-transform: uppercase; }
+.description p { margin: 0; color: #68778b; font-size: 1.15cqw; line-height: 1.6; }
+.description dl { display: grid; gap: 0.65cqw; margin: 2.2cqw 0 0; }
+.description dl div { display: flex; justify-content: space-between; border-top: 1px solid var(--menu-line); padding-top: 0.65cqw; }
+.description dt { color: #526175; font-size: 0.78cqw; text-transform: uppercase; }
+.description dd { margin: 0; color: #bdc9d8; font-size: 0.78cqw; font-weight: 800; text-transform: uppercase; }
+
+.hints {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  height: 5.2cqw;
+  align-items: center;
+  justify-content: center;
+  gap: 3cqw;
+  color: #8796a9;
+  background: rgb(5 7 10 / 78%);
+  border-top: 1px solid var(--menu-line);
+  font-size: 0.85cqw;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hints kbd { color: #fff; font: inherit; }
