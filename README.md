@@ -3,7 +3,7 @@
 > **Agent brief.** This file is the single source of truth for building this project.
 > Read it fully before writing any code. Re-read §1 before starting each new task.
 
-A browser-based 3D anime fighting game. This repository builds a **10-day vertical slice**, not the full game.
+A browser-based 3D cel-shaded fighting game. This repository builds a **10-day vertical slice**, not the full game.
 
 **Goal of the slice:** prove that hitting someone feels good, that the Clash mechanic reads as a moment, and that it runs at 60 FPS in a browser.
 
