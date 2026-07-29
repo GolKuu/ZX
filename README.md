@@ -79,7 +79,7 @@ Exactly twenty-one items. Nothing else ships.
 - [ ] **F11** **Clash system** (the signature mechanic)
 - [ ] **F12** Health, KO, best-of-3, round timer
 - [ ] **F13** Toon shading + inverted-hull outline + rim light
-- [ ] **F14** Hitsparks, impact flash, screen shake
+- [ ] **F14** Hitsparks, directional attack cue, screen shake
 - [ ] **F15** AI opponent, 3 difficulty tiers via reaction delay
 - [ ] **F16** Local 2P (keyboard + gamepad, or two gamepads)
 - [ ] **F17** HUD: health bars, timer, round pips, combo counter
@@ -247,7 +247,7 @@ Keyboard P2 uses arrows + numpad `1 2 3 0`. Two gamepads is the primary demo pat
 │   ├── render/
 │   │   ├── toonMaterial.ts
 │   │   ├── outline.ts
-│   │   └── vfx.ts               #   hitsparks, flash, shake
+│   │   └── vfx.ts               #   hitsparks, attack cue, shake
 │   ├── stage/                   # R3F components. Lifecycle only, no game logic
 │   │   ├── Arena.tsx
 │   │   ├── Fighter.tsx
@@ -316,7 +316,7 @@ Move table from §6.2 as data. Attack states driven by that table. Hitbox / hurt
 **Done when:** attacks play and boxes appear and disappear on the correct frames.
 
 ### T-04 — FIRST HIT `Day 4` ⭐ **GATE**
-Capsule overlap detection. Hit resolution, damage, health. Hitstun, blockstun, pushback. **Hitstop per §6.3 (asymmetric).** Screen shake with trauma decay. Full-screen white flash for 1 frame. One placeholder impact sound.
+Capsule overlap detection. Hit resolution, damage, health. Hitstun, blockstun, pushback. **Hitstop per §6.3 (asymmetric).** Screen shake with trauma decay. A coloured directional arc triggers when an attack starts; hits never flash the full screen. One placeholder impact sound.
 
 **Done when:** you land a hit and it feels good.
 

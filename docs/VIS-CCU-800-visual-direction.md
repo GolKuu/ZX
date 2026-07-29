@@ -66,7 +66,7 @@ Per fighter, per frame:
 3. base pass           ramp lookup → coloured shade band → stepped highlight
 4. rim pass            Fresnel, gated to the combat axis, additive
 5. face pass           unlit drawn elements: eyes, lids, brows — no shading, no hull
-6. effect layer        aura shell, trails, impact flash
+6. effect layer        aura shell, trails, directional attack cue
 ```
 
 **Two draw calls per material zone** — hull then base. With eight zones plus unlit face elements the fighter costs ~20 calls, which is inside the 160-call mid-tier budget for two fighters plus stage.
@@ -230,7 +230,7 @@ rim  = rimBase * gate * CTRL.a * strength * rimColor
 | Default | character accent at 0.85 |
 | Skin | 0.70 — the face must not blow out |
 | Airborne | ×1.25 — airborne readability is worse and 25% closes it |
-| Counter-hit | flashes white at 1.6 for 3 frames |
+| Counter-hit | accent rim tightens at 1.25 for 3 frames — never white |
 | Super invulnerability | pulses at 4 Hz — an authored, learnable tell |
 
 ---
@@ -341,7 +341,7 @@ This is the FighterZ lesson and it is worth more than any other decision in this
 
 | Class | Method | Justification needed |
 |---|---|---|
-| Impacts, sparks, slashes, flashes | sprite sheet, camera-facing | no |
+| Impacts, sparks, slashes, attack cues | sprite sheet, camera-facing | no |
 | Speed lines, shockwave rings | sprite sheet | no |
 | Trails, ribbons | procedural mesh strip | no |
 | Aura, charge | mesh shell + scrolling noise | no |
@@ -364,26 +364,25 @@ Five shapes, used consistently so players learn them without being told:
 
 Any VFX proposal containing a flat circular ring is rejected unless it is a Clash.
 
-## Impact effects
+## Attack and impact feedback
 
 Three frames, fixed:
 
 ```
-f0  CONTACT   full-screen white flash, additive, α by weight.
-              Character silhouettes render pure white — no shading, no outline.
-              Duration: 1 frame. Non-negotiable.
-f1  SHAPE     flash drops to 0.25. Impact sheet frame 0.
-              Pose exaggerated 120–140% beyond the animation curve.
-f2+ RELEASE   flash gone. Sheet continues. Pose eases back over 3 frames.
+f0  COMMIT    a small accent-colour crescent appears in front of the attacker.
+              It is directional, local to the fighter, and never white.
+f1  TRAVEL    the crescent expands along the attack facing and fades.
+f2+ CONTACT   no screen flash. Hitstop, camera trauma and the impact sheet carry
+              the hit. Pose eases back over 3 frames.
 ```
 
-| Weight | Flash α | Frames | Hitstop (atk/def) |
+| Weight | Cue scale | Duration | Hitstop (atk/def) |
 |---|---|---|---|
-| Light | 0.45 | 1 | 6 / 8 |
-| Medium | 0.65 | 1 | 8 / 11 |
-| Heavy | **0.85** | 1 | **11 / 15** |
-| Counter | 0.85 | 2 | +3 / +4 |
-| Super | 1.00 | 3 | 14 / 20 |
+| Light | 0.82 | 0.28 s | 6 / 8 |
+| Medium | 1.00 | 0.28 s | 8 / 11 |
+| Heavy | 1.16 | 0.28 s | **11 / 15** |
+| Counter | 1.20 | 0.28 s | +3 / +4 |
+| Super | 1.24 | 0.28 s | 14 / 20 |
 
 Flash frequency capped at 3 Hz; at maximum hit rate the system throttles to every other hit.
 
@@ -769,7 +768,7 @@ Ranked by impact per hour invested:
 
 ## What is genuinely done
 
-Coloured shade, axis-gated rim, constant-pixel outlines, per-zone material families, unlit drawn eyes with catchlights, 7.3-head proportions, layered stage with storm dome, ground rings and drifting debris, refraction barrier shader, impact flash hook.
+Coloured shade, axis-gated rim, constant-pixel outlines, per-zone material families, unlit drawn eyes with catchlights, 7.3-head proportions, layered stage with storm dome, ground rings and drifting debris, refraction barrier shader, directional attack-cue hook.
 
 The shading pipeline is not the bottleneck. **The assets are.**
 
