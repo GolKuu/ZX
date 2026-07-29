@@ -1,11 +1,14 @@
 import { KADE_MOVES } from '@/src/data/combat-moves';
+import { ROSTER_ADDITION_MOVES } from '@/src/data/roster-moves';
 import { totalMoveFrames } from '@/src/sim';
 
 const WINDUP_END = 0.34;
 const ACTIVE_END = 0.58;
 const FALLBACK_FRAMES = 32;
 
-const MOVES_BY_ID = new Map(KADE_MOVES.map((move) => [move.id, move]));
+const MOVES_BY_ID = new Map(
+  [...KADE_MOVES, ...ROSTER_ADDITION_MOVES].map((move) => [move.id, move]),
+);
 
 export function combatAnimationProgress(
   moveId: string,
