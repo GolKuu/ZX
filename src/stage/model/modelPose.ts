@@ -11,23 +11,22 @@
  * ## How the rotations are applied
  *
  * Rigs disagree about bone axes. Mixamo's arm bones run down +Y with an
- * arbitrary roll; another vendor's run down +X. Rotating in *bone-local* space
- * therefore means something different in every file, which is why naive
- * procedural posing produces limbs that fold sideways on one model and
- * correctly on another.
+ * arbitrary roll; another vendor's run down +X. Rotating in bone-local *or*
+ * parent space therefore means something different in every file — Mixamo's
+ * `LeftShoulder` is oriented along the arm, so a raise authored as Z rolls the
+ * limb instead of lifting it.
  *
- * So every rotation here is applied in **parent space** (`premultiply`), not
- * local space. Near the root of a humanoid, parent space is close to character
- * space in any rig, so X reads as forward/back swing, Y as twist and Z as
- * raise-to-the-side, on every model. It is not a true retarget — a full one
- * needs per-bone reference frames — but it is stable across rigs and it is what
- * makes "swap the GLB, change nothing else" actually hold.
+ * Every rotation below is therefore applied in **character space**, conjugated
+ * through a per-bone basis captured from the rest pose (`boneSpace.ts`). X is
+ * forward/back swing, Y twist and Z raise-to-the-side, on every model, which is
+ * what makes "swap the GLB, change nothing else" actually hold.
  *
  * Each frame every joint is reset to its captured rest orientation first, so
  * poses are additive and never accumulate drift.
  */
 
 import { Euler, Quaternion, type Bone } from 'three';
+import { captureBoneSpace, relaxArm, rotateInCharacterSpace } from './boneSpace';
 import type { FighterSnapshot } from '@/src/sim';
 import { FIXED_SCALE } from '@/src/sim';
 import { combatAnimationProgress } from '../combatAnimationProgress';
@@ -49,10 +48,17 @@ export interface RestPose {
 }
 
 export function captureRestPose(joints: HumanoidJoints): RestPose {
+  // Normalise before capturing, never after: the pose tables are additive, so
+  // a rig delivered in a T-pose would otherwise keep its arms out through every
+  // move in the game.
+  relaxArm(joints.upperArmL, joints.forearmL);
+  relaxArm(joints.upperArmR, joints.forearmR);
+
   const rotations = new Map<Bone, Quaternion>();
   for (const name of HUMANOID_JOINTS) {
     const bone = joints[name];
     if (bone === null) continue;
+    captureBoneSpace(bone);
     rotations.set(bone, bone.quaternion.clone());
   }
   return { rotations, hipsHeight: joints.hips?.position.y ?? 0 };
@@ -73,7 +79,7 @@ function reset(joints: HumanoidJoints, rest: RestPose): void {
   }
 }
 
-/** Additive rotation in parent space. See the module note. */
+/** Additive rotation in character space. See the module note. */
 function turn(
   joints: HumanoidJoints,
   name: HumanoidJointName,
@@ -86,7 +92,7 @@ function turn(
   if (x === 0 && y === 0 && z === 0) return;
   scratchEuler.set(x, y, z);
   scratchQuaternion.setFromEuler(scratchEuler);
-  bone.quaternion.premultiply(scratchQuaternion);
+  rotateInCharacterSpace(bone, scratchQuaternion);
 }
 
 function lift(joints: HumanoidJoints, rest: RestPose, offset: number): void {

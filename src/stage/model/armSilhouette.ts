@@ -1,4 +1,5 @@
 import { Euler, Quaternion, type Bone } from 'three';
+import { mirrorDepthDelta, rotateInCharacterSpace } from './boneSpace';
 import {
   type HumanoidJointName,
   type HumanoidJoints,
@@ -18,8 +19,6 @@ const ARM_JOINTS: readonly HumanoidJointName[] = [
 const SHOULDERS: readonly HumanoidJointName[] = ['shoulderL', 'shoulderR'];
 const CAMERA_BIAS = 0.14;
 
-const scratchDelta = new Quaternion();
-const scratchRestInverse = new Quaternion();
 const scratchEuler = new Euler();
 const scratchBias = new Quaternion();
 
@@ -38,35 +37,18 @@ export function applyArmSilhouette(
 ): void {
   if (facing === -1) {
     for (const name of ARM_JOINTS) {
-      mirrorDepth(joints[name], restRotations);
+      const bone = joints[name];
+      if (bone === null) continue;
+      const rest = restRotations.get(bone);
+      if (rest === undefined) continue;
+      mirrorDepthDelta(bone, rest);
     }
   }
 
   scratchEuler.set(-CAMERA_BIAS * facing, 0, 0);
   scratchBias.setFromEuler(scratchEuler);
   for (const name of SHOULDERS) {
-    joints[name]?.quaternion.premultiply(scratchBias);
+    const bone = joints[name];
+    if (bone !== null) rotateInCharacterSpace(bone, scratchBias);
   }
-}
-
-function mirrorDepth(
-  bone: Bone | null,
-  restRotations: ReadonlyMap<Bone, Quaternion>,
-): void {
-  if (bone === null) return;
-  const rest = restRotations.get(bone);
-  if (rest === undefined) return;
-
-  scratchRestInverse.copy(rest).invert();
-  scratchDelta.copy(bone.quaternion).multiply(scratchRestInverse);
-
-  // Reflection across the character's XY plane maps an axial rotation vector
-  // (x, y, z) to (-x, -y, z).
-  scratchDelta.set(
-    -scratchDelta.x,
-    -scratchDelta.y,
-    scratchDelta.z,
-    scratchDelta.w,
-  ).normalize();
-  bone.quaternion.copy(scratchDelta).multiply(rest);
 }
