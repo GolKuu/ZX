@@ -7,13 +7,12 @@ import { createImpactMaterial } from '@/src/render/impactMaterial';
 import { useRenderStore } from '@/src/store/renderStore';
 
 const IMPACT_DURATION = 0.72;
-const AUTO_REPLAY_SECONDS = 5;
 
 export function ImpactBurst() {
   const material = useMemo(() => createImpactMaterial(), []);
   const materialRef = useRef<ShaderMaterial>(material);
   const initialImpact = useRenderStore.getState().impactVersion;
-  const startTimeRef = useRef(0.8);
+  const startTimeRef = useRef(-IMPACT_DURATION);
   const triggerRef = useRef(initialImpact);
   const handledTriggerRef = useRef(initialImpact);
   const enabledRef = useRef(useRenderStore.getState().effectsEnabled);
@@ -33,9 +32,8 @@ export function ImpactBurst() {
     const shader = materialRef.current;
     const elapsed = clock.elapsedTime;
     const wasTriggered = triggerRef.current !== handledTriggerRef.current;
-    const shouldReplay = elapsed - startTimeRef.current >= AUTO_REPLAY_SECONDS;
 
-    if (wasTriggered || shouldReplay) {
+    if (wasTriggered) {
       startTimeRef.current = elapsed;
       handledTriggerRef.current = triggerRef.current;
     }

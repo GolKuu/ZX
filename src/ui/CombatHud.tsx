@@ -6,20 +6,13 @@ import type {
   HudFighterSnapshot,
   HudSnapshot,
 } from '@/src/hud/types';
-import { MobileControls } from './MobileControls';
 import { MatchMenus } from './MatchMenus';
 import styles from './CombatHud.module.css';
 
 export function CombatHud() {
   const snapshot = useHudStore((state) => state.snapshot);
   const screen = useHudStore((state) => state.screen);
-  const touchControlsForced = useHudStore(
-    (state) => state.touchControlsForced,
-  );
   const openPause = useHudStore((state) => state.openPause);
-  const toggleTouchControls = useHudStore(
-    (state) => state.toggleTouchControls,
-  );
 
   useEffect(() => {
     const keyDown = (event: KeyboardEvent) => {
@@ -49,20 +42,11 @@ export function CombatHud() {
       <ComboCounter snapshot={snapshot} />
 
       <div className={styles.utilityControls}>
-        <button
-          aria-label="Toggle touch controls"
-          aria-pressed={touchControlsForced}
-          type="button"
-          onClick={toggleTouchControls}
-        >
-          Touch
-        </button>
         <button aria-label="Pause match" type="button" onClick={openPause}>
           <span aria-hidden="true">Ⅱ</span> Pause
         </button>
       </div>
 
-      <MobileControls forcedVisible={touchControlsForced} />
       <MatchMenus />
     </div>
   );

@@ -59,6 +59,7 @@ export function CombatGameLoop() {
       handledReset.current = resetVersion;
       useHudStore.getState().resetMatchUi();
       session.reset();
+      handledMode.current = useHudStore.getState().mode;
     }
     const hud = useHudStore.getState();
     if (hud.mode !== handledMode.current) {

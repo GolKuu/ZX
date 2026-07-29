@@ -24,6 +24,15 @@ test('relative movement respects facing and forward/backward speeds', () => {
   assert.equal(readFighter(backward.state, 'p2').position.x, 1_188);
 });
 
+test('jump input leaves the ground with authored vertical velocity', () => {
+  const engine = makeEngine(makeMove());
+  const result = engine.tick({ p1: { jump: true } });
+  const fighter = readFighter(result.state, 'p1');
+  assert.equal(fighter.grounded, false);
+  assert.equal(fighter.position.y > 0, true);
+  assert.equal(fighter.velocity.y > 0, true);
+});
+
 test('guard converts an incoming hit into blockstun without damage', () => {
   const move = makeMove({
     damage: 30,

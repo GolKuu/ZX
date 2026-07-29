@@ -24,7 +24,6 @@ type HudState = {
   screen: HudScreen;
   mode: MatchMode | null;
   menuFocus: number;
-  touchControlsForced: boolean;
   result: MatchResult;
   publishSnapshot: (snapshot: HudSnapshot) => void;
   resetMatchUi: () => void;
@@ -35,7 +34,6 @@ type HudState = {
   openModeMenu: () => void;
   selectMode: (mode: MatchMode) => void;
   setMenuFocus: (index: number) => void;
-  toggleTouchControls: () => void;
 };
 
 const initialSnapshot = (mode: MatchMode = 'local'): HudSnapshot => ({
@@ -80,7 +78,6 @@ export const useHudStore = create<HudState>((set) => ({
   screen: 'mode',
   mode: null,
   menuFocus: 0,
-  touchControlsForced: false,
   result: initialResult,
   publishSnapshot: (snapshot) => set({ snapshot }),
   resetMatchUi: () =>
@@ -102,8 +99,6 @@ export const useHudStore = create<HudState>((set) => ({
       menuFocus: 0,
     }),
   setMenuFocus: (menuFocus) => set({ menuFocus }),
-  toggleTouchControls: () =>
-    set((state) => ({ touchControlsForced: !state.touchControlsForced })),
 }));
 
 export function resetHudStore(): void {
@@ -112,7 +107,6 @@ export function resetHudStore(): void {
     screen: 'mode',
     mode: null,
     menuFocus: 0,
-    touchControlsForced: false,
     result: initialResult,
   });
 }

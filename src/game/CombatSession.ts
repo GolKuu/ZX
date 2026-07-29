@@ -1,25 +1,25 @@
-import { CombatAiAgent } from '@/src/ai';
-import { KADE_AI_LOADOUT } from '@/src/data/combat-ai';
-import { KADE_HURTBOXES, KADE_MOVES } from '@/src/data/combat-moves';
-import { HudBridge } from '@/src/hud';
 import type { KeyboardInputSource } from '@/src/input';
 import {
-  CombatEngine,
   FixedStepRunner,
-  fixed,
   type CombatEvent,
   type WorldSnapshot,
 } from '@/src/sim';
 import { useHudStore } from '@/src/store/hudStore';
 import { useRenderStore } from '@/src/store/renderStore';
 import { publishCombatFrame } from './combatRuntime';
+import {
+  createCombatAi,
+  createCombatEngine,
+  createCombatHud,
+  readFighter,
+} from './combatSetup';
 
 const ROUND_FRAMES = 99 * 60;
 
 export class CombatSession {
-  private engine = createEngine();
-  private ai = createAi();
-  private hud = createHudBridge();
+  private engine = createCombatEngine();
+  private ai = createCombatAi();
+  private hud = createCombatHud();
   private readonly runner = new FixedStepRunner(() => this.tick());
   private lastEvents: readonly CombatEvent[] = [];
   private timerFrames = ROUND_FRAMES;
@@ -40,9 +40,9 @@ export class CombatSession {
   }
 
   public reset(): void {
-    this.engine = createEngine();
-    this.ai = createAi();
-    this.hud = createHudBridge();
+    this.engine = createCombatEngine();
+    this.ai = createCombatAi();
+    this.hud = createCombatHud();
     this.runner.reset();
     this.hud.reset();
     this.lastEvents = [];
@@ -56,10 +56,10 @@ export class CombatSession {
   private tick(): void {
     if (this.ended) return;
     const before = this.engine.read();
-    const player = fighter(before, 'p1');
+    const player = readFighter(before, 'p1');
     const mode = useHudStore.getState().mode;
     const opponentInput = mode === 'local'
-      ? this.playerTwo.sample(fighter(before, 'p2').facing)
+      ? this.playerTwo.sample(readFighter(before, 'p2').facing)
       : this.ai.decide(before, this.lastEvents).input;
     const result = this.engine.tick({
       p1: this.playerOne.sample(player.facing),
@@ -118,56 +118,6 @@ export class CombatSession {
       duration: formatDuration(ROUND_FRAMES - this.timerFrames),
     });
   }
-}
-
-function createEngine(): CombatEngine {
-  return new CombatEngine({
-    moves: KADE_MOVES,
-    fighters: [
-      fighterDefinition('p1', 1, -1.55, 1),
-      fighterDefinition('p2', 2, 1.55, -1),
-    ],
-    world: { leftWall: fixed(-4.8), rightWall: fixed(4.8) },
-  });
-}
-
-function createAi(): CombatAiAgent {
-  return new CombatAiAgent({
-    fighterId: 'p2',
-    opponentId: 'p1',
-    difficulty: 'normal',
-    moves: KADE_MOVES,
-    loadout: KADE_AI_LOADOUT,
-    seed: 29,
-  });
-}
-
-function fighterDefinition(id: string, team: number, x: number, facing: -1 | 1) {
-  return {
-    id,
-    team,
-    maxHealth: 1_000,
-    spawn: { x: fixed(x), y: 0 },
-    facing,
-    hurtboxes: KADE_HURTBOXES,
-  };
-}
-
-function createHudBridge(): HudBridge {
-  const opponentTag = useHudStore.getState().mode === 'ai' ? 'CPU' : 'P2';
-  return new HudBridge(
-    [
-      { id: 'p1', displayName: 'Roronoa Zoro', playerTag: 'P1', side: 'left' },
-      { id: 'p2', displayName: 'Roronoa Zoro', playerTag: opponentTag, side: 'right' },
-    ],
-    (snapshot) => useHudStore.getState().publishSnapshot(snapshot),
-  );
-}
-
-function fighter(world: WorldSnapshot, id: string) {
-  const result = world.fighters.find((entry) => entry.id === id);
-  if (result === undefined) throw new Error(`Missing fighter "${id}"`);
-  return result;
 }
 
 function formatDuration(frames: number): string {
