@@ -16,6 +16,10 @@ const MOVE_SCALE: Readonly<Record<string, number>> = {
   '2L': 0.78,
   '2M': 1,
   overtake: 1.24,
+  'idol.lp': 0.84,
+  'idol.hp': 1.22,
+  'idol.lk': 0.96,
+  'idol.hk': 1.18,
 };
 
 export function AttackCue() {

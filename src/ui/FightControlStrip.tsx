@@ -40,6 +40,8 @@ export function FightControlStrip() {
       <ControlGroup label="Спец" codes={[bindingCode(bindings, 'special')]} />
       {selection[0] === 'aang' && <ElementGroup fighterId="p1" />}
       {selection[1] === 'aang' && <ElementGroup fighterId="p2" />}
+      {selection[0] === 'idol' && <IdolMoveGroup fighterId="p1" />}
+      {selection[1] === 'idol' && <IdolMoveGroup fighterId="p2" />}
       <button type="button" onClick={openControls}>Изменить</button>
     </section>
   );
@@ -55,6 +57,15 @@ function ElementGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
     <span className={styles.elementGroup}>
       <small>{fighterId.toUpperCase()} · ↓↓ + J/K/L/U</small>
       <b>{elements}</b>
+    </span>
+  );
+}
+
+function IdolMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
+  return (
+    <span className={styles.elementGroup}>
+      <small>{fighterId.toUpperCase()} · LP / HP / LK / HK</small>
+      <b>МИКРО-ДЖЕБ · ЗВЕЗДА · СКОЛЬЖЕНИЕ · ТАНЕЦ</b>
     </span>
   );
 }

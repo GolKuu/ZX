@@ -63,6 +63,11 @@
   background: linear-gradient(145deg, #382c50, #141323);
 }
 
+.characterList button[data-character="idol"] > i {
+  color: #ffe47b;
+  background: linear-gradient(145deg, #ec4d92, #7b265f);
+}
+
 .characterList button > span {
   display: grid;
   min-width: 0;

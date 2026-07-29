@@ -111,6 +111,15 @@
   transform: skew(3deg);
 }
 
+.panel[data-character="idol"] .portrait i {
+  background:
+    radial-gradient(circle at 50% 16%, #ffd86a 0 3%, #f47aab 3.4% 8%, transparent 8.4%),
+    linear-gradient(105deg, transparent 29%, #fff4f8 29.5% 49%, transparent 49.5%),
+    linear-gradient(255deg, transparent 29%, #e9468b 29.5% 49%, transparent 49.5%);
+  filter: drop-shadow(0 1cqw 2cqw rgb(117 27 81 / 70%));
+  transform: skew(-2deg);
+}
+
 .identity {
   position: relative;
   z-index: 2;
