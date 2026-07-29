@@ -1,6 +1,7 @@
 'use client';
 
 import { type FormEvent, useEffect, useId, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { getSupabaseClient } from '@/src/lib/supabase';
 import {
   AccountLinkForm,
@@ -18,17 +19,23 @@ export function AccountLinkButton() {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    const client = getSupabaseClient();
-    if (client === null) return;
-
-    void client.auth.getSession().then(({ data }) => {
-      setAccountEmail(data.session?.user.email ?? null);
+    let unsubscribe: (() => void) | undefined;
+    let active = true;
+    void getSupabaseClient().then((client) => {
+      if (client === null || !active) return;
+      void client.auth.getSession().then(({ data }) => {
+        if (active) setAccountEmail(data.session?.user.email ?? null);
+      });
+      const { data } = client.auth.onAuthStateChange((_event, session) => {
+        setAccountEmail(session?.user.email ?? null);
+        if (session !== null) setDialogOpen(false);
+      });
+      unsubscribe = () => data.subscription.unsubscribe();
     });
-    const { data } = client.auth.onAuthStateChange((_event, session) => {
-      setAccountEmail(session?.user.email ?? null);
-      if (session !== null) setDialogOpen(false);
-    });
-    return () => data.subscription.unsubscribe();
+    return () => {
+      active = false;
+      unsubscribe?.();
+    };
   }, []);
 
   useEffect(() => {
@@ -48,7 +55,7 @@ export function AccountLinkButton() {
 
   const sendLink = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const client = getSupabaseClient();
+    const client = await getSupabaseClient();
     if (client === null) {
       setErrorMessage('Подключение аккаунтов пока не настроено.');
       setRequestState('error');
@@ -73,7 +80,7 @@ export function AccountLinkButton() {
   };
 
   const signOut = async () => {
-    const client = getSupabaseClient();
+    const client = await getSupabaseClient();
     if (client === null) return;
     await client.auth.signOut();
     setAccountEmail(null);
@@ -92,7 +99,7 @@ export function AccountLinkButton() {
         <span>{accountEmail ?? 'Привязать аккаунт'}</span>
       </button>
 
-      {dialogOpen && (
+      {dialogOpen && createPortal(
         <div
           className={dialogStyles.scrim}
           onMouseDown={() => setDialogOpen(false)}
@@ -114,7 +121,7 @@ export function AccountLinkButton() {
             </button>
             <span className={dialogStyles.kicker}>CC//ID</span>
             {accountEmail === null ? (
-              <AccountForm
+              <AccountLinkForm
                 email={email}
                 errorMessage={errorMessage}
                 requestState={requestState}
@@ -125,12 +132,13 @@ export function AccountLinkButton() {
             ) : (
               <div className={dialogStyles.connected}>
                 <h2 id={titleId}>Аккаунт привязан</h2>
-                <p>Прогресс будет связан с адресом <strong>{accountEmail}</strong>.</p>
+                <p>Вы вошли с адресом <strong>{accountEmail}</strong>.</p>
                 <button type="button" onClick={signOut}>Выйти из аккаунта</button>
               </div>
             )}
           </section>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );

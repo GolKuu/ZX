@@ -1,26 +1,25 @@
-import {
-  createClient,
-  type SupabaseClient,
-} from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-let browserClient: SupabaseClient | null | undefined;
+let browserClient: Promise<SupabaseClient | null> | undefined;
 
-export function getSupabaseClient(): SupabaseClient | null {
+export function getSupabaseClient(): Promise<SupabaseClient | null> {
   if (browserClient !== undefined) return browserClient;
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (url === undefined || publishableKey === undefined) {
-    browserClient = null;
+    browserClient = Promise.resolve(null);
     return browserClient;
   }
 
-  browserClient = createClient(url, publishableKey, {
-    auth: {
-      detectSessionInUrl: true,
-      flowType: 'pkce',
-      persistSession: true,
-    },
+  browserClient = import('@supabase/supabase-js').then(({ createClient }) => {
+    return createClient(url, publishableKey, {
+      auth: {
+        detectSessionInUrl: true,
+        flowType: 'pkce',
+        persistSession: true,
+      },
+    });
   });
   return browserClient;
 }

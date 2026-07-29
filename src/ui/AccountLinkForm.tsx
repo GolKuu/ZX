@@ -29,7 +29,7 @@ export function AccountLinkForm({
   return (
     <>
       <h2 id={titleId}>Привязать аккаунт</h2>
-      <p>Получите ссылку входа без пароля и сохраните игровой прогресс.</p>
+      <p>Получите безопасную ссылку и войдите без пароля.</p>
       <form onSubmit={onSubmit}>
         <label htmlFor="account-email">Email</label>
         <input
