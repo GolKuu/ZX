@@ -23,6 +23,13 @@ export interface CommandRow {
   readonly requiresModifier?: boolean;
   /** `'crouching'` and `'standing'` gate on the direction at press time. */
   readonly stance?: 'standing' | 'crouching' | 'any';
+  /**
+   * Additional buttons that must be down at the committing press, for
+   * simultaneous-press commands like `LP+LK` and `P+K`. Checked against the
+   * held mask on that frame rather than requiring a same-frame press, because
+   * no player hits two keys on the same 16 ms tick.
+   */
+  readonly alsoPressed?: readonly Button[];
   /** Optional gate — stance systems, gauge costs, air-only moves. */
   readonly available?: (context: CommandContext) => boolean;
 }
@@ -101,6 +108,9 @@ export function resolveCommand(
     if (!matchesStance(buffer.at(pressedAgo).direction, row.stance)) {
       continue;
     }
+    if (!allButtonsDown(buffer, row.alsoPressed, pressedAgo)) {
+      continue;
+    }
     if (row.available !== undefined && !row.available(context)) {
       continue;
     }
@@ -115,6 +125,23 @@ export function resolveCommand(
     };
   }
   return null;
+}
+
+/**
+ * Every companion button must be held on the committing frame. A one-frame
+ * window would make `LP+LK` unusable on a keyboard.
+ */
+function allButtonsDown(
+  buffer: InputBuffer,
+  buttons: readonly Button[] | undefined,
+  pressedAgo: number,
+): boolean {
+  if (buttons === undefined) return true;
+  const held = buffer.at(pressedAgo).held;
+  for (const button of buttons) {
+    if (!hasButton(held, button)) return false;
+  }
+  return true;
 }
 
 function matchesStance(
