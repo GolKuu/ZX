@@ -80,7 +80,7 @@ const initialSnapshot = (
 });
 
 const initialResult: MatchResult = {
-  winner: 'Ророноа Зоро',
+  winner: 'IDOL',
   rounds: '2–1',
   maxCombo: 6,
   clashes: 2,
@@ -111,12 +111,13 @@ export const useHudStore = create<HudState>((set) => ({
   openModeMenu: () => set({ screen: 'mode', menuFocus: 0 }),
   openCharacterSelect: () => set({ screen: 'character', menuFocus: 0 }),
   selectMode: (mode) =>
-    set((state) => ({
+    set({
       mode,
       screen: mode === 'online' ? 'online' : 'character',
-      snapshot: initialSnapshot(mode, state.fighterSelection),
+      fighterSelection: DEFAULT_CHARACTER_SELECTION,
+      snapshot: initialSnapshot(mode, DEFAULT_CHARACTER_SELECTION),
       menuFocus: 0,
-    })),
+    }),
   startMatch: (fighterSelection) =>
     set((state) => ({
       fighterSelection: [...fighterSelection],

@@ -1,0 +1,60 @@
+/*!********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[5].use[3]!./src/app/error.module.css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************/
+.error_page__jHoTS {
+  align-items: center;
+  background: radial-gradient(circle at 50% 35%, #152b43, #060914 60%);
+  color: #f4f7ff;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.error_eyebrow__qaIen {
+  color: #71dcff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  margin: 0;
+}
+
+.error_page__jHoTS h1 {
+  font-size: clamp(2rem, 7vw, 4.5rem);
+  line-height: 0.95;
+  margin: 0;
+}
+
+.error_page__jHoTS p {
+  color: #b9c9df;
+  margin: 0;
+  max-width: 34rem;
+}
+
+.error_actions__q9j6S {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.error_actions__q9j6S a,
+.error_actions__q9j6S button {
+  background: #71dcff;
+  border: 0;
+  color: #071018;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0.8rem 1.1rem;
+}
+
+.error_actions__q9j6S a:last-child {
+  background: transparent;
+  border: 1px solid #57738f;
+  color: #f4f7ff;
+}
+

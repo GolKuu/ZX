@@ -21,14 +21,10 @@ export interface CharacterDefinition {
 }
 
 /**
- * The five original roster slots.
- *
- * Ids stay as they are — `zoro` and `aang` are wired through the render, AI and
- * HUD layers, and renaming them buys nothing. The *display* names are what
- * ships, and those are original, per the standing constraint that this universe
- * carries no copyrighted characters.
+ * Every definition stays available for old replays and saved selections.
+ * Only `CHARACTER_ROSTER` below is exposed in the local/AI selection screen.
  */
-export const CHARACTER_ROSTER = [
+const CHARACTER_DEFINITIONS = [
   {
     id: 'mim',
     displayName: 'MIM',
@@ -111,15 +107,26 @@ export const CHARACTER_ROSTER = [
   },
 ] as const satisfies readonly CharacterDefinition[];
 
+const NEW_CHARACTER_IDS: readonly CharacterId[] = [
+  'mim',
+  'echo',
+  'glitch',
+  'idol',
+  'chrono',
+];
+
+export const CHARACTER_ROSTER: readonly CharacterDefinition[] =
+  CHARACTER_DEFINITIONS.filter(({ id }) => NEW_CHARACTER_IDS.includes(id));
+
 export const DEFAULT_CHARACTER_SELECTION: CharacterSelection = [
-  'zoro',
-  'void-walker',
+  'idol',
+  'glitch',
 ];
 
 export function getCharacterDefinition(
   characterId: CharacterId,
 ): CharacterDefinition {
-  const character = CHARACTER_ROSTER.find(({ id }) => id === characterId);
+  const character = CHARACTER_DEFINITIONS.find(({ id }) => id === characterId);
   if (character === undefined) {
     throw new Error(`Unknown character "${characterId}"`);
   }

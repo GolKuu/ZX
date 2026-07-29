@@ -105,7 +105,7 @@ export function ModeMenu() {
           <h1>{selected.label}</h1>
           <p>{selected.description}</p>
           <dl>
-            <div><dt>Ростер</dt><dd>2 готовых бойца</dd></div>
+            <div><dt>Ростер</dt><dd>5 новых бойцов</dd></div>
             <div><dt>Арена</dt><dd>Null Circle</dd></div>
           </dl>
         </aside>
