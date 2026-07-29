@@ -51,7 +51,7 @@ function makeSkyline() {
 
 export function RuinedMegacity({ ruinMaterial }: RuinedMegacityProps) {
   const windowRef = useRef<InstancedMesh>(null);
-  const skylineGeometry = useMemo(makeSkyline, []);
+  const skylineGeometry = useMemo(() => makeSkyline(), []);
   const cityMaterial = useMemo(
     () => new MeshBasicMaterial({ color: new Color('#151122'), fog: false }),
     [],

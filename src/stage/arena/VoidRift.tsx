@@ -17,7 +17,7 @@ function makeRift(width: number) {
   const left = [-0.08, -0.46, -0.2, -0.64, -0.3, -0.78, -0.22];
   const right = [0.12, 0.5, 0.24, 0.72, 0.32, 0.62, 0.2];
   const step = 10 / (left.length - 1);
-  shape.moveTo(left[0] * width, -5);
+  shape.moveTo((left[0] ?? 0) * width, -5);
   left.slice(1).forEach((x, index) => shape.lineTo(x * width, -5 + step * (index + 1)));
   [...right].reverse().forEach((x, index) => shape.lineTo(x * width, 5 - step * index));
   shape.closePath();

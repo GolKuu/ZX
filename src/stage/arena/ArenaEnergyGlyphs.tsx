@@ -55,8 +55,8 @@ export function ArenaEnergyGlyphs() {
   const crackRef = useRef<InstancedMesh>(null);
   const runeMaterialRef = useRef<MeshBasicMaterial>(null);
   const crackMaterialRef = useRef<MeshBasicMaterial>(null);
-  const runes = useMemo(buildRunes, []);
-  const cracks = useMemo(buildCracks, []);
+  const runes = useMemo(() => buildRunes(), []);
+  const cracks = useMemo(() => buildCracks(), []);
 
   useEffect(() => {
     if (runeRef.current !== null) setSegments(runeRef.current, runes);

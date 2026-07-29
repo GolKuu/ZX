@@ -6,6 +6,8 @@ Specifications that are **in scope for the vertical slice**.
 |---|---|---|
 | [`UI-CCU-700-ui-ux.md`](./UI-CCU-700-ui-ux.md) | Front-end screens and combat HUD — tokens, layouts, interaction rules, accessibility | `F17`, `F21` |
 | [`ui-mockups.html`](./ui-mockups.html) | Rendered mockups of all nine screens plus an interactive HUD state switcher | reference for the above |
+| [`VIS-CCU-800-visual-direction.md`](./VIS-CCU-800-visual-direction.md) | Rendering contract — cel shading, outlines, rim, eyes, VFX, arena, camera, post | `src/render/`, `src/stage/` |
+| [`CHR-CCU-810-void-walker-production.md`](./CHR-CCU-810-void-walker-production.md) | Void Walker, concept → GLB. Nine gated stages: concept, turnaround, expressions, poses, materials, model, rig, animation, export | `src/stage/voidwalker/` |
 
 **Open `ui-mockups.html` in a browser before implementing any UI.** It is the visual source of truth; the markdown is the measurable one.
 
