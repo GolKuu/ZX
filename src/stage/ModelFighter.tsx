@@ -8,6 +8,7 @@ import {
   readCombatFighter,
 } from '@/src/game/combatRuntime';
 import {
+  bandsFor,
   paletteFor,
   type CharacterPalette,
   type ZonePalette,
@@ -171,12 +172,20 @@ export function ModelFighter({
 /**
  * Palette per `CHR-CCU-810` §5. Shadow tints are hue shifts, never a multiply —
  * skin toward plum, white hair toward lilac, dark cloth toward violet.
+ *
+ * Every zone also carries the *whole* palette as vertical bands. The stock
+ * models merge their surfaces into one or two materials, so whichever zone a
+ * mesh resolves to has to be able to paint a complete character on its own; the
+ * band split is what turns a single-material mannequin back into boots,
+ * trousers, coat, skin and hair. `heightRange` is a placeholder here and is
+ * corrected to the model's real bind-pose extent once it loads.
  */
 function createFighterZones(
   gradient: ReturnType<typeof createCelGradient>,
   auraColor: string,
   palette: CharacterPalette,
 ): FighterZones {
+  const bands = bandsFor(palette);
   const zone = ({ lit, shade, rim, shadow }: ZonePalette) =>
     createToonMaterial({
       color: lit,
@@ -185,6 +194,8 @@ function createFighterZones(
       shadowStrength: shadow,
       rimColor: auraColor,
       rimStrength: rim,
+      heightZones: bands,
+      heightRange: [0, 1],
     });
 
   return {

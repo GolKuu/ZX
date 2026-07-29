@@ -12,6 +12,7 @@ import { LazyModelFighter } from './LazyModelFighter';
 import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
 import { FrameProfiler } from './FrameProfiler';
+import { IdolFighter } from './IdolFighter';
 import { LazyPostEffects } from './LazyPostEffects';
 import { RenderDebugBridge } from './RenderDebugBridge';
 import { StageLighting } from './StageLighting';
@@ -91,6 +92,9 @@ function primitiveFighter(
   }
   if (characterId === 'aang') {
     return <AangFighter auraColor={auraColor} fighterId={fighterId} />;
+  }
+  if (characterId === 'idol') {
+    return <IdolFighter auraColor={auraColor} fighterId={fighterId} />;
   }
   return <VoidWalkerFighter auraColor={auraColor} fighterId={fighterId} />;
 }

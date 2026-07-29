@@ -26,7 +26,7 @@ const ROUND_FRAMES = 99 * 60;
 
 export class CombatSession {
   private engine = createCombatEngine();
-  private ai;
+  private ai: ReturnType<typeof createCombatAi>;
   private hud = createCombatHud();
   private readonly runner = new FixedStepRunner(() => this.tick());
   private lastEvents: readonly CombatEvent[] = [];

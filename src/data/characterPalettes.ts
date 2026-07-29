@@ -40,6 +40,17 @@ function zone(
 }
 
 /** Void Walker — near-black indigo, violet shade, cyan reservation. */
+/** MIM — yellow skin and scarf, purple hoodie, clean white sneakers. */
+const MIM: CharacterPalette = {
+  hair: zone('#ffd52a', '#ee8f2c', 1.0, 0.72),
+  skin: zone('#ffd52a', '#ee8f2c', 0.8, 0.72),
+  coat: zone('#6f35cf', '#35156f', 1.0, 0.82),
+  trousers: zone('#5b2db6', '#2b145f', 0.82, 0.82),
+  boot: zone('#faf9ff', '#c8b7eb', 1.0, 0.68),
+  eye: zone('#3c176f', '#210c43', 0, 0),
+  body: zone('#6f35cf', '#35156f', 1.0, 0.82),
+};
+
 const VOID_WALKER: CharacterPalette = {
   hair: zone('#f2f0fb', '#9b93d6', 1.0, 0.8),
   skin: zone('#e8c3a4', '#9c6a8a', 0.62, 0.7),
@@ -106,6 +117,7 @@ const ELASTIC_BRAWLER: CharacterPalette = {
 };
 
 const PALETTES: Record<CharacterId, CharacterPalette> = {
+  mim: MIM,
   zoro: BLADE_PHANTOM,
   aang: ELEMENT_SAGE,
   idol: IDOL,
@@ -116,4 +128,43 @@ const PALETTES: Record<CharacterId, CharacterPalette> = {
 
 export function paletteFor(characterId: CharacterId): CharacterPalette {
   return PALETTES[characterId];
+}
+
+/**
+ * Where each zone sits up a humanoid, as a fraction of bind-pose height.
+ *
+ * Every model in `public/models/` ships one or two merged materials, so the
+ * keyword pass in `loadFighterModel` resolves a whole character to a single
+ * zone and paints it one flat colour — a bare mannequin, or one green blob.
+ * Slicing by height recovers boots, trousers, coat, skin and hair from geometry
+ * the vendor never separated. Proportions are a standing figure's: feet to
+ * mid-calf, calf to waist, waist to collar, collar to brow, brow to crown.
+ */
+export const ZONE_HEIGHTS = {
+  boot: 0.075,
+  trousers: 0.5,
+  coat: 0.8,
+  skin: 0.915,
+  hair: 1,
+} as const satisfies Readonly<Record<string, number>>;
+
+export interface PaletteBand {
+  readonly upTo: number;
+  readonly lit: string;
+  readonly shade: string;
+}
+
+/** The palette read as vertical bands, lowest first. */
+export function bandsFor(palette: CharacterPalette): readonly PaletteBand[] {
+  return [
+    { upTo: ZONE_HEIGHTS.boot, ...pair(palette.boot) },
+    { upTo: ZONE_HEIGHTS.trousers, ...pair(palette.trousers) },
+    { upTo: ZONE_HEIGHTS.coat, ...pair(palette.coat) },
+    { upTo: ZONE_HEIGHTS.skin, ...pair(palette.skin) },
+    { upTo: ZONE_HEIGHTS.hair, ...pair(palette.hair) },
+  ];
+}
+
+function pair({ lit, shade }: ZonePalette): { lit: string; shade: string } {
+  return { lit, shade };
 }

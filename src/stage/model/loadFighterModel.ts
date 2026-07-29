@@ -203,6 +203,11 @@ export async function loadFighterModel(
   // Vendor materials are ours to release; we replaced every reference.
   for (const material of originals) material.dispose();
 
+  // The zone bands are authored as fractions of the character's height, but the
+  // shader reads the *bind-pose* vertex Y so a crouch cannot slide the boot band
+  // up the shins. Only the geometry knows what range that is, and only now.
+  applyBindHeightRange(meshes, usedToon);
+
   // --- skeleton ---
   const joints = resolveHumanoidJoints(root);
 
@@ -241,6 +246,33 @@ export async function loadFighterModel(
       root.removeFromParent();
     },
   };
+}
+
+/**
+ * Point every zone material's band split at the model's own bind-pose extent.
+ *
+ * Measured across all meshes together: a character whose head is a separate
+ * mesh must not decide on its own that its chin is the character's feet.
+ */
+function applyBindHeightRange(
+  meshes: readonly Mesh[],
+  materials: ReadonlySet<ToonMaterial>,
+): void {
+  let low = Infinity;
+  let high = -Infinity;
+  for (const mesh of meshes) {
+    mesh.geometry.computeBoundingBox();
+    const box = mesh.geometry.boundingBox;
+    if (box === null) continue;
+    low = Math.min(low, box.min.y);
+    high = Math.max(high, box.max.y);
+  }
+  if (!Number.isFinite(low) || !Number.isFinite(high) || high - low < 1e-4) {
+    return;
+  }
+  for (const material of materials) {
+    material.toon.uZoneRange.value = [low, high];
+  }
 }
 
 const jointPosition = new Vector3();

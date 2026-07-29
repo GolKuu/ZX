@@ -1,4 +1,5 @@
 export type CharacterId =
+  | 'mim'
   | 'zoro'
   | 'aang'
   | 'idol'
@@ -25,6 +26,14 @@ export interface CharacterDefinition {
  * carries no copyrighted characters.
  */
 export const CHARACTER_ROSTER = [
+  {
+    id: 'mim',
+    displayName: 'MIM',
+    archetype: 'Тролль · ловушки',
+    description:
+      'Минималистичный боец в худи: щёлкает пальцами, роняет курсор, пинает банан и раскручивает кресло.',
+    mark: 'M',
+  },
   {
     id: 'zoro',
     displayName: 'Клинковый Призрак',
