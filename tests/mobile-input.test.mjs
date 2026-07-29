@@ -26,6 +26,18 @@ test('mobile attack is emitted once on press rather than every held frame', () =
   assert.deepEqual(input.read(), { movement: 0, guard: false });
 });
 
+test('mobile attacks tapped during animation are discarded, not queued', () => {
+  const input = new MobileInputController();
+  input.press(7, 'heavy');
+
+  assert.deepEqual(input.read(true), { movement: 0, guard: false });
+  assert.deepEqual(input.read(false), { movement: 0, guard: false });
+
+  input.release(7);
+  input.press(8, 'heavy');
+  assert.equal(input.read(false).move, '5H');
+});
+
 test('mobile input handles simultaneous and duplicate touch pointers safely', () => {
   const input = new MobileInputController();
   input.press(1, 'back');

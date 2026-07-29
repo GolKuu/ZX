@@ -11,6 +11,7 @@ import {
   toFacingRelative,
   resolveDirection,
   DEFAULT_BINDINGS,
+  AttackButtonGate,
 } from '../.sim-test-build/src/input/core.js';
 
 /** Feed a sequence of [direction, buttonNames[]] pairs, one per frame. */
@@ -211,4 +212,14 @@ test('identical frame sequences resolve identically', () => {
   const first = resolveCommand(feed(new InputBuffer(), frames), KADE_COMMANDS);
   const second = resolveCommand(feed(new InputBuffer(), frames), KADE_COMMANDS);
   assert.deepEqual(first, second);
+});
+
+test('attack gate rejects mashing and requires release after animation', () => {
+  const gate = new AttackButtonGate();
+  const attackAndGuard = BUTTON_BIT.hp | BUTTON_BIT.block;
+
+  assert.equal(gate.filter(attackAndGuard, true), BUTTON_BIT.block);
+  assert.equal(gate.filter(attackAndGuard, false), BUTTON_BIT.block);
+  assert.equal(gate.filter(BUTTON_BIT.block, false), BUTTON_BIT.block);
+  assert.equal(gate.filter(attackAndGuard, false), attackAndGuard);
 });

@@ -23,6 +23,7 @@ import {
   type CommandContext,
   type CommandRow,
 } from './command.js';
+import { AttackButtonGate } from './attack-gate.js';
 
 export interface KeyboardSourceOptions {
   readonly bindings?: KeyBindings;
@@ -34,6 +35,7 @@ export interface KeyboardSourceOptions {
 export class KeyboardInputSource {
   private readonly held = new Set<string>();
   private readonly buffer = new InputBuffer();
+  private readonly attackGate = new AttackButtonGate();
   private bindings: KeyBindings;
   private readonly commands: readonly CommandRow[];
   private readonly preventDefault: boolean;
@@ -60,6 +62,7 @@ export class KeyboardInputSource {
   /** Releasing everything on blur avoids a key sticking down forever. */
   private readonly onBlur = (): void => {
     this.held.clear();
+    this.attackGate.reset();
   };
 
   public constructor(options: KeyboardSourceOptions) {
@@ -87,6 +90,7 @@ export class KeyboardInputSource {
     target.removeEventListener('blur', this.onBlur);
     this.held.clear();
     this.buffer.clear();
+    this.attackGate.reset();
     this.attached = false;
   }
 
@@ -97,11 +101,16 @@ export class KeyboardInputSource {
    */
   public sample(
     facing: -1 | 1,
+    attacksLocked = false,
     context: CommandContext = DEFAULT_CONTEXT,
   ): FighterInput {
     const screenDirection = resolveDirection(this.held, this.bindings);
     const direction = toFacingRelative(screenDirection, facing);
-    this.buffer.push(direction, readButtonMask(this.held, this.bindings));
+    const buttons = this.attackGate.filter(
+      readButtonMask(this.held, this.bindings),
+      attacksLocked,
+    );
+    this.buffer.push(direction, buttons);
 
     const guard = isGuarding(this.buffer);
     const command = resolveCommand(this.buffer, this.commands, context);
@@ -118,6 +127,7 @@ export class KeyboardInputSource {
     this.bindings = copyBindings(bindings);
     this.held.clear();
     this.buffer.clear();
+    this.attackGate.reset();
   }
 
   /** Exposed for the input display and for replay capture. */

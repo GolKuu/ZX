@@ -56,7 +56,7 @@ export class MobileInputController {
     this.queuedMove = undefined;
   }
 
-  public read(): FighterInput {
+  public read(attacksLocked = false): FighterInput {
     const movement = this.readMovement();
     const input: {
       movement: -1 | 0 | 1;
@@ -66,10 +66,10 @@ export class MobileInputController {
       movement,
       guard: this.held.has('guard'),
     };
-    if (this.queuedMove !== undefined) {
+    if (this.queuedMove !== undefined && !attacksLocked) {
       input.move = this.queuedMove;
-      this.queuedMove = undefined;
     }
+    this.queuedMove = undefined;
     return input;
   }
 

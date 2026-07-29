@@ -46,3 +46,5 @@ export {
   type CommandRow,
   type ResolvedCommand,
 } from './command.js';
+
+export { AttackButtonGate } from './attack-gate.js';
