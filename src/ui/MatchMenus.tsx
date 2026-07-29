@@ -15,16 +15,6 @@ interface MenuItem {
   readonly action: () => void;
 }
 
-const bindings = [
-  ['Move', 'A / D', 'Left stick', '◀ / ▶'],
-  ['Guard', 'S', 'LT', 'G'],
-  ['Light', 'J', 'X', 'L'],
-  ['Medium', 'K', 'Y', 'M'],
-  ['Heavy', 'L', 'B', 'H'],
-  ['Special', 'I', 'RB', 'S'],
-  ['Pause', 'Esc', 'Menu', 'Ⅱ'],
-] as const;
-
 export function MatchMenus() {
   const screen = useHudStore((state) => state.screen);
   if (screen === 'mode') return <ModeMenu />;
@@ -148,68 +138,6 @@ function InMatchMenus() {
   );
 }
 
-function ControlsMenu() {
-  const openPause = useHudStore((state) => state.openPause);
-
-  useEffect(() => {
-    const setActive = (event: KeyboardEvent, active: boolean) => {
-      const row = document.querySelector<HTMLElement>(
-        `[data-key="${event.code}"]`,
-      );
-      if (row !== null) {
-        row.dataset.active = active ? 'true' : 'false';
-      }
-    };
-    const keyDown = (event: KeyboardEvent) => setActive(event, true);
-    const keyUp = (event: KeyboardEvent) => setActive(event, false);
-    window.addEventListener('keydown', keyDown);
-    window.addEventListener('keyup', keyUp);
-    return () => {
-      window.removeEventListener('keydown', keyDown);
-      window.removeEventListener('keyup', keyUp);
-    };
-  }, []);
-
-  return (
-    <div
-      aria-label="Controls"
-      aria-modal="true"
-      className={styles.menuScrim}
-      role="dialog"
-    >
-      <section className={styles.controlsPanel}>
-        <header>
-          <span>Input reference</span>
-          <h2>Controls</h2>
-          <p>Keyboard, controller, and touch feed the same combat input.</p>
-        </header>
-        <div className={styles.bindingHeader} aria-hidden="true">
-          <span>Action</span>
-          <span>Keyboard</span>
-          <span>Gamepad</span>
-          <span>Touch</span>
-        </div>
-        {bindings.map(([action, keyboard, gamepad, touch]) => (
-          <div
-            key={action}
-            className={styles.bindingRow}
-            data-key={bindingCode(keyboard)}
-          >
-            <strong>{action}</strong>
-            <kbd>{keyboard}</kbd>
-            <kbd>{gamepad}</kbd>
-            <kbd>{touch}</kbd>
-          </div>
-        ))}
-        <button className={styles.backButton} type="button" onClick={openPause}>
-          Back to pause
-        </button>
-      </section>
-      <HintBar screen="controls" />
-    </div>
-  );
-}
-
 function ResultHeader({
   result,
 }: {
@@ -245,17 +173,4 @@ function HintBar({ screen }: { readonly screen: HudScreen }) {
       <span><kbd>↑↓</kbd> Navigate</span>
     </footer>
   );
-}
-
-function bindingCode(label: string): string {
-  const codes: Record<string, string> = {
-    'A / D': 'KeyA',
-    S: 'KeyS',
-    J: 'KeyJ',
-    K: 'KeyK',
-    L: 'KeyL',
-    I: 'KeyI',
-    Esc: 'Escape',
-  };
-  return codes[label] ?? '';
 }
