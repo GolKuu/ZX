@@ -1,8 +1,10 @@
 export type CharacterId =
   | 'mim'
+  | 'echo'
   | 'zoro'
   | 'aang'
   | 'idol'
+  | 'chrono'
   | 'void-walker'
   | 'velocity-king'
   | 'elastic-brawler';
@@ -35,6 +37,14 @@ export const CHARACTER_ROSTER = [
     mark: 'M',
   },
   {
+    id: 'echo',
+    displayName: 'ECHO',
+    archetype: 'Предвидение · адаптация',
+    description:
+      'Считывает поведение соперника и отвечает точными ударами: быстрым джебом, предсказанным выпадом, подсечкой и прямым пинком.',
+    mark: 'E',
+  },
+  {
     id: 'zoro',
     displayName: 'Клинковый Призрак',
     archetype: 'Мечник · ближний бой',
@@ -57,6 +67,14 @@ export const CHARACTER_ROSTER = [
     description:
       'Боевая поп-звезда: колет микрофоном, сбивает низким скольжением и завершает серию звёздным танцевальным вращением.',
     mark: '★',
+  },
+  {
+    id: 'chrono',
+    displayName: 'CHRONO',
+    archetype: 'Хроно-боец · власть времени',
+    description:
+      'Манипулирует темпом боя: мгновенно колет из будущего, рассекает временной волной и наказывает низкой подсечкой или круговым ударом.',
+    mark: 'C',
   },
   {
     id: 'void-walker',

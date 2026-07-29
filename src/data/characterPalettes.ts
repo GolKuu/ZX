@@ -51,6 +51,17 @@ const MIM: CharacterPalette = {
   body: zone('#6f35cf', '#35156f', 1.0, 0.82),
 };
 
+/** ECHO — white armour, cyan telemetry and a deep navy undersuit. */
+const ECHO: CharacterPalette = {
+  hair: zone('#f7fbff', '#8fd7eb', 1.05, 0.72),
+  skin: zone('#eef8ff', '#87bfd3', 0.72, 0.68),
+  coat: zone('#f4f8fb', '#6fa9c2', 1.1, 0.72),
+  trousers: zone('#0d2744', '#155777', 0.82, 0.78),
+  boot: zone('#102b49', '#1d6683', 0.95, 0.74),
+  eye: zone('#54e7ff', '#1b83a4', 0, 0),
+  body: zone('#f4f8fb', '#6fa9c2', 1.1, 0.72),
+};
+
 const VOID_WALKER: CharacterPalette = {
   hair: zone('#f2f0fb', '#9b93d6', 1.0, 0.8),
   skin: zone('#e8c3a4', '#9c6a8a', 0.62, 0.7),
@@ -94,6 +105,17 @@ const IDOL: CharacterPalette = {
   body: zone('#f04f91', '#a73d86'),
 };
 
+/** Chrono — black coat, cold silver armour and saturated time-blue. */
+const CHRONO: CharacterPalette = {
+  hair: zone('#e7edf5', '#8296b5', 1.05, 0.78),
+  skin: zone('#e2b89d', '#9a677f', 0.62, 0.7),
+  coat: zone('#111725', '#1c3156', 1.05, 0.82),
+  trousers: zone('#172b48', '#102033', 0.82, 0.8),
+  boot: zone('#cbd7e6', '#607898', 1.18, 0.75),
+  eye: zone('#42b9ff', '#236d9d', 0, 0),
+  body: zone('#111725', '#1c3156'),
+};
+
 /** Velocity King — bleached bone and hot magenta, the fastest read. */
 const VELOCITY_KING: CharacterPalette = {
   hair: zone('#e8e4dc', '#a06a94', 1.0, 0.78),
@@ -118,9 +140,11 @@ const ELASTIC_BRAWLER: CharacterPalette = {
 
 const PALETTES: Record<CharacterId, CharacterPalette> = {
   mim: MIM,
+  echo: ECHO,
   zoro: BLADE_PHANTOM,
   aang: ELEMENT_SAGE,
   idol: IDOL,
+  chrono: CHRONO,
   'void-walker': VOID_WALKER,
   'velocity-king': VELOCITY_KING,
   'elastic-brawler': ELASTIC_BRAWLER,

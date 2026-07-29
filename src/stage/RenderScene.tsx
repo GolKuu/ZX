@@ -11,9 +11,11 @@ import { Arena } from './Arena';
 import { LazyModelFighter } from './LazyModelFighter';
 import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
+import { EchoFighter } from './EchoFighter';
 import { FrameProfiler } from './FrameProfiler';
 import { IdolFighter } from './IdolFighter';
 import { LazyPostEffects } from './LazyPostEffects';
+import { MimFighter } from './MimFighter';
 import { RenderDebugBridge } from './RenderDebugBridge';
 import { StageLighting } from './StageLighting';
 import { VoidWalkerFighter } from './VoidWalkerFighter';
@@ -93,8 +95,14 @@ function primitiveFighter(
   if (characterId === 'aang') {
     return <AangFighter auraColor={auraColor} fighterId={fighterId} />;
   }
+  if (characterId === 'echo') {
+    return <EchoFighter auraColor={auraColor} fighterId={fighterId} />;
+  }
   if (characterId === 'idol') {
     return <IdolFighter auraColor={auraColor} fighterId={fighterId} />;
+  }
+  if (characterId === 'mim') {
+    return <MimFighter auraColor={auraColor} fighterId={fighterId} />;
   }
   return <VoidWalkerFighter auraColor={auraColor} fighterId={fighterId} />;
 }

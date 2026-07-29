@@ -9,6 +9,8 @@ import { AANG_NORMAL_MOVES } from '@/src/data/aang-combat-moves';
 import { AANG_SPECIAL_MOVES } from '@/src/data/aang-special-moves';
 import { IDOL_AI_LOADOUT } from '@/src/data/idol-ai';
 import { IDOL_MOVES } from '@/src/data/idol-combat-moves';
+import { ECHO_AI_LOADOUT } from '@/src/data/echo-ai';
+import { ECHO_MOVES } from '@/src/data/echo-combat-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
 import { ROSTER_ADDITION_MOVES } from '@/src/data/roster-moves';
 import { HudBridge } from '@/src/hud';
@@ -31,6 +33,7 @@ export const ALL_COMBAT_MOVES = [
   ...AANG_NORMAL_MOVES,
   ...AANG_SPECIAL_MOVES,
   ...IDOL_MOVES,
+  ...ECHO_MOVES,
 ];
 
 export function createCombatEngine(): CombatEngine {
@@ -50,7 +53,9 @@ export function createCombatAi(characterId: CharacterId = 'zoro'): CombatAiAgent
     opponentId: 'p1',
     difficulty: 'normal',
     moves: ALL_COMBAT_MOVES,
-    loadout: characterId === 'idol' ? IDOL_AI_LOADOUT : KADE_AI_LOADOUT,
+    loadout: characterId === 'echo'
+      ? ECHO_AI_LOADOUT
+      : characterId === 'idol' ? IDOL_AI_LOADOUT : KADE_AI_LOADOUT,
     seed: 29,
   });
 }

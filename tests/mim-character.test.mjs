@@ -1,0 +1,50 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import {
+  BUTTON_BIT,
+  InputBuffer,
+  MIM_COMMANDS,
+  resolveCommand,
+} from '../.sim-test-build/src/input/core.js';
+import {
+  MIM_MOVES,
+  MIM_MOVE_IDS,
+} from '../.sim-test-build/src/data/mim-moves.js';
+
+const expectedByButton = {
+  lp: MIM_MOVE_IDS.snap,
+  hp: MIM_MOVE_IDS.cursor,
+  lk: MIM_MOVE_IDS.banana,
+  hk: MIM_MOVE_IDS.chair,
+};
+
+test('MIM owns one unique move for every attack button', () => {
+  for (const [button, moveId] of Object.entries(expectedByButton)) {
+    const buffer = new InputBuffer();
+    buffer.push(5, 0);
+    buffer.push(5, BUTTON_BIT[button]);
+    assert.equal(resolveCommand(buffer, MIM_COMMANDS)?.moveId, moveId);
+  }
+});
+
+test('MIM frame data contains four damaging, active attacks', () => {
+  assert.deepEqual(
+    MIM_MOVES.map(({ id }) => id),
+    Object.values(MIM_MOVE_IDS),
+  );
+  for (const move of MIM_MOVES) {
+    assert.ok(move.startup > 0);
+    assert.ok(move.active > 0);
+    assert.ok(move.recovery > 0);
+    assert.ok((move.hitboxes[0]?.hit.damage ?? 0) > 0);
+  }
+});
+
+test('MIM attacks preserve their intended reach order', () => {
+  const reach = Object.fromEntries(MIM_MOVES.map((move) => [
+    move.id,
+    move.hitboxes[0].boxes[0].halfSize.x,
+  ]));
+  assert.ok(reach[MIM_MOVE_IDS.snap] < reach[MIM_MOVE_IDS.banana]);
+  assert.ok(reach[MIM_MOVE_IDS.banana] < reach[MIM_MOVE_IDS.chair]);
+});
