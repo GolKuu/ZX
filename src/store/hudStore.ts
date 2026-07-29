@@ -78,7 +78,7 @@ const initialSnapshot = (
 });
 
 const initialResult: MatchResult = {
-  winner: 'Roronoa Zoro',
+  winner: 'Ророноа Зоро',
   rounds: '2–1',
   maxCombo: 6,
   clashes: 2,

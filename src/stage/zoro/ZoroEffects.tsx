@@ -10,12 +10,12 @@ interface ZoroEffectsProps {
 }
 
 const echoArms = [
-  [-0.48, 2.0, 0, 0.6],
-  [-0.52, 1.7, 0, 1.2],
-  [-0.5, 1.4, 0, 1.75],
-  [0.48, 2.0, 0, -0.6],
-  [0.52, 1.7, 0, -1.2],
-  [0.5, 1.4, 0, -1.75],
+  [-0.46, 1.72, 0, 0.6],
+  [-0.5, 1.48, 0, 1.2],
+  [-0.48, 1.24, 0, 1.75],
+  [0.46, 1.72, 0, -0.6],
+  [0.5, 1.48, 0, -1.2],
+  [0.48, 1.24, 0, -1.75],
 ] as const;
 
 export function ZoroEffects({
@@ -36,7 +36,7 @@ export function ZoroEffects({
           scale={1.18}
         />
       </group>
-      <group ref={refs.aura} position={[0, 1.35, -0.08]}>
+      <group ref={refs.aura} position={[0, 1.18, -0.08]}>
         {[0.7, 1, 1.3].map((scale, index) => (
           <mesh
             key={scale}
@@ -79,7 +79,7 @@ function EchoHead({
   readonly resources: ZoroResources;
 }) {
   return (
-    <group position={[x, 2.52, -0.05]}>
+    <group position={[x, 2.14, -0.05]}>
       <mesh geometry={resources.head} material={materials.phantom} />
       <mesh
         geometry={resources.hair}

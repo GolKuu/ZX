@@ -56,6 +56,22 @@ test('HUD bridge maps health, ultimate charge, sides, timer, and rounds', () => 
   assert.equal(snapshot.fighters[1].roundWins, 2);
 });
 
+test('X-Ray becomes ready at 25 percent health and empties after use', () => {
+  const published = [];
+  const bridge = new HudBridge(identities, (snapshot) => published.push(snapshot));
+  bridge.accept(
+    world(0, { alphaHealth: 250, bravoHealth: 250 }),
+    [],
+    {
+      ...match(),
+      ultimateSpent: { alpha: false, bravo: true },
+    },
+  );
+
+  assert.equal(published[0].fighters[0].superCharge, 100);
+  assert.equal(published[0].fighters[1].superCharge, 0);
+});
+
 test('HUD combo aggregates hit events and clears after defender recovery', () => {
   const published = [];
   const bridge = new HudBridge(identities, (snapshot) => published.push(snapshot));

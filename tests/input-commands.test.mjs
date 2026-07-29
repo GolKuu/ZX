@@ -170,6 +170,22 @@ test('the dedicated special button starts Overtake without a motion', () => {
   assert.equal(resolveCommand(buffer, KADE_COMMANDS)?.moveId, 'overtake');
 });
 
+test('a full ultimate charge upgrades the special button to X-Ray', () => {
+  const buffer = new InputBuffer();
+  feed(buffer, [
+    [5, []],
+    [5, ['special']],
+  ]);
+  const context = {
+    grounded: true,
+    stanceId: null,
+    gauge: 0,
+    superMeter: 100,
+  };
+
+  assert.equal(resolveCommand(buffer, KADE_COMMANDS, context)?.moveId, 'xray');
+});
+
 test('crouching selects the crouching normal', () => {
   const buffer = new InputBuffer();
   feed(buffer, [

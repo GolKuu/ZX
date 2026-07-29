@@ -4,8 +4,10 @@ import type {
   CharacterId,
   CharacterSelection,
 } from '@/src/data/characterRoster';
+import { modelUrlFor } from '@/src/data/characterModels';
 import { AangFighter } from './AangFighter';
 import { Arena } from './Arena';
+import { ModelFighter } from './ModelFighter';
 import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
 import { FrameProfiler } from './FrameProfiler';
@@ -54,6 +56,28 @@ function SelectedFighter({
   readonly characterId: CharacterId;
   readonly fighterId: 'p1' | 'p2';
 }) {
+  const blockout = primitiveFighter(auraColor, characterId, fighterId);
+  const url = modelUrlFor(characterId);
+
+  // The rigged model is preferred whenever its file is present. The primitive
+  // blockout stays as the fallback rather than being deleted — the models are
+  // untracked assets, and a missing file must never blank the scene.
+  if (url === null) return blockout;
+  return (
+    <ModelFighter
+      auraColor={auraColor}
+      fallback={blockout}
+      fighterId={fighterId}
+      url={url}
+    />
+  );
+}
+
+function primitiveFighter(
+  auraColor: string,
+  characterId: CharacterId,
+  fighterId: 'p1' | 'p2',
+) {
   if (characterId === 'zoro') {
     return <ZoroFighter auraColor={auraColor} fighterId={fighterId} />;
   }

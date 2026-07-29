@@ -1,7 +1,6 @@
-import type { CommandContext, KeyboardInputSource } from '@/src/input';
+import type { KeyboardInputSource } from '@/src/input';
 import { getCharacterDefinition } from '@/src/data/characterRoster';
-import { KADE_MOVES, XRAY_MOVE_ID } from '@/src/data/combat-moves';
-import { ultimateChargeFromHealth } from '@/src/hud';
+import { KADE_MOVES } from '@/src/data/combat-moves';
 import {
   FixedStepRunner,
   type CombatEvent,
@@ -17,6 +16,7 @@ import {
   createCombatHud,
   readFighter,
 } from './combatSetup';
+import { XrayController } from './XrayController';
 
 const ROUND_FRAMES = 99 * 60;
 
@@ -30,7 +30,7 @@ export class CombatSession {
   private ended = false;
   private comboHits = 0;
   private maxCombo = 0;
-  private readonly usedUltimates = new Set<string>();
+  private readonly xray = new XrayController();
   private readonly attackInput = new AttackInputPolicy(KADE_MOVES);
 
   public constructor(
@@ -56,7 +56,7 @@ export class CombatSession {
     this.ended = false;
     this.comboHits = 0;
     this.maxCombo = 0;
-    this.usedUltimates.clear();
+    this.xray.reset();
     this.attackInput.reset();
     this.publishInitialState();
   }
@@ -71,21 +71,21 @@ export class CombatSession {
       ? this.playerTwo.sample(
           opponent.facing,
           this.attackInput.isLocked(opponent),
-          this.inputContext(opponent),
+          this.xray.inputContext(opponent),
         )
       : this.ai.decide(before, this.lastEvents).input;
     const result = this.engine.tick({
       p1: this.playerOne.sample(
         player.facing,
         this.attackInput.isLocked(player),
-        this.inputContext(player),
+        this.xray.inputContext(player),
       ),
       p2: opponentInput,
     });
     this.timerFrames = Math.max(0, this.timerFrames - 1);
     this.lastEvents = result.events;
     this.attackInput.accept(result.state, result.events);
-    this.handleXray(result.events);
+    this.xray.accept(result.events);
     publishCombatFrame(result.state, 0);
     this.publishHud(result.state, result.events);
     this.handleImpact(result.events);
@@ -111,37 +111,8 @@ export class CombatSession {
       round: 1,
       timerFrames: this.timerFrames,
       roundWins: { p1: 0, p2: 0 },
-      ultimateSpent: {
-        p1: this.usedUltimates.has('p1'),
-        p2: this.usedUltimates.has('p2'),
-      },
+      ultimateSpent: this.xray.spentState(),
     });
-  }
-
-  private inputContext(fighter: WorldSnapshot['fighters'][number]): CommandContext {
-    return {
-      grounded: fighter.grounded,
-      stanceId: null,
-      gauge: 0,
-      superMeter: this.usedUltimates.has(fighter.id)
-        ? 0
-        : ultimateChargeFromHealth(fighter.health, fighter.maxHealth),
-    };
-  }
-
-  private handleXray(events: readonly CombatEvent[]): void {
-    for (const event of events) {
-      if (event.type === 'moveStarted' && event.moveId === XRAY_MOVE_ID) {
-        this.usedUltimates.add(event.fighterId);
-      }
-      if (
-        event.type === 'hit'
-        && event.moveId === XRAY_MOVE_ID
-        && (event.attackerId === 'p1' || event.attackerId === 'p2')
-      ) {
-        useRenderStore.getState().triggerXray(event.attackerId);
-      }
-    }
   }
 
   private handleImpact(events: readonly CombatEvent[]): void {

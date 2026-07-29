@@ -84,7 +84,7 @@ function PlayerBay({ fighter }: { readonly fighter: HudFighterSnapshot }) {
         <div className={styles.meterRow}>
           <b>{fighter.playerTag}</b>
           <span className={superReady ? styles.superReady : ''}>
-            {superReady ? 'Super ready' : 'Super'}
+            {superReady ? 'X-Ray ready' : 'X-Ray'}
           </span>
           <div
             aria-label={`${fighter.playerTag} super charge ${fighter.superCharge} percent`}

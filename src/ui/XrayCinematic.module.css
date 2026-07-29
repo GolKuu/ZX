@@ -1,0 +1,193 @@
+.cinematic {
+  --xray: #55dcff;
+  position: absolute;
+  z-index: 45;
+  inset: 0;
+  overflow: hidden;
+  color: #eaffff;
+  background:
+    radial-gradient(circle at 56% 48%, rgb(38 151 190 / 28%), transparent 34%),
+    linear-gradient(105deg, rgb(0 5 13 / 98%) 0 28%, rgb(2 22 35 / 88%) 58%, rgb(0 4 10 / 98%));
+  animation: cinematic 2.8s both;
+  pointer-events: none;
+}
+
+.cinematic[data-side="p2"] {
+  --xray: #ba76ff;
+}
+
+.cinematic::before {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 4px,
+    rgb(163 240 255 / 5%) 5px
+  );
+  content: "";
+  mix-blend-mode: screen;
+}
+
+.cinematic::after {
+  position: absolute;
+  inset: -20%;
+  border: 18cqw solid rgb(0 0 0 / 55%);
+  border-radius: 50%;
+  content: "";
+  animation: vignette-pulse 0.38s steps(2) 4;
+}
+
+.readout {
+  position: absolute;
+  z-index: 3;
+  top: 25%;
+  left: 8%;
+  display: grid;
+  gap: 0.35cqw;
+  border-left: 0.3cqw solid var(--xray);
+  padding-left: 1.2cqw;
+  text-transform: uppercase;
+  animation: readout-in 0.45s 0.08s both;
+}
+
+.readout span,
+.readout i {
+  color: color-mix(in srgb, var(--xray) 82%, white);
+  font-size: clamp(0.55rem, 0.9cqw, 0.85rem);
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+}
+
+.readout strong {
+  font-size: clamp(3rem, 8cqw, 7.5rem);
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  line-height: 0.8;
+  text-shadow: 0 0 2.2cqw color-mix(in srgb, var(--xray) 72%, transparent);
+}
+
+.skeleton {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 67%;
+  width: min(42cqw, 56cqh);
+  aspect-ratio: 420 / 520;
+  max-height: 88%;
+  background: center / contain no-repeat url("/xray-skeleton.svg");
+  overflow: visible;
+  filter:
+    drop-shadow(0 0 0.45cqw white)
+    drop-shadow(0 0 1.4cqw var(--xray));
+  transform: translate(-50%, -50%);
+  animation: skeleton-hit 2.8s both;
+}
+
+.fracture {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  width: 24%;
+  aspect-ratio: 1;
+  border: 0.24cqw solid var(--xray);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 0.35cqw rgb(255 59 97 / 84%),
+    0 0 2.4cqw var(--xray);
+  transform: translate(-50%, -50%);
+  animation: fracture 0.58s 0.72s both;
+}
+
+.fracture::before,
+.fracture::after {
+  position: absolute;
+  top: 48%;
+  left: -45%;
+  width: 190%;
+  height: 0.18cqw;
+  background: #ff3b61;
+  box-shadow: 0 0 0.7cqw #ff3b61;
+  content: "";
+  transform: rotate(42deg);
+}
+
+.fracture::after {
+  transform: rotate(-52deg);
+}
+
+.energyRing {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 67%;
+  width: 12cqw;
+  aspect-ratio: 1;
+  border: 0.25cqw solid var(--xray);
+  border-radius: 50%;
+  box-shadow: 0 0 4cqw var(--xray), inset 0 0 4cqw var(--xray);
+  transform: translate(-50%, -50%);
+  animation: energy-ring 1.3s 0.35s ease-out both;
+}
+
+.flash {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  background: white;
+  mix-blend-mode: screen;
+  animation: flash 2.8s both;
+}
+
+@keyframes cinematic {
+  0% { opacity: 0; }
+  4%, 88% { opacity: 1; }
+  100% { visibility: hidden; opacity: 0; }
+}
+
+@keyframes readout-in {
+  from { opacity: 0; transform: translateX(-3cqw); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes skeleton-hit {
+  0% { opacity: 0; transform: translate(-42%, -50%) scale(1.3); }
+  14%, 78% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  83% { transform: translate(-50%, -50%) scale(1.04); }
+  100% { opacity: 0; transform: translate(-52%, -50%) scale(0.94); }
+}
+
+@keyframes fracture {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+  25% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2.4); }
+}
+
+@keyframes energy-ring {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+  18% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(5.8); }
+}
+
+@keyframes vignette-pulse {
+  50% { transform: scale(1.08); }
+}
+
+@keyframes flash {
+  0%, 12%, 27%, 100% { opacity: 0; }
+  5% { opacity: 0.8; }
+  19% { opacity: 0.18; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic,
+  .skeleton,
+  .flash {
+    animation-duration: 0.7s;
+  }
+
+  .fracture,
+  .energyRing {
+    display: none;
+  }
+}
