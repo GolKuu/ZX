@@ -2,15 +2,15 @@ import type { FighterInput } from '../sim/state.js';
 import type { TelegraphRequest } from './telegraph.js';
 import type { AiIntent } from './types.js';
 
-export interface InputPlan {
+export interface ImmediatePlan {
   readonly kind: 'input';
   readonly input: FighterInput;
   readonly intent: AiIntent;
 }
 
-export interface AttackPlan {
-  readonly kind: 'attack';
+export interface TelegraphPlan {
+  readonly kind: 'telegraph';
   readonly request: TelegraphRequest;
 }
 
-export type TacticalPlan = InputPlan | AttackPlan;
+export type PlannedAction = ImmediatePlan | TelegraphPlan;
