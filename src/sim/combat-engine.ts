@@ -11,6 +11,7 @@ import {
   readWorld,
 } from './engine-read.js';
 import type { CombatEvent, FighterDebugFrame } from './events.js';
+import { faceAirborneFightersTowardOpponents } from './facing.js';
 import { effectiveMoveFrames, type MoveFrameData } from './frame-data.js';
 import { integrateFighter } from './physics.js';
 import { resolveHit } from './resolve.js';
@@ -88,6 +89,7 @@ export class CombatEngine {
       integrateFighter(fighter, this.config, this.completedFrames, events);
     }
 
+    faceAirborneFightersTowardOpponents(this.fighters);
     const candidates = collectHitCandidates(
       this.fighters,
       this.moves,

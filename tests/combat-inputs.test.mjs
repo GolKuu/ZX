@@ -33,6 +33,52 @@ test('jump input leaves the ground with authored vertical velocity', () => {
   assert.equal(fighter.velocity.y > 0, true);
 });
 
+test('jumping over an opponent turns the fighter and attack toward them', () => {
+  const move = makeMove({
+    hitboxes: [
+      {
+        hitId: 'primary',
+        frames: { from: 0, toExclusive: 1 },
+        boxes: [
+          {
+            offset: { x: 200, y: 500 },
+            halfSize: { x: 100, y: 300 },
+          },
+        ],
+        hit: {
+          damage: 10,
+          hitstop: { attacker: 0, defender: 0 },
+          hitstun: 5,
+          knockback: { x: 0, y: 0 },
+        },
+      },
+    ],
+  });
+  const defender = {
+    ...fighterDefinition('p2', 2, 120, -1),
+    hurtboxes: [
+      {
+        offset: { x: 0, y: 500 },
+        halfSize: { x: 50, y: 500 },
+      },
+    ],
+  };
+  const engine = makeEngine(move, {
+    fighters: [
+      fighterDefinition('p1', 1, 0, 1),
+      defender,
+    ],
+  });
+
+  engine.tick({ p1: { jump: true, movement: 1 } });
+  const crossed = engine.tick();
+  assert.equal(readFighter(crossed.state, 'p1').facing, -1);
+
+  const attack = engine.tick({ p1: { move: 'strike' } });
+  assert.equal(attack.events.some((event) => event.type === 'hit'), true);
+  assert.equal(readFighter(attack.state, 'p2').health, 90);
+});
+
 test('guard converts an incoming hit into blockstun without damage', () => {
   const move = makeMove({
     damage: 30,
