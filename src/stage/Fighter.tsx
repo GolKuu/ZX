@@ -23,9 +23,9 @@ type FighterProps = {
 
 export function Fighter({ accent, color, facing, position }: FighterProps) {
   const groupRef = useRef<Group>(null);
-  const resources = useMemo(createFighterResources, []);
-  const gradient = useMemo(createCelGradient, []);
-  const outline = useMemo(createOutlineMaterial, []);
+  const resources = useMemo(() => createFighterResources(), []);
+  const gradient = useMemo(() => createCelGradient(), []);
+  const outline = useMemo(() => createOutlineMaterial(), []);
   const toon = useMemo(
     () => new MeshToonMaterial({
       color,

@@ -2,7 +2,7 @@
 
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
-import { MathUtils, type ColorRepresentation } from 'three';
+import { MathUtils, ShaderMaterial, type ColorRepresentation } from 'three';
 import { createAuraMaterial } from '@/src/render/auraMaterial';
 import { useRenderStore } from '@/src/store/renderStore';
 
@@ -13,6 +13,7 @@ type AuraProps = {
 
 export function Aura({ color, position }: AuraProps) {
   const material = useMemo(() => createAuraMaterial(color), [color]);
+  const materialRef = useRef<ShaderMaterial>(material);
   const enabledRef = useRef(useRenderStore.getState().effectsEnabled);
   const intensityRef = useRef(0.7);
 
@@ -27,10 +28,11 @@ export function Aura({ color, position }: AuraProps) {
   }, [material]);
 
   useFrame(({ clock }, delta) => {
+    const shader = materialRef.current;
     const target = enabledRef.current ? 0.72 : 0;
     intensityRef.current = MathUtils.damp(intensityRef.current, target, 8, delta);
-    material.uniforms.uTime!.value = clock.elapsedTime;
-    material.uniforms.uIntensity!.value = intensityRef.current;
+    shader.uniforms.uTime!.value = clock.elapsedTime;
+    shader.uniforms.uIntensity!.value = intensityRef.current;
   });
 
   return (

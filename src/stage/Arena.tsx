@@ -7,7 +7,7 @@ import { createCelGradient } from '@/src/render/celGradient';
 const ringColor = new Color(0.25, 1.8, 3.2);
 
 export function Arena() {
-  const gradient = useMemo(createCelGradient, []);
+  const gradient = useMemo(() => createCelGradient(), []);
   const floorMaterial = useMemo(
     () => new MeshToonMaterial({
       color: '#101a2a',

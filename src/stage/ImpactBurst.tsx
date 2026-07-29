@@ -2,7 +2,7 @@
 
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
-import { MathUtils } from 'three';
+import { MathUtils, ShaderMaterial } from 'three';
 import { createImpactMaterial } from '@/src/render/impactMaterial';
 import { useRenderStore } from '@/src/store/renderStore';
 
@@ -10,10 +10,12 @@ const IMPACT_DURATION = 0.72;
 const AUTO_REPLAY_SECONDS = 5;
 
 export function ImpactBurst() {
-  const material = useMemo(createImpactMaterial, []);
+  const material = useMemo(() => createImpactMaterial(), []);
+  const materialRef = useRef<ShaderMaterial>(material);
+  const initialImpact = useRenderStore.getState().impactVersion;
   const startTimeRef = useRef(0.8);
-  const triggerRef = useRef(useRenderStore.getState().impactVersion);
-  const handledTriggerRef = useRef(triggerRef.current);
+  const triggerRef = useRef(initialImpact);
+  const handledTriggerRef = useRef(initialImpact);
   const enabledRef = useRef(useRenderStore.getState().effectsEnabled);
 
   useEffect(() => {
@@ -28,6 +30,7 @@ export function ImpactBurst() {
   }, [material]);
 
   useFrame(({ clock }) => {
+    const shader = materialRef.current;
     const elapsed = clock.elapsedTime;
     const wasTriggered = triggerRef.current !== handledTriggerRef.current;
     const shouldReplay = elapsed - startTimeRef.current >= AUTO_REPLAY_SECONDS;
@@ -39,8 +42,8 @@ export function ImpactBurst() {
 
     const progress = (elapsed - startTimeRef.current) / IMPACT_DURATION;
     const isActive = progress >= 0 && progress <= 1;
-    material.uniforms.uProgress!.value = MathUtils.clamp(progress, 0, 1);
-    material.uniforms.uStrength!.value = enabledRef.current && isActive ? 1 : 0;
+    shader.uniforms.uProgress!.value = MathUtils.clamp(progress, 0, 1);
+    shader.uniforms.uStrength!.value = enabledRef.current && isActive ? 1 : 0;
   });
 
   return (
