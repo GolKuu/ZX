@@ -20,7 +20,7 @@ export const AI_DIFFICULTY_PROFILES: Readonly<
     threatMargin: 100,
   },
   normal: {
-    reactionFrames: 10,
+    reactionFrames: 12,
     decisionInterval: 7,
     neutralAttackPercent: 58,
     defensePercent: 68,
@@ -36,7 +36,7 @@ export const AI_DIFFICULTY_PROFILES: Readonly<
     threatMargin: 220,
   },
   hard: {
-    reactionFrames: 4,
+    reactionFrames: 7,
     decisionInterval: 3,
     neutralAttackPercent: 78,
     defensePercent: 92,

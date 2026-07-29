@@ -54,10 +54,10 @@ test('every level exposes a deterministic, difficulty-scaled telegraph', () => {
   }
 });
 
-test('hard defense reacts only after its authored observation delay', () => {
+test('hard defense reacts only after its authored seven-frame delay', () => {
   const agent = makeAgent('hard', 1);
   agent.decide(world(0, { playerX: 3_000 }));
-  for (let frame = 1; frame <= 4; frame += 1) {
+  for (let frame = 1; frame <= 7; frame += 1) {
     const result = agent.decide(
       world(frame, { playerAction: action('5H', frame - 1) }),
     );
@@ -65,7 +65,7 @@ test('hard defense reacts only after its authored observation delay', () => {
     assert.notEqual(result.intent, 'retreat');
   }
   const reaction = agent.decide(
-    world(5, { playerAction: action('5H', 4) }),
+    world(8, { playerAction: action('5H', 7) }),
   );
   assert.ok(reaction.intent === 'guard' || reaction.intent === 'retreat');
 });
@@ -139,13 +139,13 @@ test('taking a hit cancels the visible telegraph', () => {
 test('hard AI recognizes recovery and telegraphs a whiff punish', () => {
   const agent = makeAgent('hard', 1);
   agent.decide(world(0, { playerX: 3_000 }));
-  for (let frame = 1; frame <= 4; frame += 1) {
+  for (let frame = 1; frame <= 7; frame += 1) {
     agent.decide(
       world(frame, { playerAction: action('5H', 17, 9) }),
     );
   }
   const punish = agent.decide(
-    world(5, { playerAction: action('5H', 17, 9) }),
+    world(8, { playerAction: action('5H', 17, 9) }),
   );
   assert.equal(punish.intent, 'whiffPunish');
   assert.notEqual(punish.telegraph, null);

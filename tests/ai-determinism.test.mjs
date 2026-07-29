@@ -25,6 +25,10 @@ test('difficulty profiles scale reaction, telegraph, and combo depth', async () 
   const easy = AI_DIFFICULTY_PROFILES.easy;
   const normal = AI_DIFFICULTY_PROFILES.normal;
   const hard = AI_DIFFICULTY_PROFILES.hard;
+  assert.deepEqual(
+    [easy.reactionFrames, normal.reactionFrames, hard.reactionFrames],
+    [18, 12, 7],
+  );
   assert.ok(easy.reactionFrames > normal.reactionFrames);
   assert.ok(normal.reactionFrames > hard.reactionFrames);
   assert.ok(easy.telegraphFrames > normal.telegraphFrames);

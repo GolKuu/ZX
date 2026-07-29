@@ -1,23 +1,25 @@
 import type { CombatEvent } from '../sim/events.js';
 import type { MoveFrameData } from '../sim/frame-data.js';
-import type { FighterSnapshot, WorldSnapshot } from '../sim/state.js';
-import { ComboPlanner } from './combo-planner.js';
+import type {
+  FighterSnapshot,
+  WorldSnapshot,
+} from '../sim/state.js';
+import { ActionController } from './action-controller.js';
+import { createAiSeed, createDecision } from './decision.js';
 import { DefensePlanner } from './defense-planner.js';
-import { ObservationBuffer } from './observation.js';
-import { findFighter, findOpponent } from './perception.js';
-import type { TacticalPlan } from './planning.js';
-import { AI_DIFFICULTY_PROFILES } from './profiles.js';
-import { DeterministicRandom } from './rng.js';
-import { TacticsPlanner } from './tactics-planner.js';
+import { NeutralPlanner } from './neutral-planner.js';
 import {
-  TelegraphController,
-  type TelegraphRequest,
-} from './telegraph.js';
+  findFighter,
+  findOpponent,
+} from './perception.js';
+import type { PlannedAction } from './planning.js';
+import { AI_DIFFICULTY_PROFILES } from './profiles.js';
+import { ReactionHistory } from './reaction-history.js';
+import { DeterministicRandom } from './rng.js';
 import type {
   AiDecision,
   AiDifficulty,
   AiEvent,
-  AiIntent,
   AiLoadout,
 } from './types.js';
 import { validateAiLoadout } from './validation.js';
@@ -33,12 +35,11 @@ export interface CombatAiOptions {
 
 export class CombatAiAgent {
   private readonly moves: ReadonlyMap<string, MoveFrameData>;
-  private readonly initialSeed: number;
-  private readonly combo: ComboPlanner;
+  private readonly actions: ActionController;
   private readonly defense = new DefensePlanner();
-  private readonly tactics = new TacticsPlanner();
-  private readonly observation: ObservationBuffer;
-  private readonly telegraph = new TelegraphController();
+  private readonly neutral = new NeutralPlanner();
+  private readonly history: ReactionHistory;
+  private readonly initialSeed: number;
   private random: DeterministicRandom;
   private lastWorldFrame = -1;
 
@@ -49,9 +50,10 @@ export class CombatAiAgent {
     this.moves = new Map(options.moves.map((move) => [move.id, move]));
     validateAiLoadout(options.loadout, this.moves);
     const profile = AI_DIFFICULTY_PROFILES[options.difficulty];
-    this.combo = new ComboPlanner(this.moves, options.loadout, profile);
-    this.observation = new ObservationBuffer(profile.reactionFrames);
-    this.initialSeed = options.seed ?? hashSeed(options.fighterId, options.difficulty);
+    this.history = new ReactionHistory(profile.reactionFrames);
+    this.actions = new ActionController(this.moves, options.loadout);
+    this.initialSeed =
+      options.seed ?? createAiSeed(options.fighterId, options.difficulty);
     this.random = new DeterministicRandom(this.initialSeed);
   }
 
@@ -59,158 +61,98 @@ export class CombatAiAgent {
     world: WorldSnapshot,
     combatEvents: readonly CombatEvent[] = [],
   ): AiDecision {
-    this.assertNextFrame(world.frame);
-    this.observation.push(world);
+    if (world.frame <= this.lastWorldFrame) {
+      throw new Error('CombatAiAgent must advance once per increasing world frame');
+    }
+    this.lastWorldFrame = world.frame;
+    this.history.remember(world);
+
     const self = findFighter(world, this.options.fighterId);
     const opponent = this.currentOpponent(world, self);
-    const events = this.processEvents(world.frame, self, opponent, combatEvents);
+    const profile = AI_DIFFICULTY_PROFILES[this.options.difficulty];
+    const signals = this.actions.processCombatEvents(
+      world.frame,
+      self,
+      opponent,
+      combatEvents,
+      profile.comboDepth,
+    );
+    if (signals.interrupted) this.defense.reset();
 
-    const pending = this.progressTelegraph(world.frame, self, opponent, events);
-    if (pending !== null) {
-      return pending;
-    }
+    const pending = this.actions.advance(
+      world.frame,
+      self,
+      opponent,
+      signals.events,
+    );
+    if (pending !== null) return pending;
     if (self.health === 0 || self.hitstop > 0 || self.hitstun > 0) {
-      return makeDecision({}, 'idle', null, events);
+      return createDecision({}, 'idle', null, signals.events);
     }
 
-    const comboRequest = this.combo.plan(self, opponent);
-    if (comboRequest !== null) {
-      return this.startTelegraph(world.frame, self, comboRequest, events);
-    }
+    const combo = this.actions.planCombo(
+      world.frame,
+      self,
+      opponent,
+      profile.comboTelegraphFrames,
+      signals.events,
+    );
+    if (combo !== null) return combo;
     if (self.action !== null) {
-      return makeDecision({}, 'idle', null, events);
+      return createDecision({}, 'idle', null, signals.events);
     }
 
-    const observed = this.observation.read();
+    const observed = this.history.observed();
     const observedSelf = findFighter(observed, self.id);
     const observedOpponent = findFighter(observed, opponent.id);
-    const profile = AI_DIFFICULTY_PROFILES[this.options.difficulty];
-    const defense = this.defense.plan(
+    const defense = this.defense.defend(
       self,
       observedSelf,
       observedOpponent,
-      this.moves,
       profile,
+      this.moves,
       this.random,
     );
     if (defense !== null) {
-      return makeDecision(defense.input, defense.intent, null, events);
+      return createDecision(defense.input, defense.intent, null, signals.events);
     }
-    const punish = this.tactics.planPunish(
-      self,
+    const punish = this.defense.punish(
       observedSelf,
       observedOpponent,
-      this.moves,
-      this.options.loadout,
       profile,
+      this.options.loadout,
+      this.moves,
       this.random,
     );
-    if (punish !== null) {
-      return this.applyPlan(world.frame, self, punish, events);
-    }
-    const neutral = this.tactics.planNeutral(
+    const plan = punish ?? this.neutral.plan(
       self,
       observedOpponent,
-      this.moves,
-      this.options.loadout,
       profile,
+      this.options.loadout,
+      this.moves,
       this.random,
     );
-    return this.applyPlan(world.frame, self, neutral, events);
+    return this.executePlan(world.frame, self, plan, signals.events);
   }
 
   public reset(seed = this.initialSeed): void {
     this.random = new DeterministicRandom(seed);
-    this.combo.clear();
+    this.actions.reset();
     this.defense.reset();
-    this.tactics.reset();
-    this.observation.reset();
-    this.telegraph.reset();
+    this.neutral.reset();
+    this.history.reset();
     this.lastWorldFrame = -1;
   }
 
-  private progressTelegraph(
+  private executePlan(
     frame: number,
     self: FighterSnapshot,
-    opponent: FighterSnapshot,
-    events: AiEvent[],
-  ): AiDecision | null {
-    const request = this.telegraph.request();
-    if (request === null) {
-      return null;
-    }
-    const progress = this.telegraph.evaluate(frame, self.id, self, opponent);
-    events.push(...progress.events);
-    if (progress.cancelledReason !== undefined) {
-      this.combo.clear();
-      return makeDecision({}, 'idle', null, events);
-    }
-    if (progress.committed === null) {
-      return makeDecision({}, request.intent, this.telegraph.read(), events);
-    }
-    if (progress.committed.consumeCombo) {
-      this.combo.consume();
-    }
-    return makeDecision(
-      { move: progress.committed.moveId },
-      progress.committed.intent,
-      null,
-      events,
-    );
-  }
-
-  private processEvents(
-    frame: number,
-    self: FighterSnapshot,
-    opponent: FighterSnapshot,
-    combatEvents: readonly CombatEvent[],
-  ): AiEvent[] {
-    const events: AiEvent[] = [];
-    const interrupted = combatEvents.some(
-      (event) =>
-        (event.type === 'hit' || event.type === 'block')
-        && event.defenderId === self.id,
-    );
-    if (interrupted) {
-      const cancelled = this.telegraph.cancel(frame, self.id, 'hit');
-      if (cancelled !== null) {
-        events.push(cancelled);
-      }
-      this.combo.clear();
-      this.defense.reset();
-      return events;
-    }
-    const landed = combatEvents.find(
-      (event) =>
-        event.type === 'hit'
-        && event.attackerId === self.id
-        && event.defenderId === opponent.id,
-    );
-    if (landed?.type === 'hit') {
-      this.combo.queueFromHit(landed.moveId);
-    }
-    return events;
-  }
-
-  private applyPlan(
-    frame: number,
-    self: FighterSnapshot,
-    plan: TacticalPlan,
+    plan: PlannedAction,
     events: AiEvent[],
   ): AiDecision {
     return plan.kind === 'input'
-      ? makeDecision(plan.input, plan.intent, null, events)
-      : this.startTelegraph(frame, self, plan.request, events);
-  }
-
-  private startTelegraph(
-    frame: number,
-    self: FighterSnapshot,
-    request: TelegraphRequest,
-    events: AiEvent[],
-  ): AiDecision {
-    events.push(this.telegraph.start(frame, self.id, request));
-    return makeDecision({}, request.intent, this.telegraph.read(), events);
+      ? createDecision(plan.input, plan.intent, null, events)
+      : this.actions.begin(frame, self, plan.request, events);
   }
 
   private currentOpponent(
@@ -221,29 +163,4 @@ export class CombatAiAgent {
       ? findOpponent(world, self)
       : findFighter(world, this.options.opponentId);
   }
-
-  private assertNextFrame(frame: number): void {
-    if (frame <= this.lastWorldFrame) {
-      throw new Error('CombatAiAgent must be advanced once per increasing world frame');
-    }
-    this.lastWorldFrame = frame;
-  }
-}
-
-function makeDecision(
-  input: AiDecision['input'],
-  intent: AiIntent,
-  telegraph: AiDecision['telegraph'],
-  events: readonly AiEvent[],
-): AiDecision {
-  return { input, intent, telegraph, events };
-}
-
-function hashSeed(fighterId: string, difficulty: AiDifficulty): number {
-  let hash = 2_166_136_261;
-  for (const character of `${fighterId}:${difficulty}`) {
-    hash ^= character.codePointAt(0) ?? 0;
-    hash = Math.imul(hash, 16_777_619);
-  }
-  return hash >>> 0;
 }

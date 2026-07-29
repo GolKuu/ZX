@@ -1,16 +1,11 @@
 import type { CombatWorldConfig } from './config.js';
-import type {
-  AuthoredHitbox,
-  AuthoredHurtbox,
-  HitData,
-  MoveFrameData,
-} from './frame-data.js';
+import { validateBoxes } from './geometry-validation.js';
 import {
   assertInteger,
   assertNonNegativeInteger,
   assertRatio,
-  type FixedBox,
 } from './math.js';
+export { validateMoves } from './move-validation.js';
 import type { FighterDefinition } from './state.js';
 
 export function validateWorldConfig(config: CombatWorldConfig): void {
@@ -25,26 +20,6 @@ export function validateWorldConfig(config: CombatWorldConfig): void {
   assertInteger(config.maximumVelocity, 'world.maximumVelocity');
   if (config.maximumVelocity <= 0) {
     throw new Error('world.maximumVelocity must be positive');
-  }
-}
-
-export function validateMoves(moves: readonly MoveFrameData[]): void {
-  const ids = new Set<string>();
-  for (const move of moves) {
-    if (move.id.length === 0 || ids.has(move.id)) {
-      throw new Error(`Move id must be non-empty and unique: "${move.id}"`);
-    }
-    ids.add(move.id);
-    validateMove(move);
-  }
-  for (const move of moves) {
-    for (const cancel of move.cancels ?? []) {
-      for (const target of cancel.into) {
-        if (!ids.has(target)) {
-          throw new Error(`${move.id}.cancel references unknown move "${target}"`);
-        }
-      }
-    }
   }
 }
 
@@ -88,138 +63,5 @@ export function validateFighters(
       );
     }
     validateBoxes(fighter.hurtboxes, `${fighter.id}.hurtboxes`);
-  }
-}
-
-function validateMove(move: MoveFrameData): void {
-  assertNonNegativeInteger(move.startup, `${move.id}.startup`);
-  assertNonNegativeInteger(move.active, `${move.id}.active`);
-  assertNonNegativeInteger(move.recovery, `${move.id}.recovery`);
-  if (move.active === 0) {
-    throw new Error(`${move.id}.active must be at least one frame`);
-  }
-  const activeFrom = move.startup;
-  const activeTo = move.startup + move.active;
-  for (const hitbox of move.hitboxes) {
-    validateHitbox(hitbox, move.id, activeFrom, activeTo);
-  }
-  for (const hurtbox of move.hurtboxes ?? []) {
-    validateHurtbox(hurtbox, move.id, activeTo + move.recovery);
-  }
-  for (const cancel of move.cancels ?? []) {
-    validateRange(
-      cancel.frames.from,
-      cancel.frames.toExclusive,
-      `${move.id}.cancel`,
-    );
-    if (cancel.frames.toExclusive > activeTo + move.recovery) {
-      throw new Error(`${move.id}.cancel exceeds the move duration`);
-    }
-    if (cancel.into.length === 0) {
-      throw new Error(`${move.id}.cancel must contain a target move`);
-    }
-  }
-}
-
-function validateHitbox(
-  hitbox: AuthoredHitbox,
-  moveId: string,
-  activeFrom: number,
-  activeTo: number,
-): void {
-  if (hitbox.hitId.length === 0) {
-    throw new Error(`${moveId} contains an empty hitId`);
-  }
-  validateRange(hitbox.frames.from, hitbox.frames.toExclusive, `${moveId}.${hitbox.hitId}`);
-  if (hitbox.frames.from < activeFrom || hitbox.frames.toExclusive > activeTo) {
-    throw new Error(`${moveId}.${hitbox.hitId} must stay inside the active frames`);
-  }
-  validateBoxes(hitbox.boxes, `${moveId}.${hitbox.hitId}.boxes`);
-  validateHit(hitbox.hit, `${moveId}.${hitbox.hitId}.hit`);
-}
-
-function validateHurtbox(hurtbox: AuthoredHurtbox, moveId: string, total: number): void {
-  validateRange(hurtbox.frames.from, hurtbox.frames.toExclusive, `${moveId}.hurtbox`);
-  if (hurtbox.frames.toExclusive > total) {
-    throw new Error(`${moveId}.hurtbox exceeds the move duration`);
-  }
-  validateBoxes(hurtbox.boxes, `${moveId}.hurtbox.boxes`);
-}
-
-function validateHit(hit: HitData, label: string): void {
-  assertNonNegativeInteger(hit.damage, `${label}.damage`);
-  assertNonNegativeInteger(hit.hitstop.attacker, `${label}.hitstop.attacker`);
-  assertNonNegativeInteger(hit.hitstop.defender, `${label}.hitstop.defender`);
-  assertNonNegativeInteger(hit.hitstun, `${label}.hitstun`);
-  assertInteger(hit.knockback.x, `${label}.knockback.x`);
-  assertInteger(hit.knockback.y, `${label}.knockback.y`);
-  if (hit.block !== undefined) {
-    assertNonNegativeInteger(hit.block.blockstun, `${label}.block.blockstun`);
-    assertNonNegativeInteger(
-      hit.block.hitstop.attacker,
-      `${label}.block.hitstop.attacker`,
-    );
-    assertNonNegativeInteger(
-      hit.block.hitstop.defender,
-      `${label}.block.hitstop.defender`,
-    );
-    assertInteger(hit.block.knockback.x, `${label}.block.knockback.x`);
-    assertInteger(hit.block.knockback.y, `${label}.block.knockback.y`);
-  }
-  if (hit.wallBounce !== undefined) {
-    assertNonNegativeInteger(hit.wallBounce.count, `${label}.wallBounce.count`);
-    assertNonNegativeInteger(
-      hit.wallBounce.horizontalSpeed,
-      `${label}.wallBounce.horizontalSpeed`,
-    );
-    assertNonNegativeInteger(
-      hit.wallBounce.verticalSpeed,
-      `${label}.wallBounce.verticalSpeed`,
-    );
-    assertNonNegativeInteger(
-      hit.wallBounce.minimumHitstun,
-      `${label}.wallBounce.minimumHitstun`,
-    );
-    if (hit.wallBounce.count > 0 && hit.wallBounce.horizontalSpeed === 0) {
-      throw new Error(`${label}.wallBounce.horizontalSpeed must be positive`);
-    }
-  }
-  if (hit.groundBounce !== undefined) {
-    assertNonNegativeInteger(hit.groundBounce.count, `${label}.groundBounce.count`);
-    assertNonNegativeInteger(
-      hit.groundBounce.verticalSpeed,
-      `${label}.groundBounce.verticalSpeed`,
-    );
-    assertRatio(hit.groundBounce.horizontalScale, `${label}.groundBounce.horizontalScale`);
-    assertNonNegativeInteger(
-      hit.groundBounce.minimumHitstun,
-      `${label}.groundBounce.minimumHitstun`,
-    );
-    if (hit.groundBounce.count > 0 && hit.groundBounce.verticalSpeed === 0) {
-      throw new Error(`${label}.groundBounce.verticalSpeed must be positive`);
-    }
-  }
-}
-
-function validateBoxes(boxes: readonly FixedBox[], label: string): void {
-  if (boxes.length === 0) {
-    throw new Error(`${label} must contain at least one box`);
-  }
-  boxes.forEach((box, index) => {
-    assertInteger(box.offset.x, `${label}[${index}].offset.x`);
-    assertInteger(box.offset.y, `${label}[${index}].offset.y`);
-    assertInteger(box.halfSize.x, `${label}[${index}].halfSize.x`);
-    assertInteger(box.halfSize.y, `${label}[${index}].halfSize.y`);
-    if (box.halfSize.x <= 0 || box.halfSize.y <= 0) {
-      throw new Error(`${label}[${index}].halfSize must be positive`);
-    }
-  });
-}
-
-function validateRange(from: number, toExclusive: number, label: string): void {
-  assertNonNegativeInteger(from, `${label}.frames.from`);
-  assertNonNegativeInteger(toExclusive, `${label}.frames.toExclusive`);
-  if (from >= toExclusive) {
-    throw new Error(`${label}.frames must be a non-empty half-open range`);
   }
 }
