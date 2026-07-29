@@ -9,6 +9,11 @@ export function GoogleAuth() {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setIsLoading(false);
+      return;
+    }
+
     let isActive = true;
 
     void supabase.auth.getSession().then(({ data, error }) => {
