@@ -42,13 +42,13 @@ export function GlitchBody(props: GlitchBodyProps) {
       <HalfPart x={0.115} y={0.96} geometry={resources.hipHalf} material={materials.corrupt} outline={outline} />
 
       <group ref={fragments}>
-        {[
+        {([
           [0.5, 2.22, 0, 0.75],
           [0.62, 1.76, -0.08, 0.52],
           [0.47, 1.26, 0.12, 0.42],
           [0.35, 0.67, -0.08, 0.34],
           [0.72, 1.48, 0.08, 0.28],
-        ].map(([x, y, z, scale], index) => (
+        ] as const).map(([x, y, z, scale], index) => (
           <mesh
             key={`${x}-${y}`}
             geometry={resources.pixel}

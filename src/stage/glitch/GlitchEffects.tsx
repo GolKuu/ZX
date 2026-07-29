@@ -35,12 +35,12 @@ export function GlitchEffects({
 
       <group ref={refs.projectile}>
         <mesh geometry={resources.packet} material={materials.magenta} />
-        {[
+        {([
           [-0.24, 0.16, 0],
           [0.22, 0.13, 0.04],
           [-0.18, -0.2, -0.04],
           [0.2, -0.18, 0],
-        ].map(([x, y, z], index) => (
+        ] as const).map(([x, y, z], index) => (
           <mesh
             key={`${x}-${y}`}
             geometry={resources.pixel}
