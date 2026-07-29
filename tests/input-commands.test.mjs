@@ -160,6 +160,15 @@ test('the same button without a motion yields the normal', () => {
   assert.equal(resolveCommand(buffer, KADE_COMMANDS)?.moveId, '5H');
 });
 
+test('the dedicated special button starts Overtake without a motion', () => {
+  const buffer = new InputBuffer();
+  feed(buffer, [
+    [5, []],
+    [5, ['special']],
+  ]);
+  assert.equal(resolveCommand(buffer, KADE_COMMANDS)?.moveId, 'overtake');
+});
+
 test('crouching selects the crouching normal', () => {
   const buffer = new InputBuffer();
   feed(buffer, [

@@ -13,12 +13,14 @@ export interface FighterDefinition {
 export interface FighterMovementData {
   readonly forwardPerFrame: number;
   readonly backwardPerFrame: number;
+  readonly jumpPerFrame: number;
 }
 
 export interface FighterInput {
   readonly move?: string;
   readonly movement?: -1 | 0 | 1;
   readonly guard?: boolean;
+  readonly jump?: boolean;
 }
 
 export type CombatInputs = Readonly<Record<string, FighterInput | undefined>>;

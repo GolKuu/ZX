@@ -9,6 +9,7 @@ import type { FighterInput } from '../sim/state.js';
 import {
   DEFAULT_BINDINGS,
   horizontalOf,
+  isJumping,
   readButtonMask,
   resolveDirection,
   toFacingRelative,
@@ -33,7 +34,7 @@ export interface KeyboardSourceOptions {
 export class KeyboardInputSource {
   private readonly held = new Set<string>();
   private readonly buffer = new InputBuffer();
-  private readonly bindings: KeyBindings;
+  private bindings: KeyBindings;
   private readonly commands: readonly CommandRow[];
   private readonly preventDefault: boolean;
   private attached = false;
@@ -62,7 +63,7 @@ export class KeyboardInputSource {
   };
 
   public constructor(options: KeyboardSourceOptions) {
-    this.bindings = options.bindings ?? DEFAULT_BINDINGS;
+    this.bindings = copyBindings(options.bindings ?? DEFAULT_BINDINGS);
     this.commands = options.commands;
     this.preventDefault = options.preventDefault ?? true;
   }
@@ -108,8 +109,15 @@ export class KeyboardInputSource {
     return {
       movement: guard ? 0 : horizontalOf(direction),
       guard,
+      jump: !guard && isJumping(direction),
       ...(command === null ? {} : { move: command.moveId }),
     };
+  }
+
+  public updateBindings(bindings: KeyBindings): void {
+    this.bindings = copyBindings(bindings);
+    this.held.clear();
+    this.buffer.clear();
   }
 
   /** Exposed for the input display and for replay capture. */
@@ -124,4 +132,14 @@ export class KeyboardInputSource {
     }
     return Object.values(buttons).includes(code);
   }
+}
+
+function copyBindings(bindings: KeyBindings): KeyBindings {
+  return {
+    up: bindings.up,
+    down: bindings.down,
+    left: bindings.left,
+    right: bindings.right,
+    buttons: { ...bindings.buttons },
+  };
 }

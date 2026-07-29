@@ -6,7 +6,7 @@
  * normals that share their button.
  */
 
-import type { AttackButton, Direction } from './bindings.js';
+import type { Button, Direction } from './bindings.js';
 import { hasButton, isCrouching } from './bindings.js';
 import { INPUT_LEEWAY_FRAMES, type InputBuffer } from './buffer.js';
 import { matchesMotion, type MotionId } from './motion.js';
@@ -17,7 +17,7 @@ export interface CommandRow {
   /** Motion prefix, or `'none'` for a plain button press. */
   readonly motion: MotionId;
   /** Button that commits the move. */
-  readonly button: AttackButton;
+  readonly button: Button;
   /** Requires the special/super modifier to be held. */
   readonly requiresModifier?: boolean;
   /** `'crouching'` and `'standing'` gate on the direction at press time. */
@@ -48,6 +48,7 @@ export const DEFAULT_CONTEXT: CommandContext = {
  * project settles on the L/M/H/S scheme instead, only this table changes.
  */
 export const KADE_COMMANDS: readonly CommandRow[] = [
+  { moveId: 'overtake', motion: 'none', button: 'special', stance: 'any' },
   // Specials first — they share buttons with the normals below.
   { moveId: 'overtake', motion: 'qcf', button: 'hp', stance: 'any' },
   { moveId: 'overtake', motion: 'qcf', button: 'lp', stance: 'any' },
@@ -60,13 +61,13 @@ export const KADE_COMMANDS: readonly CommandRow[] = [
   { moveId: '5L', motion: 'none', button: 'lp', stance: 'standing' },
   { moveId: '5M', motion: 'none', button: 'lk', stance: 'standing' },
   { moveId: '5H', motion: 'none', button: 'hp', stance: 'standing' },
-  { moveId: '5H', motion: 'none', button: 'hk', stance: 'any' },
+  { moveId: '2M', motion: 'none', button: 'hk', stance: 'any' },
 ];
 
 export interface ResolvedCommand {
   readonly moveId: string;
   readonly motion: MotionId;
-  readonly button: AttackButton;
+  readonly button: Button;
   /** Frames since the committing press — useful for input-display debugging. */
   readonly pressedAgo: number;
 }

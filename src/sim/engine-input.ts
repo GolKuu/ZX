@@ -24,6 +24,9 @@ export function validateCombatInputs(
     ) {
       throw new Error(`Invalid movement for fighter "${fighter.id}"`);
     }
+    if (input?.jump !== undefined && typeof input.jump !== 'boolean') {
+      throw new Error(`Invalid jump input for fighter "${fighter.id}"`);
+    }
   }
 }
 
@@ -40,6 +43,10 @@ export function applyNeutralInput(
     return;
   }
   const movement = fighter.guarding ? 0 : (input?.movement ?? 0);
+  if (input?.jump === true && !fighter.guarding) {
+    fighter.velocity.y = fighter.movement.jumpPerFrame;
+    fighter.grounded = false;
+  }
   const speed =
     movement >= 0
       ? fighter.movement.forwardPerFrame

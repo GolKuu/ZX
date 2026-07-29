@@ -73,6 +73,7 @@ export function createFighterState(
     movement: {
       forwardPerFrame: definition.movement?.forwardPerFrame ?? 65,
       backwardPerFrame: definition.movement?.backwardPerFrame ?? 53,
+      jumpPerFrame: definition.movement?.jumpPerFrame ?? 340,
     },
     health: definition.maxHealth,
     position: { ...definition.spawn },

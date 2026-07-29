@@ -1,13 +1,34 @@
-import { BackSide, Color, ShaderMaterial } from 'three';
+/**
+ * Inverted-hull outline.
+ *
+ * Width is solved in *screen* space so the line holds the same pixel weight at
+ * every camera distance. The previous depth clamp made lines thicken as the
+ * camera pulled out, which is the difference between a drawn outline and a
+ * rendered one (ART-CCU-400 §4.2).
+ */
+
+import { BackSide, Color, ShaderMaterial, type ColorRepresentation } from 'three';
 
 const vertexShader = /* glsl */ `
-  uniform float uWidth;
+  uniform float uPixelWidth;     // target thickness in pixels
+  uniform float uViewportHeight;
+  uniform float uTanHalfFov;
+  uniform float uFalloff;        // 0 disables distance thinning
 
   void main() {
     vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
     vec3 viewNormal = normalize(normalMatrix * normal);
-    float depthScale = clamp(-viewPosition.z * 0.075, 0.7, 1.65);
-    viewPosition.xyz += viewNormal * uWidth * depthScale;
+
+    // World units covered by one pixel at this depth.
+    float depth = max(-viewPosition.z, 0.001);
+    float unitsPerPixel = (2.0 * uTanHalfFov * depth) / uViewportHeight;
+    float width = uPixelWidth * unitsPerPixel;
+
+    // Thin slightly at long range so a distant pair does not read as stickers.
+    float falloff = mix(1.0, clamp(1.0 - (depth - 7.0) / 22.0, 0.55, 1.0), uFalloff);
+    width *= falloff;
+
+    viewPosition.xyz += viewNormal * width;
     gl_Position = projectionMatrix * viewPosition;
   }
 `;
@@ -20,15 +41,43 @@ const fragmentShader = /* glsl */ `
   }
 `;
 
-export function createOutlineMaterial() {
+export interface OutlineOptions {
+  /** Line weight in pixels. */
+  readonly pixelWidth?: number;
+  readonly color?: ColorRepresentation;
+  readonly falloff?: boolean;
+}
+
+export function createOutlineMaterial(options: OutlineOptions = {}) {
   return new ShaderMaterial({
     uniforms: {
-      uColor: { value: new Color('#070912') },
-      uWidth: { value: 0.032 },
+      uColor: { value: new Color(options.color ?? '#0a0d18') },
+      uPixelWidth: { value: options.pixelWidth ?? 2.4 },
+      uViewportHeight: { value: 1080 },
+      uTanHalfFov: { value: Math.tan((45 * Math.PI) / 180 / 2) },
+      uFalloff: { value: options.falloff === false ? 0 : 1 },
     },
     vertexShader,
     fragmentShader,
     side: BackSide,
     toneMapped: false,
   });
+}
+
+export type OutlineMaterial = ReturnType<typeof createOutlineMaterial>;
+
+/** Call on mount and on resize — the width formula needs both values. */
+export function updateOutlineProjection(
+  material: OutlineMaterial,
+  viewportHeightPx: number,
+  fovDegrees: number,
+): void {
+  const height = material.uniforms.uViewportHeight;
+  const tan = material.uniforms.uTanHalfFov;
+  if (height !== undefined) {
+    height.value = Math.max(1, viewportHeightPx);
+  }
+  if (tan !== undefined) {
+    tan.value = Math.tan((fovDegrees * Math.PI) / 180 / 2);
+  }
 }
