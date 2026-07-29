@@ -18,6 +18,8 @@
   "include": [
     "src/sim/**/*.ts",
     "src/ai/**/*.ts",
+    "src/hud/**/*.ts",
+    "src/input/mobile-controller.ts",
     "src/data/combat-moves.ts",
     "src/data/combat-ai.ts"
   ]

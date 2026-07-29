@@ -2,127 +2,52 @@
   position: absolute;
   z-index: 10;
   inset: 0;
-  padding: 24px clamp(20px, 3.5vw, 54px);
   pointer-events: none;
 }
 
-.topbar {
+.devTools {
+  position: absolute;
+  z-index: 80;
+  right: 1rem;
+  bottom: 1rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-}
-
-.brand,
-.telemetry,
-.caption span,
-.caption p,
-.controls {
-  font-size: 0.7rem;
-  font-weight: 780;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.brand {
+  gap: 0.45rem;
   pointer-events: auto;
 }
 
-.brand span,
-.caption span {
-  color: #71dcff;
-}
-
-.telemetry {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  color: #8091a8;
-}
-
-.telemetry span:last-child {
-  min-width: 68px;
-  color: #f6c453;
-  text-align: right;
-}
-
-.telemetry span[data-stable="true"] {
-  color: #71dcff;
-}
-
-.caption {
-  position: absolute;
-  bottom: 96px;
-  left: clamp(20px, 3.5vw, 54px);
-}
-
-.caption h1 {
-  margin: 8px 0 12px;
-  color: #f5f7ff;
-  font-size: clamp(2rem, 4vw, 4.4rem);
-  letter-spacing: -0.06em;
-  line-height: 0.82;
-  text-transform: uppercase;
-}
-
-.caption p {
-  color: #7f90a7;
-  letter-spacing: 0.07em;
-}
-
-.controls {
-  position: absolute;
-  right: clamp(20px, 3.5vw, 54px);
-  bottom: 42px;
-  display: flex;
-  gap: 10px;
-  pointer-events: auto;
-}
-
-.controls button {
-  min-height: 46px;
-  padding: 0 16px;
-  color: #dce5f2;
-  cursor: pointer;
-  background: rgb(9 16 29 / 78%);
+.devTools button,
+.fps {
+  min-height: 2rem;
+  padding: 0 0.65rem;
+  color: #9aabbe;
+  background: rgb(6 11 18 / 78%);
   border: 1px solid rgb(135 171 200 / 24%);
-  border-radius: 3px;
-  backdrop-filter: blur(12px);
-  font: inherit;
-  letter-spacing: inherit;
+  border-radius: 99px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 2rem;
+  text-transform: uppercase;
 }
 
-.controls button:hover,
-.controls .active {
+.devTools button {
+  cursor: pointer;
+}
+
+.devTools button:hover,
+.devTools button:focus-visible,
+.devTools button[aria-pressed="true"] {
+  color: #fff;
   border-color: #71dcff;
+  outline: none;
 }
 
-.key {
-  display: inline-grid;
-  width: 24px;
-  height: 24px;
-  margin-right: 10px;
-  place-items: center;
-  color: #071018;
-  background: #71dcff;
-  border-radius: 2px;
+.devTools kbd {
+  color: #71dcff;
+  font: inherit;
 }
 
-@media (max-width: 720px) {
-  .caption {
-    bottom: 140px;
-  }
-
-  .telemetry > span:not(:last-child) {
-    display: none;
-  }
-
-  .controls {
-    right: 20px;
-    bottom: 24px;
-    left: 20px;
-  }
-
-  .controls button {
-    flex: 1;
-  }
+.fps {
+  color: #f6c453;
 }

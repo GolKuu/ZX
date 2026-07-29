@@ -1,48 +1,45 @@
 'use client';
 
-import Link from 'next/link';
-import { FpsMeter } from './FpsMeter';
+import dynamic from 'next/dynamic';
+import { CombatHud } from './CombatHud';
+import { useHudStore } from '@/src/store/hudStore';
 import { useRenderStore } from '@/src/store/renderStore';
 import styles from './PlayOverlay.module.css';
+
+const DevelopmentFpsMeter = dynamic(
+  () => import('./FpsMeter').then((module) => module.FpsMeter),
+  { ssr: false },
+);
 
 export function PlayOverlay() {
   const effectsEnabled = useRenderStore((state) => state.effectsEnabled);
   const toggleEffects = useRenderStore((state) => state.toggleEffects);
   const triggerImpact = useRenderStore((state) => state.triggerImpact);
+  const registerPreviewHit = useHudStore((state) => state.registerPreviewHit);
+
+  const replayImpact = () => {
+    triggerImpact();
+    registerPreviewHit();
+  };
 
   return (
     <div className={styles.overlay}>
-      <header className={styles.topbar}>
-        <Link className={styles.brand} href="/">
-          CC<span>//</span>ULTIMATE
-        </Link>
-        <div className={styles.telemetry}>
-          <span>WEBGL</span>
-          <span>GPU FX</span>
-          <FpsMeter />
-        </div>
-      </header>
-
-      <aside className={styles.caption}>
-        <span>RENDER STUDY 01</span>
-        <h1>Chromatic<br />Impact</h1>
-        <p>Cel light · inverted hull · procedural energy</p>
-      </aside>
-
-      <div className={styles.controls}>
-        <button type="button" onClick={triggerImpact}>
-          <span className={styles.key}>J</span>
-          Replay impact
-        </button>
-        <button
-          aria-pressed={effectsEnabled}
-          className={effectsEnabled ? styles.active : ''}
-          type="button"
-          onClick={toggleEffects}
-        >
-          FX {effectsEnabled ? 'ON' : 'OFF'}
-        </button>
-      </div>
+      <CombatHud />
+      {process.env.NODE_ENV !== 'production' && (
+        <aside className={styles.devTools} aria-label="Development tools">
+          <span className={styles.fps}><DevelopmentFpsMeter /></span>
+          <button type="button" onClick={replayImpact}>
+            <kbd>J</kbd> Impact
+          </button>
+          <button
+            aria-pressed={effectsEnabled}
+            type="button"
+            onClick={toggleEffects}
+          >
+            FX {effectsEnabled ? 'on' : 'off'}
+          </button>
+        </aside>
+      )}
     </div>
   );
 }

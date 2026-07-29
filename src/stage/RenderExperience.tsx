@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRenderStore } from '@/src/store/renderStore';
+import { useHudStore } from '@/src/store/hudStore';
 import { PlayOverlay } from '@/src/ui/PlayOverlay';
 import { RenderCanvas } from './RenderCanvas';
 import styles from './RenderExperience.module.css';
@@ -11,6 +12,7 @@ export function RenderExperience() {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === 'KeyJ' && !event.repeat) {
         useRenderStore.getState().triggerImpact();
+        useHudStore.getState().registerPreviewHit();
       }
     };
 
