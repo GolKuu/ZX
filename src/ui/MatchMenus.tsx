@@ -8,6 +8,7 @@ import { ControlsMenu } from './ControlsMenu';
 import { CharacterSelectMenu } from './CharacterSelectMenu';
 import { ModeMenu } from './ModeMenu';
 import { OnlineNotice } from './OnlineNotice';
+import { VersusScreen } from './VersusScreen';
 import styles from './CombatHud.module.css';
 
 interface MenuItem {
@@ -20,6 +21,7 @@ export function MatchMenus() {
   const screen = useHudStore((state) => state.screen);
   if (screen === 'mode') return <ModeMenu />;
   if (screen === 'character') return <CharacterSelectMenu />;
+  if (screen === 'versus') return <VersusScreen />;
   if (screen === 'online') return <OnlineNotice />;
   return <InMatchMenus />;
 }

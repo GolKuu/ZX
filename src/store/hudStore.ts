@@ -9,6 +9,7 @@ import type { HudSnapshot } from '@/src/hud/types';
 export type HudScreen =
   | 'mode'
   | 'character'
+  | 'versus'
   | 'fight'
   | 'pause'
   | 'controls'
@@ -42,6 +43,7 @@ type HudState = {
   openCharacterSelect: () => void;
   selectMode: (mode: MatchMode) => void;
   startMatch: (selection: CharacterSelection) => void;
+  enterFight: () => void;
   setMenuFocus: (index: number) => void;
 };
 
@@ -99,7 +101,7 @@ export const useHudStore = create<HudState>((set) => ({
         state.mode ?? 'local',
         state.fighterSelection,
       ),
-      screen: 'fight',
+      screen: state.screen === 'versus' ? 'versus' : 'fight',
       menuFocus: 0,
     })),
   openPause: () => set({ screen: 'pause', menuFocus: 0 }),
@@ -118,10 +120,11 @@ export const useHudStore = create<HudState>((set) => ({
   startMatch: (fighterSelection) =>
     set((state) => ({
       fighterSelection: [...fighterSelection],
-      screen: 'fight',
+      screen: 'versus',
       snapshot: initialSnapshot(state.mode ?? 'local', fighterSelection),
       menuFocus: 0,
     })),
+  enterFight: () => set({ screen: 'fight', menuFocus: 0 }),
   setMenuFocus: (menuFocus) => set({ menuFocus }),
 }));
 

@@ -905,12 +905,14 @@
 .hudRoot[data-screen="result"] .topHud,
 .hudRoot[data-screen="mode"] .topHud,
 .hudRoot[data-screen="character"] .topHud,
+.hudRoot[data-screen="versus"] .topHud,
 .hudRoot[data-screen="online"] .topHud,
 .hudRoot[data-screen="pause"] .comboCounter,
 .hudRoot[data-screen="controls"] .comboCounter,
 .hudRoot[data-screen="result"] .comboCounter,
 .hudRoot[data-screen="mode"] .comboCounter,
 .hudRoot[data-screen="character"] .comboCounter,
+.hudRoot[data-screen="versus"] .comboCounter,
 .hudRoot[data-screen="online"] .comboCounter {
   opacity: 0.18;
 }
