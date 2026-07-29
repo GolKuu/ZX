@@ -36,6 +36,7 @@ function FighterAttackCue({
 }) {
   const groupRef = useRef<Group>(null);
   const material = useMemo(() => createAttackCueMaterial(color), [color]);
+  const materialRef = useRef(material);
   const lastSerialRef = useRef(0);
   const startTimeRef = useRef(-CUE_DURATION_SECONDS);
   const facingRef = useRef<1 | -1>(1);
@@ -78,7 +79,7 @@ function FighterAttackCue({
       1.35,
     );
     group.scale.set(facing * growth, growth, 1);
-    material.uniforms.uProgress!.value = MathUtils.clamp(progress, 0, 1);
+    materialRef.current.uniforms.uProgress!.value = MathUtils.clamp(progress, 0, 1);
   });
 
   return (
