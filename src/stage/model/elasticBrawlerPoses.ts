@@ -76,7 +76,8 @@ const gearShift: RosterAttackPose = (
   settle,
 ) => {
   const compress = windup * (1 - strike);
-  const surge = Math.max(strike, 1 - smooth01(settle));
+  const aftershock = Math.sin(clamp01(settle / 0.55) * Math.PI);
+  const surge = Math.max(strike * (1 - settle * 0.6), aftershock);
   const brace = smooth01(settle);
 
   turnJoint(joints, 'hips', 0.5 * compress - 0.08 * surge, 0.3, 0);
