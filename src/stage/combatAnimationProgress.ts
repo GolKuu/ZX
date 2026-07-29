@@ -4,6 +4,7 @@ import { AANG_NORMAL_MOVES } from '@/src/data/aang-combat-moves';
 import { AANG_SPECIAL_MOVES } from '@/src/data/aang-special-moves';
 import { IDOL_MOVES } from '@/src/data/idol-combat-moves';
 import { ECHO_MOVES } from '@/src/data/echo-combat-moves';
+import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
 import { totalMoveFrames } from '@/src/sim';
 
@@ -20,6 +21,7 @@ const MOVES_BY_ID = new Map(
     ...AANG_SPECIAL_MOVES,
     ...IDOL_MOVES,
     ...ECHO_MOVES,
+    ...CHRONO_MOVES,
   ].map((move) => [move.id, move]),
 );
 

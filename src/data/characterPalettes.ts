@@ -105,6 +105,17 @@ const IDOL: CharacterPalette = {
   body: zone('#f04f91', '#a73d86'),
 };
 
+/** Glitch — black prototype shell split by magenta and cyan corruption. */
+const GLITCH: CharacterPalette = {
+  hair: zone('#080a0f', '#511052', 1.15, 0.82),
+  skin: zone('#10131a', '#7d176b', 0.9, 0.78),
+  coat: zone('#06080d', '#4a0f50', 1.1, 0.88),
+  trousers: zone('#080a10', '#183e63', 1.0, 0.84),
+  boot: zone('#030409', '#30103d', 1.2, 0.82),
+  eye: zone('#16e6ff', '#ff2bd6', 0, 0),
+  body: zone('#07090e', '#61105e', 1.15, 0.86),
+};
+
 /** Chrono — black coat, cold silver armour and saturated time-blue. */
 const CHRONO: CharacterPalette = {
   hair: zone('#e7edf5', '#8296b5', 1.05, 0.78),
@@ -144,6 +155,7 @@ const PALETTES: Record<CharacterId, CharacterPalette> = {
   zoro: BLADE_PHANTOM,
   aang: ELEMENT_SAGE,
   idol: IDOL,
+  glitch: GLITCH,
   chrono: CHRONO,
   'void-walker': VOID_WALKER,
   'velocity-king': VELOCITY_KING,

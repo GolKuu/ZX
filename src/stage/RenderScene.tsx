@@ -11,6 +11,7 @@ import { Arena } from './Arena';
 import { LazyModelFighter } from './LazyModelFighter';
 import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
+import { ChronoFighter } from './ChronoFighter';
 import { EchoFighter } from './EchoFighter';
 import { FrameProfiler } from './FrameProfiler';
 import { IdolFighter } from './IdolFighter';
@@ -94,6 +95,9 @@ function primitiveFighter(
   }
   if (characterId === 'aang') {
     return <AangFighter auraColor={auraColor} fighterId={fighterId} />;
+  }
+  if (characterId === 'chrono') {
+    return <ChronoFighter auraColor={auraColor} fighterId={fighterId} />;
   }
   if (characterId === 'echo') {
     return <EchoFighter auraColor={auraColor} fighterId={fighterId} />;

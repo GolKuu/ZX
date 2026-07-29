@@ -4,6 +4,7 @@ export type CharacterId =
   | 'zoro'
   | 'aang'
   | 'idol'
+  | 'glitch'
   | 'chrono'
   | 'void-walker'
   | 'velocity-king'
@@ -67,6 +68,14 @@ export const CHARACTER_ROSTER = [
     description:
       'Боевая поп-звезда: колет микрофоном, сбивает низким скольжением и завершает серию звёздным танцевальным вращением.',
     mark: '★',
+  },
+  {
+    id: 'glitch',
+    displayName: 'GLITCH',
+    archetype: 'Баг игры · искажение данных',
+    description:
+      'Сломанный боец из повреждённого билда: колет пикселями, стирает дистанцию телепорт-пинком и выбрасывает кубы ошибок.',
+    mark: 'G',
   },
   {
     id: 'chrono',
