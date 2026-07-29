@@ -26,6 +26,16 @@ export function resetZoroRig(
   const breath = Math.sin(time * 2.4) * 0.025;
   setPosition(rig.root, 0, breath, 0);
   setRotation(rig.root, 0, 0, Math.sin(time * 1.35) * 0.012);
+  setPosition(rig.torso, 0, 1.45, 0);
+  setPosition(rig.head, 0, 2.45, 0);
+  setPosition(rig.leftArm, -0.46, 1.82, 0);
+  setPosition(rig.rightArm, 0.46, 1.82, 0);
+  setPosition(rig.leftLeg, -0.2, 0.92, 0);
+  setPosition(rig.rightLeg, 0.2, 0.92, 0);
+  setPosition(rig.leftSword, 0, -0.72, 0.02);
+  setPosition(rig.rightSword, 0, -0.72, 0.02);
+  setPosition(rig.mouthSword, 0, 2.4, 0.22);
+  setPosition(rig.echoes, 0, 0, -0.04);
   setRotation(rig.torso, 0, 0, 0);
   setRotation(rig.head, 0, 0, 0);
   setRotation(rig.leftLeg, 0, 0, 0.08);
