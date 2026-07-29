@@ -24,6 +24,15 @@
   border-right: 1px solid rgb(255 255 255 / 8%);
 }
 
+.strip > .elementGroup {
+  min-width: 15rem;
+}
+
+.elementGroup b {
+  color: #9beeff;
+  font-size: 0.58rem;
+}
+
 .strip small {
   color: #728b7f;
   font-size: 0.48rem;

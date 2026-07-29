@@ -1,4 +1,4 @@
-import type { FighterInput } from '@/src/sim';
+import type { FighterInput } from '../../sim/state.js';
 
 export const AANG_ELEMENTS = ['air', 'fire', 'earth', 'water'] as const;
 export type AangCombatElement = (typeof AANG_ELEMENTS)[number];

@@ -113,6 +113,25 @@ test('same-frame attacks trade instead of being canceled by resolution order', (
   assert.equal(readFighter(result.state, 'p2').health, 90);
 });
 
+test('chip damage passes through a successful guard', () => {
+  const move = makeMove({
+    damage: 30,
+    block: {
+      blockstun: 4,
+      hitstop: { attacker: 0, defender: 0 },
+      knockback: { x: 0, y: 0 },
+      chipDamage: 5,
+    },
+  });
+  const engine = makeEngine(move);
+  const result = engine.tick({
+    p1: { move: 'strike' },
+    p2: { guard: true },
+  });
+  assert.equal(result.events.some((event) => event.type === 'block'), true);
+  assert.equal(readFighter(result.state, 'p2').health, 95);
+});
+
 test('unknown moves fail fast and invalid active windows are rejected', () => {
   const engine = makeEngine(makeMove());
   assert.throws(() => engine.tick({ p1: { move: 'missing' } }), /Unknown move/);

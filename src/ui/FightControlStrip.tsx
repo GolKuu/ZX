@@ -2,11 +2,18 @@
 
 import { bindingCode, keyLabel, useControlStore } from '@/src/store/controlStore';
 import { useHudStore } from '@/src/store/hudStore';
+import {
+  AANG_ELEMENTS,
+  AANG_ELEMENT_INFO,
+  type CombatFighterId,
+} from '@/src/aang/combat/elements';
+import { useRenderStore } from '@/src/store/renderStore';
 import styles from './FightControlStrip.module.css';
 
 export function FightControlStrip() {
   const bindings = useControlStore((state) => state.bindings);
   const screen = useHudStore((state) => state.screen);
+  const selection = useHudStore((state) => state.fighterSelection);
   if (screen !== 'fight') return null;
 
   const openControls = (): void => {
@@ -31,8 +38,24 @@ export function FightControlStrip() {
       />
       <ControlGroup label="Блок" codes={[bindingCode(bindings, 'block')]} />
       <ControlGroup label="Спец" codes={[bindingCode(bindings, 'special')]} />
+      {selection[0] === 'aang' && <ElementGroup fighterId="p1" />}
+      {selection[1] === 'aang' && <ElementGroup fighterId="p2" />}
       <button type="button" onClick={openControls}>Изменить</button>
     </section>
+  );
+}
+
+function ElementGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
+  const active = useRenderStore((state) => state.aangElements[fighterId]);
+  const elements = AANG_ELEMENTS.map((element) => {
+    const label = AANG_ELEMENT_INFO[element].label;
+    return active === element ? `[${label}]` : label;
+  }).join(' ');
+  return (
+    <span className={styles.elementGroup}>
+      <small>{fighterId.toUpperCase()} · ↓↓ + J/K/L/U</small>
+      <b>{elements}</b>
+    </span>
   );
 }
 

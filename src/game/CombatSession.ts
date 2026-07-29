@@ -4,11 +4,6 @@ import {
   type CharacterSelection,
 } from '@/src/data/characterRoster';
 import {
-  AangCombatController,
-  type CombatFighterId,
-} from '@/src/aang/combat/elements';
-import type { FighterInput } from '@/src/sim';
-import {
   FixedStepRunner,
   type CombatEvent,
   type WorldSnapshot,
@@ -17,6 +12,7 @@ import { useHudStore } from '@/src/store/hudStore';
 import { useRenderStore } from '@/src/store/renderStore';
 import { publishCombatFrame } from './combatRuntime';
 import { AttackInputPolicy } from './attackInputPolicy';
+import { AangCombatLoadout } from './AangCombatLoadout';
 import {
   createCombatAi,
   createCombatEngine,
@@ -40,16 +36,14 @@ export class CombatSession {
   private maxCombo = 0;
   private readonly xray = new XrayController();
   private readonly attackInput = new AttackInputPolicy(ALL_COMBAT_MOVES);
-  private readonly aangControllers: Readonly<
-    Partial<Record<CombatFighterId, AangCombatController>>
-  >;
+  private readonly aangCombat: AangCombatLoadout;
 
   public constructor(
     private readonly playerOne: KeyboardInputSource,
     private readonly playerTwo: KeyboardInputSource,
     fighterSelection: CharacterSelection,
   ) {
-    this.aangControllers = createAangControllers(fighterSelection);
+    this.aangCombat = new AangCombatLoadout(fighterSelection);
     this.publishInitialState();
   }
 
@@ -71,9 +65,7 @@ export class CombatSession {
     this.maxCombo = 0;
     this.xray.reset();
     this.attackInput.reset();
-    for (const controller of Object.values(this.aangControllers)) {
-      controller.reset();
-    }
+    this.aangCombat.reset();
     this.publishInitialState();
   }
 
@@ -91,12 +83,12 @@ export class CombatSession {
         )
       : this.ai.decide(before, this.lastEvents).input;
     const result = this.engine.tick({
-      p1: this.resolveInput('p1', this.playerOne.sample(
+      p1: this.aangCombat.resolve('p1', this.playerOne.sample(
         player.facing,
         this.attackInput.isLocked(player),
         this.xray.inputContext(player),
       )),
-      p2: this.resolveInput('p2', opponentInput),
+      p2: this.aangCombat.resolve('p2', opponentInput),
     });
     this.timerFrames = Math.max(0, this.timerFrames - 1);
     this.lastEvents = result.events;
@@ -111,13 +103,6 @@ export class CombatSession {
     ) {
       this.finish(result.state);
     }
-  }
-
-  private resolveInput(
-    fighterId: CombatFighterId,
-    input: FighterInput,
-  ): FighterInput {
-    return this.aangControllers[fighterId]?.resolve(input) ?? input;
   }
 
   private publishInitialState(): void {
@@ -165,24 +150,6 @@ export class CombatSession {
       duration: formatDuration(ROUND_FRAMES - this.timerFrames),
     });
   }
-}
-
-function createAangControllers(
-  selection: CharacterSelection,
-): Readonly<Partial<Record<CombatFighterId, AangCombatController>>> {
-  const controllers: Partial<Record<CombatFighterId, AangCombatController>> = {};
-  const render = useRenderStore.getState();
-  if (selection[0] === 'aang') {
-    controllers.p1 = new AangCombatController(
-      (element) => render.setAangElement('p1', element),
-    );
-  }
-  if (selection[1] === 'aang') {
-    controllers.p2 = new AangCombatController(
-      (element) => render.setAangElement('p2', element),
-    );
-  }
-  return controllers;
 }
 
 function formatDuration(frames: number): string {
