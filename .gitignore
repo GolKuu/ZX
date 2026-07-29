@@ -23,3 +23,6 @@ vitest.config.d.ts
 
 # Licensed character assets — see docs/ASSET-CCU-820-model-pipeline.md
 public/models/
+
+# Render-critique screenshots (scripts/shoot.mjs)
+.shots/

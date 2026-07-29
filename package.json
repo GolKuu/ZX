@@ -33,7 +33,8 @@
     "keep-awake:setup": "node scripts/setup-keep-awake.mjs",
     "ai:secret": "node scripts/setup-ai-secret.mjs",
     "ai:deploy": "supabase functions deploy ai",
-    "models:check": "node scripts/check-models.mjs"
+    "models:check": "node scripts/check-models.mjs",
+    "shoot": "node scripts/shoot.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "9.6.1",
@@ -59,6 +60,7 @@
     "eslint": "10.8.0",
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "17.8.0",
+    "playwright-core": "^1.58.0",
     "supabase": "^2.109.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "8.65.0"
