@@ -69,41 +69,51 @@ export function applyAangCombatAnimation(
   if (action === null) return;
   const progress = combatAnimationProgress(action.moveId, action.frame);
   const strike = Math.sin(progress * Math.PI);
-  rig.effect.visible = progress > 0.12 && progress < 0.74;
-  rig.effect.scale.setScalar(0.35 + strike * 0.75);
-  rig.effect.rotation.z = progress * Math.PI * 1.6;
+  const facing = fighter.facing;
+  const arm = facing === 1 ? rig.rightArm : rig.leftArm;
+  const supportArm = facing === 1 ? rig.leftArm : rig.rightArm;
+  const leg = facing === 1 ? rig.rightLeg : rig.leftLeg;
+  const supportLeg = facing === 1 ? rig.leftLeg : rig.rightLeg;
 
   if (action.moveId === '5L') {
-    rig.leftArm.rotation.z = 0.24 - strike * 1.5;
-    rig.rightArm.rotation.z = -0.24 + strike * 1.5;
+    arm.position.x += facing * strike * 0.4;
+    arm.position.y += strike * 0.12;
+    arm.rotation.z -= facing * strike * 1.42;
+    supportArm.rotation.z += facing * strike * 0.3;
+    rig.torso.rotation.y += facing * strike * 0.28;
+    rig.root.position.x += facing * strike * 0.2;
   } else if (action.moveId === '5M') {
-    rig.torso.rotation.z = -strike * 0.18;
-    rig.rightLeg.rotation.z = -0.04 + strike * 1.75;
-    rig.effect.position.set(0.72, 0.72, 0.1);
+    leg.position.x += facing * strike * 0.44;
+    leg.position.y += strike * 0.3;
+    leg.rotation.z -= facing * strike * 1.72;
+    supportLeg.rotation.z += facing * strike * 0.18;
+    rig.torso.rotation.z -= facing * strike * 0.2;
+    rig.root.position.x += facing * strike * 0.24;
   } else if (action.moveId === '5H') {
-    rig.staff.rotation.z = 0.28 - strike * 2.4;
-    rig.rightArm.rotation.z = -0.24 + strike * 1.15;
-    rig.effect.position.set(0.72, 1.45, 0.1);
+    rig.staff.rotation.z -= facing * strike * 2.35;
+    arm.rotation.z -= facing * strike * 1.2;
+    supportArm.rotation.z += facing * strike * 0.72;
+    rig.torso.rotation.y += facing * strike * 0.4;
+    rig.root.position.x += facing * strike * 0.32;
   } else if (action.moveId === '2L') {
     rig.root.position.y -= strike * 0.18;
-    rig.leftLeg.rotation.z = 0.04 - strike * 1.2;
-    rig.effect.position.set(0.62, 0.35, 0.08);
+    rig.root.position.x += facing * strike * 0.18;
+    arm.position.x += facing * strike * 0.38;
+    arm.position.y -= strike * 0.2;
+    arm.rotation.z -= facing * strike * 1.15;
   } else if (action.moveId === '2M') {
     rig.root.position.y -= strike * 0.12;
-    rig.rightLeg.rotation.z = -0.04 + strike * 1.38;
-    rig.effect.position.set(0.72, 0.28, 0.08);
+    leg.position.x += facing * strike * 0.46;
+    leg.position.y -= strike * 0.08;
+    leg.rotation.z -= facing * strike * 1.4;
+    supportLeg.rotation.z += facing * strike * 0.2;
+    rig.torso.rotation.z -= facing * strike * 0.16;
   } else {
-    rig.leftArm.rotation.z = 0.24 - strike * 1.7;
-    rig.rightArm.rotation.z = -0.24 + strike * 1.7;
-    rig.staff.rotation.z = 0.28 + strike * 1.2;
-    rig.effect.position.set(0.78, 1.12, 0.08);
+    rig.root.position.x += facing * strike * 0.52;
+    arm.position.x += facing * strike * 0.46;
+    arm.rotation.z -= facing * strike * 1.55;
+    supportArm.rotation.z += facing * strike * 0.7;
+    rig.staff.rotation.z -= facing * strike * 1.35;
+    rig.torso.rotation.y += facing * strike * 0.48;
   }
-}
-
-export function effectColor(moveId: string): string {
-  if (moveId === '5M') return '#ff713f';
-  if (moveId === '2L' || moveId === '2M') return '#8acb72';
-  if (moveId === '5H') return '#5ecbff';
-  if (moveId === 'overtake') return '#fff4c4';
-  return '#9ceeff';
 }

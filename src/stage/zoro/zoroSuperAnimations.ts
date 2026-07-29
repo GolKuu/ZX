@@ -17,10 +17,6 @@ export function threeThousandWorlds(
   setRotation(rig.rightSword, -spin, 0, Math.PI / 2);
   rig.aura.visible = progress > 0.04 && progress < 0.96;
   rig.aura.scale.setScalar(0.8 + charge * 0.38);
-  rig.slash.visible = progress > 0.18 && progress < 0.92;
-  rig.slash.scale.setScalar(1.35 + pulse(progress, 0.55) * 0.35);
-  setPosition(rig.slash, 0.45, 1.25, 0);
-  setRotation(rig.slash, Math.PI / 2, 0, spin);
 }
 
 export function asura(rig: ZoroRig, progress: number): void {
@@ -38,8 +34,4 @@ export function asura(rig: ZoroRig, progress: number): void {
   rig.echoes.visible = progress > 0.12;
   rig.echoes.scale.setScalar(0.72 + manifest * 0.28);
   setRotation(rig.echoes, 0, wave * 0.24, 0);
-  rig.slash.visible = progress > 0.32 && progress < 0.94;
-  rig.slash.scale.setScalar(1.25 + Math.abs(wave) * 0.55);
-  setPosition(rig.slash, 0.75, 1.3, 0);
-  setRotation(rig.slash, 0, 0, wave * 1.2);
 }

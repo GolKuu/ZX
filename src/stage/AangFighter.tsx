@@ -27,7 +27,6 @@ import {
 } from './aang3d/aangMaterials';
 import {
   applyAangCombatAnimation,
-  effectColor,
   readAangRig,
   resetAangRig,
   type AangRig,
@@ -90,9 +89,6 @@ export function AangFighter({
     turnTowardOpponent(outerGroup, currentRig.head, visualFacing);
     applyWalkCycle(currentRig, fighter, clock.elapsedTime, visualFacing, 0.82);
     applyAangCombatAnimation(currentRig, fighter);
-    if (fighter.action !== null) {
-      materials.effect.color.set(effectColor(fighter.action.moveId));
-    }
 
     const self = { x: outerGroup.position.x, z: outerGroup.position.z };
     const other = opponent === null

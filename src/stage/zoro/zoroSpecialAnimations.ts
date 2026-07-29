@@ -3,23 +3,22 @@ import { pulse, setPosition, setRotation, smooth } from './zoroRig';
 
 const LION_DASH_DISTANCE = 1.2;
 
-export function lionSong(rig: ZoroRig, progress: number): void {
+export function lionSong(
+  rig: ZoroRig,
+  progress: number,
+  facing: -1 | 1,
+): void {
   const draw = motionWindow(progress, 0, 0.32, 0.52);
   const dash = heldMotion(progress, 0.4, 0.52, 0.64, 0.84);
   const sheath = motionWindow(progress, 0.58, 0.76, 1);
-  rig.torso.rotation.z += -draw * 0.4 + sheath * 0.18;
-  rig.rightArm.rotation.z += -draw * 1.18 + sheath * 0.68;
-  rig.rightSword.rotation.z += draw * 1.52 - sheath * 1.12;
-  rig.root.position.x += dash * LION_DASH_DISTANCE;
-  rig.slash.visible = progress > 0.43 && progress < 0.68;
-  rig.slash.scale.setScalar(1.45 + dash * 0.35);
-  setPosition(
-    rig.slash,
-    dash * LION_DASH_DISTANCE - 0.15,
-    1.35,
-    0.02,
-  );
-  setRotation(rig.slash, 0, 0, -0.2);
+  const arm = facing === 1 ? rig.rightArm : rig.leftArm;
+  const sword = facing === 1 ? rig.rightSword : rig.leftSword;
+  rig.torso.rotation.y += facing * dash * 0.45;
+  rig.torso.rotation.z += facing * (-draw * 0.4 + sheath * 0.18);
+  arm.rotation.z += facing * (-draw * 1.18 + sheath * 0.68);
+  arm.position.x += facing * dash * 0.36;
+  sword.rotation.z += facing * (draw * 1.52 - sheath * 1.12);
+  rig.root.position.x += facing * dash * LION_DASH_DISTANCE;
 }
 
 export function ogreTwister(rig: ZoroRig, progress: number): void {
@@ -31,10 +30,6 @@ export function ogreTwister(rig: ZoroRig, progress: number): void {
   setRotation(rig.rightArm, 0, 0, -1.05);
   setRotation(rig.leftSword, 0, 0, -1.25);
   setRotation(rig.rightSword, 0, 0, 1.25);
-  rig.slash.visible = progress > 0.12 && progress < 0.88;
-  rig.slash.scale.setScalar(1.2 + Math.sin(progress * Math.PI * 3) * 0.14);
-  setPosition(rig.slash, 0, 1.3, 0);
-  setRotation(rig.slash, Math.PI / 2, 0, spin);
 }
 
 export function poundCannon(rig: ZoroRig, progress: number): void {

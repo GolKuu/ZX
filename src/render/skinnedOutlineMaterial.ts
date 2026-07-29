@@ -66,7 +66,7 @@ const PROJECT = /* glsl */ `
 
   mvPosition = modelViewMatrix * mvPosition;
 
-  // `defaultnormal_vertex` negates the normal when FLIP_SIDED is set, and
+  // defaultnormal_vertex negates the normal when FLIP_SIDED is set, and
   // FLIP_SIDED is always set here because the hull renders BackSide. Undo it,
   // or the hull is pushed inward and no outline is produced at all.
   vec3 outlineNormal = transformedNormal;

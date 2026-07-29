@@ -128,9 +128,6 @@ export function VoidWalkerBody({
 
       <group ref={refs.rightSword} />
       <group ref={refs.leftSword} />
-
-      {/* Sits where the rig puts the off-hand prop — here, a rune that spins
-          up in front of the face while a super is charging. */}
       <group ref={refs.mouthSword} />
 
       <VoidWalkerEffects
