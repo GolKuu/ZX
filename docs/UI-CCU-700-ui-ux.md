@@ -12,7 +12,7 @@
 |---|---|
 | **U1** | **Pad first.** Nothing requires a mouse. Exactly one element is focused at all times, `A` always confirms, `B` always goes back — on every screen without exception. |
 | **U2** | **Three presses.** Title → fighting in three inputs on the Local 2P path. The menu's job is to get out of the way. |
-| **U3** | **The circle.** If an element can be a curve, it is. Straight lines are reserved for things the game imposes on the player. |
+| **U3** | **Genre first in the HUD.** Angled bars, portraits, centre plate — legible on sight to anyone who has held a pad. The HUD spends zero novelty; save invention for the menus. |
 
 ---
 
@@ -221,57 +221,75 @@ The important one. Everything here competes for attention with two fighters and 
 
 The ultimate pill is the sole exception to the empty-lower-region rule, and it lives in a corner.
 
-### 5.2 Health arcs
+### 5.2 Player bay
 
-Shallow curves, not straight bars — U3 applied to the element players stare at most.
+Mirrored left and right. Right side sets `flex-direction: row-reverse` and flips every `clip-path`.
 
 ```
-SVG viewBox   0 0 400 40, preserveAspectRatio="none", height 4.4cqw
-P1 path       M4 34 Q200 2 396 12       (curves up toward centre)
-P2 path       M396 34 Q200 2 4 12       (mirrored)
+┌──────────┐  KADE RUVEN
+│ PORTRAIT │  ┌───────────────────────────────────╲   health
+│          │  └────────────────────────────────────╲
+└──────────┘  P1  [ULTIMATE] ▰▰▰▰▱▱▱▱▱▱▱▱▱▱▱╲       meter
 ```
 
-Three stacked paths per bar, in order:
+| Element | Spec |
+|---|---|
+| **Portrait** | `8cqw` wide, `aspect-ratio 1/1.08`. `clip-path: polygon(0 0,100% 0,86% 100%,0 100%)` — mirrored on P2. `1px #35485F` border, gradient `158deg #2A3A52 → #0C121C`. A `.32cqw` base stripe in the player colour: blue P1, gold P2 |
+| **Name** | Sans `1.75cqw`, tracking `.2em`, white, `text-shadow 0 .15cqw .5cqw rgba(0,0,0,.8)` |
+| **Health bar** | `2.9cqw` tall, `clip-path: polygon(0 0,100% 0,97.5% 100%,0 100%)`, track `#111925`, `.18cqw` top border `#46586E` |
+| **Meter row** | P1/P2 tag mono `1.15cqw` · `ULTIMATE` pill sans `.92cqw` on `#8FA3BC` · meter bar `1.15cqw` tall |
 
-| Layer | Stroke | Width | Behaviour |
-|---|---|---|---|
-| `track` | `#141C26` | 7 | Static |
-| `ghost` | `--red` at 55% opacity | 7 | Transition `1.1s` with `.25s` delay |
-| `fill` | player colour | 7 | Transition `.45s cubic-bezier(.2,.7,.2,1)` |
+### 5.3 Health bar layers
 
-Drive both with `stroke-dasharray = pathLength` and `stroke-dashoffset = pathLength * (1 - health)`.
+Three stacked absolutely-positioned layers inside the clipped container. Width-driven, not transform-driven, so the angled edge stays put.
 
-The ghost trails the fill by 250ms so the player can **see what a combo cost**.
+| Layer | Fill | Transition |
+|---|---|---|
+| track | `#111925` | static |
+| **ghost** (`<u>`) | `linear-gradient(180deg,#F0574A,#9E241B)` | `width 1s .3s ease-out` |
+| **fill** (`<i>`) | `linear-gradient(180deg,#FBE49A,#E8B94A 38%,#B8801E)` | `width .42s cubic-bezier(.2,.7,.2,1)` |
 
-**At ≤25% health the fill stroke switches to `--red`** and the arc pulses. Colour plus motion, never colour alone.
+**Health is gold on both sides.** Gold reads as life to anyone who has held a pad; player identity is carried by side, portrait stripe and the P1/P2 tag instead of by bar colour.
 
-### 5.3 Timer
+**The ghost is the point of the bar.** It trails the fill by 300ms and takes a full second to catch up, so the player sees what a combo cost *after* it has ended.
 
-Display face, `7.4cqw`, `font-variant-numeric: tabular-nums` so digits do not jitter. It is the only large numeral on screen.
+At **≤25% health** the fill switches to `linear-gradient(180deg,#FF9A8E,#E0483A 45%,#8E1F17)` and the container pulses a red box-shadow at 1.1s. Colour **and** motion.
 
-At ≤10 seconds it turns `--red` **and** the pulse rate doubles.
+### 5.4 Meter bar — Ultimate charge
 
-### 5.4 Round pips
+The slice has no Circuit and no super gauge. This bar is **ultimate readiness** and nothing else: it fills as the owner's health drops, and the ultimate unlocks at full.
 
-`1.5cqw` circles, `.85cqw` gap, directly under the timer. Empty pip is `1px --dimmer` border; won pips fill with the winner's colour.
+| State | Fill | Pill |
+|---|---|---|
+| Charging | `linear-gradient(180deg,#CFEEFF,#5FC4E8 40%,#2A7FA8)` | `#8FA3BC` background |
+| **Ready** | `linear-gradient(180deg,#FFE9B0,#F2A93B 45%,#A76D14)`, pulsing 1.3s | `--gold` background |
 
-### 5.5 Combo counter
+Segmentation is a `repeating-linear-gradient` overlay at `3.1cqw / 3.4cqw`, drawn above the fill.
 
-Appears on the **attacker's side** at `left:4cqw; top:22cqw`.
+> **Forward compatibility:** when Circuit ships post-slice it takes this exact slot with no layout change — six segments instead of a continuous fill. Do not restructure the row for it later.
+
+### 5.5 Centre plate
+
+| Element | Spec |
+|---|---|
+| Hex | `14cqw` wide, `aspect-ratio 1/.92`, `clip-path: polygon(50% 0,100% 26%,100% 74%,50% 100%,0 74%,0 26%)`. Outer gradient `#1A2434 → #080D15`, inner inset `.22cqw` at `#0E1622 → #05080E` to read as a bevel |
+| Timer | Display `6.2cqw`, `tabular-nums`, `text-shadow 0 0 1.4cqw rgba(159,216,255,.25)` |
+| Round label | Mono `.92cqw`, tracking `.24em`, `#7E93AC`, reads `ROUND 1` |
+| Pips | Two per player, `1.15cqw` circles, `.4cqw` gap within a set, `.55cqw` between sets, sitting below the hex. Won pips fill in the player colour with a matching glow |
+
+At **≤10 seconds** the timer turns `--red` and its glow switches to red. Best of three, so two pips per side.
+
+### 5.6 Combo counter
+
+Right-aligned at `right:3.4cqw; top:19cqw`, below the HUD and clear of the fight.
 
 | Part | Spec |
 |---|---|
-| Count | Display `6cqw` white |
-| Label | Sans `1.5cqw` tracking `.2em` gold, reads `HITS` |
-| Damage | Mono `1.15cqw` stone, reads `238 DMG` |
+| Count | Display `5.6cqw` white, `text-shadow 0 .2cqw .8cqw rgba(0,0,0,.85)` |
+| Label | Sans `2cqw`, capitalised, white, baseline-aligned to the count — reads `6 Hits` |
+| Damage | Sans `1.35cqw` **bold italic**, `#B9C7D8`, uppercase — reads `2280 DAMAGE` |
 
 **Appears at hit two, not hit one.** Damage is shown because damage is the number players actually want.
-
-### 5.6 Ultimate pill
-
-`1px --gold` border, `99px` radius, padding `.9cqw 1.6cqw`. A `1.3cqw` gold dot pulsing at 1.6s, plus label `ULTIMATE READY` in sans `1.3cqw` tracking `.2em`.
-
-Appears when the ultimate becomes available (owner at ≤25% health, unused this round).
 
 ### 5.7 Callouts and overlays
 
@@ -318,7 +336,7 @@ The Clash overlay holds for the full 10-frame freeze and nothing else animates d
 | **Location** | All menu screens are DOM overlays in `src/ui/`, **never** rendered inside the R3F canvas. The HUD is also DOM, positioned over the canvas |
 | **State** | Screen routing and menu focus live in the zustand UI store. The HUD reads sim state through a **throttled 15 Hz bridge** — never a per-frame React update (README rule R3) |
 | **Scaling** | `container-type: inline-size` on the screen wrapper, `cqw` units inside. No media queries |
-| **Health arcs** | Inline SVG, `stroke-dasharray` from `getTotalLength()`. Two stacked paths: red ghost behind, coloured fill in front with the shorter transition |
+| **Health bars** | Plain divs, `clip-path` for the angle, `width` percentage for the fill. Two stacked layers: red ghost behind, gold fill in front with the shorter transition. No SVG, no canvas |
 | **Fonts** | System stacks only, per §2. No webfont, no CDN |
 | **Existing code** | `src/ui/PlayOverlay.tsx` and `src/ui/FpsMeter.tsx` already exist. Fold the HUD into `PlayOverlay`; keep `FpsMeter` as a dev-only overlay excluded from production builds |
 
