@@ -52,6 +52,11 @@ export interface AuthoredHurtbox {
   readonly boxes: readonly FixedBox[];
 }
 
+export interface CancelWindow {
+  readonly frames: FrameRange;
+  readonly into: readonly string[];
+}
+
 export interface MoveFrameData {
   readonly id: string;
   readonly startup: number;
@@ -59,6 +64,7 @@ export interface MoveFrameData {
   readonly recovery: number;
   readonly hitboxes: readonly AuthoredHitbox[];
   readonly hurtboxes?: readonly AuthoredHurtbox[];
+  readonly cancels?: readonly CancelWindow[];
 }
 
 export type MovePhase = 'startup' | 'active' | 'recovery';

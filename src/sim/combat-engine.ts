@@ -174,9 +174,11 @@ export class CombatEngine {
       input?.move === undefined
       || fighter.health === 0
       || fighter.hitstun > 0
-      || fighter.action !== null
       || fighter.guarding
     ) {
+      return;
+    }
+    if (fighter.action !== null && !this.canCancelInto(fighter, input.move)) {
       return;
     }
     fighter.action = {
@@ -192,6 +194,22 @@ export class CombatEngine {
       fighterId: fighter.id,
       moveId: input.move,
     });
+  }
+
+  private canCancelInto(fighter: MutableFighterState, targetMove: string): boolean {
+    const action = fighter.action;
+    if (action === null || action.hitLedger.length === 0) {
+      return false;
+    }
+    const move = this.moves.get(action.moveId);
+    return (
+      move?.cancels?.some(
+        (cancel) =>
+          action.frame >= cancel.frames.from
+          && action.frame < cancel.frames.toExclusive
+          && cancel.into.includes(targetMove),
+      ) ?? false
+    );
   }
 
   private advanceFrameState(

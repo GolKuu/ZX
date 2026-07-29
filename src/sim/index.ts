@@ -7,6 +7,7 @@ export {
   type AuthoredHitbox,
   type AuthoredHurtbox,
   type BlockData,
+  type CancelWindow,
   type GroundBounceData,
   type HitData,
   type MoveFrameData,

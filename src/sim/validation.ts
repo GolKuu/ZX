@@ -37,6 +37,15 @@ export function validateMoves(moves: readonly MoveFrameData[]): void {
     ids.add(move.id);
     validateMove(move);
   }
+  for (const move of moves) {
+    for (const cancel of move.cancels ?? []) {
+      for (const target of cancel.into) {
+        if (!ids.has(target)) {
+          throw new Error(`${move.id}.cancel references unknown move "${target}"`);
+        }
+      }
+    }
+  }
 }
 
 export function validateFighters(
@@ -96,6 +105,19 @@ function validateMove(move: MoveFrameData): void {
   }
   for (const hurtbox of move.hurtboxes ?? []) {
     validateHurtbox(hurtbox, move.id, activeTo + move.recovery);
+  }
+  for (const cancel of move.cancels ?? []) {
+    validateRange(
+      cancel.frames.from,
+      cancel.frames.toExclusive,
+      `${move.id}.cancel`,
+    );
+    if (cancel.frames.toExclusive > activeTo + move.recovery) {
+      throw new Error(`${move.id}.cancel exceeds the move duration`);
+    }
+    if (cancel.into.length === 0) {
+      throw new Error(`${move.id}.cancel must contain a target move`);
+    }
   }
 }
 

@@ -54,6 +54,10 @@ export function copyMove(move: MoveFrameData): MoveFrameData {
       frames: { ...hurtbox.frames },
       boxes: copyBoxes(hurtbox.boxes),
     })),
+    cancels: move.cancels?.map((cancel) => ({
+      frames: { ...cancel.frames },
+      into: [...cancel.into],
+    })),
   };
 }
 

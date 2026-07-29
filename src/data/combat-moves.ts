@@ -19,6 +19,7 @@ interface StrikeRow {
   readonly knockback: FixedVector;
   readonly wallBounce?: WallBounceData;
   readonly groundBounce?: GroundBounceData;
+  readonly cancels?: readonly string[];
 }
 
 export const KADE_HURTBOXES: readonly FixedBox[] = [
@@ -41,6 +42,7 @@ const moveRows: readonly StrikeRow[] = [
     blockPushback: fixed(0.08),
     box: attackBox(0.72, 0.98, 0.36, 0.28),
     knockback: { x: fixed(0.09), y: 0 },
+    cancels: ['5M', '2L'],
   },
   {
     id: '5M',
@@ -54,6 +56,7 @@ const moveRows: readonly StrikeRow[] = [
     blockPushback: fixed(0.11),
     box: attackBox(0.83, 1.02, 0.44, 0.34),
     knockback: { x: fixed(0.14), y: 0 },
+    cancels: ['5H', 'overtake'],
   },
   {
     id: '5H',
@@ -73,6 +76,7 @@ const moveRows: readonly StrikeRow[] = [
       horizontalScale: { numerator: 3, denominator: 4 },
       minimumHitstun: 14,
     },
+    cancels: ['overtake'],
   },
   {
     id: '2L',
@@ -86,6 +90,7 @@ const moveRows: readonly StrikeRow[] = [
     blockPushback: fixed(0.08),
     box: attackBox(0.68, 0.34, 0.38, 0.22),
     knockback: { x: fixed(0.08), y: 0 },
+    cancels: ['5L', '2M'],
   },
   {
     id: '2M',
@@ -99,6 +104,7 @@ const moveRows: readonly StrikeRow[] = [
     blockPushback: fixed(0.11),
     box: attackBox(0.86, 0.42, 0.5, 0.25),
     knockback: { x: fixed(0.13), y: fixed(0.06) },
+    cancels: ['overtake'],
   },
   {
     id: 'overtake',
@@ -149,6 +155,18 @@ export const KADE_MOVES: readonly MoveFrameData[] = moveRows.map((row) => ({
       },
     },
   ],
+  cancels:
+    row.cancels === undefined
+      ? undefined
+      : [
+          {
+            frames: {
+              from: row.startup,
+              toExclusive: row.startup + row.active + row.recovery,
+            },
+            into: row.cancels,
+          },
+        ],
 }));
 
 function attackBox(
