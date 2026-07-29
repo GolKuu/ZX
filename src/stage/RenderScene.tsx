@@ -13,6 +13,8 @@ import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
 import { FrameProfiler } from './FrameProfiler';
 import { LazyPostEffects } from './LazyPostEffects';
+import { RenderDebugBridge } from './RenderDebugBridge';
+import { StageLighting } from './StageLighting';
 import { VoidWalkerFighter } from './VoidWalkerFighter';
 import { ZoroFighter } from './ZoroFighter';
 
@@ -24,10 +26,11 @@ export function RenderScene({
   return (
     <>
       <color attach="background" args={['#10071b']} />
-      <fog attach="fog" args={['#1c0b2d', 9, 23]} />
-      <ambientLight color="#9a73ca" intensity={1.18} />
-      <directionalLight color="#fff4dd" intensity={3.2} position={[-3, 7, 5]} />
-      <directionalLight color="#b05cff" intensity={1.65} position={[5, 4, -4]} />
+      {/* Near plane pushed out just past the arena rim so the disc itself is
+          never hazed, far plane short enough that the skyline stays a value
+          behind the fight rather than competing with it. */}
+      <fog attach="fog" args={['#1c0b2d', 10, 27]} />
+      <StageLighting />
 
       <Arena />
       <CombatGameLoop fighterSelection={fighterSelection} />
@@ -46,6 +49,7 @@ export function RenderScene({
       <CameraRig />
       <LazyPostEffects />
       <FrameProfiler />
+      {process.env.NODE_ENV !== 'production' && <RenderDebugBridge />}
     </>
   );
 }

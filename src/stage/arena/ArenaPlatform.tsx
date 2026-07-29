@@ -1,16 +1,19 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
+import { useFrame } from '@react-three/fiber';
 import {
   AdditiveBlending,
   Color,
   DoubleSide,
   MeshBasicMaterial,
-  ShaderMaterial,
   type Material,
 } from 'three';
+import {
+  createArenaFloorMaterial,
+  type ArenaFloorMaterial,
+} from '@/src/render/arenaFloorMaterial';
 import { ARENA_RADIUS, buildDebris } from './arenaData';
-import { floorFragment, floorVertex } from './arenaShaders';
 
 interface ArenaPlatformProps {
   readonly stoneMaterial: Material;
@@ -18,18 +21,14 @@ interface ArenaPlatformProps {
 
 export function ArenaPlatform({ stoneMaterial }: ArenaPlatformProps) {
   const pillars = useMemo(() => buildDebris(9, 777), []);
-  const floorMaterial = useMemo(
+  const floorMaterial: ArenaFloorMaterial = useMemo(
     () =>
-      new ShaderMaterial({
-        uniforms: {
-          uBase: { value: new Color('#141021') },
-          uLine: { value: new Color('#6f3eb3') },
-          uEdge: { value: new Color('#d78cff') },
-          uRadius: { value: ARENA_RADIUS },
-        },
-        vertexShader: floorVertex,
-        fragmentShader: floorFragment,
-        toneMapped: false,
+      createArenaFloorMaterial({
+        base: '#1d1530',
+        edge: '#d78cff',
+        line: '#7b46c8',
+        radius: ARENA_RADIUS,
+        reflection: '#8c46e0',
       }),
     [],
   );
@@ -47,6 +46,10 @@ export function ArenaPlatform({ stoneMaterial }: ArenaPlatformProps) {
     [],
   );
 
+  useFrame(({ clock }) => {
+    floorMaterial.arena.uTime.value = clock.elapsedTime;
+  });
+
   useEffect(() => {
     return () => {
       floorMaterial.dispose();
@@ -56,10 +59,17 @@ export function ArenaPlatform({ stoneMaterial }: ArenaPlatformProps) {
 
   return (
     <group>
-      <mesh material={floorMaterial} rotation-x={-Math.PI / 2} position={[0, 0.002, 0]}>
-        <circleGeometry args={[ARENA_RADIUS, 96]} />
+      {/* Segment count is up from 96 so the specular pool the key light lays
+          across the disc has a smooth terminator rather than a faceted one. */}
+      <mesh
+        material={floorMaterial}
+        position={[0, 0.002, 0]}
+        receiveShadow
+        rotation-x={-Math.PI / 2}
+      >
+        <circleGeometry args={[ARENA_RADIUS, 160]} />
       </mesh>
-      <mesh material={stoneMaterial} position={[0, -0.42, 0]}>
+      <mesh castShadow material={stoneMaterial} position={[0, -0.42, 0]} receiveShadow>
         <cylinderGeometry args={[ARENA_RADIUS, ARENA_RADIUS * 0.82, 0.84, 96, 1]} />
       </mesh>
       <mesh material={edgeMaterial} position={[0, 0.02, 0]} rotation-x={-Math.PI / 2}>
@@ -69,8 +79,10 @@ export function ArenaPlatform({ stoneMaterial }: ArenaPlatformProps) {
       {pillars.map((item, index) => (
         <mesh
           key={`pillar-${String(index)}`}
+          castShadow
           material={stoneMaterial}
           position={[item.position[0], -0.8 + item.scale[1] * 2.4, item.position[2]]}
+          receiveShadow
           rotation={[item.rotation[0] * 0.06, item.rotation[1], item.rotation[2] * 0.06]}
         >
           <boxGeometry args={[item.scale[0] * 1.6, item.scale[1] * 5.5, item.scale[2] * 1.6]} />

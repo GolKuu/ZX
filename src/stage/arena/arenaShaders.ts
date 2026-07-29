@@ -39,34 +39,9 @@ export const domeFragment = /* glsl */ `
   }
 `;
 
-export const floorVertex = /* glsl */ `
-  varying vec2 vXz;
-  void main() {
-    vec4 world = modelMatrix * vec4(position, 1.0);
-    vXz = world.xz;
-    gl_Position = projectionMatrix * viewMatrix * world;
-  }
-`;
-
-export const floorFragment = /* glsl */ `
-  uniform vec3 uBase;
-  uniform vec3 uLine;
-  uniform vec3 uEdge;
-  uniform float uRadius;
-  varying vec2 vXz;
-
-  void main() {
-    float dist = length(vXz);
-    float t = clamp(dist / uRadius, 0.0, 1.0);
-    vec3 color = mix(uBase, uBase * 0.55, t);
-    float rings = abs(fract(dist * 1.55) - 0.5) * 2.0;
-    color += uLine * smoothstep(0.94, 1.0, rings) * (0.25 + t * 0.35);
-    float edge = smoothstep(0.82, 0.97, t) * (1.0 - smoothstep(0.985, 1.0, t));
-    color += uEdge * edge * 0.82;
-    color += uLine * smoothstep(0.055, 0.0, abs(dist - 0.42)) * 0.5;
-    gl_FragColor = vec4(color, 1.0);
-  }
-`;
+// The floor is no longer an unlit ShaderMaterial — it moved to
+// `src/render/arenaFloorMaterial.ts` so it can take specular from the key light
+// and receive the fighters' shadows.
 
 export const shaftVertex = /* glsl */ `
   varying vec2 vUv;

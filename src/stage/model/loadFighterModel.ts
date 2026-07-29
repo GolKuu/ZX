@@ -186,6 +186,11 @@ export async function loadFighterModel(
     // leaving that box makes the whole character vanish at screen edges.
     if (isSkinned(mesh)) mesh.frustumCulled = false;
 
+    // Both directions: a fighter has to drop a shadow on the disc to be
+    // standing on it, and take the other fighter's shadow to be beside them.
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+
     // Eyes are drawn elements, not surfaces — no outline pass, ever.
     if (options.withOutline === false || zone === 'eye') continue;
 
@@ -249,6 +254,10 @@ function buildOutlineHull(
     hull.quaternion.copy(mesh.quaternion);
     hull.scale.copy(mesh.scale);
     hull.frustumCulled = false;
+    // The hull is the same geometry pushed outward along its normals; letting
+    // it cast would draw a second shadow, fattened by the outline width.
+    hull.castShadow = false;
+    hull.receiveShadow = false;
     hull.renderOrder = -1;
     return hull;
   }
@@ -258,6 +267,8 @@ function buildOutlineHull(
   hull.position.copy(mesh.position);
   hull.quaternion.copy(mesh.quaternion);
   hull.scale.copy(mesh.scale);
+  hull.castShadow = false;
+  hull.receiveShadow = false;
   hull.renderOrder = -1;
   return hull;
 }

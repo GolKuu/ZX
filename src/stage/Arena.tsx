@@ -15,13 +15,17 @@ export function Arena() {
   const gradient = useMemo(() => createCelGradient(), []);
   const stoneMaterial = useMemo(
     () =>
+      // Darker and less rimmed than it was: under the old flat ambient this
+      // stone needed help to be visible at all, but the new rig lights it
+      // properly and at the old values the ruins came forward and started
+      // competing with the fighters for attention.
       createToonMaterial({
-        color: '#211a32',
+        color: '#171227',
         gradientMap: gradient,
-        shadowTint: '#431d65',
+        shadowTint: '#391858',
         shadowStrength: 0.9,
         rimColor: '#a65ee1',
-        rimStrength: 0.42,
+        rimStrength: 0.26,
       }),
     [gradient],
   );

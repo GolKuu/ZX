@@ -21,8 +21,10 @@ export function FighterPart({
 }: FighterPartProps) {
   return (
     <group position={position} rotation={rotation} scale={scale}>
+      {/* The hull is a back-faced duplicate — casting from it would double the
+          shadow and fatten it by the outline width. */}
       <mesh geometry={geometry} material={outlineMaterial} renderOrder={0} />
-      <mesh geometry={geometry} material={toonMaterial} renderOrder={1} />
+      <mesh castShadow geometry={geometry} material={toonMaterial} receiveShadow renderOrder={1} />
     </group>
   );
 }
