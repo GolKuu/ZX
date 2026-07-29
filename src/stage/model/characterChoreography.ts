@@ -1,8 +1,11 @@
+import { KADE_MOVES } from '@/src/data/combat-moves';
 import type { CharacterId } from '@/src/data/characterRoster';
+import { totalMoveFrames } from '@/src/sim';
 import { asAttackPose } from './choreography';
 import {
   BLADE_PHANTOM_CHOREOGRAPHY,
   VOID_WALKER_CHOREOGRAPHY,
+  type Sequence,
 } from './choreographySequences';
 import type { RosterAttackPose } from './rosterPoseTools';
 
@@ -20,16 +23,24 @@ import type { RosterAttackPose } from './rosterPoseTools';
  */
 export type ChoreographyTable = Readonly<Record<string, RosterAttackPose>>;
 
-function tableOf(
-  sequences: readonly { moveId: string }[],
-): ChoreographyTable {
+/** Real move lengths, so beat holds stay in true simulation frames. */
+const MOVE_FRAMES = new Map(
+  KADE_MOVES.map((move) => [move.id, totalMoveFrames(move)]),
+);
+
+function tableOf(sequences: readonly Sequence[]): ChoreographyTable {
   const table: Record<string, RosterAttackPose> = {};
   for (const sequence of sequences) {
-    // `asAttackPose` needs the full sequence type; the narrowed parameter above
-    // only exists to keep the map generic.
-    table[sequence.moveId] = asAttackPose(
-      sequence as Parameters<typeof asAttackPose>[0],
-    );
+    const frames = MOVE_FRAMES.get(sequence.moveId);
+    if (frames === undefined) {
+      // A sequence attached to a move that no longer exists would otherwise
+      // fail silently as a frozen character.
+      console.warn(
+        `Choreography for unknown move "${sequence.moveId}" was skipped.`,
+      );
+      continue;
+    }
+    table[sequence.moveId] = asAttackPose(sequence, frames);
   }
   return table;
 }

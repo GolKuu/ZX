@@ -32,6 +32,9 @@
     "src/input/rosterCommands.ts",
     "src/game/mechanics/*.ts",
     "src/stage/model/choreography.ts",
+    "src/stage/model/choreographySequences.ts",
+    "src/stage/model/rosterPoseTools.ts",
+    "src/stage/model/humanoidBones.ts",
     "src/data/combat-ai.ts"
   ]
 }

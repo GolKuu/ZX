@@ -114,11 +114,19 @@ export function ModelFighter({
     };
   }, [fighterId, outline, url, zones]);
 
+  // Three separate lifetimes, deliberately.
+  //
+  // These used to share one cleanup keyed on `[gradient, outline, zones]`.
+  // `zones` is rebuilt whenever the palette changes — which happens on a
+  // rematch with a different character — and that fired the shared cleanup,
+  // disposing `gradient` and `outline` too. Both are memoised on `[]`, so they
+  // were never rebuilt: the fighter came back with a disposed ramp texture and
+  // a disposed outline material. Each resource now ends with its own.
+  useEffect(() => () => gradient.dispose(), [gradient]);
+  useEffect(() => () => outline.dispose(), [outline]);
   useEffect(() => () => {
-    gradient.dispose();
-    outline.dispose();
     for (const material of Object.values(zones)) material.dispose();
-  }, [gradient, outline, zones]);
+  }, [zones]);
 
   useFrame(({ camera: activeCamera, clock }) => {
     const loaded = model.current;

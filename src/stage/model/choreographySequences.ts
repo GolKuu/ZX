@@ -8,8 +8,14 @@
  * put one impossible frame between the coil and the extreme, and let the
  * recovery overshoot before it settles.
  *
- * Beat holds are in simulation frames. Threes read as compression, twos as
- * momentum, ones only on smears.
+ * Beat holds are in simulation frames and each sequence sums to the exact
+ * length of the move it drives (`5H` is 51 frames, `overtake` is 52). That
+ * equality is enforced by a test — a sequence that does not add up either
+ * freezes on its last pose or never reaches it, and in both cases the
+ * performance stops matching the hitbox.
+ *
+ * Within a string, the long beats are the coil and the recovery; the cuts
+ * themselves are two frames each and the smears exactly one.
  */
 
 import {
@@ -37,7 +43,7 @@ export const BLADE_PHANTOM_STRING: Sequence = {
   beats: [
     {
       name: 'coil',
-      hold: 3,
+      hold: 12,
       pose: (joints, rest) => {
         stance(joints, rest, 0.42);
         // Blades drawn back across the body — the further the coil, the more
@@ -106,7 +112,7 @@ export const BLADE_PHANTOM_STRING: Sequence = {
     },
     {
       name: 'finish',
-      hold: 3,
+      hold: 8,
       pose: (joints, rest, within) => {
         // The finish drops lower and holds. Weight is the point.
         stance(joints, rest, 0.52 + within * 0.06);
@@ -122,7 +128,7 @@ export const BLADE_PHANTOM_STRING: Sequence = {
     },
     {
       name: 'settle',
-      hold: 3,
+      hold: 25,
       pose: (joints, rest, within) => {
         // Overshoot back past neutral, then ease in. Returning straight to
         // neutral reads as an animation stopping, not a body recovering.
@@ -153,7 +159,7 @@ export const VOID_WALKER_STRING: Sequence = {
   beats: [
     {
       name: 'raise',
-      hold: 3,
+      hold: 8,
       pose: (joints, rest) => {
         stance(joints, rest, 0.1);
         // Hand comes up, body does not move. He does not brace.
@@ -165,7 +171,7 @@ export const VOID_WALKER_STRING: Sequence = {
     },
     {
       name: 'still',
-      hold: 4,
+      hold: 7,
       pose: (joints, rest, within) => {
         // Held. The only movement is a breath. Four frames of nothing is a
         // long time in a fighting game, and that is the intent.
@@ -189,7 +195,7 @@ export const VOID_WALKER_STRING: Sequence = {
     },
     {
       name: 'release',
-      hold: 2,
+      hold: 3,
       pose: (joints, rest) => {
         stance(joints, rest, 0.14);
         // The arm extends; the torso barely turns. The distance does the work.
@@ -205,7 +211,7 @@ export const VOID_WALKER_STRING: Sequence = {
     },
     {
       name: 'hold',
-      hold: 3,
+      hold: 8,
       pose: (joints, rest) => {
         // Held at full extension. No recoil — nothing pushed back at him.
         stance(joints, rest, 0.12);
@@ -218,7 +224,7 @@ export const VOID_WALKER_STRING: Sequence = {
     },
     {
       name: 'lower',
-      hold: 3,
+      hold: 25,
       pose: (joints, rest, within) => {
         const back = 1 - within;
         stance(joints, rest, 0.1);

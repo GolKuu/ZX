@@ -2,9 +2,16 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import {
+  asAttackPose,
   beatAt,
+  sequenceFitsMove,
   sequenceLength,
 } from '../.sim-test-build/src/stage/model/choreography.js';
+import { KADE_MOVES } from '../.sim-test-build/src/data/combat-moves.js';
+import {
+  BLADE_PHANTOM_CHOREOGRAPHY,
+  VOID_WALKER_CHOREOGRAPHY,
+} from '../.sim-test-build/src/stage/model/choreographySequences.js';
 
 /** Minimal sequence: holds of 3, 1 (smear), 2. Total 6 frames. */
 const SEQUENCE = {
@@ -66,4 +73,46 @@ test('a zero hold still occupies one frame', () => {
   assert.equal(sequenceLength(degenerate), 2);
   assert.equal(beatAt(degenerate, 0)?.beat.name, 'a');
   assert.equal(beatAt(degenerate, 1)?.beat.name, 'b');
+});
+
+/* ---------------------------------------------------------------- */
+/* Frame accuracy — the bug this system was silently failing at      */
+/* ---------------------------------------------------------------- */
+
+test('asAttackPose maps progress onto real frames, not a normalised span', () => {
+  const seen = [];
+  const probe = {
+    moveId: 'probe',
+    beats: [
+      { name: 'a', hold: 2, pose: () => seen.push('a') },
+      { name: 'smear', hold: 1, smear: true, pose: () => seen.push('smear') },
+      { name: 'b', hold: 3, pose: () => seen.push('b') },
+    ],
+  };
+  const pose = asAttackPose(probe, 6);
+
+  // Walk all six simulation frames as combatAnimationProgress would.
+  for (let frame = 0; frame < 6; frame += 1) {
+    const progress = frame / 5;
+    pose(null, null, progress / 0.34, 0, 0);
+  }
+
+  // The smear must occupy exactly one of the six frames. Before the fix the
+  // sequence was stretched across the move and it occupied several.
+  assert.equal(seen.filter((name) => name === 'smear').length, 1);
+  assert.deepEqual(seen, ['a', 'a', 'smear', 'b', 'b', 'b']);
+});
+
+test('authored sequences add up to the exact length of their move', () => {
+  for (const sequence of [...BLADE_PHANTOM_CHOREOGRAPHY, ...VOID_WALKER_CHOREOGRAPHY]) {
+    const move = KADE_MOVES.find(({ id }) => id === sequence.moveId);
+    assert.ok(move, `${sequence.moveId} exists in the frame data`);
+    const frames = move.startup + move.active + move.recovery;
+    assert.equal(
+      sequenceLength(sequence),
+      frames,
+      `${sequence.moveId}: beats sum to ${sequenceLength(sequence)}, move is ${frames}`,
+    );
+    assert.ok(sequenceFitsMove(sequence, frames));
+  }
 });

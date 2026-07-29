@@ -124,6 +124,13 @@ export function applyChoreography<TJoints, TRest>(
  */
 export function asAttackPose<TJoints, TRest>(
   sequence: Choreography<TJoints, TRest>,
+  /**
+   * The move's real length from the frame data. Required: without it the
+   * sequence gets stretched across whatever the move happens to last, a 1-frame
+   * smear starts showing for three or four frames, and the stepping this whole
+   * module exists to produce is gone.
+   */
+  totalFrames: number,
 ): (
   joints: TJoints,
   rest: TRest,
@@ -131,11 +138,26 @@ export function asAttackPose<TJoints, TRest>(
   strike: number,
   settle: number,
 ) => void {
-  const length = sequenceLength(sequence as Choreography<never, never>);
+  const span = Math.max(1, totalFrames) - 1;
   return (joints, rest, windup, strike, settle) => {
     const progress = combineProgress(windup, strike, settle);
-    applyChoreography(joints, rest, sequence, progress * (length - 1));
+    applyChoreography(joints, rest, sequence, progress * span);
   };
+}
+
+/**
+ * Whether a sequence's beats add up to the move it is attached to.
+ *
+ * They must. Beat holds are simulation frames, and if the sum is short the
+ * string finishes early and the last pose sits frozen through the rest of the
+ * move; if it is long the tail never plays. Either way the performance stops
+ * matching the hitbox, which is the one thing animation may not do (rule R4).
+ */
+export function sequenceFitsMove(
+  sequence: Choreography<never, never>,
+  totalFrames: number,
+): boolean {
+  return sequenceLength(sequence) === totalFrames;
 }
 
 /** Rebuilds 0..1 from the three phase values `combatAnimationProgress` splits. */
