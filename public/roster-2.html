@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Velocity King & Elastic Brawler — Command Lists</title>
+<style>
+  :root{
+    --ink:#05070A; --panel:#0C121B; --blue:#9FD8FF; --blue-d:#2F6E96;
+    --gold:#F2A93B; --red:#E0483A; --stone:#79879B; --line:#18202B; --line2:#26313F;
+    --white:#EEF3F8; --dim:#4A5768;
+    --k:#8FE3C8;  /* velocity king accent — cold mint, film-frame glass */
+    --t:#F26D4B;  /* elastic brawler accent — cinder orange */
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono",Consolas,monospace;
+    --disp:Impact,Haettenschweiler,"Arial Narrow Bold","Franklin Gothic Heavy",var(--sans);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ink);color:var(--white);font-family:var(--sans);
+       font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:clamp(1.5rem,4vw,3rem) clamp(1rem,3vw,2rem) 6rem;
+        display:flex;flex-direction:column;gap:clamp(2rem,4vw,3rem)}
+  h1,h2,h3{margin:0;line-height:1.05;text-wrap:balance}
+  p{margin:0;max-width:70ch}
+  .eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--stone)}
+
+  .topnote{border-left:2px solid var(--gold);padding:.55rem 0 .55rem 1rem;font-size:.88rem;color:#8FA0B4}
+  .topnote b{color:var(--gold);font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
+             text-transform:uppercase;display:block;margin-bottom:.25rem}
+  .topnote code{font-family:var(--mono);font-size:.82rem;color:var(--white)}
+
+  /* ---- character hero ---- */
+  .charwrap{display:flex;flex-direction:column;gap:1.4rem;
+            border-top:2px solid var(--acc);padding-top:1.6rem}
+  .hero{display:grid;grid-template-columns:minmax(170px,225px) 1fr;gap:clamp(1.1rem,3vw,2.4rem);align-items:center}
+  .figbox{position:relative;aspect-ratio:1/2;border:1px solid var(--line2);overflow:hidden;
+      clip-path:polygon(0 0,100% 0,100% 95%,90% 100%,0 100%);display:grid;place-items:center;padding:5% 0;
+      background:radial-gradient(78% 48% at 50% 30%,var(--glow),transparent 70%),linear-gradient(170deg,#0C1119,#05070C)}
+  .figbox::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--acc)}
+  .figbox svg{width:88%;height:100%;overflow:visible}
+  .heroinfo{display:flex;flex-direction:column;gap:.75rem;min-width:0}
+  .cname{font-family:var(--disp);font-size:clamp(2.2rem,6vw,3.9rem);text-transform:uppercase;line-height:.86}
+  .creal{font-weight:800;font-size:clamp(.85rem,1.8vw,1rem);letter-spacing:.22em;
+         text-transform:uppercase;color:var(--acc)}
+  .statrow{display:flex;flex-wrap:wrap;border:1px solid var(--line2);width:fit-content}
+  .stat{padding:.5rem 1rem;display:flex;flex-direction:column}
+  .stat+.stat{border-left:1px solid var(--line2)}
+  .stat b{font-family:var(--disp);font-size:1.35rem;line-height:1;font-variant-numeric:tabular-nums}
+  .stat span{font-family:var(--mono);font-size:.56rem;letter-spacing:.17em;text-transform:uppercase;color:var(--stone)}
+  .blurb{color:#8FA0B4;font-size:.92rem;max-width:54ch}
+
+  /* ---- sections ---- */
+  .sechead{display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap;margin-top:.4rem}
+  .sechead h2{font-family:var(--disp);font-size:clamp(1.25rem,2.8vw,1.75rem);text-transform:uppercase}
+  .sechead .rule{flex:1;height:1px;background:var(--line);min-width:2rem}
+
+  /* ---- move ---- */
+  .move{border:1px solid var(--line);background:linear-gradient(180deg,var(--panel),#070B11);
+        display:grid;grid-template-columns:1fr minmax(215px,270px)}
+  .mleft{padding:1rem 1.15rem;display:flex;flex-direction:column;gap:.65rem;min-width:0}
+  .mright{border-left:1px solid var(--line);background:#070A0F;padding:.9rem;display:flex;
+          flex-direction:column;gap:.4rem;justify-content:center}
+  .mhead{display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap}
+  .mname{font-weight:800;font-size:1rem;letter-spacing:.12em;text-transform:uppercase}
+  .minput{font-family:var(--mono);font-size:.74rem;letter-spacing:.09em;color:var(--acc);
+          border:1px solid var(--accd);padding:.08rem .5rem;white-space:nowrap}
+  .mdesc{font-size:.87rem;color:#94A5B8;max-width:58ch}
+  .fd{display:flex;flex-wrap:wrap;border:1px solid var(--line2);width:fit-content}
+  .fdc{padding:.3rem .65rem;display:flex;flex-direction:column}
+  .fdc+.fdc{border-left:1px solid var(--line2)}
+  .fdc b{font-family:var(--mono);font-size:.82rem;font-variant-numeric:tabular-nums;line-height:1.3}
+  .fdc span{font-family:var(--mono);font-size:.53rem;letter-spacing:.13em;text-transform:uppercase;color:var(--stone)}
+  .fdc.neg b{color:var(--red)} .fdc.pos b{color:var(--blue)}
+  .props{display:flex;flex-wrap:wrap;gap:.3rem}
+  .tag{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;
+       padding:.16rem .45rem;border:1px solid var(--line2);color:var(--stone)}
+  .tag.hi{border-color:var(--accd);color:var(--acc)}
+  .tag.warn{border-color:#6B4B1A;color:var(--gold)}
+  .tag.bad{border-color:#6B2620;color:var(--red)}
+  .diaglabel{font-family:var(--mono);font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--dim)}
+  svg.dg{width:100%;height:auto;display:block;overflow:visible}
+
+  /* ---- animation strip ---- */
+  .anim{border-top:1px dashed var(--line2);padding-top:.6rem;margin-top:.15rem;
+        display:flex;flex-direction:column;gap:.4rem}
+  .animlabel{font-family:var(--mono);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--acc)}
+  .keys{display:flex;flex-wrap:wrap;gap:.35rem}
+  .key{border:1px solid var(--line2);background:#080C12;padding:.3rem .55rem;
+       display:flex;flex-direction:column;gap:.05rem;min-width:72px}
+  .key i{font-family:var(--mono);font-size:.56rem;letter-spacing:.1em;color:var(--acc);font-style:normal}
+  .key span{font-size:.72rem;color:#A8B7C8;line-height:1.35}
+  .key.smear{border-color:var(--accd);background:linear-gradient(100deg,#0B121A,#121B26)}
+  .key.smear i{color:var(--gold)}
+
+  /* ---- tables / combos ---- */
+  .tw{overflow-x:auto;border:1px solid var(--line)}
+  table{width:100%;border-collapse:collapse;font-size:.82rem;min-width:620px}
+  th,td{text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--line)}
+  th{font-family:var(--mono);font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;
+     color:var(--stone);font-weight:400;white-space:nowrap;background:#080C12}
+  td{font-family:var(--mono);font-size:.76rem;font-variant-numeric:tabular-nums;color:#B4C2D2}
+  td:first-child{font-family:var(--sans);font-weight:700;letter-spacing:.05em;color:var(--white);
+                 text-transform:uppercase;font-size:.75rem}
+  tbody tr:last-child td{border-bottom:0}
+  .neg{color:var(--red)} .pos{color:var(--blue)}
+
+  .combo{border:1px solid var(--line);background:var(--panel);padding:.75rem 1rem;
+         display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .9rem}
+  .croute{font-family:var(--mono);font-size:.79rem;flex:1;min-width:230px;color:var(--white)}
+  .croute em{font-style:normal;color:var(--acc)}
+  .cdmg{font-family:var(--disp);font-size:1.35rem;line-height:1;font-variant-numeric:tabular-nums}
+  .ctag{font-family:var(--mono);font-size:.57rem;letter-spacing:.13em;text-transform:uppercase;color:var(--stone)}
+
+  ul{margin:0;padding-left:1.05rem;display:flex;flex-direction:column;gap:.35rem;max-width:70ch;
+     font-size:.88rem;color:#94A5B8}
+  li::marker{color:var(--dim)}
+  li b{color:var(--white)}
+
+  @media (max-width:720px){
+    .hero{grid-template-columns:1fr}
+    .figbox{max-width:210px;aspect-ratio:1/1.9}
+    .move{grid-template-columns:1fr}
+    .mright{border-left:0;border-top:1px solid var(--line)}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<div>
+  <div class="eyebrow">Circle Clash Ultimate · roster sheet 02</div>
+  <h1 style="font-family:var(--disp);font-size:clamp(2rem,5vw,3rem);text-transform:uppercase;margin-top:.4rem">
+    Velocity King &amp; Elastic Brawler</h1>
+</div>
+
+<div class="topnote">
+  <b>Naming &amp; design</b>
+  Both movesets map onto roster slots that already existed in <code>CHR-CCU-300</code> — frame manipulation was always Kade Ruven's power, elastic impact absorption was always Tamsin Oduya's. Every technique is renamed; mechanics carry over frame-for-frame. Two design substitutions: the brimmed hat is a rigger's wide-brim rather than a straw hat, since that specific item is a registered mark and not a costume detail; and the Level 3 transformation is a smeared many-limbed form rather than a worm — identical full-screen horizontal crush hitboxes, different silhouette.
+</div>
+
+<!-- ================================================================ -->
+<!-- ==================  VELOCITY KING  ============================= -->
+<!-- ================================================================ -->
+<div class="charwrap" style="--acc:var(--k);--accd:#3E7A68;--glow:rgba(143,227,200,.16)">
+
+  <div class="hero">
+    <div class="figbox">
+      <svg viewBox="0 0 150 320" aria-label="Velocity King character design">
+        <defs>
+          <linearGradient id="haori" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#28313D"/><stop offset="1" stop-color="#131A23"/>
+          </linearGradient>
+          <linearGradient id="hakama" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#C9D2DA"/><stop offset="1" stop-color="#8E99A5"/>
+          </linearGradient>
+          <linearGradient id="hair2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#E4E08A"/><stop offset="1" stop-color="#A9A249"/>
+          </linearGradient>
+        </defs>
+
+        <!-- residual frames: the tell -->
+        <g opacity=".2" fill="none" stroke="#8FE3C8" stroke-width="1">
+          <rect x="18" y="120" width="24" height="90"/><rect x="8" y="128" width="24" height="90"/>
+        </g>
+
+        <!-- hakama: wide pleated trousers -->
+        <path d="M46 172 q29 8 58 0 l9 96 q-38 10 -76 0 z" fill="url(#hakama)"/>
+        <g stroke="#7C8894" stroke-width="1.1" opacity=".85">
+          <path d="M57 176 l-4 92"/><path d="M68 178 l-2 92"/><path d="M82 178 l2 92"/><path d="M93 176 l4 92"/>
+        </g>
+        <!-- waist tie -->
+        <path d="M44 164 q31 9 62 0 l1 12 q-32 9 -64 0 z" fill="#E7EDF2"/>
+        <path d="M70 168 l5 6 l5 -6 l-2 12 h-6 z" fill="#D3DBE3"/>
+
+        <!-- boots -->
+        <path d="M50 268 h22 l1 22 q0 6 -6 6 h-12 q-5 0 -5 -6 z" fill="#2B333D"/>
+        <path d="M78 268 h22 l-1 22 q0 6 -5 6 h-12 q-6 0 -6 -6 z" fill="#2B333D"/>
+        <path d="M51 286 h21 M79 286 h20" stroke="#8FE3C8" stroke-width="1.6" opacity=".8"/>
+
+        <!-- under-layer collar -->
+        <path d="M62 66 q13 -5 26 0 l-4 30 h-18 z" fill="#F2F5F8"/>
+
+        <!-- haori body -->
+        <path d="M48 82 q27 -10 54 0 l6 22 l-4 62 q-29 8 -58 0 l-4 -62 z" fill="url(#haori)"/>
+        <!-- lapels crossing left-over-right -->
+        <path d="M62 74 l13 30 l13 -30 l6 6 l-16 38 h-6 l-16 -38 z" fill="#1B222C"/>
+        <path d="M62 74 l13 30 l13 -30" fill="none" stroke="#8FE3C8" stroke-width="1" opacity=".55"/>
+
+        <!-- wide sleeves -->
+        <path d="M48 84 l-22 8 l-4 46 l20 6 l8 -14 z" fill="url(#haori)"/>
+        <path d="M102 84 l22 8 l4 46 l-20 6 l-8 -14 z" fill="url(#haori)"/>
+        <path d="M27 120 l19 5 M123 120 l-19 5" stroke="#8FE3C8" stroke-width="1" opacity=".4"/>
+        <!-- sleeve cuffs, white under-layer -->
+        <path d="M24 132 l20 6 l-1 9 l-20 -6 z" fill="#F2F5F8"/>
+        <path d="M126 132 l-20 6 l1 9 l20 -6 z" fill="#F2F5F8"/>
+
+        <!-- left hand on hip -->
+        <path d="M43 145 q-6 6 -2 14 l10 8 l6 -8 l-9 -8 z" fill="#EFD9C6"/>
+        <!-- right hand relaxed -->
+        <path d="M107 146 l7 4 l-2 16 l-8 -3 z" fill="#EFD9C6"/>
+
+        <!-- neck / head -->
+        <rect x="68" y="58" width="14" height="10" fill="#DFC6B0"/>
+        <path d="M75 30 q-15 0 -15 16 v10 q0 15 15 15 q15 0 15 -15 v-10 q0 -16 -15 -16 z" fill="#EFD9C6"/>
+        <!-- narrowed, smug eyes -->
+        <path d="M63 45 q5 -3 10 -1" stroke="#2A2417" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <path d="M77 44 q5 -2 10 1" stroke="#2A2417" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <!-- smirk -->
+        <path d="M70 55 q6 4 11 -1" stroke="#B08C7A" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+
+        <!-- hair: parted, swept -->
+        <path d="M58 42 q-5 -24 17 -25 q22 1 17 25 q-3 -12 -17 -11 q-14 -1 -17 11 z" fill="url(#hair2)"/>
+        <path d="M57 30 q10 -14 24 -9 q10 4 11 15 q-6 -10 -18 -8 q-11 1 -17 2 z" fill="#EFEA9C"/>
+        <path d="M92 33 l7 -8 l-1 12 z" fill="url(#hair2)"/>
+      </svg>
+    </div>
+
+    <div class="heroinfo">
+      <div class="eyebrow">Circle Name · registry Y197</div>
+      <h2 class="cname">Velocity King</h2>
+      <div class="creal">Kade Ruven · 27 · Vessel City</div>
+      <div class="statrow">
+        <div class="stat"><b>920</b><span>Health</span></div>
+        <div class="stat"><b>Rush</b><span>Primary</span></div>
+        <div class="stat"><b>Drift</b><span>Secondary</span></div>
+        <div class="stat"><b>5</b><span>Tempo max</span></div>
+      </div>
+      <p class="blurb">Three-time champion. Compresses his own experienced time and lives in the interval between one instant and the next — which is exhilarating for four seconds and lonely for the rest. Rewards momentum, punishes hesitation, and is the only kit whose numbers change during the round.</p>
+    </div>
+  </div>
+
+  <!-- NORMALS -->
+  <div class="sechead"><span class="eyebrow">Four buttons</span><h2>Normals</h2><span class="rule"></span></div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Two Fingers</span><span class="minput">LP</span></div>
+      <p class="mdesc">A contemptuous two-finger jab at eye level. The fastest button in the game and it deals almost nothing — its job is to start Tempo and to make people flinch.</p>
+      <div class="fd">
+        <div class="fdc"><b>4</b><span>Start</span></div><div class="fdc"><b>2</b><span>Active</span></div>
+        <div class="fdc"><b>8</b><span>Rec</span></div><div class="fdc neg"><b>−1</b><span>oB</span></div>
+        <div class="fdc pos"><b>+2</b><span>oH</span></div><div class="fdc"><b>22</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag bad">High</span><span class="tag hi">Fastest in roster</span><span class="tag hi">Tempo +1</span></div>
+      <div class="anim">
+        <span class="animlabel">Animation · 14 frames total</span>
+        <div class="keys">
+          <div class="key"><i>f1–2</i><span>Weight shift, no arm motion</span></div>
+          <div class="key smear"><i>f3 · smear</i><span>Linear arm smear, 250% stretch</span></div>
+          <div class="key"><i>f4–5</i><span>Contact pose, held</span></div>
+          <div class="key"><i>f6–14</i><span>Retract, return to smug idle</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">High · 1.7 m</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="13" height="38" fill="#28313D" stroke="#8FE3C8" stroke-width=".8"/>
+        <rect x="29" y="24" width="28" height="8" fill="#8FE3C8" opacity=".55"/>
+        <rect x="29" y="24" width="28" height="8" fill="none" stroke="#8FE3C8" stroke-width=".8"/>
+        <text x="61" y="31" font-family="ui-monospace,monospace" font-size="7" fill="#8FE3C8">high</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Backhand</span><span class="minput">HP</span></div>
+      <p class="mdesc">A whipping backfist thrown from the wrist. He does not turn his shoulders into it, which is the point — it is dismissive, and it is his main special-cancel.</p>
+      <div class="fd">
+        <div class="fdc"><b>9</b><span>Start</span></div><div class="fdc"><b>3</b><span>Active</span></div>
+        <div class="fdc"><b>16</b><span>Rec</span></div><div class="fdc neg"><b>−5</b><span>oB</span></div>
+        <div class="fdc pos"><b>+3</b><span>oH</span></div><div class="fdc"><b>62</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag">Mid</span><span class="tag hi">Special-cancel</span><span class="tag hi">Tempo +1</span></div>
+      <div class="anim">
+        <span class="animlabel">Animation · 28 frames</span>
+        <div class="keys">
+          <div class="key"><i>f1–5</i><span>Wrist cocks inward, elbow leads</span></div>
+          <div class="key smear"><i>f6–8 · smear</i><span>Arc smear mesh, 300% along path</span></div>
+          <div class="key"><i>f9–11</i><span>Contact, 3f hold on impact frame</span></div>
+          <div class="key"><i>f12–28</i><span>Follow-through, hand settles to hip</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Arc · 2.2 m</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="13" height="38" fill="#28313D" stroke="#8FE3C8" stroke-width=".8"/>
+        <path d="M29 42 a30 30 0 0 1 30 -18 l0 11 a19 19 0 0 0 -19 12 z" fill="#8FE3C8" opacity=".45"/>
+        <path d="M29 42 a30 30 0 0 1 30 -18 l0 11 a19 19 0 0 0 -19 12 z" fill="none" stroke="#8FE3C8" stroke-width=".8"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Instep</span><span class="minput">LK</span></div>
+      <p class="mdesc">A short scraping kick to the top of the foot. Low, fast, and completely without ceremony.</p>
+      <div class="fd">
+        <div class="fdc"><b>6</b><span>Start</span></div><div class="fdc"><b>2</b><span>Active</span></div>
+        <div class="fdc"><b>10</b><span>Rec</span></div><div class="fdc neg"><b>−4</b><span>oB</span></div>
+        <div class="fdc pos"><b>+1</b><span>oH</span></div><div class="fdc"><b>28</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag bad">Low</span><span class="tag hi">Chains → LP, HP</span></div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Low</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="13" height="38" fill="#28313D" stroke="#8FE3C8" stroke-width=".8"/>
+        <rect x="29" y="49" width="26" height="9" fill="#E0483A" opacity=".55"/>
+        <rect x="29" y="49" width="26" height="9" fill="none" stroke="#E0483A" stroke-width=".8"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Side Kick</span><span class="minput">HK</span></div>
+      <p class="mdesc">A high linear side kick that shoves rather than strikes. Resets the round to his preferred distance, which is "further away than you want to be".</p>
+      <div class="fd">
+        <div class="fdc"><b>14</b><span>Start</span></div><div class="fdc"><b>4</b><span>Active</span></div>
+        <div class="fdc"><b>24</b><span>Rec</span></div><div class="fdc neg"><b>−11</b><span>oB</span></div>
+        <div class="fdc"><b>KD</b><span>oH</span></div><div class="fdc"><b>82</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag">Mid</span><span class="tag warn">Pushback ×2.4</span><span class="tag warn">Knockdown</span></div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Push 3.6 m</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="13" height="38" fill="#28313D" stroke="#8FE3C8" stroke-width=".8"/>
+        <rect x="29" y="28" width="40" height="12" fill="#8FE3C8" opacity=".5"/>
+        <rect x="150" y="20" width="13" height="38" fill="#54401F" stroke="#F2A93B" stroke-width=".7" opacity=".35"/>
+        <path d="M74 34 L146 34" stroke="#F2A93B" stroke-width="1.3" stroke-dasharray="3 3"/>
+        <path d="M146 34 l-7 -4 v8 z" fill="#F2A93B"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- COMMAND THROW -->
+  <div class="sechead"><span class="eyebrow">Command throw</span><h2>Presentation</h2><span class="rule"></span></div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Presentation</span><span class="minput">HCB + LP+LK</span></div>
+      <p class="mdesc">He lunges, takes a fistful of collar, and puts the opponent face-first into the floor. Then — unhurried — he fixes his hair with the other hand, looks down, and rests a heel on their back. Unblockable at point-blank. Drains the opponent's meter, because the humiliation is the mechanic.</p>
+      <div class="fd">
+        <div class="fdc"><b>7</b><span>Start</span></div><div class="fdc"><b>2</b><span>Active</span></div>
+        <div class="fdc"><b>42</b><span>Rec</span></div><div class="fdc"><b>145</b><span>Dmg</span></div>
+        <div class="fdc pos"><b>+2</b><span>Tempo</span></div><div class="fdc"><b>1.3</b><span>Range m</span></div>
+      </div>
+      <div class="props"><span class="tag bad">Unblockable</span><span class="tag bad">PIERCE</span><span class="tag hi">Drains 40 opponent meter</span><span class="tag warn">−42 on whiff</span></div>
+      <div class="anim">
+        <span class="animlabel">Animation · 96 frames — the longest in his kit, on purpose</span>
+        <div class="keys">
+          <div class="key"><i>f1–6</i><span>Lunge, low centre, hand open</span></div>
+          <div class="key smear"><i>f7 · smear</i><span>Grab smear, arm 200%</span></div>
+          <div class="key"><i>f8–20</i><span>Collar seized, opponent rotates</span></div>
+          <div class="key"><i>f21–24</i><span>Slam. 4f hitstop, hard shake</span></div>
+          <div class="key"><i>f25–52</i><span>He straightens. Hand to hair, slow</span></div>
+          <div class="key"><i>f53–70</i><span>Look down. Smirk hold — 18f, unbroken</span></div>
+          <div class="key"><i>f71–84</i><span>Heel placed on back, weight settles</span></div>
+          <div class="key"><i>f85–96</i><span>Steps off, returns to idle</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Point-blank · unblockable</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="13" height="38" fill="#28313D" stroke="#8FE3C8" stroke-width="1.2"/>
+        <rect x="42" y="20" width="13" height="38" fill="#54401F" stroke="#F2A93B" stroke-width=".7" opacity=".45"/>
+        <path d="M29 30 h13" stroke="#8FE3C8" stroke-width="2"/>
+        <rect x="42" y="50" width="30" height="8" fill="#F2A93B" opacity=".3"/>
+        <text x="76" y="57" font-family="ui-monospace,monospace" font-size="7" fill="#F2A93B">grounded</text>
+        <text x="60" y="18" font-family="ui-monospace,monospace" font-size="7" fill="#8FE3C8">−40 meter</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SPECIALS -->
+  <div class="sechead"><span class="eyebrow">Three families</span><h2>Specials</h2><span class="rule"></span></div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Cut To</span><span class="minput">QCF + LK</span></div>
+      <p class="mdesc">He crosses the floor instantly, leaving twenty-four translucent glass frames of himself hanging in the air behind him. The frames are decoration — but the opponent has to check, and checking costs them the round.</p>
+      <div class="fd">
+        <div class="fdc"><b>11</b><span>Start</span></div><div class="fdc"><b>4</b><span>Active</span></div>
+        <div class="fdc"><b>15</b><span>Rec</span></div><div class="fdc neg"><b>−3</b><span>oB</span></div>
+        <div class="fdc pos"><b>+4</b><span>oH</span></div><div class="fdc"><b>70</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag hi">Travels 5.4 m</span><span class="tag hi">Tempo +1</span><span class="tag">Tracking 1</span></div>
+      <div class="anim">
+        <span class="animlabel">Animation · 30 frames · the signature VFX</span>
+        <div class="keys">
+          <div class="key"><i>f1–8</i><span>Crouch load, heel dug in</span></div>
+          <div class="key smear"><i>f9–12 · ghosts</i><span>24 glass frame-cards spawn along path, 1 per 0.22 m</span></div>
+          <div class="key"><i>f13–16</i><span>Arrival pose, palm extended</span></div>
+          <div class="key"><i>f17–30</i><span>Cards shatter back-to-front over 14f</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Straight dash · 24 residual frames</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <g fill="none" stroke="#8FE3C8" stroke-width=".7">
+          <rect x="20" y="22" width="11" height="36" opacity=".14"/><rect x="42" y="22" width="11" height="36" opacity=".22"/>
+          <rect x="64" y="22" width="11" height="36" opacity=".3"/><rect x="86" y="22" width="11" height="36" opacity=".38"/>
+          <rect x="108" y="22" width="11" height="36" opacity=".48"/><rect x="130" y="22" width="11" height="36" opacity=".6"/>
+        </g>
+        <rect x="152" y="20" width="13" height="38" fill="#28313D" stroke="#8FE3C8" stroke-width="1"/>
+        <rect x="165" y="30" width="26" height="10" fill="#8FE3C8" opacity=".5"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Cut To · Reverse</span><span class="minput">QCF + HK</span></div>
+      <p class="mdesc">The same cut, angled. He resolves behind the opponent and lands an open-palm chop across the back of the neck on arrival. The side-swap is automatic, which makes it a mix-up and not just movement.</p>
+      <div class="fd">
+        <div class="fdc"><b>16</b><span>Start</span></div><div class="fdc"><b>4</b><span>Active</span></div>
+        <div class="fdc"><b>22</b><span>Rec</span></div><div class="fdc neg"><b>−9</b><span>oB</span></div>
+        <div class="fdc"><b>KD</b><span>oH</span></div><div class="fdc"><b>88</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag hi">Side swap</span><span class="tag hi">Cross-up</span><span class="tag warn">Knockdown</span><span class="tag">Tracking 3</span></div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Passes through · strikes from behind</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="13" height="38" fill="#28313D" stroke="#8FE3C8" stroke-width=".8" opacity=".3" stroke-dasharray="2 2"/>
+        <rect x="130" y="20" width="13" height="38" fill="#54401F" stroke="#F2A93B" stroke-width=".7" opacity=".4"/>
+        <rect x="160" y="20" width="13" height="38" fill="#28313D" stroke="#8FE3C8" stroke-width="1"/>
+        <path d="M34 40 Q90 4 158 34" stroke="#8FE3C8" stroke-width="1" fill="none" stroke-dasharray="4 3"/>
+        <path d="M158 30 l-14 4 l12 5 z" fill="#8FE3C8"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Still</span><span class="minput">QCB + LP</span></div>
+      <p class="mdesc">A brief open-palm touch to the chest. The opponent is sealed inside a flat pane of glass — a single frame of film — and holds whatever pose they were in. No damage. Pure setup.</p>
+      <div class="fd">
+        <div class="fdc"><b>14</b><span>Start</span></div><div class="fdc"><b>3</b><span>Active</span></div>
+        <div class="fdc"><b>24</b><span>Rec</span></div><div class="fdc neg"><b>−9</b><span>oB</span></div>
+        <div class="fdc"><b>0</b><span>Dmg</span></div><div class="fdc pos"><b>34</b><span>Freeze</span></div>
+      </div>
+      <div class="props"><span class="tag hi">Capture — no damage</span><span class="tag bad">Range 1.1 m</span><span class="tag hi">Freeze 34f</span></div>
+      <div class="anim">
+        <span class="animlabel">Animation · 41 frames</span>
+        <div class="keys">
+          <div class="key"><i>f1–13</i><span>Step in, palm rises flat</span></div>
+          <div class="key"><i>f14–16</i><span>Contact. 6f hitstop, no impact spark</span></div>
+          <div class="key smear"><i>f17</i><span>Glass pane snaps in, 1 frame, full opacity</span></div>
+          <div class="key"><i>f18–41</i><span>He steps back and waits. Opponent immobile inside frame</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Touch · seals pose 34f</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="13" height="38" fill="#28313D" stroke="#8FE3C8" stroke-width=".8"/>
+        <rect x="52" y="20" width="13" height="38" fill="#54401F" stroke="#F2A93B" stroke-width=".7" opacity=".4"/>
+        <rect x="44" y="12" width="30" height="54" fill="#8FE3C8" opacity=".14"/>
+        <rect x="44" y="12" width="30" height="54" fill="none" stroke="#8FE3C8" stroke-width="1.2"/>
+        <g stroke="#8FE3C8" stroke-width=".6" opacity=".7">
+          <path d="M44 20 h30 M44 58 h30"/>
+        </g>
+        <text x="80" y="20" font-family="ui-monospace,monospace" font-size="7" fill="#8FE3C8">frozen</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Cue</span><span class="minput">SRK + P</span></div>
+      <p class="mdesc">A diagonal rising elbow. Invincible on startup — his get-out, and the only genuinely committed thing he ever does.</p>
+      <div class="fd">
+        <div class="fdc"><b>6</b><span>Start</span></div><div class="fdc"><b>6</b><span>Active</span></div>
+        <div class="fdc"><b>34</b><span>Rec</span></div><div class="fdc pos"><b>1–7</b><span>Invuln</span></div>
+        <div class="fdc neg"><b>−26</b><span>oB</span></div><div class="fdc"><b>96</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag hi">Invincible reversal</span><span class="tag bad">−26 on block</span><span class="tag warn">Tempo reset to 0</span></div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Rising · invuln 1–7</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="13" height="38" fill="#28313D" stroke="#8FE3C8" stroke-width=".8"/>
+        <path d="M28 44 L58 6" stroke="#8FE3C8" stroke-width="10" opacity=".4" stroke-linecap="round"/>
+        <path d="M28 44 L58 6" stroke="#8FE3C8" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- TEMPO -->
+  <div class="sechead"><span class="eyebrow">Unique mechanic</span><h2>Tempo</h2><span class="rule"></span></div>
+  <p class="blurb" style="max-width:70ch">A blurred trail gathers at his feet. Each of five stages cuts <b style="color:var(--k)">15% off the recovery of every move he owns</b> and adds a little walk speed. It builds on contact and collapses the moment he is knocked down.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Stage</th><th>Recovery</th><th>Walk</th><th>Gains</th><th>Loses</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td>100%</td><td>3.9 m/s</td><td>—</td><td>—</td></tr>
+        <tr><td>1</td><td>85%</td><td>4.05</td><td class="pos">+1 landed hit</td><td class="neg">−1 on being hit</td></tr>
+        <tr><td>2</td><td>72%</td><td>4.20</td><td class="pos">+1 successful Cut To</td><td class="neg">−1 punished on block</td></tr>
+        <tr><td>3</td><td>61%</td><td>4.35</td><td class="pos">+1 whiff punish</td><td class="neg">decays 1 per 3s idle</td></tr>
+        <tr><td>4</td><td>52%</td><td>4.50</td><td class="pos">+2 Presentation</td><td class="neg">reset on knockdown</td></tr>
+        <tr><td>5</td><td>44%</td><td>4.65</td><td class="pos">next Cut To is 1f startup</td><td class="neg">drops to 3 after using it</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SUPERS -->
+  <div class="sechead"><span class="eyebrow">Two levels</span><h2>Supers</h2><span class="rule"></span></div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Montage</span><span class="minput">QCF ×2 + K</span><span class="tag hi">Level 1 · 100</span></div>
+      <p class="mdesc">He becomes a continuous band of light and delivers twenty-four kicks across every height in one second — head, body, legs, in no order the eye can follow.</p>
+      <div class="fd">
+        <div class="fdc"><b>8</b><span>Start</span></div><div class="fdc"><b>60</b><span>Active</span></div>
+        <div class="fdc"><b>38</b><span>Rec</span></div><div class="fdc pos"><b>1–9</b><span>Invuln</span></div>
+        <div class="fdc neg"><b>−28</b><span>oB</span></div><div class="fdc"><b>218</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag hi">24 hits</span><span class="tag hi">Hits all heights</span><span class="tag warn">Combo-viable from HP</span></div>
+      <div class="anim">
+        <span class="animlabel">Animation · 106 frames · the mix problem</span>
+        <div class="keys">
+          <div class="key"><i>f1–8</i><span>Commitment beat. World desaturates 20%</span></div>
+          <div class="key smear"><i>f9–68</i><span>Solid light band. 24 impacts as ONE granular burst, 3 accented — never 24 discrete sounds</span></div>
+          <div class="key"><i>f69–74</i><span>Final kick lands, 8f hitstop</span></div>
+          <div class="key"><i>f75–106</i><span>Cost beat. He lands hard, breathing, palette drained</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">24 hits · all heights · 1 second</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="13" height="38" fill="#28313D" stroke="#8FE3C8" stroke-width=".8"/>
+        <rect x="30" y="10" width="150" height="48" fill="#8FE3C8" opacity=".18"/>
+        <g stroke="#8FE3C8" stroke-width="1.1" opacity=".85">
+          <path d="M36 16 h14 M56 30 h14 M76 48 h14 M96 20 h14 M116 40 h14 M136 26 h14 M156 50 h14"/>
+        </g>
+        <rect x="182" y="20" width="13" height="38" fill="#54401F" stroke="#F2A93B" stroke-width=".7" opacity=".4"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Overrun</span><span class="minput">QCF ×2 + LP+HP</span><span class="tag warn">Level 3 · 300</span></div>
+      <p class="mdesc">He exceeds his own frame budget. The model stops resolving into one body and smears into a continuous many-limbed band across the arena — every attack he throws in this state carries a full-screen horizontal hitbox with crush properties. Eight seconds. Then he comes back, and he looks worse for it.</p>
+      <div class="fd">
+        <div class="fdc"><b>10</b><span>Start</span></div><div class="fdc"><b>480</b><span>Duration</span></div>
+        <div class="fdc"><b>44</b><span>End rec</span></div><div class="fdc pos"><b>1–14</b><span>Invuln</span></div>
+        <div class="fdc"><b>—</b><span>Dmg</span></div><div class="fdc neg"><b>Tempo 0</b><span>After</span></div>
+      </div>
+      <div class="props"><span class="tag bad">Full-screen horizontal hitboxes</span><span class="tag bad">Crush</span><span class="tag hi">8 seconds</span><span class="tag warn">Tempo locked 0 for 8s after</span></div>
+      <div class="anim">
+        <span class="animlabel">Animation · install super, 3 stages</span>
+        <div class="keys">
+          <div class="key"><i>f1–10</i><span>He folds down. Silhouette destabilises</span></div>
+          <div class="key smear"><i>f11–34</i><span>Body fails to resolve — 6 overlapping smear meshes, no single form</span></div>
+          <div class="key"><i>f35–480</i><span>Active. Every normal gains a screen-wide band; limbs never settle</span></div>
+          <div class="key"><i>f481–524</i><span>Collapse back. He is on one knee for 20f before he can act</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Screen-wide horizontal · crush</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="8" y="26" width="264" height="24" fill="#8FE3C8" opacity=".22"/>
+        <rect x="8" y="26" width="264" height="24" fill="none" stroke="#8FE3C8" stroke-width="1.2"/>
+        <g fill="#28313D" stroke="#8FE3C8" stroke-width=".6" opacity=".5">
+          <rect x="30" y="22" width="11" height="32"/><rect x="52" y="22" width="11" height="32"/>
+          <rect x="74" y="22" width="11" height="32"/><rect x="96" y="22" width="11" height="32"/>
+        </g>
+        <text x="150" y="20" font-family="ui-monospace,monospace" font-size="7" fill="#8FE3C8">crush · full width</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ROUTES -->
+  <div class="sechead"><span class="eyebrow">Conversions</span><h2>Routes</h2><span class="rule"></span></div>
+  <div class="combo"><span class="croute">LK <em>&gt;</em> LP <em>&gt;</em> HP <em>xx</em> QCF+LK</span><span class="cdmg">172</span><span class="ctag">Meterless · Tempo +3</span></div>
+  <div class="combo"><span class="croute">QCB+LP <em>(still)</em> <em>&gt;</em> HP <em>xx</em> QCF+HK</span><span class="cdmg">208</span><span class="ctag">Meterless · side swap ender</span></div>
+  <div class="combo"><span class="croute">QCF+HK <em>(cross-up)</em> <em>&gt;</em> LP <em>&gt;</em> HP <em>xx</em> QCF×2+K</span><span class="cdmg">341</span><span class="ctag">1 bar</span></div>
+  <div class="combo"><span class="croute">Tempo 5 · QCF+LK <em>(1f)</em> <em>&gt;</em> HP <em>&gt;</em> QCB+LP <em>&gt;</em> HP <em>xx</em> QCF×2+K</span><span class="cdmg">404</span><span class="ctag">1 bar · max tempo</span></div>
+</div>
+
+
+<!-- ================================================================ -->
+<!-- ==================  ELASTIC BRAWLER  =========================== -->
+<!-- ================================================================ -->
+<div class="charwrap" style="--acc:var(--t);--accd:#8A3A22;--glow:rgba(242,109,75,.16)">
+
+  <div class="hero">
+    <div class="figbox">
+      <svg viewBox="0 0 150 320" aria-label="Elastic Brawler character design">
+        <defs>
+          <linearGradient id="shirt" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#E24B37"/><stop offset="1" stop-color="#A32C1E"/>
+          </linearGradient>
+          <linearGradient id="shorts" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#3E6EA8"/><stop offset="1" stop-color="#24456B"/>
+          </linearGradient>
+          <linearGradient id="brim" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#D9B268"/><stop offset="1" stop-color="#A07C3C"/>
+          </linearGradient>
+        </defs>
+
+        <!-- legs -->
+        <path d="M56 196 l-3 62 h18 l4 -40 l4 40 h18 l-3 -62 z" fill="#C9A184"/>
+        <!-- work shorts -->
+        <path d="M52 168 q23 7 46 0 l4 34 q-27 8 -54 0 z" fill="url(#shorts)"/>
+        <path d="M74 172 v30" stroke="#1B3450" stroke-width="1.4"/>
+        <path d="M54 198 q20 6 42 0 l1 5 q-22 6 -44 0 z" fill="#EDEFF2"/>
+        <!-- boots -->
+        <path d="M50 258 h22 l1 26 q0 6 -6 6 h-12 q-5 0 -5 -6 z" fill="#2E2B29"/>
+        <path d="M78 258 h22 l-1 26 q0 6 -5 6 h-12 q-6 0 -6 -6 z" fill="#2E2B29"/>
+        <path d="M51 278 h21 M79 278 h20" stroke="#F2A93B" stroke-width="1.6"/>
+
+        <!-- torso: vest + bare midsection -->
+        <path d="M56 88 q19 -6 38 0 l3 62 q-22 7 -44 0 z" fill="#C9A184"/>
+        <!-- scar -->
+        <path d="M62 104 l10 8 l-6 6 l12 6" fill="none" stroke="#A87661" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- open shirt, both panels -->
+        <path d="M52 86 l-8 16 l2 62 l16 4 l4 -66 z" fill="url(#shirt)"/>
+        <path d="M98 86 l8 16 l-2 62 l-16 4 l-4 -66 z" fill="url(#shirt)"/>
+        <g fill="#F2C94C">
+          <circle cx="60" cy="104" r="2.4"/><circle cx="61" cy="120" r="2.4"/><circle cx="62" cy="136" r="2.4"/>
+        </g>
+        <!-- rolled cuffs -->
+        <path d="M40 128 l14 4 l-2 12 l-14 -5 z" fill="#F5EDE4"/>
+        <path d="M110 128 l-14 4 l2 12 l14 -5 z" fill="#F5EDE4"/>
+
+        <!-- yellow rigging sash -->
+        <path d="M50 160 q25 8 50 0 l2 12 q-27 9 -54 0 z" fill="#F2C94C"/>
+        <path d="M96 168 l14 30 l-8 3 l-12 -28 z" fill="#F2C94C"/>
+
+        <!-- arms -->
+        <path d="M44 100 l-10 30 l10 4 l10 -30 z" fill="url(#shirt)"/>
+        <path d="M106 100 l10 30 l-10 4 l-10 -30 z" fill="url(#shirt)"/>
+        <!-- forearms, wrapped -->
+        <path d="M36 138 l12 4 l-4 30 l-12 -4 z" fill="#C9A184"/>
+        <path d="M114 138 l-12 4 l4 30 l12 -4 z" fill="#C9A184"/>
+        <g stroke="#EDEFF2" stroke-width="2.4" opacity=".9">
+          <path d="M35 148 l12 4 M34 156 l12 4 M33 164 l12 4"/>
+          <path d="M115 148 l-12 4 M116 156 l-12 4 M117 164 l-12 4"/>
+        </g>
+        <!-- fists -->
+        <circle cx="38" cy="176" r="8" fill="#C9A184"/>
+        <circle cx="112" cy="176" r="8" fill="#C9A184"/>
+
+        <!-- neck / head -->
+        <rect x="69" y="76" width="13" height="12" fill="#BC9077"/>
+        <path d="M75 44 q-16 0 -16 17 v10 q0 16 16 16 q16 0 16 -16 v-10 q0 -17 -16 -17 z" fill="#C9A184"/>
+        <!-- eyes, wide -->
+        <circle cx="68" cy="60" r="4.6" fill="#F7F9FB"/><circle cx="68" cy="60" r="2.2" fill="#1C1712"/>
+        <circle cx="83" cy="60" r="4.6" fill="#F7F9FB"/><circle cx="83" cy="60" r="2.2" fill="#1C1712"/>
+        <!-- grin -->
+        <path d="M65 70 q10 9 21 0" fill="none" stroke="#8C5F4C" stroke-width="2" stroke-linecap="round"/>
+        <!-- cheek scar -->
+        <path d="M63 66 h7" stroke="#A87661" stroke-width="1.8" stroke-linecap="round"/>
+        <!-- hair -->
+        <path d="M58 50 q-3 -18 17 -19 q20 1 17 19 q-6 -8 -17 -7 q-11 -1 -17 7 z" fill="#231C16"/>
+        <!-- wide-brim rigger's hat -->
+        <ellipse cx="75" cy="38" rx="40" ry="9" fill="url(#brim)"/>
+        <path d="M58 38 q3 -18 17 -18 q14 0 17 18 z" fill="url(#brim)"/>
+        <path d="M56 34 q19 6 38 0 l0 5 q-19 6 -38 0 z" fill="#C4463A"/>
+        <ellipse cx="75" cy="38" rx="40" ry="9" fill="none" stroke="#7C5C2C" stroke-width=".9"/>
+
+        <!-- load rings -->
+        <g fill="none" stroke="#F26D4B" stroke-width="1" opacity=".3">
+          <ellipse cx="75" cy="160" rx="58" ry="26"/><ellipse cx="75" cy="160" rx="46" ry="19"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="heroinfo">
+      <div class="eyebrow">Circle Name · registry Y198</div>
+      <h2 class="cname">Elastic Brawler</h2>
+      <div class="creal">Tamsin Oduya · 31 · Cinderreach</div>
+      <div class="statrow">
+        <div class="stat"><b>1180</b><span>Health</span></div>
+        <div class="stat"><b>Bruiser</b><span>Primary</span></div>
+        <div class="stat"><b>Grapple</b><span>Secondary</span></div>
+        <div class="stat"><b>5</b><span>Load max</span></div>
+      </div>
+      <p class="blurb">Fourteen years a demolition rigger before the Circuit found her. Her body never fully agreed to be solid — impact goes in, and impact comes back out. The highest health in the roster, the slowest walk, and the scariest close range in the game.</p>
+    </div>
+  </div>
+
+  <!-- NORMALS -->
+  <div class="sechead"><span class="eyebrow">Four buttons</span><h2>Normals</h2><span class="rule"></span></div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Snap Jab</span><span class="minput">LP</span></div>
+      <p class="mdesc">A short straight jab thrown from a fist that arrives before the arm does. Reaches most of the screen's near half and costs her nothing.</p>
+      <div class="fd">
+        <div class="fdc"><b>7</b><span>Start</span></div><div class="fdc"><b>2</b><span>Active</span></div>
+        <div class="fdc"><b>11</b><span>Rec</span></div><div class="fdc neg"><b>−3</b><span>oB</span></div>
+        <div class="fdc pos"><b>+1</b><span>oH</span></div><div class="fdc"><b>30</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag">Mid</span><span class="tag hi">Reach 3.2 m</span><span class="tag hi">Chains → HP</span></div>
+      <div class="anim">
+        <span class="animlabel">Animation · 20 frames · stretch is real deformation</span>
+        <div class="keys">
+          <div class="key"><i>f1–5</i><span>Shoulder loads, arm compresses 25%</span></div>
+          <div class="key smear"><i>f6–8 · stretch</i><span>Arm mesh extends 320%, tapered — crash-test, not rubber-hose</span></div>
+          <div class="key"><i>f9</i><span>Contact, 6f hitstop</span></div>
+          <div class="key"><i>f10–20</i><span>Snap-back with 2f overshoot past neutral</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Reach 3.2 m</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="15" height="38" fill="#A32C1E" stroke="#F26D4B" stroke-width=".8"/>
+        <rect x="31" y="28" width="58" height="9" fill="#F26D4B" opacity=".5"/>
+        <rect x="31" y="28" width="58" height="9" fill="none" stroke="#F26D4B" stroke-width=".8"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Sickle</span><span class="minput">HP</span></div>
+      <p class="mdesc">A wide sweeping hook thrown from an arm that keeps going. Curves around a standing block, which is what makes it a threat rather than a poke.</p>
+      <div class="fd">
+        <div class="fdc"><b>13</b><span>Start</span></div><div class="fdc"><b>4</b><span>Active</span></div>
+        <div class="fdc"><b>21</b><span>Rec</span></div><div class="fdc neg"><b>−8</b><span>oB</span></div>
+        <div class="fdc pos"><b>+3</b><span>oH</span></div><div class="fdc"><b>76</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag">Mid</span><span class="tag hi">Curved arc, 4.4 m</span><span class="tag hi">Special-cancel</span><span class="tag hi">Load +1 on hit</span></div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Curved arc · 4.4 m</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="15" height="38" fill="#A32C1E" stroke="#F26D4B" stroke-width=".8"/>
+        <path d="M31 40 q46 -34 88 4 l-10 8 q-32 -28 -70 -3 z" fill="#F26D4B" opacity=".45"/>
+        <path d="M31 40 q46 -34 88 4 l-10 8 q-32 -28 -70 -3 z" fill="none" stroke="#F26D4B" stroke-width=".8"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Scuff</span><span class="minput">LK</span></div>
+      <p class="mdesc">A quick upward flick of the foot from below. Her only fast low and the entry to everything she does.</p>
+      <div class="fd">
+        <div class="fdc"><b>7</b><span>Start</span></div><div class="fdc"><b>2</b><span>Active</span></div>
+        <div class="fdc"><b>12</b><span>Rec</span></div><div class="fdc neg"><b>−4</b><span>oB</span></div>
+        <div class="fdc pos"><b>+1</b><span>oH</span></div><div class="fdc"><b>28</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag bad">Low</span><span class="tag hi">Chains → LP, HP</span></div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Low</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="15" height="38" fill="#A32C1E" stroke="#F26D4B" stroke-width=".8"/>
+        <rect x="31" y="48" width="30" height="10" fill="#E0483A" opacity=".55"/>
+        <rect x="31" y="48" width="30" height="10" fill="none" stroke="#E0483A" stroke-width=".8"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Whip</span><span class="minput">HK</span></div>
+      <p class="mdesc">A 180-degree leg sweep that comes all the way around. Hits on both sides of her, which means it beats a crossing-up opponent and covers her worst weakness.</p>
+      <div class="fd">
+        <div class="fdc"><b>17</b><span>Start</span></div><div class="fdc"><b>6</b><span>Active</span></div>
+        <div class="fdc"><b>26</b><span>Rec</span></div><div class="fdc neg"><b>−12</b><span>oB</span></div>
+        <div class="fdc"><b>KD</b><span>oH</span></div><div class="fdc"><b>90</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag">Mid</span><span class="tag hi">Hits both sides</span><span class="tag warn">Knockdown</span><span class="tag hi">Load +1</span></div>
+      <div class="anim">
+        <span class="animlabel">Animation · 49 frames</span>
+        <div class="keys">
+          <div class="key"><i>f1–10</i><span>Pivot load, plant foot screws in</span></div>
+          <div class="key"><i>f11–16</i><span>Leg extends 260% as it comes around</span></div>
+          <div class="key smear"><i>f17–22 · smear</i><span>Full 180° ribbon smear, one solid crescent mesh</span></div>
+          <div class="key"><i>f23–49</i><span>Leg reels in, 3f overshoot, heavy landing</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">180° · both sides</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <path d="M20 40 a48 48 0 0 1 96 0 l-13 0 a35 35 0 0 0 -70 0 z" fill="#F26D4B" opacity=".4"/>
+        <path d="M20 40 a48 48 0 0 1 96 0 l-13 0 a35 35 0 0 0 -70 0 z" fill="none" stroke="#F26D4B" stroke-width=".8"/>
+        <rect x="61" y="20" width="15" height="38" fill="#A32C1E" stroke="#F26D4B" stroke-width=".8"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SPECIALS -->
+  <div class="sechead"><span class="eyebrow">Three families</span><h2>Specials</h2><span class="rule"></span></div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Piston</span><span class="minput">QCF + P · hold HP</span></div>
+      <p class="mdesc">The fist leaves and the arm follows. Crosses the whole arena horizontally. Held on <b>HP</b>, the fist inflates before it lands and the hitbox doubles — slower, unmissable, and it beats every projectile in the game by simply being bigger.</p>
+      <div class="fd">
+        <div class="fdc"><b>15</b><span>LP start</span></div><div class="fdc"><b>28</b><span>HP held</span></div>
+        <div class="fdc"><b>24</b><span>Rec</span></div><div class="fdc neg"><b>−6 / −13</b><span>oB</span></div>
+        <div class="fdc"><b>84 / 128</b><span>Dmg</span></div><div class="fdc"><b>×2</b><span>Held box</span></div>
+      </div>
+      <div class="props"><span class="tag hi">Full screen</span><span class="tag hi">Held: hitbox ×2</span><span class="tag warn">Held: armour 1 hit</span><span class="tag hi">Load +1</span></div>
+      <div class="anim">
+        <span class="animlabel">Animation · 67 frames held</span>
+        <div class="keys">
+          <div class="key"><i>f1–12</i><span>Arm winds back behind her, torso twists</span></div>
+          <div class="key"><i>f13–27</i><span>Held: fist swells, knuckles separate, skin tightens</span></div>
+          <div class="key smear"><i>f28–32 · stretch</i><span>Arm segments to a taper, fist leads by 4 body-lengths</span></div>
+          <div class="key"><i>f33–43</i><span>Contact. 11f hitstop on the held version</span></div>
+          <div class="key"><i>f44–67</i><span>Recoil drags her forward 0.4 m</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Full screen · held doubles the box</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="15" height="38" fill="#A32C1E" stroke="#F26D4B" stroke-width=".8"/>
+        <path d="M33 34 L200 34" stroke="#C9A184" stroke-width="5"/>
+        <circle cx="212" cy="34" r="17" fill="#F26D4B" opacity=".35"/>
+        <circle cx="212" cy="34" r="17" fill="none" stroke="#F26D4B" stroke-width="1.2"/>
+        <circle cx="212" cy="34" r="8" fill="#C9A184"/>
+        <text x="236" y="24" font-family="ui-monospace,monospace" font-size="7" fill="#F26D4B">×2</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Drop Hammer</span><span class="minput">QCB + K</span></div>
+      <p class="mdesc">Her leg extends straight up to the ceiling of the arena, hangs for a beat, and comes down flat across a wide strip of floor. Slow, obvious, and it beats everything that is not blocking or already airborne.</p>
+      <div class="fd">
+        <div class="fdc"><b>22</b><span>Start</span></div><div class="fdc"><b>6</b><span>Active</span></div>
+        <div class="fdc"><b>30</b><span>Rec</span></div><div class="fdc neg"><b>−16</b><span>oB</span></div>
+        <div class="fdc"><b>HKD</b><span>oH</span></div><div class="fdc"><b>104</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag bad">Overhead</span><span class="tag hi">Ground bounce — once per combo</span><span class="tag warn">Hard knockdown</span><span class="tag hi">Load +2</span></div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Vertical → flat slam, 3.8 m strip</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="15" height="38" fill="#A32C1E" stroke="#F26D4B" stroke-width=".8"/>
+        <rect x="33" y="2" width="7" height="40" fill="#C9A184"/>
+        <path d="M42 6 L120 6" stroke="#F26D4B" stroke-width="1" stroke-dasharray="3 3"/>
+        <rect x="42" y="46" width="78" height="12" fill="#F26D4B" opacity=".45"/>
+        <rect x="42" y="46" width="78" height="12" fill="none" stroke="#F26D4B" stroke-width=".8"/>
+        <path d="M80 12 L80 42" stroke="#F26D4B" stroke-width="1.2"/>
+        <path d="M80 42 l-4 -8 h8 z" fill="#F26D4B"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Double Piston</span><span class="minput">Air · QCF + K</span></div>
+      <p class="mdesc">Airborne only. Both arms draw back far behind her and fire forward and down on a diagonal. Her air-to-ground answer and the only thing that lets a slow character contest a jump.</p>
+      <div class="fd">
+        <div class="fdc"><b>13</b><span>Start</span></div><div class="fdc"><b>5</b><span>Active</span></div>
+        <div class="fdc"><b>land+12</b><span>Rec</span></div><div class="fdc neg"><b>−9</b><span>oB</span></div>
+        <div class="fdc"><b>112</b><span>Dmg</span></div><div class="fdc"><b>45°</b><span>Angle</span></div>
+      </div>
+      <div class="props"><span class="tag hi">Air only</span><span class="tag hi">Diagonal down</span><span class="tag warn">Wall bounce on counter-hit</span></div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Air · 45° down-forward</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="20" y="4" width="15" height="30" fill="#A32C1E" stroke="#F26D4B" stroke-width=".8"/>
+        <path d="M36 24 L108 54" stroke="#C9A184" stroke-width="5"/>
+        <path d="M36 32 L108 58" stroke="#C9A184" stroke-width="5"/>
+        <circle cx="112" cy="55" r="11" fill="#F26D4B" opacity=".4"/>
+        <circle cx="112" cy="55" r="11" fill="none" stroke="#F26D4B" stroke-width="1"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- LOAD -->
+  <div class="sechead"><span class="eyebrow">Unique mechanic</span><h2>Load · two stances</h2><span class="rule"></span></div>
+  <p class="blurb" style="max-width:70ch">Impact goes in and impact comes back out. <b style="color:var(--t)">Load</b> builds to five stacks from blocking, from being hit, and from landing heavies. Spend it by switching stance with <code style="font-family:var(--mono);color:var(--t)">↓ ↓ + P+K</code>.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Stance</th><th>Cost</th><th>Effect</th><th>Duration</th><th>Downside</th></tr></thead>
+      <tbody>
+        <tr><td>Load I</td><td>2 stacks</td><td class="pos">All startup −30%</td><td>8 seconds</td><td class="neg">Health drains 1%/s</td></tr>
+        <tr><td>Load II</td><td>4 stacks</td><td class="pos">Size +25%, armour 1 hit on all heavies, damage +18%</td><td>10 seconds</td><td class="neg">Cannot crouch or block low; bounces in place</td></tr>
+        <tr><td colspan="5" style="color:#79879B">Load stacks: +1 per 3 blocked hits · +1 per hit taken · +1 on Sickle/Whip hit · +2 on Drop Hammer · decay 1 per 6s idle · cleared between rounds</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SUPERS -->
+  <div class="sechead"><span class="eyebrow">Two levels</span><h2>Supers</h2><span class="rule"></span></div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Overtime</span><span class="minput">QCF ×2 + P</span><span class="tag hi">Level 1 · 100</span></div>
+      <p class="mdesc">She throws until it stops being punches. Both arms become a solid wall of fists directly in front of her, filling the near half of the arena for a second and a half.</p>
+      <div class="fd">
+        <div class="fdc"><b>10</b><span>Start</span></div><div class="fdc"><b>76</b><span>Active</span></div>
+        <div class="fdc"><b>40</b><span>Rec</span></div><div class="fdc pos"><b>1–10</b><span>Invuln</span></div>
+        <div class="fdc neg"><b>−32</b><span>oB</span></div><div class="fdc"><b>232</b><span>Dmg</span></div>
+      </div>
+      <div class="props"><span class="tag hi">Wall of hitboxes, 4.5 m</span><span class="tag hi">Chips heavily on block</span><span class="tag warn">Combo-viable from Sickle</span></div>
+      <div class="anim">
+        <span class="animlabel">Animation · 126 frames</span>
+        <div class="keys">
+          <div class="key"><i>f1–10</i><span>Both arms cock, feet plant wide</span></div>
+          <div class="key smear"><i>f11–86</i><span>Arms replaced by a single instanced fist-field mesh — never individual arms</span></div>
+          <div class="key"><i>f87–92</i><span>Final two-handed shove, 12f hitstop</span></div>
+          <div class="key"><i>f93–126</i><span>Cost beat. Hands on knees, breathing hard</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Wall of fists · 4.5 m</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="20" width="15" height="38" fill="#A32C1E" stroke="#F26D4B" stroke-width=".8"/>
+        <rect x="33" y="14" width="112" height="44" fill="#F26D4B" opacity=".26"/>
+        <rect x="33" y="14" width="112" height="44" fill="none" stroke="#F26D4B" stroke-width="1"/>
+        <g fill="#C9A184">
+          <circle cx="52" cy="26" r="5"/><circle cx="72" cy="40" r="5"/><circle cx="92" cy="22" r="5"/>
+          <circle cx="112" cy="44" r="5"/><circle cx="130" cy="30" r="5"/><circle cx="62" cy="50" r="5"/>
+          <circle cx="104" cy="34" r="5"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="move">
+    <div class="mleft">
+      <div class="mhead"><span class="mname">Eleven Thousand</span><span class="minput">QCF ×2 + 3P · Load II only</span><span class="tag warn">Level 3 · 300</span></div>
+      <p class="mdesc">Requires Load II. She draws a fist the size of her whole body back into the shoulder and throws it once. She says the number under her breath first — the count of people her contract feeds — and the game never explains what it means.</p>
+      <div class="fd">
+        <div class="fdc"><b>16</b><span>Start</span></div><div class="fdc"><b>5</b><span>Active</span></div>
+        <div class="fdc"><b>58</b><span>Rec</span></div><div class="fdc pos"><b>1–16</b><span>Invuln</span></div>
+        <div class="fdc"><b>398</b><span>Dmg</span></div><div class="fdc"><b>+18</b><span>Per stack</span></div>
+      </div>
+      <div class="props"><span class="tag bad">Requires Load II</span><span class="tag hi">Armour 3 hits during startup</span><span class="tag hi">Consumes all Load</span><span class="tag warn">−58 on whiff</span></div>
+      <div class="anim">
+        <span class="animlabel">Animation · 140 frames · three beats</span>
+        <div class="keys">
+          <div class="key"><i>f1–16</i><span>Fist retracts <em>into</em> the shoulder, arm compresses to nothing. Line delivered here, under breath</span></div>
+          <div class="key smear"><i>f17–21 · stretch</i><span>Release. Fist at 400% scale, arm a single tapered tube</span></div>
+          <div class="key"><i>f22–34</i><span>Contact. 20f hitstop, screen-wide shockwave ring</span></div>
+          <div class="key"><i>f35–96</i><span>Follow-through. Arm slowly reels back in over 60f</span></div>
+          <div class="key"><i>f97–140</i><span>She catches the opponent on the way down, sets them on the floor, then sits down herself</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mright">
+      <span class="diaglabel">Single punch · shockwave</span>
+      <svg class="dg" viewBox="0 0 280 70">
+        <line x1="8" y1="58" x2="272" y2="58" stroke="#26313F"/>
+        <rect x="16" y="16" width="19" height="42" fill="#A32C1E" stroke="#F26D4B" stroke-width="1.2"/>
+        <path d="M37 32 L140 32" stroke="#C9A184" stroke-width="9"/>
+        <circle cx="168" cy="32" r="27" fill="#F26D4B" opacity=".4"/>
+        <circle cx="168" cy="32" r="27" fill="none" stroke="#F26D4B" stroke-width="1.4"/>
+        <circle cx="168" cy="32" r="14" fill="#C9A184"/>
+        <g fill="none" stroke="#F2C94C" stroke-width="1">
+          <circle cx="168" cy="32" r="36" opacity=".55"/><circle cx="168" cy="32" r="46" opacity=".3"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ROUTES -->
+  <div class="sechead"><span class="eyebrow">Conversions</span><h2>Routes</h2><span class="rule"></span></div>
+  <div class="combo"><span class="croute">LK <em>&gt;</em> LP <em>&gt;</em> HP <em>xx</em> QCF+LP</span><span class="cdmg">186</span><span class="ctag">Meterless · Load +2</span></div>
+  <div class="combo"><span class="croute">HP <em>xx</em> QCB+K <em>(bounce)</em> <em>&gt;</em> LP <em>&gt;</em> HP</span><span class="cdmg">248</span><span class="ctag">Meterless · ground bounce</span></div>
+  <div class="combo"><span class="croute">j.QCF+K <em>&gt;</em> LK <em>&gt;</em> HP <em>xx</em> QCF×2+P</span><span class="cdmg">368</span><span class="ctag">1 bar · air start</span></div>
+  <div class="combo"><span class="croute">Load II <em>&gt;</em> HP <em>&gt;</em> QCB+K <em>&gt;</em> HP <em>xx</em> QCF×2+3P</span><span class="cdmg">572</span><span class="ctag">3 bars · 5 stacks · round-ending</span></div>
+</div>
+
+<!-- ================================================================ -->
+<div class="charwrap" style="--acc:var(--blue);--accd:var(--blue-d);--glow:rgba(159,216,255,.1)">
+  <div class="sechead"><span class="eyebrow">Cross-character</span><h2>Animation standards</h2><span class="rule"></span></div>
+  <ul>
+    <li><b>Everything is on 2s and 3s.</b> Neutral poses hold. Impact frames hold. Interpolation is disabled on any frame flagged as a key — the export pipeline must not optimise repeated keys away or the entire style collapses into smooth 3D.</li>
+    <li><b>Smear frames are geometry, not motion blur.</b> Each character carries 4–7 swap meshes bound to the same skeleton, shown for 1–3 frames. Velocity King gets the maximum seven; his whole identity is the frames he leaves behind.</li>
+    <li><b>Elastic deformation is crash-test, never rubber-hose.</b> Tamsin's limbs taper and snap back with a 2–3 frame overshoot past neutral. Reference is a dummy taking a barrier hit, not a bouncing ball. The animation never mugs for a laugh.</li>
+    <li><b>Every Level 3 ends on the cost.</b> Beat one is the decision, beat two is the technique, beat three is the character visibly paying for it. Beat three is protected from cuts.</li>
+    <li><b>Command throws get long animations on purpose.</b> Presentation runs 96 frames and most of them are him being unhurried. The humiliation is the mechanic and it needs the screen time.</li>
+    <li><b>Root motion is baked to displacement curves at build time.</b> The simulation moves the character; animation never does.</li>
+  </ul>
+</div>
+
+</div>
+</body>
+</html>
