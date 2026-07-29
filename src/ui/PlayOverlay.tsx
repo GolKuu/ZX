@@ -1,6 +1,7 @@
 'use client';
 
 import { CombatHud } from './CombatHud';
+import { AangElementHud } from './AangElementHud';
 import { useRenderStore } from '@/src/store/renderStore';
 import { FightControlStrip } from './FightControlStrip';
 import { FpsMeter } from './FpsMeter';
@@ -12,6 +13,7 @@ export function PlayOverlay() {
     <div className={styles.overlay}>
       <XrayCinematic />
       <CombatHud />
+      <AangElementHud />
       <FightControlStrip />
       {process.env.NODE_ENV !== 'production' && <DevelopmentTools />}
     </div>
