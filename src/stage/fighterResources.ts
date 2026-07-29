@@ -3,8 +3,8 @@
  *
  * Still primitives — authored meshes are an asset task, not a code one — but
  * built to a real figure instead of a capsule mannequin: 1.90 m at roughly 7.5
- * heads, with the joints and mass distribution an anime fighter needs to read
- * as a silhouette (ART-CCU-400 §1.3).
+ * heads, with the joints and mass distribution a fighter needs to read as a
+ * silhouette (ART-CCU-400 §1.3).
  *
  * Every dimension is expressed against HEAD so the proportions stay locked when
  * the scale changes.

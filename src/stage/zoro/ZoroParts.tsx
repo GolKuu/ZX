@@ -3,13 +3,20 @@ import { FighterPart } from '../FighterPart';
 import type { ZoroBodyProps } from './ZoroBody';
 import { ZoroSword } from './ZoroSword';
 
+import { HEAD_UNIT as H } from './zoroResources';
+
 const hairSpikes = [
-  [-0.22, 0.25, -0.02, -0.4],
-  [0, 0.32, -0.04, 0],
-  [0.22, 0.25, -0.02, 0.4],
-  [-0.12, 0.26, 0.18, -0.2],
-  [0.12, 0.26, 0.18, 0.2],
+  [-H * 1.5, H * 1.7, -H * 0.15, -0.4],
+  [0, H * 2.1, -H * 0.3, 0],
+  [H * 1.5, H * 1.7, -H * 0.15, 0.4],
+  [-H * 0.85, H * 1.8, H * 1.25, -0.2],
+  [H * 0.85, H * 1.8, H * 1.25, 0.2],
 ] as const;
+
+/** Eyes sit forward on the face and are wide — the primary style read. */
+const EYE_X = H * 0.44;
+const EYE_Y = H * 0.1;
+const EYE_Z = H * 0.86;
 
 export function ZoroHead({
   materials,
@@ -24,6 +31,61 @@ export function ZoroHead({
         outlineMaterial={outline}
         toonMaterial={materials.skin}
       />
+      <FighterPart
+        geometry={resources.jaw}
+        outlineMaterial={outline}
+        position={[0, -H * 0.34, H * 0.1]}
+        scale={[0.92, 0.78, 0.96]}
+        toonMaterial={materials.skin}
+      />
+
+      {/* Eyes. Drawn elements, not surfaces — no outline pass, no shading. */}
+      {[-1, 1].map((side) => (
+        <group key={side} position={[EYE_X * side, EYE_Y, EYE_Z]}>
+          <mesh
+            geometry={resources.eyeWhite}
+            material={materials.eyeWhite}
+            scale={[1.32, 1.06, 0.42]}
+          />
+          <mesh
+            geometry={resources.iris}
+            material={materials.iris}
+            position={[side * H * 0.03, -H * 0.02, H * 0.19]}
+          />
+          <mesh
+            geometry={resources.pupil}
+            material={materials.pupil}
+            position={[side * H * 0.03, -H * 0.02, H * 0.2]}
+          />
+          <mesh
+            geometry={resources.catchlight}
+            material={materials.catchlight}
+            position={[side * H * 0.13, H * 0.12, H * 0.21]}
+          />
+          {/* Upper lid line: the heaviest stroke on the face. */}
+          <mesh
+            geometry={resources.lidLine}
+            material={materials.lineArt}
+            position={[0, H * 0.24, H * 0.16]}
+            rotation={[0, 0, side * -0.14]}
+          />
+          <mesh
+            geometry={resources.brow}
+            material={materials.lineArt}
+            position={[0, H * 0.46, H * 0.1]}
+            rotation={[0, 0, side * -0.26]}
+          />
+        </group>
+      ))}
+
+      {/* Hair mass first, spikes over it, so the silhouette reads as one shape. */}
+      <FighterPart
+        geometry={resources.hairMass}
+        outlineMaterial={outline}
+        position={[0, H * 0.24, -H * 0.16]}
+        scale={[1, 0.9, 1]}
+        toonMaterial={materials.hair}
+      />
       {hairSpikes.map(([x, y, z, rotation]) => (
         <FighterPart
           key={`${x}-${z}`}
@@ -34,12 +96,12 @@ export function ZoroHead({
           toonMaterial={materials.hair}
         />
       ))}
-      {[-0.09, 0, 0.09].map((offset) => (
+      {[-H * 0.7, 0, H * 0.7].map((offset) => (
         <mesh
           key={offset}
           geometry={resources.earring}
           material={materials.gold}
-          position={[0.31, -0.16 + offset, 0]}
+          position={[H * 1.02, -H * 0.5 + offset, 0]}
         />
       ))}
     </group>
