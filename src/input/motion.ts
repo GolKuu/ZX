@@ -14,6 +14,8 @@ export type MotionId =
   | 'none'
   | 'qcf'
   | 'qcb'
+  | 'qcf2'
+  | 'qcb2'
   | 'hcb'
   | 'hcf'
   | 'dp'
@@ -40,6 +42,16 @@ interface MotionDefinition {
 }
 
 const MOTIONS: Readonly<Record<Exclude<MotionId, 'none'>, MotionDefinition>> = {
+  qcf2: {
+    steps: [DOWN, DOWN_FORWARD, FORWARD, DOWN, DOWN_FORWARD, FORWARD],
+    slack: 6,
+    window: 38,
+  },
+  qcb2: {
+    steps: [DOWN, DOWN_BACK, BACK, DOWN, DOWN_BACK, BACK],
+    slack: 6,
+    window: 38,
+  },
   qcf: { steps: [DOWN, DOWN_FORWARD, FORWARD], slack: 6, window: 20 },
   qcb: { steps: [DOWN, DOWN_BACK, BACK], slack: 6, window: 20 },
   hcf: {
@@ -118,6 +130,8 @@ export function detectMotion(
   buffer: InputBuffer,
   endingAgo = 0,
   candidates: readonly MotionId[] = [
+    'qcf2',
+    'qcb2',
     'hcb',
     'hcf',
     'dp',
