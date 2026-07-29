@@ -2,6 +2,7 @@
 
 import { Arena } from './Arena';
 import { CameraRig } from './CameraRig';
+import { CombatGameLoop } from './CombatGameLoop';
 import { FrameProfiler } from './FrameProfiler';
 import { ImpactBurst } from './ImpactBurst';
 import { LazyPostEffects } from './LazyPostEffects';
@@ -19,16 +20,14 @@ export function RenderScene() {
 
       <SpeedLines />
       <Arena />
+      <CombatGameLoop />
       <ZoroFighter
         auraColor="#3dff9a"
-        controlled
-        position={[-1.55, 0, 0]}
-        facing={1}
+        fighterId="p1"
       />
       <ZoroFighter
         auraColor="#ff6d72"
-        position={[1.55, 0, 0]}
-        facing={-1}
+        fighterId="p2"
       />
       <ImpactBurst />
       <CameraRig />

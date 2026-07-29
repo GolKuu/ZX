@@ -1,7 +1,15 @@
 import { create } from 'zustand';
 import type { HudSnapshot } from '@/src/hud/types';
 
-export type HudScreen = 'fight' | 'pause' | 'controls' | 'result';
+export type HudScreen =
+  | 'mode'
+  | 'fight'
+  | 'pause'
+  | 'controls'
+  | 'result'
+  | 'online';
+
+export type MatchMode = 'local' | 'ai' | 'online';
 
 export interface MatchResult {
   readonly winner: string;
@@ -14,6 +22,7 @@ export interface MatchResult {
 type HudState = {
   snapshot: HudSnapshot;
   screen: HudScreen;
+  mode: MatchMode | null;
   menuFocus: number;
   touchControlsForced: boolean;
   result: MatchResult;
@@ -26,11 +35,13 @@ type HudState = {
   resume: () => void;
   openControls: () => void;
   openResult: (result: MatchResult) => void;
+  openModeMenu: () => void;
+  selectMode: (mode: MatchMode) => void;
   setMenuFocus: (index: number) => void;
   toggleTouchControls: () => void;
 };
 
-const initialSnapshot = (): HudSnapshot => ({
+const initialSnapshot = (mode: MatchMode = 'local'): HudSnapshot => ({
   frame: 0,
   round: 1,
   timerFrames: 99 * 60,
@@ -48,7 +59,7 @@ const initialSnapshot = (): HudSnapshot => ({
     {
       id: 'p2',
       displayName: 'Roronoa Zoro',
-      playerTag: 'P2',
+      playerTag: mode === 'ai' ? 'CPU' : 'P2',
       side: 'right',
       health: 1000,
       maxHealth: 1000,
@@ -69,7 +80,8 @@ const initialResult: MatchResult = {
 
 export const useHudStore = create<HudState>((set) => ({
   snapshot: initialSnapshot(),
-  screen: 'fight',
+  screen: 'mode',
+  mode: null,
   menuFocus: 0,
   touchControlsForced: false,
   result: initialResult,
@@ -126,16 +138,25 @@ export const useHudStore = create<HudState>((set) => ({
       };
     }),
   resetPreview: () =>
-    set({
-      snapshot: initialSnapshot(),
+    set((state) => ({
+      snapshot: initialSnapshot(state.mode ?? 'local'),
       screen: 'fight',
       menuFocus: 0,
       previewComboFrames: 0,
-    }),
+    })),
   openPause: () => set({ screen: 'pause', menuFocus: 0 }),
   resume: () => set({ screen: 'fight', menuFocus: 0 }),
   openControls: () => set({ screen: 'controls', menuFocus: 0 }),
   openResult: (result) => set({ screen: 'result', menuFocus: 0, result }),
+  openModeMenu: () => set({ screen: 'mode', menuFocus: 0 }),
+  selectMode: (mode) =>
+    set({
+      mode,
+      screen: mode === 'online' ? 'online' : 'fight',
+      snapshot: initialSnapshot(mode),
+      menuFocus: 0,
+      previewComboFrames: 0,
+    }),
   setMenuFocus: (menuFocus) => set({ menuFocus }),
   toggleTouchControls: () =>
     set((state) => ({ touchControlsForced: !state.touchControlsForced })),
@@ -144,7 +165,8 @@ export const useHudStore = create<HudState>((set) => ({
 export function resetHudStore(): void {
   useHudStore.setState({
     snapshot: initialSnapshot(),
-    screen: 'fight',
+    screen: 'mode',
+    mode: null,
     menuFocus: 0,
     touchControlsForced: false,
     result: initialResult,

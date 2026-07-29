@@ -1,4 +1,4 @@
-import type { WorldSnapshot } from '@/src/sim';
+import type { FighterSnapshot, WorldSnapshot } from '@/src/sim';
 
 interface CombatRenderFrame {
   world: WorldSnapshot | null;
@@ -26,4 +26,13 @@ export function requestCombatReset(): void {
 
 export function readCombatResetVersion(): number {
   return requestedReset;
+}
+
+export function readCombatFighter(id: string): FighterSnapshot | null {
+  const fighters = combatRenderFrame.world?.fighters;
+  if (fighters === undefined) return null;
+  for (const fighter of fighters) {
+    if (fighter.id === id) return fighter;
+  }
+  return null;
 }
