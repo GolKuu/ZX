@@ -1,13 +1,11 @@
 'use client';
 
-import { useFrame } from '@react-three/fiber';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   AdditiveBlending,
   Color,
   DoubleSide,
   ShaderMaterial,
-  type IUniform,
 } from 'three';
 import { shaftFragment, shaftVertex } from './arenaShaders';
 
@@ -18,13 +16,11 @@ const SHAFTS = [
 ] as const;
 
 export function LightShafts() {
-  const timeUniform = useRef<IUniform<number> | null>(null);
   const material = useMemo(
     () =>
       new ShaderMaterial({
         uniforms: {
           uColor: { value: new Color('#b95cff') },
-          uTime: { value: 0 },
         },
         vertexShader: shaftVertex,
         fragmentShader: shaftFragment,
@@ -39,15 +35,8 @@ export function LightShafts() {
   );
 
   useEffect(() => {
-    timeUniform.current = material.uniforms.uTime ?? null;
     return () => material.dispose();
   }, [material]);
-
-  useFrame(({ clock }) => {
-    if (timeUniform.current !== null) {
-      timeUniform.current.value = clock.elapsedTime;
-    }
-  });
 
   return (
     <group position-z={-11.5} renderOrder={-6}>

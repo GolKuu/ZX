@@ -1,14 +1,12 @@
 'use client';
 
-import { useFrame } from '@react-three/fiber';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   AdditiveBlending,
   Color,
   DoubleSide,
   MeshBasicMaterial,
   ShaderMaterial,
-  type IUniform,
   type Material,
 } from 'three';
 import { ARENA_RADIUS, buildDebris } from './arenaData';
@@ -19,7 +17,6 @@ interface ArenaPlatformProps {
 }
 
 export function ArenaPlatform({ stoneMaterial }: ArenaPlatformProps) {
-  const timeUniform = useRef<IUniform<number> | null>(null);
   const pillars = useMemo(() => buildDebris(9, 777), []);
   const floorMaterial = useMemo(
     () =>
@@ -29,7 +26,6 @@ export function ArenaPlatform({ stoneMaterial }: ArenaPlatformProps) {
           uLine: { value: new Color('#6f3eb3') },
           uEdge: { value: new Color('#d78cff') },
           uRadius: { value: ARENA_RADIUS },
-          uTime: { value: 0 },
         },
         vertexShader: floorVertex,
         fragmentShader: floorFragment,
@@ -52,18 +48,11 @@ export function ArenaPlatform({ stoneMaterial }: ArenaPlatformProps) {
   );
 
   useEffect(() => {
-    timeUniform.current = floorMaterial.uniforms.uTime ?? null;
     return () => {
       floorMaterial.dispose();
       edgeMaterial.dispose();
     };
   }, [edgeMaterial, floorMaterial]);
-
-  useFrame(({ clock }) => {
-    if (timeUniform.current !== null) {
-      timeUniform.current.value = clock.elapsedTime;
-    }
-  });
 
   return (
     <group>

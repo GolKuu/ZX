@@ -1,12 +1,10 @@
 'use client';
 
-import { useFrame } from '@react-three/fiber';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   AdditiveBlending,
   Color,
   DoubleSide,
-  Group,
   MeshBasicMaterial,
   Shape,
   ShapeGeometry,
@@ -25,7 +23,6 @@ function makeRift(width: number) {
 }
 
 export function VoidRift() {
-  const groupRef = useRef<Group>(null);
   const outerGeometry = useMemo(() => makeRift(4.8), []);
   const middleGeometry = useMemo(() => makeRift(2.8), []);
   const coreGeometry = useMemo(() => makeRift(0.9), []);
@@ -54,16 +51,8 @@ export function VoidRift() {
     [coreGeometry, middleGeometry, outerGeometry, outerMaterial],
   );
 
-  useFrame(({ clock }) => {
-    const group = groupRef.current;
-    if (group === null) return;
-    const pulse = 1 + Math.sin(clock.elapsedTime * 1.7) * 0.025;
-    group.scale.set(pulse, 1 + Math.cos(clock.elapsedTime * 1.2) * 0.012, 1);
-    group.rotation.z = Math.sin(clock.elapsedTime * 0.28) * 0.015;
-  });
-
   return (
-    <group ref={groupRef} position={[0, 4.7, -15.5]} renderOrder={-7}>
+    <group position={[0, 4.7, -15.5]} renderOrder={-7}>
       <mesh geometry={outerGeometry} material={outerMaterial} scale={1.18} />
       <mesh geometry={middleGeometry}>
         <meshBasicMaterial

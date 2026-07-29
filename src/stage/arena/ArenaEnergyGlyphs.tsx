@@ -1,8 +1,7 @@
 'use client';
 
-import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
-import { AdditiveBlending, InstancedMesh, MeshBasicMaterial, Object3D } from 'three';
+import { AdditiveBlending, InstancedMesh, Object3D } from 'three';
 
 interface EnergySegment {
   readonly angle: number;
@@ -53,8 +52,6 @@ function setSegments(mesh: InstancedMesh, segments: EnergySegment[]) {
 export function ArenaEnergyGlyphs() {
   const runeRef = useRef<InstancedMesh>(null);
   const crackRef = useRef<InstancedMesh>(null);
-  const runeMaterialRef = useRef<MeshBasicMaterial>(null);
-  const crackMaterialRef = useRef<MeshBasicMaterial>(null);
   const runes = useMemo(() => buildRunes(), []);
   const cracks = useMemo(() => buildCracks(), []);
 
@@ -63,18 +60,11 @@ export function ArenaEnergyGlyphs() {
     if (crackRef.current !== null) setSegments(crackRef.current, cracks);
   }, [cracks, runes]);
 
-  useFrame(({ clock }) => {
-    const pulse = 0.48 + Math.sin(clock.elapsedTime * 2.3) * 0.14;
-    if (runeMaterialRef.current !== null) runeMaterialRef.current.opacity = pulse;
-    if (crackMaterialRef.current !== null) crackMaterialRef.current.opacity = pulse * 0.72;
-  });
-
   return (
     <group>
       <instancedMesh ref={runeRef} args={[undefined, undefined, runes.length]}>
         <boxGeometry args={[1, 0.018, 0.045]} />
         <meshBasicMaterial
-          ref={runeMaterialRef}
           blending={AdditiveBlending}
           color="#d478ff"
           depthWrite={false}
@@ -86,7 +76,6 @@ export function ArenaEnergyGlyphs() {
       <instancedMesh ref={crackRef} args={[undefined, undefined, cracks.length]}>
         <boxGeometry args={[1, 0.016, 0.025]} />
         <meshBasicMaterial
-          ref={crackMaterialRef}
           blending={AdditiveBlending}
           color="#883dff"
           depthWrite={false}
