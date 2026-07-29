@@ -1,0 +1,75 @@
+import { MathUtils, type Group } from 'three';
+import type { FighterSnapshot } from '@/src/sim';
+
+interface LocomotionRig {
+  readonly root: Group;
+  readonly torso: Group;
+  readonly head: Group;
+  readonly leftArm: Group;
+  readonly rightArm: Group;
+  readonly leftLeg: Group;
+  readonly rightLeg: Group;
+}
+
+const COMBAT_YAW = Math.PI * 0.29;
+const WALK_SPEED = 8.4;
+const WALK_VELOCITY = 65;
+const WALK_THRESHOLD = 16;
+
+export function facingOpponent(
+  fighter: FighterSnapshot,
+  opponent: FighterSnapshot | null,
+): -1 | 1 {
+  if (opponent === null) return fighter.facing;
+  const distance = opponent.position.x - fighter.position.x;
+  if (Math.abs(distance) < 1) return fighter.facing;
+  return distance > 0 ? 1 : -1;
+}
+
+export function turnTowardOpponent(group: Group, facing: -1 | 1): void {
+  group.rotation.y = facing * COMBAT_YAW;
+}
+
+export function applyWalkCycle(
+  rig: LocomotionRig,
+  fighter: FighterSnapshot,
+  time: number,
+  visualFacing: -1 | 1,
+  bodyScale = 1,
+): void {
+  const isWalking = (
+    fighter.grounded
+    && fighter.action === null
+    && !fighter.guarding
+    && fighter.hitstop === 0
+    && fighter.hitstun === 0
+    && Math.abs(fighter.velocity.x) >= WALK_THRESHOLD
+  );
+  if (!isWalking) return;
+
+  const speed = MathUtils.clamp(
+    Math.abs(fighter.velocity.x) / WALK_VELOCITY,
+    0.62,
+    1.18,
+  );
+  const travelDirection = fighter.velocity.x * visualFacing >= 0 ? 1 : -1;
+  const phase = time * WALK_SPEED * speed * travelDirection;
+  const stride = Math.sin(phase);
+  const counterStride = Math.sin(phase + Math.PI);
+  const landing = Math.abs(Math.sin(phase));
+
+  rig.root.position.y += landing * 0.04 * bodyScale;
+  rig.root.rotation.z -= stride * 0.025;
+  rig.torso.rotation.z += stride * 0.055;
+  rig.head.rotation.z -= stride * 0.025;
+
+  rig.leftLeg.rotation.x += stride * 0.28;
+  rig.leftLeg.rotation.z += stride * 0.34;
+  rig.rightLeg.rotation.x += counterStride * 0.28;
+  rig.rightLeg.rotation.z += counterStride * 0.34;
+
+  rig.leftArm.rotation.x += counterStride * 0.18;
+  rig.leftArm.rotation.z += counterStride * 0.3;
+  rig.rightArm.rotation.x += stride * 0.18;
+  rig.rightArm.rotation.z += stride * 0.3;
+}

@@ -14,6 +14,11 @@ import {
 } from '@/src/render/outlineMaterial';
 import { updateRimAxis } from '@/src/render/toonMaterial';
 import { FIXED_SCALE } from '@/src/sim';
+import {
+  applyWalkCycle,
+  facingOpponent,
+  turnTowardOpponent,
+} from './fighterPresentation';
 import { AangBody } from './aang3d/AangBody';
 import {
   createAangMaterials,
@@ -80,13 +85,15 @@ export function AangFighter({
       + (fighter.position.x - fighter.previousPosition.x) * alpha
     ) / FIXED_SCALE;
     outerGroup.position.y = fighter.position.y / FIXED_SCALE;
-    outerGroup.rotation.y = fighter.facing === 1 ? -0.08 : Math.PI + 0.08;
+    const opponent = readCombatFighter(opponentId);
+    const visualFacing = facingOpponent(fighter, opponent);
+    turnTowardOpponent(outerGroup, visualFacing);
+    applyWalkCycle(currentRig, fighter, clock.elapsedTime, visualFacing, 0.82);
     applyAangCombatAnimation(currentRig, fighter);
     if (fighter.action !== null) {
       materials.effect.color.set(effectColor(fighter.action.moveId));
     }
 
-    const opponent = readCombatFighter(opponentId);
     const self = { x: outerGroup.position.x, z: outerGroup.position.z };
     const other = opponent === null
       ? { x: self.x + fighter.facing, z: self.z }
