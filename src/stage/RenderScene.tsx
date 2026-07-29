@@ -14,6 +14,7 @@ import { CombatGameLoop } from './CombatGameLoop';
 import { ChronoFighter } from './ChronoFighter';
 import { EchoFighter } from './EchoFighter';
 import { FrameProfiler } from './FrameProfiler';
+import { GlitchFighter } from './GlitchFighter';
 import { IdolFighter } from './IdolFighter';
 import { LazyPostEffects } from './LazyPostEffects';
 import { MimFighter } from './MimFighter';
@@ -104,6 +105,9 @@ function primitiveFighter(
   }
   if (characterId === 'idol') {
     return <IdolFighter auraColor={auraColor} fighterId={fighterId} />;
+  }
+  if (characterId === 'glitch') {
+    return <GlitchFighter fighterId={fighterId} />;
   }
   if (characterId === 'mim') {
     return <MimFighter auraColor={auraColor} fighterId={fighterId} />;

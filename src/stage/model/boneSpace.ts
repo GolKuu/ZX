@@ -22,7 +22,7 @@
  */
 
 import { Euler, Quaternion, Vector3, type Bone, type Object3D } from 'three';
-import type { HumanoidJointName, HumanoidJoints } from './humanoidBones';
+import type { HumanoidJointName, HumanoidJoints } from './humanoidBones.js';
 
 /** Parent orientation in character space, captured from the rest pose. */
 const PARENT_REST = new WeakMap<Bone, Quaternion>();

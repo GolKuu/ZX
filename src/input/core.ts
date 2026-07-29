@@ -58,6 +58,10 @@ export {
 } from './mimCommands.js';
 
 export {
+  GLITCH_COMMANDS,
+} from './glitchCommands.js';
+
+export {
   DEFAULT_CONTEXT,
   KADE_COMMANDS,
   isGuarding,

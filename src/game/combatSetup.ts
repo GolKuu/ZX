@@ -13,6 +13,8 @@ import { ECHO_AI_LOADOUT } from '@/src/data/echo-ai';
 import { ECHO_MOVES } from '@/src/data/echo-combat-moves';
 import { CHRONO_AI_LOADOUT } from '@/src/data/chrono-ai';
 import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
+import { GLITCH_AI_LOADOUT } from '@/src/data/glitch-ai';
+import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
 import { ROSTER_ADDITION_MOVES } from '@/src/data/roster-moves';
 import { HudBridge } from '@/src/hud';
@@ -37,6 +39,7 @@ export const ALL_COMBAT_MOVES = [
   ...IDOL_MOVES,
   ...ECHO_MOVES,
   ...CHRONO_MOVES,
+  ...GLITCH_MOVES,
 ];
 
 export function createCombatEngine(): CombatEngine {
@@ -60,7 +63,9 @@ export function createCombatAi(characterId: CharacterId = 'zoro'): CombatAiAgent
       ? ECHO_AI_LOADOUT
       : characterId === 'chrono'
         ? CHRONO_AI_LOADOUT
-        : characterId === 'idol' ? IDOL_AI_LOADOUT : KADE_AI_LOADOUT,
+        : characterId === 'glitch'
+          ? GLITCH_AI_LOADOUT
+          : characterId === 'idol' ? IDOL_AI_LOADOUT : KADE_AI_LOADOUT,
     seed: 29,
   });
 }

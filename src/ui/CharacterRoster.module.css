@@ -2,12 +2,14 @@
   position: relative;
   z-index: 4;
   display: grid;
-  align-content: center;
+  min-height: 0;
+  align-content: stretch;
   padding: 6cqw 1.8cqw 4.8cqw;
   background: rgb(4 7 11 / 76%);
   border-right: 1px solid var(--select-line);
   border-left: 1px solid var(--select-line);
   backdrop-filter: blur(0.8cqw);
+  grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 .prompt {
@@ -30,7 +32,13 @@
 
 .characterList {
   display: grid;
+  min-height: 0;
+  align-content: start;
   gap: 0.7cqw;
+  overflow-y: auto;
+  padding-right: 0.35cqw;
+  scrollbar-color: var(--select-blue) transparent;
+  scrollbar-width: thin;
 }
 
 .characterList button {
@@ -61,6 +69,12 @@
 .characterList button[data-character="void-walker"] > i {
   color: #d0a8ff;
   background: linear-gradient(145deg, #382c50, #141323);
+}
+
+.characterList button[data-character="glitch"] > i {
+  color: #16e6ff;
+  background: linear-gradient(145deg, #ff2bd6, #080a10 58%);
+  text-shadow: 0.12cqw 0 #ff2bd6;
 }
 
 .characterList button[data-character="mim"] > i {

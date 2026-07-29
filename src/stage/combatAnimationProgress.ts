@@ -6,6 +6,7 @@ import { IDOL_MOVES } from '@/src/data/idol-combat-moves';
 import { ECHO_MOVES } from '@/src/data/echo-combat-moves';
 import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
+import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
 import { totalMoveFrames } from '@/src/sim';
 
 const WINDUP_END = 0.34;
@@ -22,6 +23,7 @@ const MOVES_BY_ID = new Map(
     ...IDOL_MOVES,
     ...ECHO_MOVES,
     ...CHRONO_MOVES,
+    ...GLITCH_MOVES,
   ].map((move) => [move.id, move]),
 );
 
