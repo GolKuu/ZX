@@ -150,6 +150,9 @@ export function updateRimAxis(
  * removed. It intentionally does nothing; new fighters should not call it.
  */
 export function decayFlash(
-  _material: ToonMaterial,
-  _deltaFrames: number,
-): void {}
+  material: ToonMaterial,
+  deltaFrames: number,
+): void {
+  void material;
+  void deltaFrames;
+}

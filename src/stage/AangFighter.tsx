@@ -12,7 +12,7 @@ import {
   createOutlineMaterial,
   updateOutlineProjection,
 } from '@/src/render/outlineMaterial';
-import { decayFlash, updateRimAxis } from '@/src/render/toonMaterial';
+import { updateRimAxis } from '@/src/render/toonMaterial';
 import { FIXED_SCALE } from '@/src/sim';
 import { AangBody } from './aang3d/AangBody';
 import {
@@ -67,7 +67,7 @@ export function AangFighter({
     outline.dispose();
   }, [gradient, materials, outline, resources]);
 
-  useFrame(({ camera: activeCamera, clock }, delta) => {
+  useFrame(({ camera: activeCamera, clock }) => {
     rig.current ??= readAangRig(refs);
     const currentRig = rig.current;
     const fighter = readCombatFighter(fighterId);
@@ -93,7 +93,6 @@ export function AangFighter({
       : { x: opponent.position.x / FIXED_SCALE, z: self.z };
     for (const material of toonMaterials) {
       updateRimAxis(material, self, other, activeCamera.matrixWorldInverse);
-      decayFlash(material, delta * 60);
     }
   });
 
