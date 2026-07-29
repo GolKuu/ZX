@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { validateAangAnimations } from '../animation/validation';
 import { AANG_MOVES } from '../moves';
 import type { AangMove, AangElement } from '../types';
 import { AangStage } from './AangStage';
@@ -18,6 +19,8 @@ const FILTERS: readonly { id: MoveFilter; label: string; detail: string }[] = [
   { id: 'water', label: 'Вода', detail: 'mid-range · zoning' },
   { id: 'specials', label: 'Особые', detail: 'specials · supers' },
 ];
+
+validateAangAnimations(AANG_MOVES);
 
 export function AangLab() {
   const [filter, setFilter] = useState<MoveFilter>('air');
