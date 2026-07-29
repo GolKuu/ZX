@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { requestCombatReset } from '@/src/game/combatRuntime';
 import { useHudStore, type MatchMode } from '@/src/store/hudStore';
 import { useMenuNavigation } from './useMenuNavigation';
 import styles from './ModeMenu.module.css';
@@ -13,7 +14,7 @@ const MODES = [
     detail: 'Два игрока · одно устройство',
     status: 'ГОТОВО',
     description:
-      'Сразитесь рядом за одной клавиатурой или подключите два геймпада. Второй игрок управляет соперником напрямую.',
+      'Сразитесь рядом за одной клавиатурой: P1 использует WASD, а P2 — стрелки и цифровой блок.',
   },
   {
     id: 'ai',
@@ -47,10 +48,17 @@ export function ModeMenu() {
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const selected = MODES[menuFocus] ?? MODES[0];
 
+  const startMode = useCallback((mode: MatchMode) => {
+    const previousMode = useHudStore.getState().mode;
+    selectMode(mode);
+    if (mode !== 'online' && previousMode === mode) {
+      requestCombatReset();
+    }
+  }, [selectMode]);
   const confirm = useCallback(() => {
     const mode = MODES[useHudStore.getState().menuFocus];
-    if (mode !== undefined) selectMode(mode.id);
-  }, [selectMode]);
+    if (mode !== undefined) startMode(mode.id);
+  }, [startMode]);
   const back = useCallback(() => router.push('/'), [router]);
 
   useMenuNavigation({
@@ -83,7 +91,7 @@ export function ModeMenu() {
               }}
               type="button"
               data-focused={index === menuFocus}
-              onClick={() => selectMode(mode.id)}
+              onClick={() => startMode(mode.id)}
               onFocus={() => setMenuFocus(index)}
               onPointerEnter={() => setMenuFocus(index)}
             >

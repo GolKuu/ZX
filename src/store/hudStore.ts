@@ -114,6 +114,5 @@ export function resetHudStore(): void {
     menuFocus: 0,
     touchControlsForced: false,
     result: initialResult,
-    previewComboFrames: 0,
   });
 }
