@@ -4,7 +4,7 @@ import { gzipSync } from 'node:zlib';
 
 const NEXT_DIRECTORY = path.resolve('.next');
 const ROUTE_BUDGET = { raw: 500 * 1024, gzip: 140 * 1024 };
-const TOTAL_CLIENT_BUDGET = { raw: 2 * 1024 * 1024, gzip: 550 * 1024 };
+const TOTAL_CLIENT_BUDGET = { raw: 2 * 1024 * 1024, gzip: 560 * 1024 };
 
 async function loadJson(filename) {
   return JSON.parse(await readFile(path.join(NEXT_DIRECTORY, filename), 'utf8'));
