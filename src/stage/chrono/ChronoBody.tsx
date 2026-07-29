@@ -5,6 +5,12 @@ import type { FighterResources } from '../fighterResources';
 import type { ChronoMaterials } from './chronoMaterials';
 import type { ChronoRigRefs } from './chronoRig';
 
+const CLOCK_FRAGMENTS: readonly (readonly [number, number, number, number])[] = [
+  [-0.58, 0.32, -0.1, -0.4],
+  [0.62, 0.18, 0.04, 1.8],
+  [-0.48, -0.55, 0.08, 3.5],
+];
+
 export function ChronoBody({
   materials,
   outline,
@@ -110,11 +116,7 @@ function ClockFragments({
 }) {
   return (
     <group ref={refGroup}>
-      {[
-        [-0.58, 0.32, -0.1, -0.4],
-        [0.62, 0.18, 0.04, 1.8],
-        [-0.48, -0.55, 0.08, 3.5],
-      ].map(([x, y, z, rotation], index) => (
+      {CLOCK_FRAGMENTS.map(([x, y, z, rotation], index) => (
         <mesh key={index} material={material} position={[x, y, z]} rotation-z={rotation}>
           <torusGeometry args={[0.13, 0.018, 5, 18, Math.PI * 0.72]} />
         </mesh>
