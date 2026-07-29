@@ -78,10 +78,14 @@ export function ArenaPlatform({ stoneMaterial }: ArenaPlatformProps) {
         <ringGeometry args={[ARENA_RADIUS - 0.09, ARENA_RADIUS + 0.02, 96]} />
       </mesh>
 
+      {/* The ring pillars stand 6.5–14.5 m out, and the key light is only 8.6 m
+          up — so anything on the lit side threw a pillar-length shadow straight
+          across the disc, put both fighters in shade and left a hard black smear
+          on the floor beside them. They are backdrop silhouette; they do not get
+          to light the fight. */}
       {pillars.map((item, index) => (
         <mesh
           key={`pillar-${String(index)}`}
-          castShadow
           material={stoneMaterial}
           position={[item.position[0], -0.8 + item.scale[1] * 2.4, item.position[2]]}
           receiveShadow

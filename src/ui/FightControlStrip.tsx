@@ -46,6 +46,8 @@ export function FightControlStrip() {
       {selection[1] === 'chrono' && <ChronoMoveGroup fighterId="p2" />}
       {selection[0] === 'mim' && <MimMoveGroup fighterId="p1" />}
       {selection[1] === 'mim' && <MimMoveGroup fighterId="p2" />}
+      {selection[0] === 'glitch' && <GlitchMoveGroup fighterId="p1" />}
+      {selection[1] === 'glitch' && <GlitchMoveGroup fighterId="p2" />}
       <button type="button" onClick={openControls}>Изменить</button>
     </section>
   );
@@ -88,6 +90,15 @@ function MimMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
     <span className={styles.elementGroup}>
       <small>{fighterId.toUpperCase()} · LP / HP / LK / HK</small>
       <b>ЩЕЛЧОК · КУРСОР · БАНАН · СТУЛ</b>
+    </span>
+  );
+}
+
+function GlitchMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
+  return (
+    <span className={styles.elementGroup}>
+      <small>{fighterId.toUpperCase()} · QCF / QCB / DP + J/K</small>
+      <b>PACKET LOSS · CORRUPTED ZONE · DESYNC JUMP</b>
     </span>
   );
 }
