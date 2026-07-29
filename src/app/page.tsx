@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { StructuredData } from './StructuredData';
 import styles from './page.module.css';
 
 const features = ['CEL SHADING', 'GPU IMPACT FX', '60 FPS TARGET'];
@@ -6,6 +7,7 @@ const features = ['CEL SHADING', 'GPU IMPACT FX', '60 FPS TARGET'];
 export default function HomePage() {
   return (
     <main className={styles.page}>
+      <StructuredData />
       <div className={styles.glow} aria-hidden="true" />
       <header className={styles.header}>
         <span className={styles.brand}>CC//ULTIMATE</span>

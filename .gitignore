@@ -1,5 +1,6 @@
 node_modules
 .next
+analyze
 out
 dist
 dist-ssr

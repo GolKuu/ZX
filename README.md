@@ -35,9 +35,9 @@ This project has extensive design documentation describing a $50M, 32-month prod
 ## 2. Current status
 
 ```
-Phase:      Not started
-Next task:  T-01 (see §9)
-Deployed:   no
+Phase:      Production hardening
+Next task:  Continue vertical slice gameplay integration
+Deployed:   yes — https://zx-puce.vercel.app
 ```
 
 Update this block after every completed task.
@@ -49,9 +49,10 @@ Update this block after every completed task.
 | Layer | Choice | Notes |
 |---|---|---|
 | Framework | **Next.js 15**, App Router, TypeScript strict | |
-| 3D | **three.js** + **@react-three/fiber** + **@react-three/drei** | |
+| 3D | **three.js** + **@react-three/fiber** | |
 | UI state | **zustand** | Menus and HUD only. Never gameplay |
 | Hosting | **Vercel** | |
+| Observability | **Vercel Analytics + Speed Insights + Runtime Logs** | No external tracker |
 | Assets | **Mixamo** character + fight animations → Blender → single `.glb` | Placeholder only. See §7 |
 | Audio | Web Audio API directly. No library | |
 
@@ -84,7 +85,7 @@ Exactly twenty-one items. Nothing else ships.
 - [ ] **F17** HUD: health bars, timer, round pips, combo counter
 - [ ] **F18** ~12 sound effects + 1 music loop
 - [ ] **F19** Title → fight → result → rematch loop
-- [ ] **F20** Deployed to Vercel, publicly playable
+- [x] **F20** Deployed to Vercel, publicly playable
 - [ ] **F21** Front-end screens: title, menu, difficulty, player setup, VS, pause, result, controls
 
 ### 4.1 UI specification
@@ -392,10 +393,13 @@ npm install
 npm run dev          # http://localhost:3000/play
 npm run build
 npm run lint
+npm run verify       # complete production gate
+npm run analyze      # private bundle report
 npx tsc --noEmit     # must pass with zero errors
 ```
 
 Deploy: push to `main`. Vercel builds automatically.
+See [`docs/PRODUCTION.md`](docs/PRODUCTION.md) for budgets and post-deploy checks.
 
 ---
 

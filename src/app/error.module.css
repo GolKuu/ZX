@@ -1,0 +1,56 @@
+.page {
+  align-items: center;
+  background: radial-gradient(circle at 50% 35%, #152b43, #060914 60%);
+  color: #f4f7ff;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.eyebrow {
+  color: #71dcff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  margin: 0;
+}
+
+.page h1 {
+  font-size: clamp(2rem, 7vw, 4.5rem);
+  line-height: 0.95;
+  margin: 0;
+}
+
+.page p {
+  color: #b9c9df;
+  margin: 0;
+  max-width: 34rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.actions a,
+.actions button {
+  background: #71dcff;
+  border: 0;
+  color: #071018;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0.8rem 1.1rem;
+}
+
+.actions a:last-child {
+  background: transparent;
+  border: 1px solid #57738f;
+  color: #f4f7ff;
+}

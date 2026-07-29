@@ -4,8 +4,9 @@ import { Arena } from './Arena';
 import { Aura } from './Aura';
 import { CameraRig } from './CameraRig';
 import { Fighter } from './Fighter';
+import { FrameProfiler } from './FrameProfiler';
 import { ImpactBurst } from './ImpactBurst';
-import { PostEffects } from './PostEffects';
+import { LazyPostEffects } from './LazyPostEffects';
 import { SpeedLines } from './SpeedLines';
 
 export function RenderScene() {
@@ -25,7 +26,8 @@ export function RenderScene() {
       <Fighter color="#a62f57" accent="#ff6d93" position={[1.45, 0, 0]} facing={-1} />
       <ImpactBurst />
       <CameraRig />
-      <PostEffects />
+      <LazyPostEffects />
+      <FrameProfiler />
     </>
   );
 }

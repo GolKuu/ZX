@@ -8,7 +8,7 @@ const RenderExperience = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className={styles.loading}>
+      <div aria-live="polite" className={styles.loading} role="status">
         <span />
         <p>Compiling render pipeline…</p>
       </div>
