@@ -14,13 +14,27 @@ const projection: RosterAttackPose = (
   settle,
 ) => {
   const load = windup * (1 - strike);
-  const dash = strike * (1 - settle * 0.72);
+  const dash = strike * (1 - smooth01(settle));
+  const followThrough = strike * Math.sin(clamp01(settle) * Math.PI);
   const arrive = smooth01(settle);
 
   turnJoint(joints, 'hips', 0.34 * load - 0.18 * dash, 0.34, 0);
   turnJoint(joints, 'spine', 0.42 * load - 0.5 * dash, -0.12, 0);
   turnJoint(joints, 'chest', 0.28 * load - 0.42 * dash, -0.1, 0);
-  turnJoint(joints, 'head', -0.2 * load + 0.18 * dash, -0.08, 0);
+  turnJoint(
+    joints,
+    'neck',
+    -0.12 * load + 0.1 * dash,
+    -0.08 - dash * 0.1,
+    0,
+  );
+  turnJoint(
+    joints,
+    'head',
+    -0.2 * load + 0.18 * dash - followThrough * 0.05,
+    -0.1 - load * 0.08 - dash * 0.18 + followThrough * 0.08,
+    0,
+  );
 
   // The lead palm arrives first while the rear arm trails through the dash.
   turnJoint(joints, 'upperArmL', -0.7 - dash * 0.86, 0.24, 0.34);
@@ -44,14 +58,27 @@ const commandThrow: RosterAttackPose = (
   settle,
 ) => {
   const lunge = windup * (1 - strike);
-  const seize = strike * (1 - settle * 0.4);
+  const seize = strike * (1 - smooth01((settle - 0.35) / 0.65));
   const slam = Math.sin(clamp01(settle / 0.52) * Math.PI);
   const swagger = smooth01((settle - 0.48) / 0.52);
 
   turnJoint(joints, 'hips', 0.34 * lunge + 0.22 * slam, 0.4, 0);
   turnJoint(joints, 'spine', 0.3 * lunge + 0.48 * slam, -0.14, 0);
   turnJoint(joints, 'chest', 0.16 * lunge + 0.62 * slam, -0.1, 0);
-  turnJoint(joints, 'head', -0.16 * lunge + 0.3 * slam - 0.12 * swagger, -0.08, 0);
+  turnJoint(
+    joints,
+    'neck',
+    -0.08 * lunge + 0.18 * slam,
+    -0.08 - seize * 0.08,
+    0,
+  );
+  turnJoint(
+    joints,
+    'head',
+    -0.16 * lunge + 0.3 * slam - 0.12 * swagger,
+    -0.1 - lunge * 0.1 - seize * 0.14 + swagger * 0.08,
+    0,
+  );
 
   // Open-hand lunge, two-handed collar control, then a downward slam.
   turnJoint(joints, 'upperArmL', -0.78 - seize * 0.75 + slam * 0.42, 0.28, 0.28);

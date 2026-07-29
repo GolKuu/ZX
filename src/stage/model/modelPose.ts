@@ -160,8 +160,8 @@ function poseLocomotion(
   turn(joints, 'hips', 0.06, 0.34, 0);
   turn(joints, 'spine', -0.04 + breath * 0.012, -0.12, 0);
   turn(joints, 'chest', 0.02 + breath * 0.016, -0.1, 0);
-  turn(joints, 'neck', 0.02, -0.12, 0);
-  turn(joints, 'head', -0.04, -0.1, 0);
+  turn(joints, 'neck', 0.02 + breath * 0.004, -0.12, 0);
+  turn(joints, 'head', -0.04 - breath * 0.008, -0.1, 0);
 
   // Lead arm high and forward, rear arm tucked at the ribs.
   turn(joints, 'shoulderL', 0, 0, -0.12);
@@ -189,6 +189,7 @@ function poseLocomotion(
   // cycle that does not counter-rotate the shoulders reads as a shuffle.
   const cycle = time * 7.4;
   const swing = Math.sin(cycle) * moving;
+  const step = Math.cos(cycle) * moving;
   const lead = fighter.velocity.x >= 0 ? 1 : -1;
 
   turn(joints, 'thighL', swing * 0.52 * lead, 0, 0);
@@ -198,6 +199,10 @@ function poseLocomotion(
 
   turn(joints, 'hips', 0, 0, swing * 0.05);
   turn(joints, 'chest', 0, -swing * 0.12 * lead, 0);
+  // The gaze settles a fraction after the shoulders. This counter-motion keeps
+  // the opponent framed while still letting the head share the step rhythm.
+  turn(joints, 'neck', step * 0.012, swing * 0.04 * lead, 0);
+  turn(joints, 'head', -step * 0.024, swing * 0.07 * lead, -swing * 0.018);
   turn(joints, 'upperArmL', -swing * 0.18 * lead, 0, 0);
   turn(joints, 'upperArmR', swing * 0.18 * lead, 0, 0);
 }
@@ -269,6 +274,8 @@ function poseAirborne(
   turn(joints, 'hips', 0.12 * tuck, 0.3, 0);
   turn(joints, 'spine', 0.2 * tuck, -0.1, 0);
   turn(joints, 'chest', 0.14 * tuck, 0, 0);
+  turn(joints, 'neck', rising ? -0.1 : 0.08, -0.08, 0);
+  turn(joints, 'head', rising ? -0.16 : 0.12, -0.1, 0);
 
   turn(joints, 'upperArmL', -0.9, 0.24, 0.5);
   turn(joints, 'forearmL', -1.3, 0, 0);
@@ -316,6 +323,15 @@ function beats(progress: number): [number, number, number] {
   return [windup, strike, settle];
 }
 
+function recoveredStrike(strike: number, settle: number): number {
+  const eased = settle * settle * (3 - 2 * settle);
+  return strike * (1 - eased);
+}
+
+function recoveryArc(strike: number, settle: number): number {
+  return strike * Math.sin(settle * Math.PI);
+}
+
 function poseAttack(
   joints: HumanoidJoints,
   rest: RestPose,
@@ -342,13 +358,27 @@ function straightPunch(
   settle: number,
 ): void {
   const coil = windup * (1 - strike);
-  const reach = strike * (1 - settle * 0.82);
-  const back = settle * 0.3;
+  const reach = recoveredStrike(strike, settle);
+  const rebound = recoveryArc(strike, settle);
+  const back = rebound * 0.3;
 
   turn(joints, 'hips', 0, 0.42 - reach * 0.5 + coil * 0.16, 0);
   turn(joints, 'spine', 0.05 * coil, -0.18 + reach * -0.34, 0);
   turn(joints, 'chest', 0.04, -0.14 - reach * 0.42 + coil * 0.2, 0);
-  turn(joints, 'head', 0, -0.1 - reach * 0.18, 0);
+  turn(
+    joints,
+    'neck',
+    0,
+    -0.08 - coil * 0.05 - reach * 0.12 + rebound * 0.04,
+    0,
+  );
+  turn(
+    joints,
+    'head',
+    -reach * 0.025,
+    -0.1 - coil * 0.1 - reach * 0.2 + rebound * 0.06,
+    0,
+  );
 
   // Lead arm fires, rear arm retracts to the ribs as counterweight.
   turn(joints, 'shoulderL', 0, -reach * 0.34, -0.12 - reach * 0.1);
@@ -373,15 +403,28 @@ function heavyPunch(
   settle: number,
 ): void {
   const coil = windup * (1 - strike);
-  const reach = strike * (1 - settle * 0.7);
+  const reach = recoveredStrike(strike, settle);
+  const rebound = recoveryArc(strike, settle);
 
   // Bigger rotation through the hips — a heavy reads as the whole body turning
   // over, not a longer arm.
   turn(joints, 'hips', 0, 0.5 + coil * 0.44 - reach * 0.96, 0);
   turn(joints, 'spine', 0.08 * coil, -0.16 + coil * 0.3 - reach * 0.6, 0);
   turn(joints, 'chest', 0.06, -0.12 + coil * 0.36 - reach * 0.74, 0);
-  turn(joints, 'neck', 0.04, -reach * 0.2, 0);
-  turn(joints, 'head', -0.04, -0.1 - reach * 0.24, 0);
+  turn(
+    joints,
+    'neck',
+    0.04,
+    -coil * 0.08 - reach * 0.2 + rebound * 0.06,
+    0,
+  );
+  turn(
+    joints,
+    'head',
+    -0.04 - reach * 0.04,
+    -0.1 - coil * 0.14 - reach * 0.28 + rebound * 0.09,
+    0,
+  );
 
   turn(joints, 'shoulderR', 0, -reach * 0.4, 0.1 - reach * 0.24);
   turn(joints, 'upperArmR', -1.42 - coil * 0.3 + reach * 0.1, -0.16, -0.34);
@@ -405,11 +448,26 @@ function roundKick(
   settle: number,
 ): void {
   const coil = windup * (1 - strike);
-  const reach = strike * (1 - settle * 0.75);
+  const reach = recoveredStrike(strike, settle);
+  const rebound = recoveryArc(strike, settle);
 
   turn(joints, 'hips', -0.1 * reach, 0.44 + coil * 0.3 - reach * 0.88, 0.14 * reach);
   turn(joints, 'spine', 0.14 * reach, -0.16 - reach * 0.3, -0.16 * reach);
   turn(joints, 'chest', 0.1 * reach, -0.12 - reach * 0.28, -0.12 * reach);
+  turn(
+    joints,
+    'neck',
+    -0.04 * coil,
+    -0.08 - coil * 0.1 - reach * 0.16 + rebound * 0.06,
+    0.04 * reach,
+  );
+  turn(
+    joints,
+    'head',
+    -0.08 * coil,
+    -0.1 - coil * 0.16 - reach * 0.24 + rebound * 0.1,
+    0.08 * reach,
+  );
 
   // Arms swing opposite the kicking leg or the pose has no balance.
   turn(joints, 'upperArmL', -0.5 + reach * 0.5, 0.3, 0.7 + reach * 0.5);
@@ -437,13 +495,21 @@ function lowStrike(
   settle: number,
 ): void {
   const coil = windup * (1 - strike);
-  const reach = strike * (1 - settle * 0.8);
+  const reach = recoveredStrike(strike, settle);
+  const rebound = recoveryArc(strike, settle);
   const crouch = Math.max(coil * 0.6, reach);
 
   turn(joints, 'hips', 0.4 * crouch, 0.4, 0);
   turn(joints, 'spine', 0.2 * crouch, -0.14, 0);
   turn(joints, 'chest', 0.1 * crouch, -0.12, 0);
-  turn(joints, 'head', -0.24 * crouch, -0.1, 0);
+  turn(joints, 'neck', -0.12 * crouch, -0.08 - reach * 0.06, 0);
+  turn(
+    joints,
+    'head',
+    -0.24 * crouch + rebound * 0.05,
+    -0.1 - reach * 0.1 + rebound * 0.04,
+    0,
+  );
 
   turn(joints, 'upperArmL', -1.0 - reach * 0.5, 0.2, 0.3);
   turn(joints, 'forearmL', -1.3 + reach * 1.1, 0, 0);
@@ -467,12 +533,21 @@ function sweep(
   settle: number,
 ): void {
   const coil = windup * (1 - strike);
-  const reach = strike * (1 - settle * 0.8);
-  const crouch = Math.max(coil * 0.7, 0.85);
+  const reach = recoveredStrike(strike, settle);
+  const rebound = recoveryArc(strike, settle);
+  const crouch = Math.max(coil * 0.7, reach * 0.85);
 
   turn(joints, 'hips', 0.5 * crouch, 0.42 - reach * 0.4, 0);
   turn(joints, 'spine', 0.24 * crouch, -0.16, -0.14 * reach);
   turn(joints, 'chest', 0.1, -0.12, -0.1 * reach);
+  turn(joints, 'neck', -0.14 * crouch, -0.08 - reach * 0.1, 0.03 * reach);
+  turn(
+    joints,
+    'head',
+    -0.28 * crouch + rebound * 0.06,
+    -0.1 - coil * 0.08 - reach * 0.18 + rebound * 0.08,
+    0.06 * reach,
+  );
 
   // The supporting hand goes to the floor. It is the pose element that makes a
   // sweep read as a sweep rather than a low kick.
@@ -497,15 +572,28 @@ function overtake(
   settle: number,
 ): void {
   const coil = windup * (1 - strike);
-  const reach = strike * (1 - settle * 0.6);
+  const reach = recoveredStrike(strike, settle);
+  const rebound = recoveryArc(strike, settle);
 
   // The signature. Full body commitment: deep coil, then a rotation the
   // character cannot recover from quickly, which is what earns the frame data.
   turn(joints, 'hips', -0.2 * reach, 0.5 + coil * 0.9 - reach * 1.8, 0.2 * reach);
   turn(joints, 'spine', 0.1 - reach * 0.2, -0.16 + coil * 0.5 - reach * 0.9, -0.2 * reach);
   turn(joints, 'chest', 0.08, -0.12 + coil * 0.5 - reach * 1.0, -0.16 * reach);
-  turn(joints, 'neck', 0.06, -reach * 0.3, 0);
-  turn(joints, 'head', -0.1 * reach, -0.1 - reach * 0.4, 0);
+  turn(
+    joints,
+    'neck',
+    0.06,
+    -coil * 0.12 - reach * 0.3 + rebound * 0.08,
+    0,
+  );
+  turn(
+    joints,
+    'head',
+    -0.1 * reach,
+    -0.1 - coil * 0.2 - reach * 0.4 + rebound * 0.12,
+    0,
+  );
 
   turn(joints, 'shoulderR', 0, -reach * 0.5, 0.1 - reach * 0.5);
   turn(joints, 'upperArmR', -1.9 - coil * 0.5 + reach * 0.4, -0.2, -0.3 - reach * 0.3);

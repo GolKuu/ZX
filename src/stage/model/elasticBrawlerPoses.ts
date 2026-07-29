@@ -14,13 +14,26 @@ const pistol: RosterAttackPose = (
   settle,
 ) => {
   const compress = windup * (1 - strike);
-  const stretch = strike * (1 - settle * 0.82);
+  const stretch = strike * (1 - smooth01(settle));
   const snap = Math.sin(clamp01(settle / 0.32) * Math.PI);
 
   turnJoint(joints, 'hips', 0.08, 0.42 + compress * 0.3 - stretch * 0.52, 0);
   turnJoint(joints, 'spine', 0.08 * compress, -0.14 - stretch * 0.36, 0);
   turnJoint(joints, 'chest', 0.05, -0.12 + compress * 0.28 - stretch * 0.48, 0);
-  turnJoint(joints, 'head', 0, -0.08 - stretch * 0.16, 0);
+  turnJoint(
+    joints,
+    'neck',
+    0,
+    -0.08 - compress * 0.05 - stretch * 0.1 + snap * 0.04,
+    0,
+  );
+  turnJoint(
+    joints,
+    'head',
+    -stretch * 0.03,
+    -0.1 - compress * 0.1 - stretch * 0.18 + snap * 0.07,
+    0,
+  );
 
   // The shoulder compresses first; the elbow and wrist then resolve into one
   // long, straight impact line before snapping slightly past neutral.
@@ -46,12 +59,26 @@ const axe: RosterAttackPose = (
   settle,
 ) => {
   const chamber = windup * (1 - strike);
-  const drop = strike * (1 - settle * 0.72);
+  const drop = strike * (1 - smooth01(settle));
   const landing = Math.sin(clamp01(settle / 0.45) * Math.PI);
 
   turnJoint(joints, 'hips', -0.18 * chamber + 0.28 * drop, 0.42, -0.1 * drop);
   turnJoint(joints, 'spine', -0.24 * chamber + 0.38 * drop, -0.14, 0.12 * drop);
   turnJoint(joints, 'chest', -0.2 * chamber + 0.26 * drop, -0.1, 0.1 * drop);
+  turnJoint(
+    joints,
+    'neck',
+    0.12 * chamber - 0.08 * drop,
+    -0.08 - chamber * 0.08,
+    -0.04 * drop,
+  );
+  turnJoint(
+    joints,
+    'head',
+    0.22 * chamber - 0.14 * drop + landing * 0.06,
+    -0.1 - chamber * 0.14 - drop * 0.1 + landing * 0.06,
+    -0.08 * drop,
+  );
 
   turnJoint(joints, 'upperArmL', -0.4 + chamber * 0.7, 0.28, 0.72);
   turnJoint(joints, 'forearmL', -1.12, 0, 0);
@@ -83,7 +110,14 @@ const gearShift: RosterAttackPose = (
   turnJoint(joints, 'hips', 0.5 * compress - 0.08 * surge, 0.3, 0);
   turnJoint(joints, 'spine', 0.44 * compress - 0.22 * surge, 0, 0);
   turnJoint(joints, 'chest', 0.3 * compress - 0.34 * surge, 0, 0);
-  turnJoint(joints, 'head', -0.28 * compress + 0.22 * surge, 0, 0);
+  turnJoint(joints, 'neck', -0.16 * compress + 0.12 * surge, -0.06, 0);
+  turnJoint(
+    joints,
+    'head',
+    -0.28 * compress + 0.22 * surge,
+    -0.08 - compress * 0.06 + brace * 0.05,
+    0,
+  );
 
   turnJoint(joints, 'upperArmL', -0.5 + surge * 0.22, 0.2, 0.42 + surge * 0.72);
   turnJoint(joints, 'forearmL', -1.38 + surge * 0.34, 0, 0);
