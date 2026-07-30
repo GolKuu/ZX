@@ -17,6 +17,7 @@ import { IdolFighter } from './IdolFighter';
 import { LazyPostEffects } from './LazyPostEffects';
 import { MimFighter } from './MimFighter';
 import { RenderDebugBridge } from './RenderDebugBridge';
+import { Sprite2DFighter } from './sprite2d/Sprite2DFighter';
 import { StageLighting } from './StageLighting';
 
 export function RenderScene({
@@ -76,11 +77,26 @@ function SelectedFighter({
   );
 }
 
+/**
+ * Characters drawn as a 2D cut-out of their own sheet rather than as geometry.
+ *
+ * The value is exactness: the parts *are* the artwork, so the fighter cannot
+ * drift from its sheet. Adding a character means slicing it —
+ * `node scripts/slice-characters.mjs <name>-profile` — and adding a row here.
+ */
+const SPRITE_RIGS: Partial<Record<CharacterId, string>> = {
+  idol: 'idol-profile',
+};
+
 function primitiveFighter(
   auraColor: string,
   characterId: CharacterId,
   fighterId: 'p1' | 'p2',
 ) {
+  const rigName = SPRITE_RIGS[characterId];
+  if (rigName !== undefined) {
+    return <Sprite2DFighter fighterId={fighterId} rigName={rigName} />;
+  }
   if (characterId === 'chrono') {
     return <ChronoFighter auraColor={auraColor} fighterId={fighterId} />;
   }

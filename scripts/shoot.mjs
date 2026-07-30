@@ -32,6 +32,8 @@ function parseArgs(argv) {
     height: 900,
     headless: false,
     scale: 1,
+    p1: 0,
+    p2: 0,
   };
   for (let i = 0; i < argv.length; i += 1) {
     const flag = argv[i];
@@ -41,6 +43,11 @@ function parseArgs(argv) {
     else if (flag === '--width') args.width = Number(argv[(i += 1)]);
     else if (flag === '--height') args.height = Number(argv[(i += 1)]);
     else if (flag === '--scale') args.scale = Number(argv[(i += 1)]);
+    // Roster index to move P1 / P2 onto before confirming. The select screen
+    // opens on the first entry, so without this every shot is the same matchup
+    // and a character you have just changed never appears in one.
+    else if (flag === '--p1') args.p1 = Number(argv[(i += 1)]);
+    else if (flag === '--p2') args.p2 = Number(argv[(i += 1)]);
   }
   return args;
 }
@@ -108,8 +115,17 @@ async function main() {
   await wait(1_200);
   await shot('02-character-select');
 
+  // Walk the roster cursor onto the requested fighters before confirming.
+  for (let step = 0; step < args.p1; step += 1) {
+    await page.keyboard.press('ArrowRight');
+    await wait(120);
+  }
   await page.keyboard.press('Enter');
   await wait(400);
+  for (let step = 0; step < args.p2; step += 1) {
+    await page.keyboard.press('ArrowRight');
+    await wait(120);
+  }
   await page.keyboard.press('Enter');
   await wait(1_200);
   await shot('03-versus');
