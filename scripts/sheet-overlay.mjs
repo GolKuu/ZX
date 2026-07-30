@@ -162,7 +162,7 @@ function grow(mask, width, height, radius) {
  * its sides can still be found in the mask along enough of their extent, which is
  * what keeps the combinatorial pairing from inventing boxes.
  */
-function findRectangles(edges, width, height) {
+function findRectangles(edges, width, height, chroma) {
   const columns = new Int32Array(width);
   const rows = new Int32Array(height);
   for (let y = 0; y < height; y += 1) {
@@ -187,6 +187,7 @@ function findRectangles(edges, width, height) {
           };
           if (!sidesPresent(edges, width, height, box)) continue;
           rectangles.push(box);
+
         }
       }
     }
@@ -397,6 +398,23 @@ function restorePixel(data, index, paper, observedPaper, depth) {
 }
 
 /**
+ * What the pass sees, without changing anything: the recovered rectangles, the page
+ * mask, and the per-depth anchors.
+ *
+ * Exported because every failure so far looked identical from the outside — a panel
+ * that came back still tinted — and the cause was different each time: no boxes
+ * resolved, then boxes resolved but anchored on her skirt, then anchored on paper
+ * that turned out not to be under a box at all. Reading the intermediate numbers is
+ * the only way to tell those apart.
+ */
+export function inspectDiagramOverlay(data, width, height, options = {}) {
+  return removeDiagramOverlay(new Uint8Array(data), width, height, {
+    ...options,
+    inspect: true,
+  });
+}
+
+/**
  * Strip the diagram from one RGBA panel, in place.
  *
  * Returns what it did, so the slicer can report it and a bad calibration shows up
@@ -437,10 +455,15 @@ export function removeDiagramOverlay(data, width, height, options = {}) {
     return ['no diagram found'];
   }
 
-  // Bare paper, measured where nothing covers it.
+  // The page, and how many of each family's boxes cover every pixel.
+  const page = pageMask(data, width, height, options.pageFloor ?? 178);
+  const byFamily = found.map(({ family, rectangles }) => ({
+    family,
+    rectangles,
+    layers: layerCounts(rectangles, width, height),
+  }));
   const anyLayer = new Uint8Array(width * height);
-  for (const { rectangles } of found) {
-    const layers = layerCounts(rectangles, width, height);
+  for (const { layers } of byFamily) {
     for (let index = 0; index < anyLayer.length; index += 1) {
       if (layers[index] > 0) anyLayer[index] = 1;
     }
@@ -449,16 +472,20 @@ export function removeDiagramOverlay(data, width, height, options = {}) {
     data,
     width,
     height,
-    (index) => anyLayer[index] === 0 && allEdges[index] === 0,
+    (index) => page[index] === 1 && anyLayer[index] === 0 && allEdges[index] === 0,
     paperFloor,
   ));
 
-  for (const { family, rectangles } of found) {
+  for (const { family, rectangles, layers } of byFamily) {
     if (paper === null) {
       report.push(`${family.name}: ${String(rectangles.length)} boxes, no bare paper to anchor against`);
       continue;
     }
-    const layers = layerCounts(rectangles, width, height);
+    // Paper under this family only. A sample that also sits under another family's
+    // box carries both tints, and averaging the two into one anchor is what made the
+    // green correction come out blue.
+    const others = byFamily.filter((entry) => entry.family !== family);
+    const cleanOf = (index) => others.every((entry) => entry.layers[index] === 0);
     // One anchor per layer depth: paper under one box is a different colour from
     // paper under two, and correcting both with the same offset leaves the overlaps
     // visibly darker than everything around them.
@@ -468,10 +495,27 @@ export function removeDiagramOverlay(data, width, height, options = {}) {
         data,
         width,
         height,
-        (index) => layers[index] === depth && allEdges[index] === 0,
+        (index) => page[index] === 1
+          && layers[index] === depth
+          && allEdges[index] === 0
+          && cleanOf(index),
         paperFloor,
       ));
       if (sample !== null) anchors.set(depth, sample);
+    }
+    if (options.inspect === true) {
+      const depths = [0, 1, 2, 3].map((depth) => layers.reduce(
+        (total, value, index) => total + (
+          value === depth && page[index] === 1 && cleanOf(index) ? 1 : 0
+        ),
+        0,
+      ));
+      report.push(
+        `${family.name}: boxes ${JSON.stringify(rectangles)}\n`
+        + `    page px by depth (0,1,2,3): ${depths.join(', ')}\n`
+        + `    anchors: ${JSON.stringify([...anchors])}`,
+      );
+      continue;
     }
     if (anchors.size === 0) {
       report.push(`${family.name}: ${String(rectangles.length)} boxes, no paper visible through them`);
