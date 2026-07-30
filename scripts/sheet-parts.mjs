@@ -84,6 +84,51 @@ export const FRONT_VIEWS = {
 };
 
 /**
+ * Whole-body attack poses, as the artist drew them.
+ *
+ * A jointed rig can approximate a punch; it cannot match a drawing. These are the
+ * LP / HP / LK / HK panels, cropped to the figure and shown at the strike, so the
+ * frame a player actually reads is the sheet's own artwork.
+ *
+ * `ground` is the pixel row the character's feet stand on inside the crop — the
+ * sprite is anchored there rather than centred, because these poses have wildly
+ * different bounding boxes (a sweep is half the height of a high kick) and any
+ * other anchor makes the fighter bob between moves.
+ *
+ * Caveat, unavoidable: the panels are hitbox *diagrams*. Blue hurtbox and green
+ * collision rectangles are drawn over the figure, and the aggressive key below
+ * only removes the ones lying over bare paper. Where a box overlaps the character
+ * it tints it. IDOL and GLITCH are drawn in full colour and survive this well;
+ * ECHO and CHRONO render their attack figures as solid blue hurtbox volumes with
+ * no costume colour at all, so they are deliberately absent here and keep the rig.
+ */
+export const ATTACK_POSES = {
+  idol: {
+    file: 'public/assets/characters/idol-fighter-reference.webp',
+    // Pale box fills over bare paper get flooded away along with the paper.
+    key: { light: 148 },
+    ground: 958,
+    poses: {
+      lp: { left: 52, top: 580, width: 260, height: 390 },
+      hp: { left: 384, top: 578, width: 232, height: 392 },
+      lk: { left: 762, top: 680, width: 330, height: 290 },
+      hk: { left: 1140, top: 578, width: 350, height: 392 },
+    },
+  },
+  glitch: {
+    file: '../output/imagegen/glitch-character-reference.png',
+    key: { light: 178 },
+    ground: 908,
+    poses: {
+      lp: { left: 40, top: 600, width: 300, height: 320 },
+      hp: { left: 366, top: 590, width: 260, height: 330 },
+      lk: { left: 748, top: 660, width: 300, height: 260 },
+      hk: { left: 1086, top: 590, width: 280, height: 330 },
+    },
+  },
+};
+
+/**
  * Part rectangles, read off the gridded preview.
  *
  * `box` is [x, y, width, height] inside the cropped view. `pivot` is the joint
@@ -104,14 +149,22 @@ export const PART_RECTS = {
   // to separate them from a single flat image without inpainting. The arm parts
   // draw on top, which hides it in most poses; a fully clean rig needs the art
   // delivered in layers.
+  // No arm parts, on purpose.
+  //
+  // In a profile the near arm lies over the torso and its hand over the skirt, so
+  // any torso rectangle contains the sleeve and any hips rectangle contains the
+  // glove. Cutting separate arm parts on top of those put *three* copies of the
+  // arm on screen, each rotating independently — that is the smeared, stretched
+  // limb in the reported screenshot, not a scaling bug.
+  //
+  // A walk does not need an articulated arm, and attacks are whole-body sheet
+  // poses (`ATTACK_POSES`), so the arm is simply left where the artist drew it.
   'idol-profile': {
     ponytail: { box: [80, 12, 72, 152], pivot: [0.21, 0.12] },
     head: { box: [28, 8, 76, 100], pivot: [0.49, 0.92] },
-    torso: { box: [30, 98, 72, 108], pivot: [0.5, 0.99] },
+    torso: { box: [56, 96, 88, 110], pivot: [0.16, 0.96] },
     hips: { box: [26, 193, 92, 106], pivot: [0.48, 0.05] },
     sash: { box: [93, 212, 60, 142], pivot: [0.2, 0.04] },
-    upperArm: { box: [60, 103, 42, 74], pivot: [0.5, 0.09] },
-    forearm: { box: [43, 170, 50, 114], pivot: [0.54, 0.05] },
     thigh: { box: [58, 283, 50, 76], pivot: [0.48, 0.07] },
     shin: { box: [60, 348, 46, 80], pivot: [0.43, 0.06] },
     boot: { box: [36, 413, 76, 72], pivot: [0.55, 0.1] },

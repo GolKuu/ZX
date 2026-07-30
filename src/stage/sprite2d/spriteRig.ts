@@ -43,6 +43,68 @@ export interface SpritePart {
 
 export interface SpriteRigManifest {
   readonly parts: Partial<Record<SpritePartName, SpritePart>>;
+  /** Which way the sliced drawing faces. Differs per sheet. */
+  readonly facesRight?: boolean;
+}
+
+/** The four attack panels, as drawn. */
+export const ATTACK_POSE_NAMES = ['lp', 'hp', 'lk', 'hk'] as const;
+export type AttackPoseName = (typeof ATTACK_POSE_NAMES)[number];
+
+export interface AttackPoseSpec {
+  readonly width: number;
+  readonly height: number;
+  /** Where the floor sits, as a fraction of the image's height. */
+  readonly ground: number;
+}
+
+export interface LoadedAttackPose extends AttackPoseSpec {
+  readonly texture: Texture;
+}
+
+export type LoadedAttackPoses = {
+  readonly [Key in AttackPoseName]?: LoadedAttackPose;
+};
+
+/**
+ * Load the whole-body attack sprites for a character.
+ *
+ * Absent for characters whose sheet draws its attack panels as plain hurtbox
+ * volumes with no costume colour — those keep the jointed rig throughout.
+ */
+export async function loadAttackPoses(
+  name: string,
+): Promise<LoadedAttackPoses> {
+  const base = `/sprites/${name}`;
+  const response = await fetch(`${base}/poses.json`);
+  if (!response.ok) {
+    throw new Error(`No attack poses for "${name}" (${String(response.status)})`);
+  }
+  const manifest = (await response.json()) as {
+    poses: Partial<Record<AttackPoseName, AttackPoseSpec>>;
+  };
+
+  const loader = new TextureLoader();
+  const poses: Record<string, LoadedAttackPose> = {};
+  await Promise.all(
+    ATTACK_POSE_NAMES.map(async (pose) => {
+      const spec = manifest.poses[pose];
+      if (spec === undefined) return;
+      const texture = await loader.loadAsync(`${base}/${pose}.png`);
+      texture.colorSpace = SRGBColorSpace;
+      texture.minFilter = LinearFilter;
+      texture.magFilter = LinearFilter;
+      texture.generateMipmaps = false;
+      poses[pose] = { ...spec, texture };
+    }),
+  );
+  return poses as LoadedAttackPoses;
+}
+
+export function disposeAttackPoses(poses: LoadedAttackPoses): void {
+  for (const pose of ATTACK_POSE_NAMES) {
+    poses[pose]?.texture.dispose();
+  }
 }
 
 export interface LoadedSpritePart extends SpritePart {
@@ -51,7 +113,7 @@ export interface LoadedSpritePart extends SpritePart {
 
 export type LoadedSpriteRig = {
   readonly [Key in SpritePartName]?: LoadedSpritePart;
-};
+} & { readonly facesRight?: boolean };
 
 /**
  * Height the tallest sliced sheet maps to, in engine units.
@@ -91,7 +153,7 @@ export async function loadSpriteRig(name: string): Promise<LoadedSpriteRig> {
     }),
   );
 
-  return rig as LoadedSpriteRig;
+  return { ...rig, facesRight: manifest.facesRight === true } as LoadedSpriteRig;
 }
 
 export function disposeSpriteRig(rig: LoadedSpriteRig): void {

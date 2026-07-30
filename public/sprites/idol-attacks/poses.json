@@ -1,0 +1,25 @@
+{
+  "source": "public/assets/characters/idol-fighter-reference.webp",
+  "poses": {
+    "lp": {
+      "width": 260,
+      "height": 356,
+      "ground": 1.0225
+    },
+    "hp": {
+      "width": 231,
+      "height": 376,
+      "ground": 1.0106
+    },
+    "lk": {
+      "width": 330,
+      "height": 253,
+      "ground": 1.0158
+    },
+    "hk": {
+      "width": 350,
+      "height": 371,
+      "ground": 1.0081
+    }
+  }
+}

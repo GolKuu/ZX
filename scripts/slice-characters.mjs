@@ -21,7 +21,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
 import { keyBackground } from './sheet-key.mjs';
-import { FRONT_VIEWS, PART_RECTS } from './sheet-parts.mjs';
+import { ATTACK_POSES, FRONT_VIEWS, PART_RECTS } from './sheet-parts.mjs';
 
 /** Fraction of the crop that turning transparent means the fill leaked. */
 const LEAK_LIMIT = 0.9;
@@ -65,7 +65,21 @@ async function sliceCharacter(name) {
   };
 
   for (const [part, spec] of Object.entries(parts)) {
-    const [x, y, boxWidth, boxHeight] = spec.box;
+    const [rawX, rawY, rawWidth, rawHeight] = spec.box;
+    // Clamp rather than throw. A rectangle read a few pixels wide off the grid
+    // used to abort the whole run with `extract_area: bad extract area`, which
+    // told you nothing about which part was wrong.
+    const x = Math.max(0, Math.min(rawX, width - 1));
+    const y = Math.max(0, Math.min(rawY, height - 1));
+    const boxWidth = Math.min(rawWidth, width - x);
+    const boxHeight = Math.min(rawHeight, height - y);
+    if (boxWidth !== rawWidth || boxHeight !== rawHeight || x !== rawX || y !== rawY) {
+      console.warn(
+        `  ! ${part}: box [${String(rawX)},${String(rawY)},${String(rawWidth)},`
+        + `${String(rawHeight)}] falls outside the ${String(width)}x`
+        + `${String(height)} view; clamped.`,
+      );
+    }
     const extracted = await sharp(keyed)
       .extract({ left: x, top: y, width: boxWidth, height: boxHeight })
       .toBuffer();
@@ -101,6 +115,67 @@ async function sliceCharacter(name) {
     `${JSON.stringify(manifest, null, 2)}\n`,
   );
   console.log(`  → ${directory}/rig.json`);
+}
+
+/**
+ * Cut the four attack panels for one character.
+ *
+ * Each pose is keyed, trimmed, and recorded with the offset from the crop's
+ * ground line to the trimmed image's bottom — the runtime needs that to stand the
+ * sprite on the floor instead of centring it.
+ */
+async function sliceAttacks(name) {
+  const spec = ATTACK_POSES[name];
+  if (spec === undefined) throw new Error(`No attack poses for "${name}"`);
+
+  const directory = join('public', 'sprites', `${name}-attacks`);
+  mkdirSync(directory, { recursive: true });
+  const manifest = { source: spec.file, poses: {} };
+
+  for (const [pose, box] of Object.entries(spec.poses)) {
+    const { data } = await sharp(spec.file)
+      .extract(box)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    keyBackground(data, box.width, box.height, spec.key);
+
+    const keyed = await sharp(data, {
+      raw: { channels: 4, width: box.width, height: box.height },
+    }).png().toBuffer();
+    const trimmed = await sharp(keyed).trim({ threshold: 1 }).toBuffer({
+      resolveWithObject: true,
+    });
+    await sharp(trimmed.data).png().toFile(join(directory, `${pose}.png`));
+
+    const topInCrop = -(trimmed.info.trimOffsetTop ?? 0);
+    const groundInCrop = spec.ground - box.top;
+    manifest.poses[pose] = {
+      width: trimmed.info.width,
+      height: trimmed.info.height,
+      // Where the floor sits, as a fraction of the trimmed image's height.
+      ground: Number(((groundInCrop - topInCrop) / trimmed.info.height).toFixed(4)),
+    };
+    console.log(
+      `  ${pose.padEnd(4)} ${String(trimmed.info.width).padStart(3)}x`
+      + `${String(trimmed.info.height).padStart(3)}  ground `
+      + `${String(manifest.poses[pose].ground)}`,
+    );
+  }
+
+  writeFileSync(
+    join(directory, 'poses.json'),
+    `${JSON.stringify(manifest, null, 2)}\n`,
+  );
+  console.log(`  → ${directory}/poses.json`);
+}
+
+if (process.argv.includes('--attacks')) {
+  for (const name of Object.keys(ATTACK_POSES)) {
+    console.log(`${name} attacks:`);
+    await sliceAttacks(name);
+  }
+  process.exit(0);
 }
 
 const targets = process.argv.includes('--all')

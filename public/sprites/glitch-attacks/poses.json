@@ -1,0 +1,25 @@
+{
+  "source": "../output/imagegen/glitch-character-reference.png",
+  "poses": {
+    "lp": {
+      "width": 286,
+      "height": 287,
+      "ground": 1.0105
+    },
+    "hp": {
+      "width": 260,
+      "height": 310,
+      "ground": 1.0032
+    },
+    "lk": {
+      "width": 300,
+      "height": 215,
+      "ground": 1.0047
+    },
+    "hk": {
+      "width": 280,
+      "height": 330,
+      "ground": 0.9636
+    }
+  }
+}

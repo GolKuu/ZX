@@ -9,12 +9,17 @@ import {
 } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
 import { combatAnimationProgress } from '../combatAnimationProgress';
+import { AttackPoseSprite } from './AttackPoseSprite';
 import { SpritePart } from './SpritePart';
 import { spritePoseFor, type SpritePose } from './spritePose';
 import {
+  disposeAttackPoses,
   disposeSpriteRig,
+  loadAttackPoses,
   loadSpriteRig,
   PIXEL,
+  type AttackPoseName,
+  type LoadedAttackPoses,
   type LoadedSpriteRig,
 } from './spriteRig';
 
@@ -61,20 +66,41 @@ const LAYER = {
 /** How far behind the near side the far limbs read. */
 const FAR_TINT = '#b9a7bd';
 
+/**
+ * When the drawn attack pose replaces the jointed rig, as attack progress.
+ *
+ * A rig can approximate a punch; it cannot match a drawing. The windup and the
+ * tail of the recovery stay on the rig so the transition has motion either side
+ * of it, and the frame the player actually reads — the strike — is the sheet's
+ * own artwork.
+ */
+const POSE_IN = 0.24;
+const POSE_OUT = 0.82;
+
+/** Attack panels are drawn at a slightly smaller scale than the turnaround. */
+const ATTACK_SCALE = 1.18;
+
 function y(pixels: number): number {
   return (FOOT_Y - pixels) * PIXEL;
 }
 
 export function Sprite2DFighter({
+  attackPoseName,
   fighterId,
   rigName,
 }: {
+  /** Sliced attack panels, when the sheet draws them in costume colour. */
+  readonly attackPoseName?: string;
   readonly fighterId: 'p1' | 'p2';
   readonly rigName: string;
 }) {
   const outer = useRef<Group>(null);
   const body = useRef<Group>(null);
+  const rigGroup = useRef<Group>(null);
+  const poseGroup = useRef<Group>(null);
   const [rig, setRig] = useState<LoadedSpriteRig | null>(null);
+  const [poses, setPoses] = useState<LoadedAttackPoses | null>(null);
+  const shownPose = useRef<AttackPoseName | null>(null);
 
   // A ref, not a memo: the joint slots are filled by `ref` callbacks during
   // render, and mutating a memoised object is exactly what
@@ -120,6 +146,34 @@ export function Sprite2DFighter({
     };
   }, [fighterId, rigName]);
 
+  useEffect(() => {
+    if (attackPoseName === undefined) return undefined;
+    let cancelled = false;
+    let loaded: LoadedAttackPoses | null = null;
+
+    loadAttackPoses(attackPoseName)
+      .then((result) => {
+        if (cancelled) {
+          disposeAttackPoses(result);
+          return;
+        }
+        loaded = result;
+        setPoses(result);
+      })
+      .catch((error: unknown) => {
+        console.warn(
+          `[${fighterId}] Could not load attack poses "${attackPoseName}".`,
+          error,
+        );
+      });
+
+    return () => {
+      cancelled = true;
+      if (loaded !== null) disposeAttackPoses(loaded);
+      setPoses(null);
+    };
+  }, [attackPoseName, fighterId]);
+
   useFrame(({ clock }) => {
     const group = outer.current;
     const inner = body.current;
@@ -142,6 +196,26 @@ export function Sprite2DFighter({
     const progress = fighter.action === null
       ? 0
       : combatAnimationProgress(fighter.action.moveId, fighter.action.frame);
+    // Which read is on screen: the drawn attack pose, or the jointed rig.
+    const drawn = fighter.action !== null
+      && poses !== null
+      && progress >= POSE_IN
+      && progress <= POSE_OUT
+      ? buttonOf(fighter.action.moveId)
+      : null;
+    const available = drawn !== null && poses?.[drawn] !== undefined ? drawn : null;
+    shownPose.current = available;
+
+    if (rigGroup.current !== null) rigGroup.current.visible = available === null;
+    if (poseGroup.current !== null) poseGroup.current.visible = available !== null;
+
+    if (available !== null) {
+      // The drawn pose already contains the whole body, so the rig's lean and
+      // lift must not also apply — it would double the motion.
+      inner.position.set(0, 0, 0);
+      return;
+    }
+
     const pose = spritePoseFor(fighter, clock.elapsedTime, progress);
     apply(joints.current, pose);
     inner.position.y = pose.lift;
@@ -151,6 +225,7 @@ export function Sprite2DFighter({
   return (
     <group ref={outer}>
       <group ref={body}>
+        <group ref={rigGroup}>
         {rig === null ? null : (
           <>
             {/* Far leg, behind everything. */}
@@ -210,9 +285,33 @@ export function Sprite2DFighter({
             </group>
           </>
         )}
+        </group>
+
+        <group ref={poseGroup} visible={false}>
+          {poses === null ? null : (
+            <AttackPoseSprite poses={poses} shown={shownPose} scale={ATTACK_SCALE} />
+          )}
+        </group>
       </group>
     </group>
   );
+}
+
+/**
+ * Move id → attack button. Per-character tables namespace their ids
+ * (`idol.hp`), so the suffix is what identifies the button.
+ */
+function buttonOf(moveId: string): AttackPoseName | null {
+  const suffix = moveId.slice(moveId.lastIndexOf('.') + 1).toLowerCase();
+  if (suffix === 'lp' || suffix === 'hp' || suffix === 'lk' || suffix === 'hk') {
+    return suffix;
+  }
+  // The shared table uses fighting-game notation instead.
+  if (suffix === '5l') return 'lp';
+  if (suffix === '5h') return 'hp';
+  if (suffix === '2l' || suffix === '2m') return 'lk';
+  if (suffix === '5m') return 'hk';
+  return null;
 }
 
 type Joints = Record<keyof Omit<SpritePose, 'lift' | 'drift'>, Group | null>;
