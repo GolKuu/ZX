@@ -18,10 +18,10 @@ import {
 } from './combatRuntime';
 import { AttackInputPolicy } from './attackInputPolicy';
 import {
+  ALL_COMBAT_MOVES,
   createCombatAi,
   createCombatEngine,
   createCombatHud,
-  ALL_COMBAT_MOVES,
   readFighter,
 } from './combatSetup';
 import { XrayController } from './XrayController';
@@ -32,7 +32,7 @@ const ROUND_RESTART_DELAY_FRAMES = 90;
 const DEFAULT_ROUND_WINS = { p1: 0, p2: 0 } as const;
 
 type FighterSide = 'p1' | 'p2';
-type ChampionSide = null | FighterSide;
+type ChampionSide = FighterSide | null;
 
 export class CombatSession {
   private engine = createCombatEngine();
@@ -45,7 +45,7 @@ export class CombatSession {
   private comboHits = 0;
   private maxCombo = 0;
   private matchRound = 1;
-  private roundWins: { [side in FighterSide]: number } = {
+  private roundWins: Record<FighterSide, number> = {
     ...DEFAULT_ROUND_WINS,
   };
   private roundRestartInFrames = 0;
@@ -60,7 +60,7 @@ export class CombatSession {
     private readonly fighterSelection: CharacterSelection,
   ) {
     this.ai = createCombatAi(this.fighterSelection[1]);
-    this.fighterVoice = new FighterVoiceController(fighterSelection);
+    this.fighterVoice = new FighterVoiceController(this.fighterSelection);
     this.publishInitialState();
   }
 
@@ -101,10 +101,13 @@ export class CombatSession {
       this.publishHud(world, []);
       this.roundRestartInFrames -= 1;
       if (this.roundRestartInFrames === 0) {
-        if (this.championAtRoundEnd === null) {
+        const championSide = this.championAtRoundEnd;
+        this.championAtRoundEnd = null;
+        this.roundRestartInFrames = 0;
+        if (championSide === null) {
           this.startNextRound();
         } else {
-          this.finishMatch(this.championAtRoundEnd);
+          this.finishMatch(championSide);
         }
       }
       return;
@@ -142,7 +145,7 @@ export class CombatSession {
     if (
       (
         this.timerFrames === 0
-        || result.state.fighters.some((entry) => entry.health === 0)
+        || result.state.fighters.some((entry) => entry.health <= 0)
       )
       && !this.xray.isFrozen
     ) {
@@ -171,7 +174,9 @@ export class CombatSession {
   private handleImpact(events: readonly CombatEvent[]): void {
     const hits = events.filter((event) => event.type === 'hit').length;
     if (hits === 0) {
-      if (events.some((event) => event.type === 'moveEnded')) this.comboHits = 0;
+      if (events.some((event) => event.type === 'moveEnded')) {
+        this.comboHits = 0;
+      }
       return;
     }
     this.comboHits += hits;
@@ -190,55 +195,34 @@ export class CombatSession {
 
   private finishRound(world: WorldSnapshot): void {
     const winnerSide = this.determineRoundWinner(world);
-
     if (winnerSide !== null) {
-      const winnerIndex = winnerSide === 'p1' ? 0 : 1;
-      const winnerDisplay = winnerSide === 'p1' ? 'P1' : 'P2';
-      this.fighterVoice.celebrate(winnerSide === 'p1' ? 'p1' : 'p2');
       this.roundWins[winnerSide] += 1;
-      if (this.roundWins[winnerSide] >= ROUNDS_TO_WIN) {
-        this.championAtRoundEnd = winnerSide;
-      } else {
-        this.matchRound += 1;
-        this.championAtRoundEnd = null;
-      }
-      useRenderStore.getState().triggerImpact();
-      this.publishHud(world, []);
-      const winnerCharacter = getCharacterDefinition(
-        useHudStore.getState().fighterSelection[winnerIndex],
-      );
-      void winnerCharacter;
-      this.roundRestartInFrames = ROUND_RESTART_DELAY_FRAMES;
-      return;
-      void winnerDisplay;
+      this.fighterVoice.celebrate(winnerSide === 'p1' ? 'p1' : 'p2');
+    }
+    const isTie = winnerSide === null;
+    const reachedMatchWin = !isTie
+      && this.roundWins[winnerSide] >= ROUNDS_TO_WIN;
+    if (!isTie && reachedMatchWin) {
+      this.championAtRoundEnd = winnerSide;
+    } else {
+      this.championAtRoundEnd = null;
+      this.matchRound += 1;
     }
 
-    if (this.roundWins.p1 + this.roundWins.p2 > 0) {
-      void winnerDisplay;
-    }
-
-    this.roundRestartInFrames = ROUND_RESTART_DELAY_FRAMES;
+    useRenderStore.getState().triggerImpact();
     this.publishHud(world, []);
-    return;
-    }
-
-    if (winnerSide !== null) {
-      return;
-    }
-
-    this.championAtRoundEnd = null;
-    this.matchRound += 1;
+    this.roundRestartInFrames = ROUND_RESTART_DELAY_FRAMES;
   }
 
   private finishMatch(championSide: FighterSide): void {
     this.ended = true;
     const winnerIndex = championSide === 'p1' ? 0 : 1;
-    const winnerDisplay = championSide === 'p1' ? 'P1' : 'P2';
+    const winner = championSide === 'p1' ? 'P1' : 'P2';
     const winnerCharacter = getCharacterDefinition(
       useHudStore.getState().fighterSelection[winnerIndex],
     );
     useHudStore.getState().openResult({
-      winner: `${winnerDisplay} · ${winnerCharacter.displayName}`,
+      winner: `${winner} · ${winnerCharacter.displayName}`,
       rounds: `${this.roundWins.p1}–${this.roundWins.p2}`,
       maxCombo: this.maxCombo,
       clashes: 0,
@@ -255,9 +239,8 @@ export class CombatSession {
     this.lastEvents = [];
     this.timerFrames = ROUND_FRAMES;
     this.roundRestartInFrames = 0;
-    this.championAtRoundEnd = null;
+    this.roundWins = { ...this.roundWins };
     this.comboHits = 0;
-    this.maxCombo = 0;
     this.xray.reset();
     this.attackInput.reset();
     clearCombatHits();

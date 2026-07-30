@@ -26,7 +26,7 @@ function RoundPips({ count, right = false }: {
 }) {
   return (
     <span data-side={right ? 'right' : 'left'}>
-      {[0, 1].map((index) => <b data-won={index < count} key={index} />)}
+      {[0, 1, 2].map((index) => <b data-won={index < count} key={index} />)}
     </span>
   );
 }

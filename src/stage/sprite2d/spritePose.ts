@@ -158,6 +158,27 @@ function stance(breath: number): SpritePose {
   });
 }
 
+function knockout(): SpritePose {
+  return pose({
+    torso: 0.62,
+    head: -0.45,
+    ponytail: -0.16,
+    sash: -0.22,
+    upperArm: -1.2,
+    forearm: -0.88,
+    farUpperArm: 1.12,
+    farForearm: -0.34,
+    thigh: 0.88,
+    shin: -1.2,
+    boot: 0.38,
+    farThigh: 0.7,
+    farShin: -1.26,
+    farBoot: 0.24,
+    lift: -0.92,
+    drift: -0.04,
+  });
+}
+
 const WINDUP_END = 0.34;
 const ACTIVE_END = 0.58;
 
@@ -454,6 +475,10 @@ export function spritePoseFor(
   hurtZone: HurtZone = 'body',
   attackTransition: SpriteAttackTransition = 'windup',
 ): SpritePose {
+  if (fighter.health <= 0) {
+    return withinLimits(knockout());
+  }
+
   if (!fighter.grounded) {
     return withinLimits(airborne(fighter.velocity.y > 0));
   }

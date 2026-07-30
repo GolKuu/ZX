@@ -121,7 +121,7 @@ export class HudBridge {
       superCharge: ultimateSpent
         ? 0
         : Math.max(0, earnedCharge - superSpent),
-      roundWins: Math.min(2, nonNegativeInteger(match.roundWins[fighter.id] ?? 0, 'roundWins')),
+      roundWins: Math.min(3, nonNegativeInteger(match.roundWins[fighter.id] ?? 0, 'roundWins')),
     };
   }
 

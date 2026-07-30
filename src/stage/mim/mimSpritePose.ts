@@ -26,6 +26,18 @@ const NEUTRAL: MimSpritePose = {
   drift: 0,
 };
 
+const KO_POSE: MimSpritePose = pose({
+  torso: 0.26,
+  head: -0.22,
+  scarf: -0.7,
+  leftArm: 0.46,
+  rightArm: 0.58,
+  leftLeg: -0.38,
+  rightLeg: -0.44,
+  lift: -0.54,
+  drift: -0.06,
+});
+
 const TARGETS: Readonly<Record<MimAttackButton, MimSpritePose>> = {
   lp: pose({ torso: -0.08, head: 0.04, scarf: 0.18, leftArm: -0.12, rightArm: 0.46, leftLeg: 0.08, rightLeg: -0.08, drift: 0.1 }),
   hp: pose({ torso: -0.16, head: 0.08, scarf: 0.32, leftArm: -0.2, rightArm: 0.68, leftLeg: 0.12, rightLeg: -0.12, drift: 0.16 }),
@@ -38,6 +50,10 @@ export function mimSpritePoseFor(
   time: number,
   beat: MimAnimationBeat | null,
 ): MimSpritePose {
+  if (fighter.health <= 0) {
+    return KO_POSE;
+  }
+
   if (!fighter.grounded) {
     return pose({ torso: 0.12, leftLeg: 0.52, rightLeg: -0.38, scarf: -0.42 });
   }

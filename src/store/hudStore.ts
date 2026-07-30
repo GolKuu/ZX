@@ -81,7 +81,7 @@ const initialSnapshot = (
 
 const initialResult: MatchResult = {
   winner: 'IDOL',
-  rounds: '2–1',
+  rounds: '0–0',
   maxCombo: 6,
   clashes: 2,
   duration: '02:14',
