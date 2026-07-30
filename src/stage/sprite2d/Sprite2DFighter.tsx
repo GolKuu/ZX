@@ -16,8 +16,8 @@ import {
 import { FIXED_SCALE } from '@/src/sim';
 import {
   combatAnimationProgress,
-  idolSpriteAnimationProgress,
   isStrikeFrame,
+  spriteAnimationProgress,
 } from '../combatAnimationProgress';
 import { AttackPoseSprite } from './AttackPoseSprite';
 import {
@@ -187,8 +187,8 @@ export function Sprite2DFighter({
 
     const progress = fighter.action === null
       ? 0
-      : rigName === 'idol-profile'
-        ? idolSpriteAnimationProgress(
+      : attackPoseName !== undefined
+        ? spriteAnimationProgress(
           fighter.action.moveId,
           fighter.action.frame,
         )

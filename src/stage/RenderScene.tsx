@@ -99,7 +99,7 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
   readonly attacks?: string;
 }>> = {
   chrono: { rig: 'chrono-profile' },
-  echo: { rig: 'echo-profile' },
+  echo: { rig: 'echo-profile', attacks: 'echo-attacks' },
   glitch: { rig: 'glitch-profile', attacks: 'glitch-attacks' },
   idol: { rig: 'idol-profile', attacks: 'idol-attacks' },
 };

@@ -34,6 +34,7 @@
     "ai:secret": "node scripts/setup-ai-secret.mjs",
     "ai:deploy": "supabase functions deploy ai",
     "models:check": "node scripts/check-models.mjs",
+    "sprites:mim": "node scripts/slice-mim.mjs",
     "shoot": "node scripts/shoot.mjs"
   },
   "dependencies": {

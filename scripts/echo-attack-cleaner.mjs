@@ -39,7 +39,7 @@ export function cleanEchoAttack(data, width, height, spec, groundInCrop) {
       const recovered = recovery[pixel] !== 0;
       const onFoot = (spec.feet ?? [])
         .some(([start, end]) => x >= start && x < end);
-      const belowFloor = y >= groundInCrop - 7 && !onFoot;
+      const belowFloor = y >= groundInCrop - 14 && !onFoot;
 
       if (
         belowFloor

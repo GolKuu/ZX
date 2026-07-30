@@ -118,6 +118,15 @@ function withinLimits(pose: SpritePose): SpritePose {
   return pose;
 }
 
+function blendPose(from: SpritePose, to: SpritePose, amount: number): SpritePose {
+  const mixed = pose();
+  const clamped = Math.max(0, Math.min(1, amount));
+  for (const name of Object.keys(mixed) as (keyof SpritePose)[]) {
+    mixed[name] = from[name] + (to[name] - from[name]) * clamped;
+  }
+  return mixed;
+}
+
 /**
  * Neutral fighting stance: weight back, knees bent, breath in the shoulders.
  *
@@ -447,7 +456,15 @@ export function spritePoseFor(
   if (fighter.action !== null) {
     const attack = attackFor(fighter.action.moveId);
     const [windup, strike, settle] = beats(progress);
-    return withinLimits(attack(windup, strike, settle));
+    const attackPose = attack(windup, strike, settle);
+    const fightingStance = stance(0);
+    if (strike === 0) {
+      return withinLimits(blendPose(fightingStance, attackPose, windup));
+    }
+    if (settle > 0) {
+      return withinLimits(blendPose(attackPose, fightingStance, settle));
+    }
+    return withinLimits(attackPose);
   }
 
   if (fighter.hitstun > 0) {

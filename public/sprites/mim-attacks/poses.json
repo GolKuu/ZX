@@ -1,0 +1,25 @@
+{
+  "source": "output/imagegen/mim-fighter-reference.png",
+  "poses": {
+    "lp": {
+      "width": 393,
+      "height": 385,
+      "ground": 1.0104
+    },
+    "hp": {
+      "width": 370,
+      "height": 386,
+      "ground": 1.0078
+    },
+    "lk": {
+      "width": 421,
+      "height": 377,
+      "ground": 0.9973
+    },
+    "hk": {
+      "width": 392,
+      "height": 407,
+      "ground": 0.9975
+    }
+  }
+}

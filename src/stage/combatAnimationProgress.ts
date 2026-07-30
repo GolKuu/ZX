@@ -21,10 +21,6 @@ const MOVES_BY_ID = new Map(
   ].map((move) => [move.id, move]),
 );
 
-/** Frames either side of the active window the strike drawing is still held. */
-const STRIKE_LEAD = 3;
-const STRIKE_TRAIL = 4;
-
 /**
  * Whether this frame is the one the player reads as the strike.
  *
@@ -39,10 +35,7 @@ const STRIKE_TRAIL = 4;
 export function isStrikeFrame(moveId: string, frame: number): boolean {
   const move = MOVES_BY_ID.get(moveId);
   if (move === undefined) return false;
-  return (
-    frame >= move.startup - STRIKE_LEAD
-    && frame < move.startup + move.active + STRIKE_TRAIL
-  );
+  return frame >= move.startup && frame < move.startup + move.active;
 }
 
 export function combatAnimationProgress(
@@ -78,7 +71,7 @@ export function combatAnimationProgress(
  * recovery drawings before neutral. Simulation timing stays unchanged; long
  * moves simply hold each drawing for more than one 60 Hz tick.
  */
-export function idolSpriteAnimationProgress(
+export function spriteAnimationProgress(
   moveId: string,
   frame: number,
 ): number {
@@ -94,7 +87,7 @@ export function idolSpriteAnimationProgress(
 
   const recoveryFrame = frame - move.startup - move.active;
   return ACTIVE_END
-    + (1 - ACTIVE_END) * steppedFrame(recoveryFrame, move.recovery) / 5;
+    + (1 - ACTIVE_END) * steppedFrame(recoveryFrame, move.recovery) / 4;
 }
 
 /** Returns one of 1, 2, 3, 4 while deliberately excluding both endpoints. */
