@@ -69,10 +69,10 @@ const PARTS = {
 };
 
 const ATTACKS = {
-  lp: { left: 425, top: 200, width: 405, height: 410 },
-  hp: { left: 815, top: 200, width: 380, height: 410 },
-  lk: { left: 1185, top: 210, width: 435, height: 405 },
-  hk: { left: 1600, top: 180, width: 405, height: 435 },
+  lp: { left: 425, top: 200, width: 405, height: 410, originX: 0.5 },
+  hp: { left: 815, top: 200, width: 380, height: 410, originX: 0.57 },
+  lk: { left: 1185, top: 210, width: 435, height: 405, originX: 0.47 },
+  hk: { left: 1600, top: 180, width: 405, height: 435, originX: 0.39 },
 };
 
 function maskSvg(width, height, points, excludes = []) {
@@ -158,13 +158,15 @@ async function sliceAttacks() {
   await mkdir(ATTACK_DIR, { recursive: true });
   const manifest = { source: SOURCE, poses: {} };
   for (const [name, box] of Object.entries(ATTACKS)) {
-    const extracted = await sharp(SOURCE).extract(box).png().toBuffer();
+    const { originX, ...crop } = box;
+    const extracted = await sharp(SOURCE).extract(crop).png().toBuffer();
     const trimmed = await trimWithInfo(extracted);
     const topInCrop = -(trimmed.info.trimOffsetTop ?? 0);
     await writeFile(path.join(ATTACK_DIR, `${name}.png`), trimmed.data);
     manifest.poses[name] = {
       width: trimmed.info.width,
       height: trimmed.info.height,
+      originX,
       ground: Number(((601 - box.top - topInCrop) / trimmed.info.height).toFixed(4)),
     };
   }
