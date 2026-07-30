@@ -1,0 +1,98 @@
+.settingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 0;
+  border-block: 1px solid rgb(128 164 190 / 13%);
+}
+
+.settingRow strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+}
+
+.toggle {
+  display: flex;
+  min-width: 90px;
+  min-height: 40px;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  color: #7e90a5;
+  cursor: pointer;
+  background: #050a11;
+  border: 1px solid #263547;
+  border-radius: 99px;
+  font-size: 0.62rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.toggle i {
+  position: relative;
+  width: 27px;
+  height: 15px;
+  background: #263547;
+  border-radius: 99px;
+}
+
+.toggle i::after {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 9px;
+  height: 9px;
+  background: #8b9aad;
+  border-radius: 50%;
+  content: "";
+  transition: transform 150ms ease;
+}
+
+.toggle[aria-pressed="true"] {
+  color: #dff9ff;
+  border-color: rgb(113 220 255 / 44%);
+}
+
+.toggle[aria-pressed="true"] i {
+  background: rgb(113 220 255 / 28%);
+}
+
+.toggle[aria-pressed="true"] i::after {
+  background: #71dcff;
+  transform: translateX(12px);
+}
+
+.done {
+  width: 100%;
+  min-height: 49px;
+  color: #061019;
+  cursor: pointer;
+  background: #71dcff;
+  border: 0;
+  border-radius: 5px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.done:hover,
+.done:focus-visible {
+  background: #a3ebff;
+  outline: none;
+}
+
+@media (max-width: 520px) {
+  .settingRow {
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle i::after {
+    transition: none;
+  }
+}

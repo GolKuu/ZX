@@ -8,7 +8,10 @@ import {
   useControlStore,
 } from '@/src/store/controlStore';
 import { useRenderStore } from '@/src/store/renderStore';
-import styles from './HomeSettingsButton.module.css';
+import buttonStyles from './HomeSettingsButton.module.css';
+import controlsStyles from './HomeSettingsControls.module.css';
+import dialogStyles from './HomeSettingsDialog.module.css';
+import panelStyles from './HomeSettingsPanel.module.css';
 
 type SettingsButtonProps = {
   readonly variant: 'compact' | 'secondary';
@@ -47,7 +50,11 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
   return (
     <>
       <button
-        className={variant === 'compact' ? styles.compactTrigger : styles.secondaryTrigger}
+        className={
+          variant === 'compact'
+            ? buttonStyles.compactTrigger
+            : buttonStyles.secondaryTrigger
+        }
         type="button"
         onClick={() => setOpen(true)}
       >
@@ -56,11 +63,11 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
       </button>
 
       {open && createPortal(
-        <div className={styles.scrim} onMouseDown={() => setOpen(false)}>
+        <div className={dialogStyles.scrim} onMouseDown={() => setOpen(false)}>
           <section
             aria-labelledby={titleId}
             aria-modal="true"
-            className={styles.dialog}
+            className={dialogStyles.dialog}
             role="dialog"
             onMouseDown={(event) => event.stopPropagation()}
           >
@@ -72,7 +79,7 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
               </div>
               <button
                 aria-label="Закрыть настройки"
-                className={styles.close}
+                className={dialogStyles.close}
                 type="button"
                 onClick={() => setOpen(false)}
               >
@@ -80,14 +87,14 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
               </button>
             </header>
 
-            <div className={styles.settingRow}>
+            <div className={panelStyles.settingRow}>
               <div>
                 <strong>Боевые эффекты</strong>
                 <p>Вспышки, линии скорости и кинематографические удары.</p>
               </div>
               <button
                 aria-pressed={effectsEnabled}
-                className={styles.toggle}
+                className={panelStyles.toggle}
                 type="button"
                 onClick={toggleEffects}
               >
@@ -96,8 +103,8 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
               </button>
             </div>
 
-            <section className={styles.controls} aria-label="Текущая раскладка">
-              <div className={styles.controlsHeading}>
+            <section className={controlsStyles.controls} aria-label="Текущая раскладка">
+              <div className={controlsStyles.controlsHeading}>
                 <div>
                   <strong>Управление</strong>
                   <p>Отдельные клавиши можно изменить в меню паузы.</p>
@@ -108,7 +115,7 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
               <KeyRow label="Удары" keys={attacks} />
             </section>
 
-            <button className={styles.done} type="button" onClick={() => setOpen(false)}>
+            <button className={panelStyles.done} type="button" onClick={() => setOpen(false)}>
               Готово
             </button>
           </section>
@@ -121,7 +128,7 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
 
 function KeyRow({ label, keys }: { readonly label: string; readonly keys: readonly string[] }) {
   return (
-    <div className={styles.keyRow}>
+    <div className={controlsStyles.keyRow}>
       <span>{label}</span>
       <div>{keys.map((key, index) => <kbd key={`${key}-${index}`}>{key}</kbd>)}</div>
     </div>
