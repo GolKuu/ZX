@@ -22,8 +22,14 @@ import { join } from 'node:path';
 import sharp from 'sharp';
 import { FRONT_VIEWS, PART_RECTS } from './sheet-parts.mjs';
 
-/** Anything at least this bright is a candidate for background. */
-const LIGHT = 196;
+/**
+ * Anything at least this bright is a candidate for background.
+ *
+ * Sits above pale skin (~217) and below the paper and its grid (~235+). The fill
+ * is contained by the character's ink regardless, so this only matters where the
+ * outline is thin.
+ */
+const LIGHT = 226;
 /** Fraction of the crop that turning transparent means the fill leaked. */
 const LEAK_LIMIT = 0.9;
 

@@ -52,15 +52,24 @@ export const FRONT_VIEWS = {
  * the reason a side view is worth cutting in the first place.
  */
 export const PART_RECTS = {
+  // Read off the *keyed* cutout, not the raw sheet — the transparency is what
+  // makes the joint positions legible.
+  //
+  // Known limitation: the near arm overlaps the torso in a profile drawing, so
+  // the torso rectangle has a copy of the sleeve baked into it. There is no way
+  // to separate them from a single flat image without inpainting. The arm parts
+  // draw on top, which hides it in most poses; a fully clean rig needs the art
+  // delivered in layers.
   'idol-profile': {
-    ponytail: { box: [98, 28, 54, 226], pivot: [0.18, 0.06] },
-    head: { box: [48, 16, 94, 94], pivot: [0.56, 0.94] },
-    torso: { box: [60, 98, 78, 104], pivot: [0.5, 0.98] },
-    hips: { box: [38, 188, 124, 116], pivot: [0.5, 0.06] },
-    upperArm: { box: [88, 112, 50, 86], pivot: [0.5, 0.08] },
-    forearm: { box: [92, 186, 50, 106], pivot: [0.5, 0.06] },
-    thigh: { box: [86, 276, 58, 78], pivot: [0.5, 0.06] },
-    shin: { box: [82, 336, 56, 82], pivot: [0.5, 0.06] },
-    boot: { box: [56, 396, 88, 88], pivot: [0.62, 0.12] },
+    ponytail: { box: [80, 12, 72, 152], pivot: [0.21, 0.12] },
+    head: { box: [28, 8, 76, 100], pivot: [0.49, 0.92] },
+    torso: { box: [30, 98, 72, 108], pivot: [0.5, 0.99] },
+    hips: { box: [26, 193, 92, 106], pivot: [0.48, 0.05] },
+    sash: { box: [93, 212, 60, 142], pivot: [0.2, 0.04] },
+    upperArm: { box: [60, 103, 42, 74], pivot: [0.5, 0.09] },
+    forearm: { box: [43, 170, 50, 114], pivot: [0.54, 0.05] },
+    thigh: { box: [58, 283, 50, 76], pivot: [0.48, 0.07] },
+    shin: { box: [60, 348, 46, 80], pivot: [0.43, 0.06] },
+    boot: { box: [36, 413, 76, 72], pivot: [0.55, 0.1] },
   },
 };
