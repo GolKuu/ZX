@@ -562,5 +562,32 @@ export function removeDiagramOverlay(data, width, height, options = {}) {
       + `(${wash.perChroma.toFixed(2)} value per unit chroma)`,
     );
   }
+
+  const disturbed = fractionMoved(original, data, 40);
+  if (disturbed > (options.maximumDisturbance ?? 0.3)) {
+    data.set(original);
+    return [
+      `abandoned: ${(disturbed * 100).toFixed(0)}% of the panel moved a long way, `
+      + 'which is a misread rather than a diagram; left as drawn',
+    ];
+  }
+  report.push(`${(disturbed * 100).toFixed(1)}% of the panel changed materially`);
   return report;
+}
+
+/** Fraction of opaque pixels whose colour moved further than `threshold`. */
+function fractionMoved(before, after, threshold) {
+  let moved = 0;
+  let counted = 0;
+  for (let offset = 0; offset < before.length; offset += 4) {
+    if (before[offset + 3] === 0) continue;
+    counted += 1;
+    const worst = Math.max(
+      Math.abs(after[offset] - before[offset]),
+      Math.abs(after[offset + 1] - before[offset + 1]),
+      Math.abs(after[offset + 2] - before[offset + 2]),
+    );
+    if (worst > threshold) moved += 1;
+  }
+  return counted === 0 ? 0 : moved / counted;
 }
