@@ -8,6 +8,11 @@ export function applyGlitchCombatAnimation(
   rig: FighterRig,
   fighter: FighterSnapshot,
 ): void {
+  if (fighter.health <= 0) {
+    applyGlitchKnockdown(rig, fighter.facing);
+    return;
+  }
+
   const action = fighter.action;
   if (action !== null) {
     const progress = combatAnimationProgress(action.moveId, action.frame);
@@ -30,6 +35,25 @@ export function applyGlitchCombatAnimation(
     setRotation(rig.torso, 0, 0, fighter.facing * recoil * 0.46);
     setRotation(rig.head, 0, 0, fighter.facing * recoil * 0.28);
   }
+}
+
+function applyGlitchKnockdown(rig: FighterRig, facing: -1 | 1): void {
+  setRotation(rig.root, 0, 0, -facing * 0.54);
+  setRotation(rig.torso, 0, 0, facing * 0.46);
+  setRotation(rig.head, 0, 0, facing * -1.06);
+  setRotation(rig.leftLeg, 0, 0, facing * 0.62);
+  setRotation(rig.rightLeg, 0, 0, -facing * 0.82);
+  setRotation(rig.leftArm, 0, 0, facing * -0.32);
+  setRotation(rig.rightArm, 0, 0, facing * 0.98);
+  rig.root.position.y = -0.6;
+  rig.leftLeg.position.y = 0.38;
+  rig.rightLeg.position.y = 0.38;
+  rig.leftSword.position.y = -0.2;
+  rig.rightSword.position.y = -0.2;
+  rig.projectile.visible = false;
+  rig.aura.visible = false;
+  rig.echoes.visible = false;
+  rig.slash.visible = false;
 }
 
 function pixelPoke(rig: FighterRig, p: number, facing: -1 | 1): void {
