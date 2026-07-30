@@ -174,7 +174,7 @@ function poseLocomotion(
   time: number,
 ): void {
   const speed = Math.abs(fighter.velocity.x) / FIXED_SCALE;
-  const moving = Math.min(1, speed / 0.58);
+  const moving = Math.min(1, speed / 0.058);
   const breath = Math.sin(time * 2.2);
 
   // Fighting stance: side-on, knees bent, guard hand forward. This is the

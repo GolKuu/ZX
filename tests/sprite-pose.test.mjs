@@ -132,3 +132,34 @@ test('damage reactions scale with hitstun rather than snapping on', () => {
     'a longer hitstun should snap the head further',
   );
 });
+
+test('neutral sprite pose is a guarded fighting stance', () => {
+  const neutral = spritePoseFor(fighter(), 0, 0);
+  assert.ok(neutral.forearm < -0.4, 'near hand should stay raised');
+  assert.ok(neutral.farForearm < -0.4, 'far hand should stay raised');
+  assert.ok(neutral.shin < -0.25, 'near knee should stay bent');
+  assert.ok(neutral.farShin < -0.25, 'far knee should stay bent');
+});
+
+test('authored ground speed produces a full readable walk step', () => {
+  const time = Math.PI / (2 * 8.2);
+  const neutral = spritePoseFor(fighter(), time, 0);
+  const walking = spritePoseFor(
+    fighter({ velocity: { x: 65, y: 0 } }),
+    time,
+    0,
+  );
+
+  assert.ok(
+    Math.abs(walking.thigh - neutral.thigh) > 0.35,
+    'lead thigh should visibly advance',
+  );
+  assert.ok(
+    Math.abs(walking.farThigh - neutral.farThigh) > 0.35,
+    'rear thigh should visibly counter-step',
+  );
+  assert.ok(
+    Math.abs(walking.upperArm - neutral.upperArm) > 0.15,
+    'arms should counter-swing while walking',
+  );
+});

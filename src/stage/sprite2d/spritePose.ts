@@ -476,9 +476,9 @@ export function spritePoseFor(
 
   const base = stance(Math.sin(time * 2.2));
   const speed = Math.abs(fighter.velocity.x) / FIXED_SCALE;
-  // Authored ground speed is roughly 0.55–0.65 engine units per sim frame.
-  // Normalising by 3.5 made the old walk play at under one fifth amplitude.
-  const amount = Math.min(1, speed / 0.58);
+  // Authored ground speed is roughly 0.053–0.065 engine units per sim frame.
+  // Normalising by 3.5 made the old walk play at under two percent amplitude.
+  const amount = Math.min(1, speed / 0.058);
   if (amount < 0.02) return withinLimits(base);
   const travelDirection = fighter.velocity.x * fighter.facing >= 0 ? 1 : -1;
   return withinLimits(walk(base, time * 8.2 * travelDirection, amount));

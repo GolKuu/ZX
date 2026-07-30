@@ -56,7 +56,7 @@ export function mimSpritePoseFor(
   const base = fightingStance(breath);
   const speed = Math.min(
     1,
-    Math.abs(fighter.velocity.x) / FIXED_SCALE / 0.58,
+    Math.abs(fighter.velocity.x) / FIXED_SCALE / 0.058,
   );
   if (speed < 0.02) return base;
 

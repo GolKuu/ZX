@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  spriteFacingScale,
   withOpponentFacing,
 } from '../.sim-test-build/src/stage/fighterPresentation.js';
 
@@ -41,4 +42,11 @@ test('presentation keeps simulation facing when fighters overlap', () => {
 
   assert.equal(withOpponentFacing(p1, p2), p1);
   assert.equal(withOpponentFacing(p2, p1), p2);
+});
+
+test('sprite artwork mirrors to the requested opponent-facing direction', () => {
+  assert.equal(spriteFacingScale(true, 1), 1);
+  assert.equal(spriteFacingScale(true, -1), -1);
+  assert.equal(spriteFacingScale(false, 1), -1);
+  assert.equal(spriteFacingScale(false, -1), 1);
 });
