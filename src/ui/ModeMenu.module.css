@@ -14,9 +14,37 @@
   pointer-events: auto;
 }
 
+.modeArtwork {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 260ms ease;
+}
+
+.modeArtwork[data-visible="true"] { opacity: 1; }
+
+.modeArtwork::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(4 7 11 / 32%) 0 48%, rgb(5 9 14 / 88%) 72% 100%),
+    linear-gradient(180deg, rgb(4 7 11 / 35%), transparent 42%, rgb(4 7 11 / 82%));
+  content: "";
+}
+
+.modeArtworkImage {
+  object-fit: cover;
+  object-position: center 47%;
+  transform: scale(1.015);
+}
+
 .scrim::before,
 .scrim::after {
   position: absolute;
+  z-index: 1;
   width: 62cqw;
   aspect-ratio: 1;
   border: 1px solid rgb(159 216 255 / 8%);
@@ -30,7 +58,7 @@
 
 .brand {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   top: 3.2cqw;
   right: 4.2cqw;
   left: 4.2cqw;
@@ -45,6 +73,8 @@
 .brand small { color: #687a90; font-size: 0.82cqw; }
 
 .layout {
+  position: relative;
+  z-index: 2;
   display: grid;
   height: calc(100% - 5.2cqw);
   grid-template-columns: minmax(0, 58fr) minmax(0, 42fr);
@@ -146,7 +176,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 3;
+  z-index: 4;
   display: flex;
   height: 5.2cqw;
   align-items: center;

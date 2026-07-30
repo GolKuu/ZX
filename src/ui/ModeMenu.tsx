@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useHudStore, type MatchMode } from '@/src/store/hudStore';
 import { useMenuNavigation } from './useMenuNavigation';
@@ -70,6 +71,21 @@ export function ModeMenu() {
 
   return (
     <div aria-label="Выбор режима боя" aria-modal="true" className={styles.scrim} role="dialog">
+      <div
+        aria-hidden="true"
+        className={styles.modeArtwork}
+        data-visible={selected.id === 'ai'}
+      >
+        <Image
+          alt=""
+          className={styles.modeArtworkImage}
+          fill
+          priority
+          sizes="100vw"
+          src="/assets/modes/ai-battle-preview.webp"
+        />
+      </div>
+
       <header className={styles.brand}>
         <span>CC//ULTIMATE</span>
         <small>ВЫБОР РЕЖИМА</small>
