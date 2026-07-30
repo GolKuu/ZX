@@ -23,6 +23,14 @@ export const GLITCH_MOVE_IDS = {
   desyncJump: 'glitch.desync-jump',
 } as const;
 
+/**
+ * GLITCH's deliberately heavier animation cadence.
+ *
+ * Combat phases are expanded by the inverse of this value so the sheet poses,
+ * active hitboxes, and recovery all stay on the same timeline.
+ */
+export const GLITCH_ANIMATION_SPEED = 0.8;
+
 const rows: readonly GlitchMoveRow[] = [
   move(GLITCH_MOVE_IDS.lp, 4, 2, 10, 26, 15, box(0.76, 1.02, 0.34, 0.2), vector(0.08, 0), [
     GLITCH_MOVE_IDS.lk,
@@ -87,7 +95,21 @@ function move(
   knockback: FixedVector,
   cancels?: readonly string[],
 ): GlitchMoveRow {
-  return { id, startup, active, recovery, damage, hitstun, box: hitbox, knockback, cancels };
+  return {
+    id,
+    startup: animationFrames(startup),
+    active: animationFrames(active),
+    recovery: animationFrames(recovery),
+    damage,
+    hitstun,
+    box: hitbox,
+    knockback,
+    cancels,
+  };
+}
+
+function animationFrames(frames: number): number {
+  return Math.ceil(frames / GLITCH_ANIMATION_SPEED);
 }
 
 function box(x: number, y: number, halfWidth: number, halfHeight: number): FixedBox {

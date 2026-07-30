@@ -6,6 +6,7 @@ import { InputBuffer } from '../.sim-test-build/src/input/buffer.js';
 import { resolveCommand } from '../.sim-test-build/src/input/command.js';
 import { GLITCH_COMMANDS } from '../.sim-test-build/src/input/glitchCommands.js';
 import {
+  GLITCH_ANIMATION_SPEED,
   GLITCH_MOVE_IDS,
   GLITCH_MOVES,
 } from '../.sim-test-build/src/data/glitch-combat-moves.js';
@@ -61,4 +62,40 @@ test('every GLITCH move has active combat data', () => {
     assert.ok(move.recovery > 0);
     assert.ok(move.hitboxes.length > 0, `${move.id} needs a hitbox`);
   }
+});
+
+test('GLITCH combat phases use the slower animation cadence', () => {
+  assert.equal(GLITCH_ANIMATION_SPEED, 0.8);
+  assert.deepEqual(
+    GLITCH_MOVES.map(({ id, startup, active, recovery }) => ({
+      id,
+      startup,
+      active,
+      recovery,
+    })),
+    [
+      { id: GLITCH_MOVE_IDS.lp, startup: 5, active: 3, recovery: 13 },
+      { id: GLITCH_MOVE_IDS.hp, startup: 19, active: 7, recovery: 38 },
+      { id: GLITCH_MOVE_IDS.lk, startup: 9, active: 4, recovery: 22 },
+      { id: GLITCH_MOVE_IDS.hk, startup: 18, active: 7, recovery: 35 },
+      {
+        id: GLITCH_MOVE_IDS.packetLoss,
+        startup: 23,
+        active: 10,
+        recovery: 33,
+      },
+      {
+        id: GLITCH_MOVE_IDS.corruptedZone,
+        startup: 29,
+        active: 13,
+        recovery: 39,
+      },
+      {
+        id: GLITCH_MOVE_IDS.desyncJump,
+        startup: 14,
+        active: 5,
+        recovery: 30,
+      },
+    ],
+  );
 });
