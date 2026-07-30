@@ -1,19 +1,41 @@
 import { create } from 'zustand';
+import type { EchoSuperKind } from '@/src/data/echo-super-moves';
+import type { MimSuperKind } from '@/src/data/mim-super-moves';
 
 type RenderState = {
+  echoSuperFighterId: 'p1' | 'p2' | null;
+  echoSuperKind: EchoSuperKind | null;
+  echoSuperVersion: number;
   effectsEnabled: boolean;
   impactVersion: number;
+  mimSuperFighterId: 'p1' | 'p2' | null;
+  mimSuperKind: MimSuperKind | null;
+  mimSuperVersion: number;
   xrayFighterId: 'p1' | 'p2' | null;
   xrayVersion: number;
   hydratePreferences: () => void;
   toggleEffects: () => void;
   triggerImpact: () => void;
+  triggerEchoSuper: (
+    fighterId: 'p1' | 'p2',
+    kind: EchoSuperKind,
+  ) => void;
+  triggerMimSuper: (
+    fighterId: 'p1' | 'p2',
+    kind: MimSuperKind,
+  ) => void;
   triggerXray: (fighterId: 'p1' | 'p2') => void;
 };
 
 export const useRenderStore = create<RenderState>((set) => ({
+  echoSuperFighterId: null,
+  echoSuperKind: null,
+  echoSuperVersion: 0,
   effectsEnabled: true,
   impactVersion: 0,
+  mimSuperFighterId: null,
+  mimSuperKind: null,
+  mimSuperVersion: 0,
   xrayFighterId: null,
   xrayVersion: 0,
   hydratePreferences: () => {
@@ -28,6 +50,18 @@ export const useRenderStore = create<RenderState>((set) => ({
     }),
   triggerImpact: () =>
     set((state) => ({ impactVersion: state.impactVersion + 1 })),
+  triggerEchoSuper: (echoSuperFighterId, echoSuperKind) =>
+    set((state) => ({
+      echoSuperFighterId,
+      echoSuperKind,
+      echoSuperVersion: state.echoSuperVersion + 1,
+    })),
+  triggerMimSuper: (mimSuperFighterId, mimSuperKind) =>
+    set((state) => ({
+      mimSuperFighterId,
+      mimSuperKind,
+      mimSuperVersion: state.mimSuperVersion + 1,
+    })),
   triggerXray: (xrayFighterId) =>
     set((state) => ({
       xrayFighterId,

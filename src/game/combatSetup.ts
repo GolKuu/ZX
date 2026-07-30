@@ -9,11 +9,13 @@ import { IDOL_AI_LOADOUT } from '@/src/data/idol-ai';
 import { IDOL_MOVES } from '@/src/data/idol-combat-moves';
 import { ECHO_AI_LOADOUT } from '@/src/data/echo-ai';
 import { ECHO_MOVES } from '@/src/data/echo-combat-moves';
+import { ECHO_SUPER_MOVES } from '@/src/data/echo-super-moves';
 import { CHRONO_AI_LOADOUT } from '@/src/data/chrono-ai';
 import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
 import { GLITCH_AI_LOADOUT } from '@/src/data/glitch-ai';
 import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
+import { MIM_SUPER_MOVES } from '@/src/data/mim-super-moves';
 import { HudBridge } from '@/src/hud';
 import {
   CombatEngine,
@@ -30,8 +32,10 @@ import { useHudStore } from '@/src/store/hudStore';
 export const ALL_COMBAT_MOVES = [
   ...KADE_MOVES,
   ...MIM_MOVES,
+  ...MIM_SUPER_MOVES,
   ...IDOL_MOVES,
   ...ECHO_MOVES,
+  ...ECHO_SUPER_MOVES,
   ...CHRONO_MOVES,
   ...GLITCH_MOVES,
 ];

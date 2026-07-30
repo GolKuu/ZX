@@ -109,13 +109,18 @@ export class HudBridge {
     const maxHealth = positiveInteger(fighter.maxHealth, 'maxHealth');
     const health = Math.max(0, Math.min(maxHealth, fighter.health));
     const ultimateSpent = match.ultimateSpent?.[fighter.id] === true;
+    const superSpent = Math.max(
+      0,
+      Math.min(100, match.superSpent?.[fighter.id] ?? 0),
+    );
+    const earnedCharge = ultimateChargeFromHealth(health, maxHealth);
     return {
       ...identity,
       health,
       maxHealth,
       superCharge: ultimateSpent
         ? 0
-        : ultimateChargeFromHealth(health, maxHealth),
+        : Math.max(0, earnedCharge - superSpent),
       roundWins: Math.min(2, nonNegativeInteger(match.roundWins[fighter.id] ?? 0, 'roundWins')),
     };
   }

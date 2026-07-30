@@ -1,5 +1,9 @@
 import type { MoveFrameData } from '../sim/frame-data.js';
 import { fixed, type FixedBox, type FixedVector } from '../sim/math.js';
+import { IDOL_MOVE_IDS } from './idol-move-ids.js';
+import { IDOL_SUPER_MOVES } from './idol-super-moves.js';
+
+export { IDOL_MOVE_IDS } from './idol-move-ids.js';
 
 interface IdolMoveRow {
   readonly id: string;
@@ -12,13 +16,6 @@ interface IdolMoveRow {
   readonly knockback: FixedVector;
   readonly cancels?: readonly string[];
 }
-
-export const IDOL_MOVE_IDS = {
-  lp: 'idol.lp',
-  hp: 'idol.hp',
-  lk: 'idol.lk',
-  hk: 'idol.hk',
-} as const;
 
 const rows: readonly IdolMoveRow[] = [
   {
@@ -66,7 +63,7 @@ const rows: readonly IdolMoveRow[] = [
   },
 ];
 
-export const IDOL_MOVES: readonly MoveFrameData[] = rows.map((row) => {
+export const IDOL_NORMAL_MOVES: readonly MoveFrameData[] = rows.map((row) => {
   const heavy = row.damage > 60;
   return {
     id: row.id,
@@ -98,6 +95,11 @@ export const IDOL_MOVES: readonly MoveFrameData[] = rows.map((row) => {
     }],
   };
 });
+
+export const IDOL_MOVES: readonly MoveFrameData[] = [
+  ...IDOL_NORMAL_MOVES,
+  ...IDOL_SUPER_MOVES,
+];
 
 function attackBox(
   x: number,

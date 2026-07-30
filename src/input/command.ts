@@ -39,6 +39,7 @@ export interface CommandContext {
   readonly stanceId: string | null;
   readonly gauge: number;
   readonly superMeter: number;
+  readonly finisherReady?: boolean;
 }
 
 export const DEFAULT_CONTEXT: CommandContext = {

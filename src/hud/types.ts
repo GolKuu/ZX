@@ -36,4 +36,5 @@ export interface HudMatchState {
   readonly timerFrames: number;
   readonly roundWins: Readonly<Record<string, number | undefined>>;
   readonly ultimateSpent?: Readonly<Record<string, boolean | undefined>>;
+  readonly superSpent?: Readonly<Record<string, number | undefined>>;
 }

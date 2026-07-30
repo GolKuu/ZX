@@ -85,14 +85,14 @@ export class CombatSession {
       ? this.playerTwo.sample(
           opponent.facing,
           this.attackInput.isLocked(opponent),
-          this.xray.inputContext(opponent),
+          this.xray.inputContext(opponent, player),
         )
       : this.ai.decide(before, this.lastEvents).input;
     const result = this.engine.tick({
       p1: this.playerOne.sample(
         player.facing,
         this.attackInput.isLocked(player),
-        this.xray.inputContext(player),
+        this.xray.inputContext(player, opponent),
       ),
       p2: opponentInput,
     });
@@ -127,7 +127,7 @@ export class CombatSession {
       round: 1,
       timerFrames: this.timerFrames,
       roundWins: { p1: 0, p2: 0 },
-      ultimateSpent: this.xray.spentState(),
+      superSpent: this.xray.spentCharge(),
     });
   }
 

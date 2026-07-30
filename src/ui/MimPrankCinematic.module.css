@@ -1,0 +1,266 @@
+.scene {
+  position: absolute;
+  z-index: 46;
+  inset: 0;
+  overflow: hidden;
+  color: #fff9df;
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / 84%) 0 13%, transparent 13% 80%, rgb(0 0 0 / 88%) 80%),
+    radial-gradient(circle at 50% 58%, rgb(255 209 72 / 16%), rgb(2 5 10 / 78%) 58%);
+  animation: scene 2.8s both;
+  pointer-events: none;
+}
+
+.scene::before {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg, transparent 0 9cqw, rgb(255 255 255 / 2%) 9.1cqw);
+  content: "";
+}
+
+.scene header {
+  position: absolute;
+  z-index: 4;
+  top: 16%;
+  left: 6%;
+  display: grid;
+  border-left: 0.35cqw solid #ffd543;
+  padding-left: 1.1cqw;
+  text-transform: uppercase;
+  animation: title 0.45s both;
+}
+
+.scene header small {
+  color: #ffd543;
+  font-size: clamp(0.55rem, 0.9cqw, 0.85rem);
+  font-weight: 900;
+  letter-spacing: 0.3em;
+}
+
+.scene header strong {
+  font-size: clamp(2.3rem, 6.6cqw, 6rem);
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  line-height: 0.85;
+  text-shadow: 0 0.4cqw 1.8cqw rgb(255 198 44 / 35%);
+}
+
+.action {
+  position: absolute;
+  inset: 13% 0 20%;
+  border-bottom: 0.18cqw solid rgb(255 223 115 / 50%);
+}
+
+.actor {
+  position: absolute;
+  bottom: 0;
+  width: 8cqw;
+  height: 19cqw;
+  filter: drop-shadow(0 1cqw 1.2cqw rgb(0 0 0 / 70%));
+  transform-origin: 50% 100%;
+}
+
+.actor i {
+  position: absolute;
+  display: block;
+  background: #090b10;
+  box-shadow: inset 0 0 0 0.12cqw rgb(255 255 255 / 20%);
+}
+
+.head {
+  top: 0;
+  left: 28%;
+  width: 43%;
+  aspect-ratio: 1;
+  border-radius: 48% 48% 42% 42%;
+}
+
+.head::after {
+  position: absolute;
+  top: 43%;
+  left: 18%;
+  width: 64%;
+  height: 0.18cqw;
+  background: rgb(255 255 255 / 65%);
+  content: "";
+}
+
+.body {
+  top: 20%;
+  left: 20%;
+  width: 60%;
+  height: 52%;
+  border-radius: 38% 38% 18% 18%;
+}
+
+.arm {
+  top: 29%;
+  left: 5%;
+  width: 21%;
+  height: 48%;
+  border-radius: 99px;
+  transform: rotate(15deg);
+  transform-origin: 50% 10%;
+}
+
+.leg {
+  bottom: 0;
+  left: 26%;
+  width: 22%;
+  height: 42%;
+  border-radius: 99px;
+  box-shadow:
+    2.4cqw 0 0 #090b10,
+    inset 0 0 0 0.12cqw rgb(255 255 255 / 20%);
+}
+
+.mim {
+  left: 25%;
+  animation: mim-walk 2.8s both;
+}
+
+.mim .arm {
+  animation: mim-arm 2.8s both;
+}
+
+.enemy {
+  left: 66%;
+  animation: enemy-slip 2.8s both;
+}
+
+.enemy i {
+  background: #3c4653;
+}
+
+.enemy .leg {
+  box-shadow:
+    2.4cqw 0 0 #3c4653,
+    inset 0 0 0 0.12cqw rgb(255 255 255 / 20%);
+}
+
+.banana {
+  position: absolute;
+  z-index: 3;
+  bottom: 0.35cqw;
+  left: 31%;
+  width: 3.6cqw;
+  height: 2.3cqw;
+  animation: banana-toss 2.8s both;
+}
+
+.banana i {
+  position: absolute;
+  bottom: 0;
+  width: 2.7cqw;
+  height: 1.25cqw;
+  border-bottom: 0.55cqw solid #ffda38;
+  border-radius: 0 0 50% 50%;
+  filter: drop-shadow(0 0 0.45cqw rgb(255 207 48 / 65%));
+  transform: rotate(24deg);
+}
+
+.banana i:last-child {
+  left: 0.8cqw;
+  transform: scaleX(-1) rotate(24deg);
+}
+
+.impact {
+  position: absolute;
+  z-index: 5;
+  top: 24%;
+  left: 55%;
+  color: #fff;
+  font-size: clamp(2rem, 6cqw, 5.5rem);
+  font-style: italic;
+  font-weight: 950;
+  letter-spacing: -0.08em;
+  opacity: 0;
+  text-shadow: 0.25cqw 0.25cqw 0 #e93d38, 0 0 2cqw #ffd543;
+  transform: rotate(-8deg);
+  animation: impact 2.8s both;
+}
+
+.shockwave {
+  position: absolute;
+  top: 42%;
+  left: 65%;
+  width: 4cqw;
+  aspect-ratio: 1;
+  border: 0.35cqw solid #ffd543;
+  border-radius: 50%;
+  opacity: 0;
+  animation: shockwave 2.8s both;
+}
+
+.scene footer {
+  position: absolute;
+  right: 6%;
+  bottom: 7%;
+  color: rgb(255 255 255 / 66%);
+  font-size: clamp(0.5rem, 0.78cqw, 0.75rem);
+  font-weight: 850;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.scene footer span {
+  margin-right: 0.7cqw;
+  color: #ffd543;
+}
+
+@keyframes scene {
+  0% { opacity: 0; }
+  4%, 88% { opacity: 1; }
+  100% { visibility: hidden; opacity: 0; }
+}
+
+@keyframes title {
+  from { opacity: 0; transform: translateX(-3cqw); }
+}
+
+@keyframes banana-toss {
+  0%, 12% { transform: translate(0, -8cqw) rotate(-80deg); opacity: 0; }
+  22% { opacity: 1; }
+  38% { transform: translate(30cqw, -11cqw) rotate(220deg); }
+  48%, 100% { transform: translate(34cqw, 0) rotate(340deg); opacity: 1; }
+}
+
+@keyframes enemy-slip {
+  0%, 46% { transform: rotate(0); }
+  58% { transform: translateY(-2.2cqw) rotate(-28deg); }
+  68%, 100% { transform: translate(-1cqw, 4.5cqw) rotate(-72deg); }
+}
+
+@keyframes mim-walk {
+  0%, 56% { transform: translateX(0); }
+  76%, 100% { transform: translateX(27cqw); }
+}
+
+@keyframes mim-arm {
+  0%, 76% { transform: rotate(15deg); }
+  81% { transform: rotate(-112deg); }
+  88%, 100% { transform: rotate(-45deg); }
+}
+
+@keyframes impact {
+  0%, 80% { opacity: 0; transform: rotate(-8deg) scale(0.3); }
+  83%, 91% { opacity: 1; transform: rotate(-8deg) scale(1.1); }
+  100% { opacity: 0; transform: rotate(-8deg) scale(1.5); }
+}
+
+@keyframes shockwave {
+  0%, 80% { opacity: 0; transform: scale(0.1); }
+  82% { opacity: 1; }
+  94%, 100% { opacity: 0; transform: scale(8); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene,
+  .actor,
+  .actor i,
+  .banana,
+  .impact,
+  .shockwave {
+    animation-duration: 0.8s;
+  }
+}
