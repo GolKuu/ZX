@@ -1,11 +1,11 @@
 import { GLITCH_MOVE_IDS } from '@/src/data/glitch-combat-moves';
 import type { FighterSnapshot } from '@/src/sim';
 import { combatAnimationProgress } from '../combatAnimationProgress';
-import type { ZoroRig } from '../zoro/zoroRig';
-import { pulse, setPosition, setRotation, smooth } from '../zoro/zoroRig';
+import type { FighterRig } from '../fighterRig';
+import { pulse, setPosition, setRotation, smooth } from '../fighterRig';
 
 export function applyGlitchCombatAnimation(
-  rig: ZoroRig,
+  rig: FighterRig,
   fighter: FighterSnapshot,
 ): void {
   const action = fighter.action;
@@ -32,7 +32,7 @@ export function applyGlitchCombatAnimation(
   }
 }
 
-function pixelPoke(rig: ZoroRig, p: number, facing: -1 | 1): void {
+function pixelPoke(rig: FighterRig, p: number, facing: -1 | 1): void {
   const hit = pulse(p, 0.43);
   const arm = facing === 1 ? rig.rightArm : rig.leftArm;
   arm.position.x += facing * hit * 0.58;
@@ -42,7 +42,7 @@ function pixelPoke(rig: ZoroRig, p: number, facing: -1 | 1): void {
   showSlash(rig, p, facing * 0.9, 1.2, hit * 0.72, hit);
 }
 
-function artifactSmash(rig: ZoroRig, p: number, facing: -1 | 1): void {
+function artifactSmash(rig: FighterRig, p: number, facing: -1 | 1): void {
   const charge = windowed(p, 0, 0.3, 0.5);
   const hit = pulse(p, 0.54);
   rig.leftArm.rotation.z += charge * 1.7 - hit * 1.18;
@@ -53,7 +53,7 @@ function artifactSmash(rig: ZoroRig, p: number, facing: -1 | 1): void {
   showSlash(rig, p, facing * 0.86, 0.42, hit * 1.35, hit);
 }
 
-function bugSweep(rig: ZoroRig, p: number, facing: -1 | 1): void {
+function bugSweep(rig: FighterRig, p: number, facing: -1 | 1): void {
   const hit = pulse(p, 0.5);
   const leg = facing === 1 ? rig.rightLeg : rig.leftLeg;
   leg.position.x += facing * hit * 0.72;
@@ -64,7 +64,7 @@ function bugSweep(rig: ZoroRig, p: number, facing: -1 | 1): void {
   showSlash(rig, p, facing * 0.82, 0.18, hit * 1.12, hit);
 }
 
-function dataBurst(rig: ZoroRig, p: number, facing: -1 | 1): void {
+function dataBurst(rig: FighterRig, p: number, facing: -1 | 1): void {
   const hit = pulse(p, 0.5);
   const leg = facing === 1 ? rig.rightLeg : rig.leftLeg;
   leg.position.x += facing * hit * 0.82;
@@ -77,7 +77,7 @@ function dataBurst(rig: ZoroRig, p: number, facing: -1 | 1): void {
   setPosition(rig.echoes, facing * 1.3, 0.2, 0);
 }
 
-function packetLoss(rig: ZoroRig, p: number, facing: -1 | 1): void {
+function packetLoss(rig: FighterRig, p: number, facing: -1 | 1): void {
   const cast = pulse(p, 0.42);
   rig.leftArm.rotation.z += facing * cast * 1.18;
   rig.rightArm.rotation.z += facing * cast * 1.18;
@@ -89,7 +89,7 @@ function packetLoss(rig: ZoroRig, p: number, facing: -1 | 1): void {
   rig.projectile.scale.setScalar(0.7 + Math.sin(travel * Math.PI) * 0.55);
 }
 
-function corruptedZone(rig: ZoroRig, p: number, facing: -1 | 1): void {
+function corruptedZone(rig: FighterRig, p: number, facing: -1 | 1): void {
   const cast = pulse(p, 0.52);
   rig.root.position.y -= cast * 0.2;
   rig.torso.rotation.z -= facing * cast * 0.18;
@@ -101,7 +101,7 @@ function corruptedZone(rig: ZoroRig, p: number, facing: -1 | 1): void {
   rig.aura.rotation.y = p * Math.PI * 4;
 }
 
-function desyncJump(rig: ZoroRig, p: number, facing: -1 | 1): void {
+function desyncJump(rig: FighterRig, p: number, facing: -1 | 1): void {
   const jump = Math.sin(p * Math.PI);
   const kick = pulse(p, 0.5);
   rig.root.position.y += jump * 1.16;
@@ -116,7 +116,7 @@ function desyncJump(rig: ZoroRig, p: number, facing: -1 | 1): void {
 }
 
 function showSlash(
-  rig: ZoroRig,
+  rig: FighterRig,
   p: number,
   x: number,
   y: number,

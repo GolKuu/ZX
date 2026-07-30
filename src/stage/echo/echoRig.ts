@@ -1,8 +1,8 @@
-import type { ZoroRig } from '../zoro/zoroRig';
-import { resetZoroRig, setPosition, setRotation } from '../zoro/zoroRig';
+import type { FighterRig } from '../fighterRig';
+import { resetFighterRig, setPosition, setRotation } from '../fighterRig';
 
-export function resetEchoRig(rig: ZoroRig, time: number): void {
-  resetZoroRig(rig, 'three', time);
+export function resetEchoRig(rig: FighterRig, time: number): void {
+  resetFighterRig(rig, 'open', time);
   setRotation(rig.leftArm, 0.03, 0, -0.45);
   setRotation(rig.rightArm, -0.03, 0, 0.45);
   setPosition(rig.echoes, 0, 1.72, -0.2);

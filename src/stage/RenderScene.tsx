@@ -26,11 +26,7 @@ export function RenderScene({
 }) {
   return (
     <>
-      <color attach="background" args={['#10071b']} />
-      {/* Near plane pushed out just past the arena rim so the disc itself is
-          never hazed, far plane short enough that the skyline stays a value
-          behind the fight rather than competing with it. */}
-      <fog attach="fog" args={['#1c0b2d', 10, 27]} />
+      <color attach="background" args={['#120d29']} />
       <StageLighting />
 
       <Arena />

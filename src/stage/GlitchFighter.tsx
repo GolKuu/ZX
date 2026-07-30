@@ -30,8 +30,8 @@ import {
   createGlitchResources,
   disposeGlitchResources,
 } from './glitch/glitchResources';
-import { resetZoroRig, type ZoroRig } from './zoro/zoroRig';
-import { readZoroRig, type ZoroRigRefs } from './zoro/zoroRigRefs';
+import { resetFighterRig, type FighterRig } from './fighterRig';
+import { readFighterRig, type FighterRigRefs } from './fighterRigRefs';
 
 export function GlitchFighter({
   fighterId,
@@ -41,7 +41,7 @@ export function GlitchFighter({
   const outer = useRef<Group>(null);
   const fragments = useRef<Group>(null);
   const refs = useRigRefs();
-  const rig = useRef<ZoroRig | null>(null);
+  const rig = useRef<FighterRig | null>(null);
   const resources = useMemo(() => createGlitchResources(), []);
   const gradient = useMemo(() => createCelGradient(), []);
   const outline = useMemo(() => createOutlineMaterial(), []);
@@ -64,14 +64,14 @@ export function GlitchFighter({
   }, [gradient, materials, outline, resources]);
 
   useFrame(({ camera: activeCamera, clock }) => {
-    rig.current ??= readZoroRig(refs);
+    rig.current ??= readFighterRig(refs);
     const currentRig = rig.current;
     const fighter = readCombatFighter(fighterId);
     const outerGroup = outer.current;
     if (currentRig === null || fighter === null || outerGroup === null) return;
 
     const time = clock.elapsedTime;
-    resetZoroRig(currentRig, 'one', time);
+    resetFighterRig(currentRig, 'compact', time);
     const alpha = combatRenderFrame.interpolationAlpha;
     outerGroup.position.x = (
       fighter.previousPosition.x
@@ -114,7 +114,7 @@ export function GlitchFighter({
   );
 }
 
-function useRigRefs(): ZoroRigRefs {
+function useRigRefs(): FighterRigRefs {
   return {
     root: useRef<Group>(null),
     torso: useRef<Group>(null),

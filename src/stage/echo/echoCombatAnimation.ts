@@ -1,11 +1,11 @@
 import { ECHO_MOVE_IDS } from '@/src/data/echo-combat-moves';
 import type { FighterSnapshot } from '@/src/sim';
 import { combatAnimationProgress } from '../combatAnimationProgress';
-import type { ZoroRig } from '../zoro/zoroRig';
-import { pulse, setRotation, smooth } from '../zoro/zoroRig';
+import type { FighterRig } from '../fighterRig';
+import { pulse, setRotation, smooth } from '../fighterRig';
 
 type EchoAnimation = (
-  rig: ZoroRig,
+  rig: FighterRig,
   progress: number,
   facing: -1 | 1,
 ) => void;
@@ -18,7 +18,7 @@ const ANIMATIONS: Readonly<Record<string, EchoAnimation>> = {
 };
 
 export function applyEchoCombatAnimation(
-  rig: ZoroRig,
+  rig: FighterRig,
   fighter: FighterSnapshot,
 ): void {
   if (fighter.action !== null) {
@@ -42,7 +42,7 @@ export function applyEchoCombatAnimation(
   }
 }
 
-function dataJab(rig: ZoroRig, progress: number, facing: -1 | 1): void {
+function dataJab(rig: FighterRig, progress: number, facing: -1 | 1): void {
   const load = motionWindow(progress, 0, 0.25, 0.42);
   const strike = pulse(progress, 0.45);
   const arm = facing === 1 ? rig.rightArm : rig.leftArm;
@@ -57,7 +57,7 @@ function dataJab(rig: ZoroRig, progress: number, facing: -1 | 1): void {
 }
 
 function predictionStrike(
-  rig: ZoroRig,
+  rig: FighterRig,
   progress: number,
   facing: -1 | 1,
 ): void {
@@ -75,7 +75,7 @@ function predictionStrike(
   ringPulse(rig, strike, facing * 0.5);
 }
 
-function sweep(rig: ZoroRig, progress: number, facing: -1 | 1): void {
+function sweep(rig: FighterRig, progress: number, facing: -1 | 1): void {
   const load = motionWindow(progress, 0, 0.28, 0.46);
   const strike = heldMotion(progress, 0.27, 0.53, 0.7, 1);
   const leg = facing === 1 ? rig.rightLeg : rig.leftLeg;
@@ -90,7 +90,7 @@ function sweep(rig: ZoroRig, progress: number, facing: -1 | 1): void {
   ringPulse(rig, strike, facing * -0.34);
 }
 
-function forwardKick(rig: ZoroRig, progress: number, facing: -1 | 1): void {
+function forwardKick(rig: FighterRig, progress: number, facing: -1 | 1): void {
   const load = motionWindow(progress, 0.02, 0.3, 0.48);
   const strike = heldMotion(progress, 0.29, 0.52, 0.72, 1);
   const leg = facing === 1 ? rig.rightLeg : rig.leftLeg;
@@ -105,7 +105,7 @@ function forwardKick(rig: ZoroRig, progress: number, facing: -1 | 1): void {
   ringPulse(rig, strike, facing * 0.42);
 }
 
-function ringPulse(rig: ZoroRig, amount: number, roll: number): void {
+function ringPulse(rig: FighterRig, amount: number, roll: number): void {
   rig.echoes.scale.setScalar(1 + amount * 0.16);
   rig.echoes.rotation.z += roll * amount;
 }

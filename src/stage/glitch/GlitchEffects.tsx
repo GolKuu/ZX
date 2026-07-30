@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/refs -- R3F attaches these refs during render. */
-import type { ZoroRigRefs } from '../zoro/zoroRigRefs';
+import type { FighterRigRefs } from '../fighterRigRefs';
 import type { GlitchMaterials } from './glitchMaterials';
 import type { GlitchResources } from './glitchResources';
 
@@ -9,7 +9,7 @@ export function GlitchEffects({
   resources,
 }: {
   readonly materials: GlitchMaterials;
-  readonly refs: ZoroRigRefs;
+  readonly refs: FighterRigRefs;
   readonly resources: GlitchResources;
 }) {
   return (

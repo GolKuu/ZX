@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/refs -- R3F refs are attached, not read in render. */
 import { FighterPart } from '../FighterPart';
-import type { ZoroRigRefs } from '../zoro/zoroRigRefs';
+import type { FighterRigRefs } from '../fighterRigRefs';
 import { EchoArm, EchoHead, EchoLeg } from './EchoParts';
 import type { EchoMaterials } from './echoMaterials';
 import type { EchoResources } from './echoResources';
@@ -14,7 +14,7 @@ export function EchoBody({
 }: {
   readonly materials: EchoMaterials;
   readonly outline: Material;
-  readonly refs: ZoroRigRefs;
+  readonly refs: FighterRigRefs;
   readonly resources: EchoResources;
 }) {
   return (

@@ -2,7 +2,7 @@
 import type { RefObject } from 'react';
 import type { Group, Material } from 'three';
 import { FighterPart } from '../FighterPart';
-import type { ZoroRigRefs } from '../zoro/zoroRigRefs';
+import type { FighterRigRefs } from '../fighterRigRefs';
 import { GlitchEffects } from './GlitchEffects';
 import type { GlitchMaterials } from './glitchMaterials';
 import type { GlitchResources } from './glitchResources';
@@ -11,7 +11,7 @@ interface GlitchBodyProps {
   readonly fragments: RefObject<Group | null>;
   readonly materials: GlitchMaterials;
   readonly outline: Material;
-  readonly refs: ZoroRigRefs;
+  readonly refs: FighterRigRefs;
   readonly resources: GlitchResources;
 }
 

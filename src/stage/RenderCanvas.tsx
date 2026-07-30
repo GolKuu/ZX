@@ -12,9 +12,7 @@ export function RenderCanvas({
 }) {
   return (
     <Canvas
-      // `far` has to clear the storm dome (radius 52). It did not before, so
-      // the dome was culled every frame and the sky was just the clear colour.
-      camera={{ fov: 42, far: 120, near: 0.1, position: [0, 3.25, 8.2] }}
+      camera={{ fov: 40, far: 80, near: 0.1, position: [0, 2.42, 8.2] }}
       dpr={[1, 1.5]}
       frameloop="always"
       gl={{

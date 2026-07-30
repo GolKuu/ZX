@@ -31,7 +31,7 @@ import {
   facingOpponent,
   turnTowardOpponent,
 } from './fighterPresentation';
-import { readZoroRig, type ZoroRigRefs } from './zoro/zoroRigRefs';
+import { readFighterRig, type FighterRigRefs } from './fighterRigRefs';
 
 export function EchoFighter({
   auraColor,
@@ -70,7 +70,7 @@ export function EchoFighter({
   }, [gradient, materials, outline, resources]);
 
   useFrame(({ camera: activeCamera, clock }) => {
-    const rig = readZoroRig(refs);
+    const rig = readFighterRig(refs);
     const fighter = readCombatFighter(fighterId);
     const outerGroup = outer.current;
     if (rig === null || fighter === null || outerGroup === null) return;
@@ -108,7 +108,7 @@ export function EchoFighter({
   );
 }
 
-function useRigRefs(): ZoroRigRefs {
+function useRigRefs(): FighterRigRefs {
   return {
     root: useRef<Group>(null),
     torso: useRef<Group>(null),
