@@ -19,10 +19,6 @@ export const WHOLE_SHEETS = {
     file: 'public/chrono-character-sheet.png',
     crop: { left: 0, top: 0, width: 1152, height: 648 },
   },
-  'idol-sheet': {
-    file: 'public/assets/characters/idol-fighter-reference.webp',
-    crop: { left: 0, top: 0, width: 1536, height: 1024 },
-  },
   'glitch-sheet': {
     file: 'public/glitch-character-sheet.png',
     crop: { left: 0, top: 0, width: 1536, height: 1024 },
@@ -39,10 +35,6 @@ export const FRONT_VIEWS = {
     file: 'public/chrono-character-sheet.png',
     crop: { left: 20, top: 30, width: 290, height: 290 },
   },
-  idol: {
-    file: 'public/assets/characters/idol-fighter-reference.webp',
-    crop: { left: 300, top: 40, width: 260, height: 500 },
-  },
   // The rig is cut from a *profile*, not the front view.
   //
   // A front-facing cut-out whose limbs are rotated reads as a character facing
@@ -55,11 +47,6 @@ export const FRONT_VIEWS = {
   // stand on. The runtime hangs the whole rig off that point, so a drawing whose
   // figure sits off-centre or short of the crop's bottom edge still lands with its
   // soles on the floor and its weight over the pushbox.
-  'idol-profile': {
-    file: 'public/assets/characters/idol-fighter-reference.webp',
-    crop: { left: 1085, top: 40, width: 165, height: 490 },
-    origin: [63, 477],
-  },
   'echo-profile': {
     file: 'public/echo-character-sheet.png',
     crop: { left: 862, top: 58, width: 168, height: 360 },
@@ -73,8 +60,8 @@ export const FRONT_VIEWS = {
     // costume. A few flecks in the margin are cheaper than a holed character.
     key: { tolerance: 16 },
   },
-  // `facesRight` is per sheet, not a convention: IDOL's profile columns are both
-  // drawn facing screen-left, while CHRONO's and GLITCH's face right. The runtime
+  // `facesRight` is per sheet, not a convention: CHRONO's and GLITCH's face right.
+  // The runtime
   // mirrors from this, so getting it wrong points a fighter away from its
   // opponent.
   'chrono-profile': {
@@ -147,19 +134,6 @@ export const ATTACK_POSES = {
       hk: { left: 882, top: 435, width: 210, height: 180 },
     },
   },
-  idol: {
-    file: 'public/assets/characters/idol-fighter-reference.webp',
-    // Pale box fills over bare paper get flooded away along with the paper.
-    key: { light: 148 },
-    cleanup: 'idol',
-    ground: 958,
-    poses: {
-      lp: { left: 52, top: 580, width: 260, height: 390 },
-      hp: { left: 384, top: 578, width: 232, height: 392 },
-      lk: { left: 762, top: 680, width: 330, height: 290 },
-      hk: { left: 1140, top: 578, width: 350, height: 392 },
-    },
-  },
   glitch: {
     file: 'public/glitch-character-sheet.png',
     key: { light: 178 },
@@ -211,44 +185,6 @@ export const PART_RECTS = {
   // The same rule fixed three quieter overlaps: the ponytail's curl sat inside the
   // torso box, the sash inside the hips and thigh boxes, and the boot's cuff
   // inside the shin box. Each was one piece of art drawn twice.
-  'idol-profile': {
-    ponytail: { box: [98, 10, 54, 156], joint: [101, 40] },
-    head: { box: [26, 6, 74, 102], joint: [62, 104] },
-    torso: { box: [28, 94, 72, 112], joint: [70, 202] },
-    hips: { box: [26, 193, 66, 100], joint: [68, 200] },
-    sash: { box: [92, 204, 62, 152], joint: [104, 214] },
-    // Puffed sleeve and its white cuff. The outline runs down the armhole seam in
-    // front and along the jacket's back edge behind; the bottom two rows are bare
-    // skin, shared with the forearm, so the elbow never opens a gap.
-    upperArm: {
-      box: [54, 92, 50, 88],
-      joint: [76, 110],
-      carve: true,
-      mask: [
-        [70, 100], [80, 96], [88, 99], [95, 108], [99, 120], [100, 145],
-        [98, 163], [95, 175], [86, 179], [70, 179], [63, 172], [58, 154],
-        [57, 134], [58, 116], [63, 105],
-      ],
-    },
-    // Bare forearm, wrist cuff, gloved hand. Runs across the bare midriff, the
-    // skirt's waistband and the skirt itself — three garments, one polygon.
-    forearm: {
-      box: [48, 168, 44, 128],
-      joint: [77, 180],
-      carve: true,
-      mask: [
-        [68, 172], [90, 172], [90, 196], [86, 220], [83, 236], [80, 252],
-        [78, 270], [76, 288], [66, 293], [54, 287], [50, 266], [50, 246],
-        [54, 230], [62, 222], [65, 200],
-      ],
-    },
-    // One uninterrupted hip-to-sole drawing. IDOL's slim profile leg exposed
-    // every paper-doll knee seam, so bending separate thigh/shin/boot pieces
-    // could never preserve the source silhouette. It now turns as one limb,
-    // exactly like MIM's authored profile legs.
-    leg: { box: [26, 288, 72, 192], joint: [66, 292] },
-  },
-
   // ECHO. `sash` is the coat tail, `ponytail` the shoulder ring — the two
   // decorative slots are generic trailing pieces, named for the first character
   // that needed them.

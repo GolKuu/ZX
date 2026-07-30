@@ -4,7 +4,7 @@
 // Two steps, and the first is the one that matters:
 //
 //   1. **Key the background out by flood-filling inward from the border.** Not by
-//      luminance threshold — these characters wear white. IDOL's skirt and boots
+//      luminance threshold — this set includes pale white costume regions.
 //      are the same value as the paper they are drawn on, so a global "light
 //      pixels are background" rule deletes half the costume. Filling from the
 //      edge instead stops at the character's own ink, so enclosed whites survive.
@@ -18,16 +18,18 @@
 // Output: `public/sprites/<name>/<part>.png` plus a `rig.json` manifest the
 // runtime reads for sizes and pivots.
 //
-//   node scripts/slice-characters.mjs idol-profile
+//   node scripts/slice-characters.mjs echo-profile
 //   node scripts/slice-characters.mjs --all
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
 import { cleanEchoAttack } from './echo-attack-cleaner.mjs';
-import { cleanIdolAttack } from './idol-attack-cleaner.mjs';
 import { keyBackground } from './sheet-key.mjs';
-import { removeDiagramOverlay } from './sheet-overlay.mjs';
+import {
+  dropInklessComponents,
+  removeDiagramOverlay,
+} from './sheet-overlay.mjs';
 import {
   clearInside,
   inpaint,
@@ -327,26 +329,33 @@ async function sliceAttacks(name) {
       .ensureAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
-    // Strip the hitbox diagram *before* keying, not after.
+    // Opt-in, for a sheet whose attack panels still carry their gameplay diagram —
+    // blue hurtbox, red hitbox and green collision rectangles drawn over the pose. All
+    // four sheets in the project have since been re-exported without one, so no entry
+    // sets this today; it is here for the next sheet that arrives annotated.
     //
-    // Order matters more here than anywhere else in this file. The box fills lift the
-    // costume's value, so a key that runs first walks in from the page through a box
-    // and eats the figure — that is where the missing thighs and the boots floating
-    // free of their legs came from, and why these panels needed a luminance floor low
-    // enough to damage the costume on its own. With the diagram gone the drawing sits
-    // on clean page again and the ordinary key handles it.
-    if (spec.diagram !== false) {
+    // It has to run *before* the key, and that ordering is the whole point. The box
+    // fills lift the costume's value, so a key that goes first walks in from the page
+    // through a box and out through the figure — that is where missing thighs and boots
+    // floating free of their legs come from, and why such a panel otherwise needs a
+    // luminance floor low enough to damage the costume on its own. See
+    // `sheet-overlay.mjs`.
+    if (spec.diagram === true) {
       for (const line of removeDiagramOverlay(data, box.width, box.height)) {
         console.log(`  ${pose.padEnd(4)} ${line}`);
       }
     }
     keyBackground(data, box.width, box.height, spec.key);
+    if (spec.diagram === true) {
+      // After the key, so it works on what the key left standing: the sheet's pale
+      // annotation islands — motion arcs, impact circles — which carry no ink and so
+      // cannot be confused with any part of a character.
+      dropInklessComponents(data, box.width, box.height);
+    }
     const groundInCrop = spec.ground - box.top;
     let cleaned = data;
     if (spec.cleanup === 'echo') {
       cleaned = cleanEchoAttack(data, box.width, box.height, box, groundInCrop);
-    } else if (spec.cleanup === 'idol') {
-      cleaned = cleanIdolAttack(data, box.width, box.height);
     }
     if (spec.minimumComponentPixels !== undefined) {
       cleaned = removeSmallAlphaComponents(

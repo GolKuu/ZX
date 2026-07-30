@@ -1,5 +1,8 @@
-/** Easing windows shared by ECHO's normals and supers. */
+/** Easing windows and shared thresholds for ECHO's animations. */
 import { smooth } from '../fighterRig';
+
+/** Below this a super prop is off stage: hide it instead of drawing nothing. */
+export const PROP_VISIBLE = 0.002;
 
 /** Rises over the enter window, holds, then falls over the exit window. */
 export function heldMotion(
