@@ -4,6 +4,7 @@ import {
   type Button,
   type KeyBindings,
 } from '@/src/input/bindings';
+import { migrateKeyBindings } from '@/src/input/bindingMigration';
 
 export type ControlId = 'up' | 'down' | 'left' | 'right' | Button;
 
@@ -27,6 +28,10 @@ export const CONTROL_ROWS: readonly ControlRow[] = [
   { id: 'taunt', label: 'Насмешка', detail: 'Провокация' },
   { id: 'super', label: 'Супер', detail: 'Тратит шкалу энергии' },
   { id: 'ultimate', label: 'Ультимейт', detail: 'Только на низком HP' },
+  { id: 'echoQ', label: 'ECHO Q — modifier', detail: 'Echo supers' },
+  { id: 'echoE', label: 'ECHO E — mirror', detail: 'Echo analysis' },
+  { id: 'echoR', label: 'ECHO R — scan', detail: 'Echo analysis' },
+  { id: 'echoF', label: 'ECHO F — lock', detail: 'Echo analysis' },
 ];
 
 interface ControlState {
@@ -121,23 +126,11 @@ function readSavedBindings(): KeyBindings | null {
   if (typeof window === 'undefined') return null;
   try {
     const value: unknown = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null');
-    if (!isBindings(value)) return null;
-    return cloneBindings(value);
+    const migrated = migrateKeyBindings(value);
+    if (migrated === null) return null;
+    saveBindings(migrated);
+    return cloneBindings(migrated);
   } catch {
     return null;
   }
-}
-
-function isBindings(value: unknown): value is KeyBindings {
-  if (typeof value !== 'object' || value === null || !('buttons' in value)) {
-    return false;
-  }
-  const candidate = value as Partial<KeyBindings>;
-  return [...CONTROL_ROWS].every((row) => {
-    try {
-      return typeof bindingCode(candidate as KeyBindings, row.id) === 'string';
-    } catch {
-      return false;
-    }
-  });
 }

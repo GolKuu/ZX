@@ -4,7 +4,6 @@ import {
   DoubleSide,
   type Group,
 } from 'three';
-import { EchoHologramFigure } from './EchoHologramFigure';
 
 export function EchoPredictionReticle({
   root,
@@ -68,22 +67,6 @@ export function EchoDataFragments({
             opacity={0.38 + (index % 3) * 0.12}
           />
         </mesh>
-      ))}
-    </group>
-  );
-}
-
-export function EchoAdaptiveField({
-  root,
-}: {
-  readonly root: RefObject<Group | null>;
-}) {
-  return (
-    <group ref={root} visible={false}>
-      {Array.from({ length: 5 }, (_, index) => (
-        <group key={index}>
-          <EchoHologramFigure />
-        </group>
       ))}
     </group>
   );

@@ -323,8 +323,8 @@ export function Sprite2DFighter({
         ) : null}
         {rigName === 'echo-profile' && rig !== null ? (
           <EchoSpriteEffects
-            facesRight={rig.facesRight === true}
             fighterId={fighterId}
+            rig={rig}
           />
         ) : null}
       </group>

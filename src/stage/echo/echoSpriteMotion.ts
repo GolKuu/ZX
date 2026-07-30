@@ -41,10 +41,13 @@ export function applyEchoSpriteMotion(
 
   if (moveId === ECHO_SUPER_MOVE_IDS.analysis) {
     const read = Math.sin(progress * Math.PI);
-    rotate(joints.upperArm, -read * 0.28);
-    rotate(joints.forearm, -read * 0.44);
-    rotate(joints.farUpperArm, read * 0.2);
+    const counter = Math.sin(progress * Math.PI * 7) * read;
+    rotate(joints.upperArm, -read * 0.28 - counter * 0.12);
+    rotate(joints.forearm, -read * 0.44 + counter * 0.2);
+    rotate(joints.farUpperArm, read * 0.2 + counter * 0.1);
+    rotate(joints.farForearm, -counter * 0.18);
     rotate(joints.head, -read * 0.1);
+    body.position.x += forward * Math.max(0, counter) * 0.045;
   } else if (moveId === ECHO_SUPER_MOVE_IDS.repeat) {
     const command = Math.sin(progress * Math.PI);
     rotate(joints.upperArm, -command * 0.4);
@@ -52,13 +55,18 @@ export function applyEchoSpriteMotion(
     rotate(joints.farUpperArm, command * 0.34);
     rotate(joints.farForearm, -command * 0.18);
   } else if (moveId === ECHO_SUPER_MOVE_IDS.statistics) {
-    const stride = Math.sin(progress * Math.PI * 4);
+    const walk = smoothRange(progress, 0.02, 0.62);
+    const finish = envelope(progress, 0.58, 0.76, 0.94);
+    const stride = Math.sin(progress * Math.PI * 8) * (1 - finish);
     rotate(joints.thigh, stride * 0.12);
     rotate(joints.farThigh, -stride * 0.12);
-    rotate(joints.upperArm, -stride * 0.06);
-    rotate(joints.farUpperArm, stride * 0.06);
+    rotate(joints.upperArm, -stride * 0.06 - finish * 0.62);
+    rotate(joints.forearm, -finish * 0.38);
+    rotate(joints.farUpperArm, stride * 0.06 + finish * 0.24);
+    rotate(joints.torso, finish * 0.13);
     rotate(joints.head, -0.035);
-    body.position.x += forward * progress * 0.18;
+    body.position.x += forward * (walk * 0.38 + finish * 0.24);
+    body.scale.set(1 + finish * 0.018, 1 - finish * 0.008, 1);
   } else if (moveId === ECHO_SPECIAL_MOVE_IDS.patternScan) {
     const scan = Math.sin(progress * Math.PI);
     rotate(joints.upperArm, -scan * 0.22);
@@ -113,4 +121,8 @@ function envelope(
 function smooth(value: number): number {
   const clamped = Math.max(0, Math.min(1, value));
   return clamped * clamped * (3 - 2 * clamped);
+}
+
+function smoothRange(value: number, start: number, end: number): number {
+  return smooth((value - start) / Math.max(0.001, end - start));
 }

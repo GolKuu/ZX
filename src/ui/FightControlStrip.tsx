@@ -19,24 +19,24 @@ export function FightControlStrip() {
   };
 
   return (
-    <section className={styles.strip} aria-label="РЈРїСЂР°РІР»РµРЅРёРµ Р±РѕРµРј">
+    <section className={styles.strip} aria-label="Combat controls">
       <ControlGroup
-        label="Р”РІРёР¶РµРЅРёРµ"
+        label="Movement"
         codes={['up', 'left', 'down', 'right'].map(
           (id) => bindingCode(bindings, id as 'up' | 'left' | 'down' | 'right'),
         )}
       />
       <ControlGroup
-        label="РЈРґР°СЂС‹"
+        label="Attacks"
         codes={['lp', 'hp', 'lk', 'hk'].map(
           (id) => bindingCode(bindings, id as 'lp' | 'hp' | 'lk' | 'hk'),
         )}
       />
-      <ControlGroup label="Р‘Р»РѕРє" codes={[bindingCode(bindings, 'block')]} />
-      <ControlGroup label="Р С‹РІРѕРє" codes={[bindingCode(bindings, 'dash')]} />
-      <ControlGroup label="РЎСѓРїРµСЂ" codes={[bindingCode(bindings, 'super')]} />
-      <ControlGroup label="РЈР»СЊС‚Р°" codes={[bindingCode(bindings, 'ultimate')]} />
-      <ControlGroup label="РќР°СЃРјРµС€РєР°" codes={[bindingCode(bindings, 'taunt')]} />
+      <ControlGroup label="Block" codes={[bindingCode(bindings, 'block')]} />
+      <ControlGroup label="Dash" codes={[bindingCode(bindings, 'dash')]} />
+      <ControlGroup label="Super" codes={[bindingCode(bindings, 'super')]} />
+      <ControlGroup label="Ultimate" codes={[bindingCode(bindings, 'ultimate')]} />
+      <ControlGroup label="Taunt" codes={[bindingCode(bindings, 'taunt')]} />
       {selection[0] === 'chrono' && <ChronoMoveGroup fighterId="p1" />}
       {selection[1] === 'chrono' && <ChronoMoveGroup fighterId="p2" />}
       {selection[0] === 'mim' && <MimMoveGroup fighterId="p1" />}
@@ -45,7 +45,7 @@ export function FightControlStrip() {
       {selection[1] === 'glitch' && <GlitchMoveGroup fighterId="p2" />}
       {selection[0] === 'echo' && <EchoMoveGroup fighterId="p1" />}
       {selection[1] === 'echo' && <EchoMoveGroup fighterId="p2" />}
-      <button type="button" onClick={openControls}>РЈРїСЂР°РІР»РµРЅРёРµ</button>
+      <button type="button" onClick={openControls}>Controls</button>
     </section>
   );
 }
@@ -101,7 +101,7 @@ function MoveGroup({
 }) {
   return (
     <span className={styles.elementGroup}>
-      <small>{fighterId.toUpperCase()} В· {hint}</small>
+      <small>{fighterId.toUpperCase()} · {hint}</small>
       <b>{moves}</b>
     </span>
   );
