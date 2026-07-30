@@ -1,5 +1,5 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import { HomeArtwork } from './HomeArtwork';
 import { HomeSettingsButton } from './HomeSettingsButton';
 import styles from './HomeHero.module.css';
 
@@ -31,20 +31,7 @@ export function HomeHero() {
           Играй сразу · без загрузки и установки
         </p>
       </div>
-      <div className={styles.artwork}>
-        <Image
-          alt="Мим атакует Echo на арене Null Circle"
-          className={styles.artworkImage}
-          fill
-          priority
-          sizes="(max-width: 760px) 100vw, 62vw"
-          src="/assets/modes/ai-battle-preview.webp"
-        />
-        <div className={styles.artworkCaption}>
-          <span>NULL CIRCLE · ARENA 01</span>
-          <strong>Бой против ИИ</strong>
-        </div>
-      </div>
+      <HomeArtwork />
     </section>
   );
 }

@@ -17,8 +17,7 @@
 
 .eyebrow,
 .actions,
-.inputNote,
-.artworkCaption {
+.inputNote {
   display: flex;
   align-items: center;
 }
@@ -111,61 +110,10 @@
   font-size: 0.56rem;
 }
 
-.artwork {
-  position: relative;
-  min-height: clamp(430px, 62vh, 690px);
-  overflow: hidden;
-  background: var(--color-surface-raised);
-  border-radius: var(--radius-card);
-}
-
-.artwork::after {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgb(0 0 0 / 30%), transparent 34%),
-    linear-gradient(0deg, rgb(0 0 0 / 72%), transparent 30%);
-  content: "";
-  pointer-events: none;
-}
-
-.artworkImage {
-  object-fit: cover;
-  object-position: center;
-  transition: transform 220ms ease;
-}
-
-.artwork:hover .artworkImage {
-  transform: scale(1.015);
-}
-
-.artworkCaption {
-  position: absolute;
-  z-index: 1;
-  right: 24px;
-  bottom: 22px;
-  left: 24px;
-  justify-content: space-between;
-  gap: 16px;
-  color: var(--color-text-subtle);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-}
-
-.artworkCaption strong {
-  color: #fff;
-  font-size: 0.86rem;
-  letter-spacing: 0.02em;
-}
-
 @media (max-width: 980px) {
   .hero {
     grid-template-columns: minmax(300px, 0.8fr) minmax(390px, 1.2fr);
     gap: 28px;
-  }
-
-  .artwork {
-    min-height: 480px;
   }
 }
 
@@ -185,9 +133,6 @@
     font-size: clamp(3rem, 13.5vw, 4.8rem);
   }
 
-  .artwork {
-    min-height: clamp(280px, 62vw, 430px);
-  }
 }
 
 @media (max-width: 460px) {
@@ -199,20 +144,10 @@
     display: none;
   }
 
-  .artworkCaption {
-    right: 16px;
-    bottom: 16px;
-    left: 16px;
-  }
-
-  .artworkCaption span {
-    display: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .primaryCta,
-  .artworkImage {
+  .primaryCta {
     transition: none;
   }
 }
