@@ -27,8 +27,16 @@ const POOL = 56;
 const GRAVITY = 7.4;
 const FADE = 0.55;
 
-/** Arterial red, dark enough to read against both the stage and the costumes. */
-const BLOOD = '#9c0b25';
+/**
+ * Bright, not realistic.
+ *
+ * A true arterial `#9c0b25` disappeared against this stage: the backdrop is deep
+ * purple and maroon, so a dark red droplet is the same value as the wall behind it
+ * and reads as a speck of dirt. The spray has to be the lightest thing in its own
+ * neighbourhood to read as spray at all — the same reason `toneMapped` is off, so
+ * the tone curve cannot pull it back down into the background.
+ */
+const BLOOD = '#f0344a';
 
 interface Droplet {
   readonly position: Vector3;
@@ -123,7 +131,7 @@ export function HitBlood() {
     >
       {/* Seven segments: at this size a droplet is a handful of pixels, and any
           more is triangles nobody can see. */}
-      <circleGeometry args={[0.03, 7]} />
+      <circleGeometry args={[0.042, 7]} />
       <meshBasicMaterial color={new Color(BLOOD)} toneMapped={false} />
     </instancedMesh>
   );
