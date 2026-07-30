@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { createCelGradient } from '@/src/render/celGradient';
 import { createToonMaterial } from '@/src/render/toonMaterial';
 import { ArenaEnergyGlyphs } from './arena/ArenaEnergyGlyphs';
+import { ArenaAtmosphericField } from './arena/ArenaAtmosphericField';
 import { ArenaPlatform } from './arena/ArenaPlatform';
 import { FloatingDebris } from './arena/FloatingDebris';
 import { LightShafts } from './arena/LightShafts';
@@ -40,6 +41,7 @@ export function Arena() {
       <StormDome />
       <VoidRift />
       <LightShafts />
+      <ArenaAtmosphericField />
       <RuinedMegacity ruinMaterial={stoneMaterial} />
       <ArenaPlatform stoneMaterial={stoneMaterial} />
       <ArenaEnergyGlyphs />

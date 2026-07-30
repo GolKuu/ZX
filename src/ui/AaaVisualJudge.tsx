@@ -356,7 +356,7 @@ function evaluateFrame(
     edgeDensity,
     dominantShare,
     motionDelta,
-    zFightScore,
+    zFightScore: zFightRawScore,
   } = analyzePixels(frame.pixels, width, height, previous);
 
   const spread = (lumaMax - lumaMin) / 255;
@@ -373,7 +373,9 @@ function evaluateFrame(
   const readabilityScore = clamp(
     Math.round((contrastScore * 0.58) + (lightingScore(shadowToLuma(spread)) * 0.42)),
   );
-  const zFightScore = clamp(Math.round((dominancePenalty * 0.82) + (aliasingScore * 0.18)));
+  const zFightScore = clamp(
+    Math.round((dominancePenalty * 0.82) + (aliasingScore * 0.18) + (zFightRawScore * 0.32)),
+  );
 
   const character = clamp(
     Math.round(
