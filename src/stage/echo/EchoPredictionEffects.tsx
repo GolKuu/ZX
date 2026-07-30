@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/refs -- R3F attaches the supplied ref. */
 import type { RefObject } from 'react';
 import type { Group } from 'three';
 import type { EchoMaterials } from './echoMaterials';
