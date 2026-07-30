@@ -16,7 +16,15 @@ export function buildDebris(count: number, seed: number): ArenaDebris[] {
   };
 
   for (let index = 0; index < count; index += 1) {
-    const angle = random() * Math.PI * 2;
+    // Back half only (π…2π gives sin ≤ 0, so z ≤ 0).
+    //
+    // These used to ring the arena through a full turn, which put pillars and
+    // floating rock on the *camera* side of the fight. Harmless while the camera
+    // was locked to the origin; the moment it tracked a cornered pair, a
+    // building-sized black box slid in front of the player. Nothing is allowed
+    // between the lens and the fighters — the dressing reads as silhouette
+    // behind them, which is all it was ever doing.
+    const angle = Math.PI + random() * Math.PI;
     const distance = ARENA_RADIUS + 1.4 + random() * 8;
     items.push({
       position: [

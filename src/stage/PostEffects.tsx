@@ -43,13 +43,20 @@ export function PostEffects() {
           plane" to "objects in a room": creases, the gap under a boot, the seam
           where a fighter meets the disc. Tinted violet rather than black, so
           occlusion obeys the same never-grey rule as the toon shadows. */}
+      {/* Intensity was 2.6 — around two and a half times a normal setting. At
+          that strength AO stops describing contact and starts painting: two
+          fighters standing a metre apart occlude each other so heavily that both
+          went solid black, while the open floor kept its colour. That single
+          value, not the shading, is why the characters never matched their
+          sheets. Radius is down too — 1.15 m reached across the whole gap
+          between the pair. */}
       <N8AO
-        aoRadius={1.15}
+        aoRadius={0.55}
         color="#150a24"
         denoiseSamples={5}
-        distanceFalloff={0.85}
+        distanceFalloff={1.1}
         halfRes
-        intensity={2.6}
+        intensity={0.9}
         quality="medium"
       />
 
@@ -70,12 +77,17 @@ export function PostEffects() {
         radialModulation
       />
 
-      {/* Grade: a saturation lift and a contrast push to reclaim the black
-          point that AO and bloom both soften. */}
-      <HueSaturation hue={0} saturation={0.14} />
-      <BrightnessContrast brightness={-0.015} contrast={0.14} />
+      {/* Grade: gentle now. The old +0.14 saturation was clipping the middle
+          channel of every violet to zero — sampled floor pixels came back as
+          (58, 0, 151), which is not a colour any palette in this project
+          contains. Contrast eased for the same reason: stacked on AO and the
+          vignette it was crushing the shade band out of the characters. */}
+      <HueSaturation hue={0} saturation={0.04} />
+      <BrightnessContrast brightness={0.01} contrast={0.06} />
 
-      <Vignette darkness={0.66} eskil={false} offset={0.22} />
+      {/* Fighters live near the frame edges whenever the camera is panned, so a
+          0.66 vignette was dimming whichever one the player was watching. */}
+      <Vignette darkness={0.34} eskil={false} offset={0.32} />
 
       {/* ACES rather than AgX: AgX rolls saturated highlights toward white, and
           this stage is built out of saturated highlights — the rift core and

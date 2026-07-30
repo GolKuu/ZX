@@ -35,8 +35,16 @@ const DISTANCE_PER_GAP = 0.66;
 /** Extra lift when they are far apart, so the floor gap does not dominate. */
 const FAR_LIFT = 0.5;
 
-/** How far the camera may pan off centre before the arena rim leaves frame. */
-const MAX_PAN = 2.15;
+/**
+ * How far the camera may pan off centre.
+ *
+ * Has to cover a *cornered* pair, not just a central one. Fighters reach ±4.8 on
+ * a 5.1 m disc — an idle player gets walked into the wall by the AI in a couple
+ * of seconds — and at 2.15 the camera ran out of pan and left both of them
+ * stuck against the left edge of the frame. Panning this far shows some stage
+ * past the rim, which is what the backdrop is for.
+ */
+const MAX_PAN = 4;
 /** Exponential follow rate, per second. High enough to keep up with a dash. */
 const FOLLOW_RATE = 7.5;
 
