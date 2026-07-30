@@ -49,7 +49,7 @@ export function ChronoFighter({
   const rig = useRef<ChronoRig | null>(null);
   const resources = useMemo(() => createFighterResources(), []);
   const gradient = useMemo(() => createCelGradient(), []);
-  const outline = useMemo(() => createOutlineMaterial({ pixelWidth: 2 }), []);
+  const outline = useMemo(() => createOutlineMaterial(), []);
   const materials = useMemo(
     () => createChronoMaterials(gradient, auraColor),
     [auraColor, gradient],

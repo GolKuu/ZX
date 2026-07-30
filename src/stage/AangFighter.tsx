@@ -53,7 +53,7 @@ export function AangFighter({
   const rig = useRef<AangRig | null>(null);
   const resources = useMemo(() => createFighterResources(), []);
   const gradient = useMemo(() => createCelGradient(), []);
-  const outline = useMemo(() => createOutlineMaterial({ pixelWidth: 2 }), []);
+  const outline = useMemo(() => createOutlineMaterial(), []);
   const materials = useMemo(
     () => createAangMaterials(gradient, auraColor),
     [auraColor, gradient],

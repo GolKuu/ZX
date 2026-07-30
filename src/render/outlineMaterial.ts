@@ -48,14 +48,29 @@ export interface OutlineOptions {
   readonly falloff?: boolean;
 }
 
+/**
+ * The roster's ink weight, in pixels.
+ *
+ * One number for every character on purpose. A heavy, even black contour is the
+ * single most defining feature of the character sheets, and it is the same
+ * weight on all five of them — so it is art direction, not a per-character
+ * tuning knob. Each fighter used to pass its own value between 2 and 2.4, which
+ * was both inconsistent and far too fine to read against this stage.
+ */
+export const INK_WIDTH = 3.6;
+
+/** Near-black. A true 0x000000 reads as a hole; this reads as ink. */
+export const INK_COLOR = '#07070c';
+
 export function createOutlineMaterial(options: OutlineOptions = {}) {
   return new ShaderMaterial({
     uniforms: {
-      uColor: { value: new Color(options.color ?? '#0a0d18') },
-      uPixelWidth: { value: options.pixelWidth ?? 2.4 },
+      uColor: { value: new Color(options.color ?? INK_COLOR) },
+      uPixelWidth: { value: options.pixelWidth ?? INK_WIDTH },
       uViewportHeight: { value: 1080 },
       uTanHalfFov: { value: Math.tan((45 * Math.PI) / 180 / 2) },
-      uFalloff: { value: options.falloff === false ? 0 : 1 },
+      // Off by default: drawn ink does not thin with distance.
+      uFalloff: { value: options.falloff === true ? 1 : 0 },
     },
     vertexShader,
     fragmentShader,

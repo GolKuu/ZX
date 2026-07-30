@@ -56,7 +56,7 @@ export function VoidWalkerFighter({
   const stance = useRef(useRenderStore.getState().zoroStance);
   const resources = useMemo(() => createVoidWalkerResources(), []);
   const gradient = useMemo(() => createCelGradient(), []);
-  const outline = useMemo(() => createOutlineMaterial({ pixelWidth: 2.2 }), []);
+  const outline = useMemo(() => createOutlineMaterial(), []);
   const materials = useMemo(
     () => createVoidWalkerMaterials(gradient, auraColor),
     [auraColor, gradient],

@@ -54,7 +54,7 @@ export function IdolFighter({
   const body = useMemo(() => createFighterResources(), []);
   const idol = useMemo(() => createIdolResources(), []);
   const gradient = useMemo(() => createCelGradient(), []);
-  const outline = useMemo(() => createOutlineMaterial({ pixelWidth: 2.2 }), []);
+  const outline = useMemo(() => createOutlineMaterial(), []);
   const materials = useMemo(
     () => createIdolMaterials(gradient, auraColor),
     [auraColor, gradient],

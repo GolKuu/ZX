@@ -44,7 +44,7 @@ export function GlitchFighter({
   const rig = useRef<ZoroRig | null>(null);
   const resources = useMemo(() => createGlitchResources(), []);
   const gradient = useMemo(() => createCelGradient(), []);
-  const outline = useMemo(() => createOutlineMaterial({ pixelWidth: 2.3 }), []);
+  const outline = useMemo(() => createOutlineMaterial(), []);
   const materials = useMemo(() => createGlitchMaterials(gradient), [gradient]);
   const toonMaterials = useMemo(() => toonMaterialsOf(materials), [materials]);
   const viewportHeight = useThree((state) => state.size.height);

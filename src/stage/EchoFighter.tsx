@@ -44,7 +44,7 @@ export function EchoFighter({
   const refs = useRigRefs();
   const resources = useMemo(() => createEchoResources(), []);
   const gradient = useMemo(() => createCelGradient(), []);
-  const outline = useMemo(() => createOutlineMaterial({ pixelWidth: 2 }), []);
+  const outline = useMemo(() => createOutlineMaterial(), []);
   const materials = useMemo(
     () => createEchoMaterials(gradient, auraColor),
     [auraColor, gradient],

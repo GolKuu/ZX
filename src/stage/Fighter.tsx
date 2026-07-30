@@ -52,7 +52,7 @@ export function Fighter({
   const groupRef = useRef<Group>(null);
   const resources = useMemo(() => createFighterResources(), []);
   const gradient = useMemo(() => createCelGradient(), []);
-  const outline = useMemo(() => createOutlineMaterial({ pixelWidth: 2.4 }), []);
+  const outline = useMemo(() => createOutlineMaterial(), []);
   const outlineThin = useMemo(
     () => createOutlineMaterial({ pixelWidth: 1.1 }),
     [],

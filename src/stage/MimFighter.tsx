@@ -49,7 +49,7 @@ export function MimFighter({
   const rig = useRef<MimRig | null>(null);
   const resources = useMemo(() => createMimResources(), []);
   const gradient = useMemo(() => createCelGradient(), []);
-  const outline = useMemo(() => createOutlineMaterial({ pixelWidth: 2.2 }), []);
+  const outline = useMemo(() => createOutlineMaterial(), []);
   const materials = useMemo(
     () => createMimMaterials(gradient, auraColor),
     [auraColor, gradient],
