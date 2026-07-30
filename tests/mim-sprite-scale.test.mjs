@@ -9,16 +9,17 @@ const PROFILE_NAMES = [
   'glitch-profile',
 ];
 
-test('MIM matches the average rendered height of the sprite roster', async () => {
+test('MIM is slightly shorter than the average sprite fighter', async () => {
   const mim = await loadManifest('mim-profile');
   const others = await Promise.all(PROFILE_NAMES.map(loadManifest));
   const average = others.reduce(
     (total, manifest) => total + renderedHeight(manifest),
     0,
   ) / others.length;
+  const difference = average - renderedHeight(mim);
 
   assert.ok(
-    Math.abs(renderedHeight(mim) - average) < 0.04,
+    difference > 0.02 && difference < 0.07,
     `MIM ${renderedHeight(mim).toFixed(3)} vs roster ${average.toFixed(3)}`,
   );
 });

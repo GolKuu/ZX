@@ -70,9 +70,9 @@ async function sliceProfile() {
   const source = await sharp(SOURCE).extract(VIEW).png().toBuffer();
   const manifest = {
     source: SOURCE,
-    // Match the roster's average floor-to-crown height. The source figure is
-    // 387 px tall, so a 406 px scale reference renders it at ~2.50 world units.
-    view: { ...VIEW, figureHeight: 406 },
+    // Sit slightly below the roster average without changing the drawing's
+    // proportions. The same pixel scale is shared by the rig and strike poses.
+    view: { ...VIEW, figureHeight: 414 },
     textureScale: TEXTURE_SCALE,
     facesRight: true,
     origin: ORIGIN,
@@ -88,9 +88,12 @@ async function sliceProfile() {
     let cut = clippedSource;
     if (spec.base === true) {
       const polygon = spec.points.map((point) => point.join(',')).join(' ');
+      const strokeWidth = spec.baseStrokeWidth ?? 0;
       const base = Buffer.from(
         `<svg width="${VIEW.width}" height="${VIEW.height}">`
-        + `<polygon points="${polygon}" fill="#6739b6" stroke="#25105e" stroke-width="4"/>`
+        + `<polygon points="${polygon}" fill="${spec.baseFill ?? '#6739b6'}"`
+        + ` stroke="${spec.baseStroke ?? '#6739b6'}"`
+        + ` stroke-width="${strokeWidth}"/>`
         + '</svg>',
       );
       cut = await sharp({
