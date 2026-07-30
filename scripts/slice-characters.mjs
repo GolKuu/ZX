@@ -24,6 +24,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
+import { cleanEchoAttack } from './echo-attack-cleaner.mjs';
 import { keyBackground } from './sheet-key.mjs';
 import {
   clearInside,
@@ -116,7 +117,14 @@ async function sliceCharacter(name) {
   const masks = new Map();
   for (const [part, spec] of Object.entries(parts)) {
     if (spec.mask === undefined) continue;
-    masks.set(part, rasterisePolygon(spec.mask, width, height));
+    const mask = rasterisePolygon(spec.mask, width, height);
+    for (const hole of spec.holes ?? []) {
+      const holeMask = rasterisePolygon(hole, width, height);
+      for (let pixel = 0; pixel < mask.length; pixel += 1) {
+        if (holeMask[pixel] !== 0) mask[pixel] = 0;
+      }
+    }
+    masks.set(part, mask);
   }
   const carved = Buffer.from(data);
   const carving = Object.entries(parts)
@@ -272,8 +280,12 @@ async function sliceAttacks(name) {
       .raw()
       .toBuffer({ resolveWithObject: true });
     keyBackground(data, box.width, box.height, spec.key);
+    const groundInCrop = spec.ground - box.top;
+    const cleaned = spec.cleanup === 'echo'
+      ? cleanEchoAttack(data, box.width, box.height, box, groundInCrop)
+      : data;
 
-    const keyed = await sharp(data, {
+    const keyed = await sharp(cleaned, {
       raw: { channels: 4, width: box.width, height: box.height },
     }).png().toBuffer();
     const trimmed = await sharp(keyed).trim({ threshold: 1 }).toBuffer({
@@ -282,7 +294,6 @@ async function sliceAttacks(name) {
     await sharp(trimmed.data).png().toFile(join(directory, `${pose}.png`));
 
     const topInCrop = -(trimmed.info.trimOffsetTop ?? 0);
-    const groundInCrop = spec.ground - box.top;
     manifest.poses[pose] = {
       width: trimmed.info.width,
       height: trimmed.info.height,

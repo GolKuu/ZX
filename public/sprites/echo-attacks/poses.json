@@ -1,0 +1,25 @@
+{
+  "source": "public/echo-character-sheet.png",
+  "poses": {
+    "lp": {
+      "width": 205,
+      "height": 203,
+      "ground": 1.0099
+    },
+    "hp": {
+      "width": 220,
+      "height": 198,
+      "ground": 1.0101
+    },
+    "lk": {
+      "width": 230,
+      "height": 166,
+      "ground": 1.012
+    },
+    "hk": {
+      "width": 240,
+      "height": 203,
+      "ground": 1.0099
+    }
+  }
+}
