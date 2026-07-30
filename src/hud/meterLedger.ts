@@ -8,11 +8,13 @@
  */
 
 import { buildsMeter, isUltimateMove, superCostForMove } from '../data/meter-moves.js';
+import { TAUNT_MOVE_ID } from '../data/taunt-move.js';
 import type { CombatEvent } from '../sim/events.js';
 import {
   clampSuperMeter,
   superGainForDamageDealt,
   superGainForDamageTaken,
+  TAUNT_ENERGY_GAIN,
 } from './superMeter.js';
 import { ultimateReadyFromHealth } from './ultimateCharge.js';
 
@@ -54,6 +56,10 @@ export class MeterLedger {
   }
 
   private spend(fighterId: string, moveId: string): void {
+    if (moveId === TAUNT_MOVE_ID) {
+      this.add(fighterId, TAUNT_ENERGY_GAIN);
+      return;
+    }
     if (isUltimateMove(moveId)) {
       this.ultimatesUsed.add(fighterId);
       return;

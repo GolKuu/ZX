@@ -70,6 +70,8 @@ export interface MutableFighterState {
   /** Dash frames left; 0 when not dashing. */
   dashFrames: number;
   dashDirection: -1 | 0 | 1;
+  /** Frames of dash momentum left inside the current move — the dash attack. */
+  lungeFrames: number;
   action: ActiveMoveState | null;
   bounce: BounceState;
 }

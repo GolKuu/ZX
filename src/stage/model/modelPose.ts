@@ -32,9 +32,11 @@ import {
   setPoseMirror,
   turnJointInCharacterSpace,
 } from './boneSpace';
+import { moveKindFor } from '@/src/data/move-kind';
 import type { FighterSnapshot } from '@/src/sim';
-import { FIXED_SCALE } from '@/src/sim';
+import { dashPhase, FIXED_SCALE } from '@/src/sim';
 import { combatAnimationProgress } from '../combatAnimationProgress';
+import { MODEL_KIND_POSES, poseModelDash } from './specialPoses';
 import {
   HUMANOID_JOINTS,
   type HumanoidJointName,
@@ -157,6 +159,16 @@ function poseByState(
 
   if (fighter.guarding) {
     poseGuard(joints, time);
+    return;
+  }
+
+  if (fighter.dashFrames > 0) {
+    poseModelDash(
+      joints,
+      rest,
+      fighter.velocity.x * fighter.facing >= 0,
+      dashPhase(fighter.dashFrames),
+    );
     return;
   }
 
@@ -404,9 +416,12 @@ function poseAttack(
 ): void {
   // Character choreography wins over the shared pose table. Move ids are
   // roster-wide, so the scoping has to happen here.
+  // Supers, ultimates and the taunt have no per-move row and used to fall all
+  // the way through to a straight punch. They are resolved by tier instead.
   const pose =
     choreography?.[moveId]
     ?? ATTACKS[moveId]
+    ?? MODEL_KIND_POSES[moveKindFor(moveId)]
     ?? straightPunch;
   const [windup, strike, settle] = beats(progress);
   pose(joints, rest, windup, strike, settle);

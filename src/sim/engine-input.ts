@@ -1,4 +1,11 @@
-import { advanceDash, endDash, requestDash } from './dash.js';
+import {
+  advanceDash,
+  advanceLunge,
+  endDash,
+  endLunge,
+  requestDash,
+  startLunge,
+} from './dash.js';
 import type { MoveStartedEvent } from './events.js';
 import type { MoveFrameData } from './frame-data.js';
 import type {
@@ -46,12 +53,14 @@ export function applyNeutralInput(
   if (fighter.health === 0 || fighter.hitstun > 0) {
     fighter.guarding = false;
     endDash(fighter);
+    endLunge(fighter);
     return;
   }
   if (fighter.action !== null) {
     fighter.guarding = false;
     endDash(fighter);
-    if (fighter.grounded) fighter.velocity.x = 0;
+    // Zero for an ordinary attack; a dash attack keeps sliding for a few frames.
+    if (fighter.grounded) fighter.velocity.x = advanceLunge(fighter);
     return;
   }
   fighter.guarding = input?.guard ?? false;
@@ -104,8 +113,9 @@ export function tryStartMove(
     serial: actionSerial,
     hitLedger: [],
   };
+  startLunge(fighter);
   endDash(fighter);
-  if (fighter.grounded) fighter.velocity.x = 0;
+  if (fighter.grounded && fighter.lungeFrames === 0) fighter.velocity.x = 0;
   return {
     type: 'moveStarted',
     frame,

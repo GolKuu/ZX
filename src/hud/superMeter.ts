@@ -15,6 +15,15 @@ export const SUPER_METER_STOCKS = 3;
 const DAMAGE_FOR_FULL_BAR_DEALT = 520;
 const DAMAGE_FOR_FULL_BAR_TAKEN = 900;
 
+/**
+ * What a taunt is worth — under a quarter of a segment.
+ *
+ * The taunt has no hitbox and 44 frames of recovery, so it needs *some* payoff
+ * to be a button rather than a joke; small enough that taunting is never better
+ * than fighting.
+ */
+export const TAUNT_ENERGY_GAIN = 8;
+
 export function superGainForDamageDealt(damage: number): number {
   return gain(damage, DAMAGE_FOR_FULL_BAR_DEALT);
 }

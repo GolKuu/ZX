@@ -7,12 +7,24 @@
  * deliberately impossible.
  */
 
+import { scaleInteger } from './math.js';
 import type { FighterInput, MutableFighterState } from './state.js';
 
 export const DASH_FRAMES = 8;
 
 /** Multiplier on the walk speed, applied per direction. */
 export const DASH_SPEED_MULTIPLIER = 3;
+
+/**
+ * A move started out of a dash keeps part of the dash's speed — the dash attack.
+ *
+ * Without it the engine stopped a dashing fighter dead the instant an attack
+ * came out, which makes the dash a repositioning tool and nothing else. Half the
+ * speed, bleeding off over six frames, turns it into an approach.
+ */
+export const LUNGE_FRAMES = 6;
+const DASH_CANCEL_KEEP = { numerator: 1, denominator: 2 };
+const LUNGE_FRICTION = { numerator: 5, denominator: 8 };
 
 /** A dash press is only accepted from a fighter that is not already dashing. */
 export function requestDash(
@@ -51,6 +63,35 @@ export function advanceDash(fighter: MutableFighterState): boolean {
 export function endDash(fighter: MutableFighterState): void {
   fighter.dashFrames = 0;
   fighter.dashDirection = 0;
+}
+
+/**
+ * Called as a move starts. Out of a dash it opens a lunge; from anywhere else it
+ * closes one, so a stale lunge cannot leak into the next attack.
+ */
+export function startLunge(fighter: MutableFighterState): void {
+  if (fighter.dashFrames === 0) {
+    fighter.lungeFrames = 0;
+    return;
+  }
+  fighter.lungeFrames = LUNGE_FRAMES;
+  fighter.velocity.x = scaleInteger(fighter.velocity.x, DASH_CANCEL_KEEP);
+}
+
+/**
+ * Horizontal velocity for one frame of an active move: a lunge slides and bleeds
+ * off, everything else stops dead the way it always has.
+ */
+export function advanceLunge(fighter: MutableFighterState): number {
+  if (fighter.lungeFrames === 0) {
+    return 0;
+  }
+  fighter.lungeFrames -= 1;
+  return scaleInteger(fighter.velocity.x, LUNGE_FRICTION);
+}
+
+export function endLunge(fighter: MutableFighterState): void {
+  fighter.lungeFrames = 0;
 }
 
 /**

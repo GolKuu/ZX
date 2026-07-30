@@ -13,6 +13,7 @@ export { MeterLedger } from './meterLedger.js';
 export {
   SUPER_METER_MAX,
   SUPER_METER_STOCKS,
+  TAUNT_ENERGY_GAIN,
   clampSuperMeter,
   superGainForDamageDealt,
   superGainForDamageTaken,

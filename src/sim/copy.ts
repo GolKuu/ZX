@@ -88,6 +88,7 @@ export function createFighterState(
     recoveryPercent: 100,
     dashFrames: 0,
     dashDirection: 0,
+    lungeFrames: 0,
     action: null,
     bounce: {
       wallRemaining: 0,
