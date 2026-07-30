@@ -480,3 +480,17 @@
     animation-delay: 0s !important;
   }
 }
+
+/* The super keeps Mim's authored proportions instead of a proxy mannequin. */
+.mim {
+  left: 10%;
+  width: 20cqw;
+  min-width: 154px;
+  height: 27cqw;
+  min-height: 214px;
+  background: url("/sprites/mim-attacks/lp.png") center bottom / contain no-repeat;
+}
+
+.mim > i {
+  display: none;
+}

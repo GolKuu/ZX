@@ -547,3 +547,17 @@
     animation-delay: 0s !important;
   }
 }
+
+/* Keep the cinematic mascot on-model with the shipped reference-derived art. */
+.mim {
+  left: 11%;
+  width: 19cqw;
+  min-width: 145px;
+  height: 25cqw;
+  min-height: 198px;
+  background: url("/sprites/mim-attacks/hp.png") center bottom / contain no-repeat;
+}
+
+.mim > i {
+  display: none;
+}

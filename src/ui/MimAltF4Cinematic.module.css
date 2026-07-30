@@ -649,3 +649,17 @@
     animation-delay: 0s !important;
   }
 }
+
+/* Finish on the real straight-punch pose so the joke still reads as Mim. */
+.mim {
+  left: 5%;
+  width: 23cqw;
+  min-width: 178px;
+  height: 31cqw;
+  min-height: 244px;
+  background: url("/sprites/mim-attacks/lp.png") center bottom / contain no-repeat;
+}
+
+.mim > i {
+  display: none;
+}
