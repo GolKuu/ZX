@@ -366,7 +366,7 @@ function evaluateFrame(
   const edgeScore = clamp(Math.round(edgeDensity * 220));
   const motionScore = clamp(Math.round(motionDelta * 120));
   const dominancePenalty = clamp(Math.round((dominantShare - 0.34) * 180), 0);
-  const bandingScore = clamp(Math.round(Math.max(0, (dominantShare - 0.2) * 260));
+  const bandingScore = clamp(Math.round(Math.max(0, (dominantShare - 0.2) * 260)));
   const aliasingScore = clamp(
     Math.round(Math.max(0, 78 - edgeScore) + Math.max(0, 86 - entropyScore)),
   );
