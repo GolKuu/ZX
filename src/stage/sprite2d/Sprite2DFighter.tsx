@@ -1,25 +1,43 @@
 'use client';
 
 import { useFrame } from '@react-three/fiber';
-import { useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Group } from 'three';
 import {
   combatRenderFrame,
   readCombatFighter,
+  readLatestHit,
 } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
 import {
   combatAnimationProgress,
   idolSpriteAnimationProgress,
+  isStrikeFrame,
 } from '../combatAnimationProgress';
+import { AttackPoseSprite } from './AttackPoseSprite';
 import {
   SpriteRigBody,
+  type SpriteJointName,
   type SpriteJoints,
 } from './SpriteRigBody';
-import { spritePoseFor, type SpritePose } from './spritePose';
 import {
+  spritePoseFor,
+  type HurtZone,
+  type SpritePose,
+} from './spritePose';
+import {
+  disposeAttackPoses,
   disposeSpriteRig,
+  loadAttackPoses,
   loadSpriteRig,
+  PIXEL,
+  type AttackPoseName,
+  type LoadedAttackPoses,
   type LoadedSpriteRig,
 } from './spriteRig';
 
@@ -38,18 +56,36 @@ import {
  *
  * Every joint and the figure's floor origin come from the generated manifest,
  * so characters with different source-sheet sizes share the same stage height.
+ *
+ * At the strike the jointed rig steps aside for the sheet's own attack drawing —
+ * see `AttackPoseSprite`. A rig can approximate a punch; it cannot match a drawing,
+ * and the strike is the one frame a player actually reads.
  */
 
+/** Attack panels are drawn at a slightly different scale than the turnaround. */
+const ATTACK_SCALE = 1.18;
+
+/** Impact height, in engine units, below which a blow counts as low or as high. */
+const LEGS_BELOW = 0.95;
+const HEAD_ABOVE = 1.82;
+
 export function Sprite2DFighter({
+  attackPoseName,
   fighterId,
   rigName,
 }: {
+  /** Sliced attack panels, when the sheet draws them in costume colour. */
+  readonly attackPoseName?: string;
   readonly fighterId: 'p1' | 'p2';
   readonly rigName: string;
 }) {
   const outer = useRef<Group>(null);
   const body = useRef<Group>(null);
+  const rigGroup = useRef<Group>(null);
+  const poseGroup = useRef<Group>(null);
+  const shownPose = useRef<AttackPoseName | null>(null);
   const [rig, setRig] = useState<LoadedSpriteRig | null>(null);
+  const [poses, setPoses] = useState<LoadedAttackPoses | null>(null);
 
   // A ref, not a memo: the joint slots are filled by `ref` callbacks during
   // render, and mutating a memoised object is exactly what
@@ -70,6 +106,12 @@ export function Sprite2DFighter({
     farShin: null,
     farBoot: null,
   });
+  const setJoint = useCallback((
+    name: SpriteJointName,
+    node: Group | null,
+  ) => {
+    joints.current[name] = node;
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -94,6 +136,34 @@ export function Sprite2DFighter({
       setRig(null);
     };
   }, [fighterId, rigName]);
+
+  useEffect(() => {
+    if (attackPoseName === undefined) return undefined;
+    let cancelled = false;
+    let loaded: LoadedAttackPoses | null = null;
+
+    loadAttackPoses(attackPoseName)
+      .then((result) => {
+        if (cancelled) {
+          disposeAttackPoses(result);
+          return;
+        }
+        loaded = result;
+        setPoses(result);
+      })
+      .catch((error: unknown) => {
+        console.warn(
+          `[${fighterId}] Could not load attack poses "${attackPoseName}".`,
+          error,
+        );
+      });
+
+    return () => {
+      cancelled = true;
+      if (loaded !== null) disposeAttackPoses(loaded);
+      setPoses(null);
+    };
+  }, [attackPoseName, fighterId]);
 
   useFrame(({ clock }) => {
     const group = outer.current;
@@ -123,7 +193,31 @@ export function Sprite2DFighter({
           fighter.action.frame,
         )
         : combatAnimationProgress(fighter.action.moveId, fighter.action.frame);
-    const pose = spritePoseFor(fighter, clock.elapsedTime, progress);
+
+    // Which read is on screen: the drawn attack pose, or the jointed rig.
+    const drawn = fighter.action !== null
+      && poses !== null
+      && isStrikeFrame(fighter.action.moveId, fighter.action.frame)
+      ? buttonOf(fighter.action.moveId)
+      : null;
+    const available = drawn !== null && poses?.[drawn] !== undefined ? drawn : null;
+    shownPose.current = available;
+    if (rigGroup.current !== null) rigGroup.current.visible = available === null;
+    if (poseGroup.current !== null) poseGroup.current.visible = available !== null;
+
+    if (available !== null) {
+      // The drawing already contains the whole body, so the rig's lean and lift
+      // must not also apply — it would double the motion.
+      inner.position.set(0, 0, 0);
+      return;
+    }
+
+    const pose = spritePoseFor(
+      fighter,
+      clock.elapsedTime,
+      progress,
+      hurtZoneOf(fighterId, fighter.position.y / FIXED_SCALE),
+    );
     apply(joints.current, pose);
     inner.position.y = pose.lift;
     inner.position.x = pose.drift;
@@ -132,12 +226,55 @@ export function Sprite2DFighter({
   return (
     <group ref={outer}>
       <group ref={body}>
-        {rig === null ? null : (
-          <SpriteRigBody joints={joints.current} rig={rig} />
-        )}
+        <group ref={rigGroup}>
+          {rig === null ? null : (
+            <SpriteRigBody rig={rig} setJoint={setJoint} />
+          )}
+        </group>
+        <group ref={poseGroup} visible={false}>
+          {poses === null ? null : (
+            <AttackPoseSprite
+              pixelScale={PIXEL * ATTACK_SCALE}
+              poses={poses}
+              shown={shownPose}
+            />
+          )}
+        </group>
       </group>
     </group>
   );
+}
+
+/**
+ * Where the last blow landed on this fighter.
+ *
+ * Measured from the fighter's own feet, not from the stage floor, so a hit taken
+ * mid-jump is still classified by where it caught the body.
+ */
+function hurtZoneOf(fighterId: string, feetY: number): HurtZone {
+  const hit = readLatestHit(fighterId);
+  if (hit === null) return 'body';
+  const height = hit.y - feetY;
+  if (height < LEGS_BELOW) return 'legs';
+  if (height > HEAD_ABOVE) return 'head';
+  return 'body';
+}
+
+/**
+ * Move id → attack button. Per-character tables namespace their ids
+ * (`idol.hp`), so the suffix is what identifies the button.
+ */
+function buttonOf(moveId: string): AttackPoseName | null {
+  const suffix = moveId.slice(moveId.lastIndexOf('.') + 1).toLowerCase();
+  if (suffix === 'lp' || suffix === 'hp' || suffix === 'lk' || suffix === 'hk') {
+    return suffix;
+  }
+  // The shared table uses fighting-game notation instead.
+  if (suffix === '5l') return 'lp';
+  if (suffix === '5h') return 'hp';
+  if (suffix === '2l' || suffix === '2m') return 'lk';
+  if (suffix === '5m') return 'hk';
+  return null;
 }
 
 function apply(joints: SpriteJoints, pose: SpritePose): void {

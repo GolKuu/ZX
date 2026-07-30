@@ -13,6 +13,7 @@ import { ChronoFighter } from './ChronoFighter';
 import { EchoFighter } from './EchoFighter';
 import { FrameProfiler } from './FrameProfiler';
 import { GlitchFighter } from './GlitchFighter';
+import { HitBlood } from './HitBlood';
 import { IdolFighter } from './IdolFighter';
 import { LazyPostEffects } from './LazyPostEffects';
 import { MimFighter } from './MimFighter';
@@ -42,6 +43,7 @@ export function RenderScene({
         characterId={fighterSelection[1]}
         fighterId="p2"
       />
+      <HitBlood />
       <CameraRig />
       <LazyPostEffects />
       <FrameProfiler />
@@ -86,14 +88,20 @@ function SelectedFighter({
  */
 const SPRITE_RIGS: Partial<Record<CharacterId, {
   readonly rig: string;
+  /**
+   * Sliced attack panels, shown at the strike. Opt-in per character, because only
+   * some sheets draw those panels in costume colour: ECHO's and CHRONO's are solid
+   * blue hurtbox volumes with no character art in them at all, so they keep the
+   * articulated rig on all four buttons. IDOL's and GLITCH's are full colour, and
+   * carry a residue of the diagram's rectangles — that is the trade, the artist's
+   * own drawing of the strike with faint boxes over it.
+   */
+  readonly attacks?: string;
 }>> = {
-  // Attack diagrams are intentionally not mounted: their coloured hitbox
-  // rectangles are presentation notes, not character art. The articulated
-  // pieces below animate every LP / HP / LK / HK without those overlays.
   chrono: { rig: 'chrono-profile' },
   echo: { rig: 'echo-profile' },
-  glitch: { rig: 'glitch-profile' },
-  idol: { rig: 'idol-profile' },
+  glitch: { rig: 'glitch-profile', attacks: 'glitch-attacks' },
+  idol: { rig: 'idol-profile', attacks: 'idol-attacks' },
 };
 
 function primitiveFighter(
@@ -105,6 +113,7 @@ function primitiveFighter(
   if (sprite !== undefined) {
     return (
       <Sprite2DFighter
+        attackPoseName={sprite.attacks}
         fighterId={fighterId}
         rigName={sprite.rig}
       />

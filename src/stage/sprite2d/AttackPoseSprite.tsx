@@ -5,7 +5,6 @@ import { useRef, type RefObject } from 'react';
 import { DoubleSide, Mesh } from 'three';
 import {
   ATTACK_POSE_NAMES,
-  PIXEL,
   type AttackPoseName,
   type LoadedAttackPoses,
 } from './spriteRig';
@@ -22,12 +21,17 @@ import {
  * anchor makes the fighter jump vertically between moves.
  */
 export function AttackPoseSprite({
+  pixelScale,
   poses,
-  scale,
   shown,
 }: {
+  /**
+   * Engine units per source pixel. Independent of the rig's own scale: these
+   * panels are cut from the full sheet, which is a different resolution from the
+   * profile column the parts come from.
+   */
+  readonly pixelScale: number;
   readonly poses: LoadedAttackPoses;
-  readonly scale: number;
   readonly shown: RefObject<AttackPoseName | null>;
 }) {
   const meshes = useRef<Partial<Record<AttackPoseName, Mesh>>>({});
@@ -45,8 +49,8 @@ export function AttackPoseSprite({
       {ATTACK_POSE_NAMES.map((name) => {
         const pose = poses[name];
         if (pose === undefined) return null;
-        const width = pose.width * PIXEL * scale;
-        const height = pose.height * PIXEL * scale;
+        const width = pose.width * pixelScale;
+        const height = pose.height * pixelScale;
         // `ground` is the floor's position down the image; lift the centred quad
         // so that row lands on y = 0.
         const lift = (pose.ground - 0.5) * height;

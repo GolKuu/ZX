@@ -26,30 +26,35 @@ export type SpriteJoints = Record<
   keyof Omit<SpritePose, 'lift' | 'drift'>,
   Group | null
 >;
+export type SpriteJointName = keyof SpriteJoints;
+export type SetSpriteJoint = (
+  name: SpriteJointName,
+  node: Group | null,
+) => void;
 
 export function SpriteRigBody({
-  joints,
   rig,
+  setJoint,
 }: {
-  readonly joints: SpriteJoints;
   readonly rig: LoadedSpriteRig;
+  readonly setJoint: SetSpriteJoint;
 }) {
   const scale = rig.pixelScale;
   return (
     <>
       <group
         position={at(rig, 'thigh', null, LAYER.farLeg)}
-        ref={(node) => { joints.farThigh = node; }}
+        ref={(node) => { setJoint('farThigh', node); }}
       >
         <SpritePart part={rig.thigh} pixelScale={scale} tint={FAR_TINT} />
         <group
           position={at(rig, 'shin', 'thigh')}
-          ref={(node) => { joints.farShin = node; }}
+          ref={(node) => { setJoint('farShin', node); }}
         >
           <SpritePart part={rig.shin} pixelScale={scale} tint={FAR_TINT} />
           <group
             position={at(rig, 'boot', 'shin')}
-            ref={(node) => { joints.farBoot = node; }}
+            ref={(node) => { setJoint('farBoot', node); }}
           >
             <SpritePart part={rig.boot} pixelScale={scale} tint={FAR_TINT} />
           </group>
@@ -61,25 +66,25 @@ export function SpriteRigBody({
       </group>
       <group
         position={at(rig, 'sash', null, LAYER.sash)}
-        ref={(node) => { joints.sash = node; }}
+        ref={(node) => { setJoint('sash', node); }}
       >
         <SpritePart part={rig.sash} pixelScale={scale} />
       </group>
 
       <group
         position={at(rig, 'torso', null, LAYER.torso)}
-        ref={(node) => { joints.torso = node; }}
+        ref={(node) => { setJoint('torso', node); }}
       >
         <SpritePart part={rig.torso} pixelScale={scale} />
         <Arm
           far
-          joints={joints}
           rig={rig}
+          setJoint={setJoint}
           z={LAYER.farArm - LAYER.torso}
         />
         <group
           position={at(rig, 'head', 'torso', LAYER.head - LAYER.torso)}
-          ref={(node) => { joints.head = node; }}
+          ref={(node) => { setJoint('head', node); }}
         >
           <SpritePart part={rig.head} pixelScale={scale} />
           <group
@@ -89,31 +94,31 @@ export function SpriteRigBody({
               'head',
               LAYER.ponytail - LAYER.head,
             )}
-            ref={(node) => { joints.ponytail = node; }}
+            ref={(node) => { setJoint('ponytail', node); }}
           >
             <SpritePart part={rig.ponytail} pixelScale={scale} />
           </group>
         </group>
         <Arm
-          joints={joints}
           rig={rig}
+          setJoint={setJoint}
           z={LAYER.nearArm - LAYER.torso}
         />
       </group>
 
       <group
         position={at(rig, 'thigh', null, LAYER.nearLeg)}
-        ref={(node) => { joints.thigh = node; }}
+        ref={(node) => { setJoint('thigh', node); }}
       >
         <SpritePart part={rig.thigh} pixelScale={scale} />
         <group
           position={at(rig, 'shin', 'thigh')}
-          ref={(node) => { joints.shin = node; }}
+          ref={(node) => { setJoint('shin', node); }}
         >
           <SpritePart part={rig.shin} pixelScale={scale} />
           <group
             position={at(rig, 'boot', 'shin')}
-            ref={(node) => { joints.boot = node; }}
+            ref={(node) => { setJoint('boot', node); }}
           >
             <SpritePart part={rig.boot} pixelScale={scale} />
           </group>
@@ -125,13 +130,13 @@ export function SpriteRigBody({
 
 function Arm({
   far = false,
-  joints,
   rig,
+  setJoint,
   z,
 }: {
   readonly far?: boolean;
-  readonly joints: SpriteJoints;
   readonly rig: LoadedSpriteRig;
+  readonly setJoint: SetSpriteJoint;
   readonly z: number;
 }) {
   const scale = rig.pixelScale;
@@ -139,8 +144,7 @@ function Arm({
     <group
       position={at(rig, 'upperArm', 'torso', z)}
       ref={(node) => {
-        if (far) joints.farUpperArm = node;
-        else joints.upperArm = node;
+        setJoint(far ? 'farUpperArm' : 'upperArm', node);
       }}
     >
       <SpritePart
@@ -151,8 +155,7 @@ function Arm({
       <group
         position={at(rig, 'forearm', 'upperArm')}
         ref={(node) => {
-          if (far) joints.farForearm = node;
-          else joints.forearm = node;
+          setJoint(far ? 'farForearm' : 'forearm', node);
         }}
       >
         <SpritePart
