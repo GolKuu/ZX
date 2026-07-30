@@ -326,6 +326,19 @@ async function sliceAttacks(name) {
       .ensureAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
+    // Strip the hitbox diagram *before* keying, not after.
+    //
+    // Order matters more here than anywhere else in this file. The box fills lift the
+    // costume's value, so a key that runs first walks in from the page through a box
+    // and eats the figure — that is where the missing thighs and the boots floating
+    // free of their legs came from, and why these panels needed a luminance floor low
+    // enough to damage the costume on its own. With the diagram gone the drawing sits
+    // on clean page again and the ordinary key handles it.
+    if (spec.diagram !== false) {
+      for (const line of removeDiagramOverlay(data, box.width, box.height)) {
+        console.log(`  ${pose.padEnd(4)} ${line}`);
+      }
+    }
     keyBackground(data, box.width, box.height, spec.key);
     const groundInCrop = spec.ground - box.top;
     let cleaned = data;

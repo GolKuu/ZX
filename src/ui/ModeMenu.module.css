@@ -72,12 +72,54 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1.2cqw;
   font-weight: 850;
   letter-spacing: 0.18em;
 }
 
 .brand span { font-size: 1.15cqw; }
 .brand small { color: #687a90; font-size: 0.82cqw; }
+.mobileModeButton {
+  display: grid;
+  min-height: 3.1cqw;
+  margin: 0;
+  padding: 0.2cqw 0.95cqw;
+  color: #dce8f8;
+  cursor: pointer;
+  background: rgb(10 16 24 / 72%);
+  border: 1px solid var(--menu-line);
+  border-radius: 99px;
+  font: inherit;
+  text-transform: uppercase;
+  text-align: left;
+  letter-spacing: 0.1em;
+}
+
+.mobileModeButton strong,
+.mobileModeButton span {
+  display: block;
+  line-height: 1.2;
+}
+
+.mobileModeButton strong {
+  font-size: 0.75cqw;
+  color: #9fd8ff;
+}
+
+.mobileModeButton span {
+  font-size: 0.68cqw;
+}
+
+.mobileModeButton[aria-pressed="true"] {
+  border-color: #9fd8ff;
+  color: #fff;
+}
+
+.mobileModeButton:hover,
+.mobileModeButton:focus-visible {
+  border-color: #9fd8ff;
+  outline: none;
+}
 
 .layout {
   position: relative;

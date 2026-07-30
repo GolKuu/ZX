@@ -1,4 +1,4 @@
-import type { CharacterId } from '@/src/data/characterRoster';
+﻿import type { CharacterId } from '@/src/data/characterRoster';
 
 export type VoiceCategory = 'dodge' | 'taunt' | 'victory';
 
@@ -15,134 +15,108 @@ type FighterVoiceProfile = Readonly<Record<
 export const FIGHTER_VOICE_PROFILES = {
   mim: {
     dodge: [
-      { src: '/audio/mim/dodge-01.mp3', text: 'Это был мув или судорога?' },
-      { src: '/audio/mim/dodge-02.mp3', text: 'Я бы тоже промахнулся от стыда.' },
-      { src: '/audio/mim/dodge-03.mp3', text: 'Попробуй руками, мышка не поможет.' },
+      { src: '/audio/mim/dodge-01.mp3', text: 'Р­С‚Рѕ Р±С‹Р» РјСѓРІ РёР»Рё СЃСѓРґРѕСЂРѕРіР°?' },
+      { src: '/audio/mim/dodge-02.mp3', text: 'РЇ Р±С‹ С‚РѕР¶Рµ РїСЂРѕРјР°С…РЅСѓР»СЃСЏ РѕС‚ СЃС‚С‹РґР°.' },
+      { src: '/audio/mim/dodge-03.mp3', text: 'РџРѕРїСЂРѕР±СѓР№ СЂСѓРєР°РјРё, РјС‹С€РєР° РЅРµ РїРѕРјРѕР¶РµС‚.' },
     ],
     taunt: [
-      { src: '/audio/mim/taunt-01.mp3', text: 'Чтобы выиграть, нажми Alt+F4.' },
+      { src: '/audio/mim/taunt-01.mp3', text: 'Р§С‚РѕР±С‹ РІС‹РёРіСЂР°С‚СЊ, РЅР°Р¶РјРё Alt+F4.' },
       {
         src: '/audio/mim/taunt-02.mp3',
-        text: 'Сейчас будет момент, который вырежут в тикток.',
+        text: 'РЎРµР№С‡Р°СЃ Р±СѓРґРµС‚ РјРѕРјРµРЅС‚, РєРѕС‚РѕСЂС‹Р№ РІС‹СЂРµР¶СѓС‚ РІ С‚РёРєС‚РѕРє.',
       },
-      { src: '/audio/mim/taunt-03.mp3', text: 'Ты точно главный герой своей истории?' },
+      { src: '/audio/mim/taunt-03.mp3', text: 'РўС‹ С‚РѕС‡РЅРѕ РіР»Р°РІРЅС‹Р№ РіРµСЂРѕР№ СЃРІРѕРµР№ РёСЃС‚РѕСЂРёРё?' },
     ],
     victory: [
       { src: '/audio/mim/victory-01.mp3', text: 'GG. Mostly me.' },
       {
         src: '/audio/mim/victory-02.mp3',
-        text: 'Спасибо за бесплатные очки рейтинга.',
+        text: 'РЎРїР°СЃРёР±Рѕ Р·Р° Р±РµСЃРїР»Р°С‚РЅС‹Рµ РѕС‡РєРё СЂРµР№С‚РёРЅРіР°.',
       },
-      { src: '/audio/mim/victory-03.mp3', text: 'Если что, это записывалось.' },
+      { src: '/audio/mim/victory-03.mp3', text: 'Р•СЃР»Рё С‡С‚Рѕ, СЌС‚Рѕ Р·Р°РїРёСЃС‹РІР°Р»РѕСЃСЊ.' },
     ],
   },
   echo: {
     dodge: [
-      { src: '/audio/echo/dodge-01.mp3', text: 'Я это уже видел.' },
-      { src: '/audio/echo/dodge-02.mp3', text: 'Повторяешься.' },
-      { src: '/audio/echo/dodge-03.mp3', text: 'Скучно.' },
+      { src: '/audio/echo/dodge-01.mp3', text: 'РЇ СЌС‚Рѕ СѓР¶Рµ РІРёРґРµР».' },
+      { src: '/audio/echo/dodge-02.mp3', text: 'РџРѕРІС‚РѕСЂСЏРµС€СЊСЃСЏ.' },
+      { src: '/audio/echo/dodge-03.mp3', text: 'РЎРєСѓС‡РЅРѕ.' },
     ],
     taunt: [
-      { src: '/audio/echo/taunt-01.mp3', text: 'Угадай, что ты сейчас нажмешь.' },
-      { src: '/audio/echo/taunt-02.mp3', text: 'Я уже знаю следующий мув.' },
-      { src: '/audio/echo/taunt-03.mp3', text: 'Повтори для статистики.' },
+      { src: '/audio/echo/taunt-01.mp3', text: 'РЈРіР°РґР°Р№, С‡С‚Рѕ С‚С‹ СЃРµР№С‡Р°СЃ РЅР°Р¶РјРµС€СЊ.' },
+      { src: '/audio/echo/taunt-02.mp3', text: 'РЇ СѓР¶Рµ Р·РЅР°СЋ СЃР»РµРґСѓСЋС‰РёР№ РјСѓРІ.' },
+      { src: '/audio/echo/taunt-03.mp3', text: 'РџРѕРІС‚РѕСЂРё РґР»СЏ СЃС‚Р°С‚РёСЃС‚РёРєРё.' },
     ],
     victory: [
-      { src: '/audio/echo/victory-01.mp3', text: 'Спасибо за данные.' },
-      { src: '/audio/echo/victory-02.mp3', text: 'Предсказуемость — страшная сила.' },
-      { src: '/audio/echo/victory-03.mp3', text: 'Я победил тебя твоим же планом.' },
-    ],
-  },
-  idol: {
-    dodge: [
-      { src: '/audio/idol/dodge-01.mp3', text: 'Чат, вы это видели?' },
-      { src: '/audio/idol/dodge-02.mp3', text: 'Клип готов.' },
-      { src: '/audio/idol/dodge-03.mp3', text: 'Модераторы, запишите это.' },
-    ],
-    taunt: [
-      { src: '/audio/idol/taunt-01.mp3', text: 'Лайк за попытку.' },
-      { src: '/audio/idol/taunt-02.mp3', text: 'Сейчас будет хайлайт.' },
-      {
-        src: '/audio/idol/taunt-03.mp3',
-        text: 'Давайте поддержим соперника аплодисментами.',
-      },
-    ],
-    victory: [
-      { src: '/audio/idol/victory-01.mp3', text: 'Спасибо подписчикам.' },
-      {
-        src: '/audio/idol/victory-02.mp3',
-        text: 'Этот матч уже в рекомендациях.',
-      },
-      {
-        src: '/audio/idol/victory-03.mp3',
-        text: 'Поставьте лайк поражению.',
-      },
+      { src: '/audio/echo/victory-01.mp3', text: 'РЎРїР°СЃРёР±Рѕ Р·Р° РґР°РЅРЅС‹Рµ.' },
+      { src: '/audio/echo/victory-02.mp3', text: 'РџСЂРµРґСЃРєР°Р·СѓРµРјРѕСЃС‚СЊ вЂ” СЃС‚СЂР°С€РЅР°СЏ СЃРёР»Р°.' },
+      { src: '/audio/echo/victory-03.mp3', text: 'РЇ РїРѕР±РµРґРёР» С‚РµР±СЏ С‚РІРѕРёРј Р¶Рµ РїР»Р°РЅРѕРј.' },
     ],
   },
   glitch: {
     dodge: [
-      { src: '/audio/glitch/dodge-01.mp3', text: 'Ошибка 403.' },
+      { src: '/audio/glitch/dodge-01.mp3', text: 'РћС€РёР±РєР° 403.' },
       {
         src: '/audio/glitch/dodge-02.mp3',
-        text: 'Попробуйте перезагрузить противника.',
+        text: 'РџРѕРїСЂРѕР±СѓР№С‚Рµ РїРµСЂРµР·Р°РіСЂСѓР·РёС‚СЊ РїСЂРѕС‚РёРІРЅРёРєР°.',
       },
-      { src: '/audio/glitch/dodge-03.mp3', text: 'Атака не найдена.' },
+      { src: '/audio/glitch/dodge-03.mp3', text: 'РђС‚Р°РєР° РЅРµ РЅР°Р№РґРµРЅР°.' },
     ],
     taunt: [
-      { src: '/audio/glitch/taunt-01.mp3', text: 'Работает как задумано.' },
-      { src: '/audio/glitch/taunt-02.mp3', text: 'Не баг. Особенность.' },
+      { src: '/audio/glitch/taunt-01.mp3', text: 'Р Р°Р±РѕС‚Р°РµС‚ РєР°Рє Р·Р°РґСѓРјР°РЅРѕ.' },
+      { src: '/audio/glitch/taunt-02.mp3', text: 'РќРµ Р±Р°Рі. РћСЃРѕР±РµРЅРЅРѕСЃС‚СЊ.' },
       {
         src: '/audio/glitch/taunt-03.mp3',
-        text: 'Разработчик бы это не одобрил.',
+        text: 'Р Р°Р·СЂР°Р±РѕС‚С‡РёРє Р±С‹ СЌС‚Рѕ РЅРµ РѕРґРѕР±СЂРёР».',
       },
     ],
     victory: [
       {
         src: '/audio/glitch/victory-01.mp3',
-        text: 'Opponent.exe перестал отвечать.',
+        text: 'Opponent.exe РїРµСЂРµСЃС‚Р°Р» РѕС‚РІРµС‡Р°С‚СЊ.',
       },
       {
         src: '/audio/glitch/victory-02.mp3',
-        text: 'Критическая ошибка игрока.',
+        text: 'РљСЂРёС‚РёС‡РµСЃРєР°СЏ РѕС€РёР±РєР° РёРіСЂРѕРєР°.',
       },
       {
         src: '/audio/glitch/victory-03.mp3',
-        text: 'Патчноуты были против тебя.',
+        text: 'РџР°С‚С‡РЅРѕСѓС‚С‹ Р±С‹Р»Рё РїСЂРѕС‚РёРІ С‚РµР±СЏ.',
       },
     ],
   },
   chrono: {
     dodge: [
-      { src: '/audio/chrono/dodge-01.mp3', text: 'Я видел это через пять секунд.' },
-      { src: '/audio/chrono/dodge-02.mp3', text: 'Старая версия событий.' },
-      { src: '/audio/chrono/dodge-03.mp3', text: 'Неудачная линия времени.' },
+      { src: '/audio/chrono/dodge-01.mp3', text: 'РЇ РІРёРґРµР» СЌС‚Рѕ С‡РµСЂРµР· РїСЏС‚СЊ СЃРµРєСѓРЅРґ.' },
+      { src: '/audio/chrono/dodge-02.mp3', text: 'РЎС‚Р°СЂР°СЏ РІРµСЂСЃРёСЏ СЃРѕР±С‹С‚РёР№.' },
+      { src: '/audio/chrono/dodge-03.mp3', text: 'РќРµСѓРґР°С‡РЅР°СЏ Р»РёРЅРёСЏ РІСЂРµРјРµРЅРё.' },
     ],
     taunt: [
       {
         src: '/audio/chrono/taunt-01.mp3',
-        text: 'Из 143 вариантов ты выбрал худший.',
+        text: 'РР· 143 РІР°СЂРёР°РЅС‚РѕРІ С‚С‹ РІС‹Р±СЂР°Р» С…СѓРґС€РёР№.',
       },
       {
         src: '/audio/chrono/taunt-02.mp3',
-        text: 'В другой вселенной это сработало.',
+        text: 'Р’ РґСЂСѓРіРѕР№ РІСЃРµР»РµРЅРЅРѕР№ СЌС‚Рѕ СЃСЂР°Р±РѕС‚Р°Р»Рѕ.',
       },
       {
         src: '/audio/chrono/taunt-03.mp3',
-        text: 'Статистика не на твоей стороне.',
+        text: 'РЎС‚Р°С‚РёСЃС‚РёРєР° РЅРµ РЅР° С‚РІРѕРµР№ СЃС‚РѕСЂРѕРЅРµ.',
       },
     ],
     victory: [
       {
         src: '/audio/chrono/victory-01.mp3',
-        text: 'Наиболее вероятный результат.',
+        text: 'РќР°РёР±РѕР»РµРµ РІРµСЂРѕСЏС‚РЅС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚.',
       },
       {
         src: '/audio/chrono/victory-02.mp3',
-        text: 'Я проверял. Других концовок нет.',
+        text: 'РЇ РїСЂРѕРІРµСЂСЏР». Р”СЂСѓРіРёС… РєРѕРЅС†РѕРІРѕРє РЅРµС‚.',
       },
       {
         src: '/audio/chrono/victory-03.mp3',
-        text: 'Статистика беспощадна.',
+        text: 'РЎС‚Р°С‚РёСЃС‚РёРєР° Р±РµСЃРїРѕС‰Р°РґРЅР°.',
       },
     ],
   },
@@ -155,3 +129,4 @@ export function hasVoiceProfile(
 ): characterId is VoicedCharacterId {
   return characterId in FIGHTER_VOICE_PROFILES;
 }
+

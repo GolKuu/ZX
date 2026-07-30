@@ -1,4 +1,7 @@
-import type { KeyboardInputSource } from '@/src/input';
+import type {
+  CommandContext,
+  KeyboardInputSource,
+} from '@/src/input';
 import { FighterVoiceController } from '@/src/audio/FighterVoiceController';
 import {
   getCharacterDefinition,
@@ -34,6 +37,13 @@ const DEFAULT_ROUND_WINS = { p1: 0, p2: 0 } as const;
 
 type FighterSide = 'p1' | 'p2';
 type ChampionSide = FighterSide | null;
+type FighterInputSource = {
+  sample(
+    facing: -1 | 1,
+    attacksLocked?: boolean,
+    context?: CommandContext,
+  ): ReturnType<KeyboardInputSource['sample']>;
+};
 
 export class CombatSession {
   private engine = createCombatEngine();
@@ -57,8 +67,8 @@ export class CombatSession {
   private readonly attackInput = new AttackInputPolicy(ALL_COMBAT_MOVES);
 
   public constructor(
-    private readonly playerOne: KeyboardInputSource,
-    private readonly playerTwo: KeyboardInputSource,
+    private readonly playerOne: FighterInputSource,
+    private readonly playerTwo: FighterInputSource,
     private readonly fighterSelection: CharacterSelection,
   ) {
     this.ai = createCombatAi(this.fighterSelection[1]);

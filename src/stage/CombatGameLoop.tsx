@@ -10,30 +10,87 @@ import {
   CHRONO_COMMANDS,
   ECHO_COMMANDS,
   GLITCH_COMMANDS,
+  DEFAULT_CONTEXT,
+  type CommandContext,
   KeyboardInputSource,
   MIM_COMMANDS,
   PLAYER_TWO_BINDINGS,
 } from '@/src/input';
 import { useControlStore } from '@/src/store/controlStore';
 import { useHudStore } from '@/src/store/hudStore';
+import { readMobileInput, resetMobileInput } from '@/src/ui/MobileControls';
 import type {
   CharacterId,
   CharacterSelection,
 } from '@/src/data/characterRoster';
+import type { FighterInput } from '@/src/sim/state';
+
+interface InputSource {
+  sample(
+    facing: -1 | 1,
+    attacksLocked?: boolean,
+    context?: CommandContext,
+  ): FighterInput;
+  attach(target: EventTarget): void;
+  detach(target: EventTarget): void;
+  updateBindings(bindings: Parameters<KeyboardInputSource['updateBindings']>[0]): void;
+}
+
+class MobileAwareInputSource implements InputSource {
+  public constructor(private readonly keyboard: KeyboardInputSource) {}
+
+  public sample(
+    facing: -1 | 1,
+    attacksLocked = false,
+    context: CommandContext = DEFAULT_CONTEXT,
+  ): FighterInput {
+    const keyboardInput = this.keyboard.sample(facing, attacksLocked, context);
+    const mobileInput = readMobileInput();
+
+    if (
+      mobileInput.movement === 0
+      && !mobileInput.guard
+      && mobileInput.move === undefined
+    ) {
+      return keyboardInput;
+    }
+
+    return {
+      ...keyboardInput,
+      movement: mobileInput.movement === 0 ? keyboardInput.movement : mobileInput.movement,
+      guard: mobileInput.guard || keyboardInput.guard,
+      ...(mobileInput.move === undefined ? {} : { move: mobileInput.move }),
+    };
+  }
+
+  public updateBindings(
+    bindings: Parameters<KeyboardInputSource['updateBindings']>[0],
+  ): void {
+    this.keyboard.updateBindings(bindings);
+  }
+
+  public attach(target: EventTarget): void {
+    this.keyboard.attach(target);
+  }
+
+  public detach(target: EventTarget): void {
+    this.keyboard.detach(target);
+  }
+}
 
 export function CombatGameLoop({
   fighterSelection,
 }: {
   readonly fighterSelection: CharacterSelection;
 }) {
-  const keyboard = useMemo(
-    () => new KeyboardInputSource({
+  const playerOne = useMemo(
+    () => new MobileAwareInputSource(new KeyboardInputSource({
       bindings: useControlStore.getState().bindings,
       commands: commandsFor(fighterSelection[0]),
-    }),
+    })),
     [fighterSelection],
   );
-  const secondKeyboard = useMemo(
+  const playerTwoAI = useMemo(
     () => new KeyboardInputSource({
       bindings: PLAYER_TWO_BINDINGS,
       commands: commandsFor(fighterSelection[1]),
@@ -41,28 +98,29 @@ export function CombatGameLoop({
     [fighterSelection],
   );
   const session = useMemo(
-    () => new CombatSession(keyboard, secondKeyboard, fighterSelection),
-    [fighterSelection, keyboard, secondKeyboard],
+    () => new CombatSession(playerOne, playerTwoAI, fighterSelection),
+    [fighterSelection, playerOne, playerTwoAI],
   );
   const handledReset = useRef(readCombatResetVersion());
   const handledMode = useRef(useHudStore.getState().mode);
 
   useEffect(() => {
     useControlStore.getState().hydrate();
-    keyboard.updateBindings(useControlStore.getState().bindings);
-    keyboard.attach(window);
-    secondKeyboard.attach(window);
+    playerOne.updateBindings(useControlStore.getState().bindings);
+    playerOne.attach(window);
+    playerTwoAI.attach(window);
     const unsubscribe = useControlStore.subscribe((state, previous) => {
       if (state.bindings !== previous.bindings) {
-        keyboard.updateBindings(state.bindings);
+        playerOne.updateBindings(state.bindings);
       }
     });
     return () => {
       unsubscribe();
-      keyboard.detach(window);
-      secondKeyboard.detach(window);
+      playerOne.detach(window);
+      playerTwoAI.detach(window);
+      resetMobileInput();
     };
-  }, [keyboard, secondKeyboard]);
+  }, [playerOne, playerTwoAI]);
 
   useFrame((_, delta) => {
     const resetVersion = readCombatResetVersion();

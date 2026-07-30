@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { bindingCode, keyLabel, useControlStore } from '@/src/store/controlStore';
 import { useHudStore } from '@/src/store/hudStore';
@@ -19,26 +19,24 @@ export function FightControlStrip() {
   };
 
   return (
-    <section className={styles.strip} aria-label="Управление боем">
+    <section className={styles.strip} aria-label="РЈРїСЂР°РІР»РµРЅРёРµ Р±РѕРµРј">
       <ControlGroup
-        label="Движение"
+        label="Р”РІРёР¶РµРЅРёРµ"
         codes={['up', 'left', 'down', 'right'].map(
           (id) => bindingCode(bindings, id as 'up' | 'left' | 'down' | 'right'),
         )}
       />
       <ControlGroup
-        label="Удары"
+        label="РЈРґР°СЂС‹"
         codes={['lp', 'hp', 'lk', 'hk'].map(
           (id) => bindingCode(bindings, id as 'lp' | 'hp' | 'lk' | 'hk'),
         )}
       />
-      <ControlGroup label="Блок" codes={[bindingCode(bindings, 'block')]} />
-      <ControlGroup label="Рывок" codes={[bindingCode(bindings, 'dash')]} />
-      <ControlGroup label="Супер" codes={[bindingCode(bindings, 'super')]} />
-      <ControlGroup label="Ульта" codes={[bindingCode(bindings, 'ultimate')]} />
-      <ControlGroup label="Насмешка" codes={[bindingCode(bindings, 'taunt')]} />
-      {selection[0] === 'idol' && <IdolMoveGroup fighterId="p1" />}
-      {selection[1] === 'idol' && <IdolMoveGroup fighterId="p2" />}
+      <ControlGroup label="Р‘Р»РѕРє" codes={[bindingCode(bindings, 'block')]} />
+      <ControlGroup label="Р С‹РІРѕРє" codes={[bindingCode(bindings, 'dash')]} />
+      <ControlGroup label="РЎСѓРїРµСЂ" codes={[bindingCode(bindings, 'super')]} />
+      <ControlGroup label="РЈР»СЊС‚Р°" codes={[bindingCode(bindings, 'ultimate')]} />
+      <ControlGroup label="РќР°СЃРјРµС€РєР°" codes={[bindingCode(bindings, 'taunt')]} />
       {selection[0] === 'chrono' && <ChronoMoveGroup fighterId="p1" />}
       {selection[1] === 'chrono' && <ChronoMoveGroup fighterId="p2" />}
       {selection[0] === 'mim' && <MimMoveGroup fighterId="p1" />}
@@ -47,18 +45,8 @@ export function FightControlStrip() {
       {selection[1] === 'glitch' && <GlitchMoveGroup fighterId="p2" />}
       {selection[0] === 'echo' && <EchoMoveGroup fighterId="p1" />}
       {selection[1] === 'echo' && <EchoMoveGroup fighterId="p2" />}
-      <button type="button" onClick={openControls}>Управление</button>
+      <button type="button" onClick={openControls}>РЈРїСЂР°РІР»РµРЅРёРµ</button>
     </section>
-  );
-}
-
-function IdolMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
-  return (
-    <MoveGroup
-      fighterId={fighterId}
-      hint="U+J / U+I / O"
-      moves="ХАЙЛАЙТ · МИЛЛИОН ПОДПИСЧИКОВ · ОТМЕНА"
-    />
   );
 }
 
@@ -66,8 +54,8 @@ function ChronoMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId })
   return (
     <MoveGroup
       fighterId={fighterId}
-      hint="U · 1 / 3 · O ULT"
-      moves="ПЕРЕМОТКА · 143 ИСХОДА · НЕИЗБЕЖНОСТЬ"
+      hint="U В· 1 / 3 В· O ULT"
+      moves="РџР•Р Р•РњРћРўРљРђ В· 143 РРЎРҐРћР”Рђ В· РќР•РР—Р‘Р•Р–РќРћРЎРўР¬"
     />
   );
 }
@@ -76,8 +64,8 @@ function MimMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
   return (
     <MoveGroup
       fighterId={fighterId}
-      hint="U · 1 / 3 · O ULT"
-      moves="ПРАНК · ГЛАВНЫЙ ГЕРОЙ · ALT+F4"
+      hint="U В· 1 / 3 В· O ULT"
+      moves="РџР РђРќРљ В· Р“Р›РђР’РќР«Р™ Р“Р•Р РћР™ В· ALT+F4"
     />
   );
 }
@@ -87,7 +75,7 @@ function GlitchMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId })
     <MoveGroup
       fighterId={fighterId}
       hint="QCF / QCB / DP + J/K"
-      moves="PACKET LOSS · CORRUPTED ZONE · DESYNC JUMP"
+      moves="PACKET LOSS В· CORRUPTED ZONE В· DESYNC JUMP"
     />
   );
 }
@@ -97,7 +85,7 @@ function EchoMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
     <MoveGroup
       fighterId={fighterId}
       hint="U+J / U+I / O"
-      moves="АНАЛИЗ · ПОВТОР · СТАТИСТИКА"
+      moves="РђРќРђР›РР— В· РџРћР’РўРћР  В· РЎРўРђРўРРЎРўРРљРђ"
     />
   );
 }
@@ -113,7 +101,7 @@ function MoveGroup({
 }) {
   return (
     <span className={styles.elementGroup}>
-      <small>{fighterId.toUpperCase()} · {hint}</small>
+      <small>{fighterId.toUpperCase()} В· {hint}</small>
       <b>{moves}</b>
     </span>
   );
@@ -133,3 +121,4 @@ function ControlGroup({
     </span>
   );
 }
+

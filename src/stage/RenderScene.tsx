@@ -88,6 +88,7 @@ function SelectedFighter({
  */
 const SPRITE_RIGS: Partial<Record<CharacterId, {
   readonly rig: string;
+  readonly contactEffects?: 'idol';
   /** Sliced clean attack panels, shown at the strike impact frame. */
   readonly attacks?: string;
 }>> = {

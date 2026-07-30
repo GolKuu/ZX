@@ -29,6 +29,7 @@ export interface MatchResult {
 type HudState = {
   snapshot: HudSnapshot;
   screen: HudScreen;
+  mobileMode: boolean;
   mode: MatchMode | null;
   fighterSelection: CharacterSelection;
   menuFocus: number;
@@ -42,6 +43,7 @@ type HudState = {
   openModeMenu: () => void;
   openCharacterSelect: () => void;
   selectMode: (mode: MatchMode) => void;
+  toggleMobileMode: () => void;
   startMatch: (selection: CharacterSelection) => void;
   enterFight: () => void;
   setMenuFocus: (index: number) => void;
@@ -92,6 +94,7 @@ const initialResult: MatchResult = {
 export const useHudStore = create<HudState>((set) => ({
   snapshot: initialSnapshot(),
   screen: 'mode',
+  mobileMode: false,
   mode: null,
   fighterSelection: DEFAULT_CHARACTER_SELECTION,
   menuFocus: 0,
@@ -112,14 +115,28 @@ export const useHudStore = create<HudState>((set) => ({
   openResult: (result) => set({ screen: 'result', menuFocus: 0, result }),
   openModeMenu: () => set({ screen: 'mode', menuFocus: 0 }),
   openCharacterSelect: () => set({ screen: 'character', menuFocus: 0 }),
-  selectMode: (mode) =>
-    set({
-      mode,
-      screen: mode === 'online' ? 'online' : 'character',
+  selectMode: (mode) => set((state) => {
+    const requestedMode = state.mobileMode && mode === 'local' ? 'ai' : mode;
+    return {
+      mode: requestedMode,
+      screen: requestedMode === 'online' ? 'online' : 'character',
       fighterSelection: DEFAULT_CHARACTER_SELECTION,
-      snapshot: initialSnapshot(mode, DEFAULT_CHARACTER_SELECTION),
+      snapshot: initialSnapshot(requestedMode, DEFAULT_CHARACTER_SELECTION),
       menuFocus: 0,
-    }),
+    };
+  }),
+  toggleMobileMode: () => set((state) => {
+    const mobileMode = !state.mobileMode;
+    if (!mobileMode || state.mode !== 'local') {
+      return { mobileMode };
+    }
+    return {
+      mobileMode,
+      mode: 'ai',
+      fighterSelection: state.fighterSelection,
+      snapshot: initialSnapshot('ai', state.fighterSelection),
+    };
+  }),
   startMatch: (fighterSelection) =>
     set((state) => ({
       fighterSelection: [...fighterSelection],
@@ -141,4 +158,3 @@ export function resetHudStore(): void {
     result: initialResult,
   });
 }
-

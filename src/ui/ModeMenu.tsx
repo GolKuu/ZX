@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useHudStore, type MatchMode } from '@/src/store/hudStore';
@@ -11,26 +11,26 @@ const MODES = [
   {
     id: 'local',
     label: 'Локальный бой',
-    detail: 'Два игрока · одно устройство',
-    status: 'ГОТОВО',
+    detail: 'Быстрый бой на одной клавиатуре: P1 и P2',
+    status: 'Доступно',
     description:
-      'Сразитесь рядом за одной клавиатурой: P1 использует WASD, а P2 — стрелки и цифровой блок.',
+      'Классическая локальная дуэль: второй игрок управляется клавишами клавиатуры и клавишами курсора.',
   },
   {
     id: 'ai',
-    label: 'Бой против ИИ',
-    detail: 'Один игрок · компьютер',
-    status: 'ГОТОВО',
+    label: 'Бой с ИИ',
+    detail: 'Сражайтесь с контролируемым ИИ соперником',
+    status: 'Доступно',
     description:
-      'Тренируйте движения и комбинации против компьютерного соперника. Игрок справа получает метку CPU.',
+      'Выбирайте уровень сложности и тактику ИИ. Противник реагирует на действия.',
   },
   {
     id: 'online',
-    label: 'Онлайн-бой',
-    detail: 'Сетевой матч · скоро',
-    status: 'В РАЗРАБОТКЕ',
+    label: 'Онлайн-режим',
+    detail: 'Идёт интеграция для будущей игры с друзьями',
+    status: 'В разработке',
     description:
-      'Будущий режим для игры через интернет. Сетевой код ещё не подключён, поэтому пункт открывает экран статуса.',
+      'Сетевая версия пока загружается. Сейчас доступен только локальный и AI-режим.',
   },
 ] as const satisfies readonly {
   id: MatchMode;
@@ -50,21 +50,34 @@ export function ModeMenu() {
   const menuFocus = useHudStore((state) => state.menuFocus);
   const selectMode = useHudStore((state) => state.selectMode);
   const setMenuFocus = useHudStore((state) => state.setMenuFocus);
+  const mobileMode = useHudStore((state) => state.mobileMode);
+  const toggleMobileMode = useHudStore((state) => state.toggleMobileMode);
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const selected = MODES[menuFocus] ?? MODES[0];
+
+  const visibleModes = useMemo(
+    () => (mobileMode ? MODES.filter((mode) => mode.id !== 'local') : MODES),
+    [mobileMode],
+  );
+  const selected = visibleModes[menuFocus] ?? visibleModes[0];
 
   const startMode = useCallback((mode: MatchMode) => {
     selectMode(mode);
   }, [selectMode]);
   const confirm = useCallback(() => {
-    const mode = MODES[useHudStore.getState().menuFocus];
-    if (mode !== undefined) startMode(mode.id);
-  }, [startMode]);
+    const mode = visibleModes[useHudStore.getState().menuFocus];
+    if (mode !== undefined) {
+      startMode(mode.id);
+    }
+  }, [startMode, visibleModes]);
   const back = useCallback(() => router.push('/'), [router]);
+  const toggleMobile = useCallback(() => {
+    toggleMobileMode();
+  }, [toggleMobileMode]);
+  const modeNumber = String(menuFocus + 1).padStart(2, '0');
 
   useMenuNavigation({
     focus: menuFocus,
-    itemCount: MODES.length,
+    itemCount: visibleModes.length,
     onBack: back,
     onConfirm: confirm,
     setFocus: setMenuFocus,
@@ -73,9 +86,20 @@ export function ModeMenu() {
   useEffect(() => {
     buttonRefs.current[menuFocus]?.focus();
   }, [menuFocus]);
+  useEffect(() => {
+    if (menuFocus < visibleModes.length) {
+      return;
+    }
+    setMenuFocus(0);
+  }, [menuFocus, visibleModes.length, setMenuFocus]);
 
   return (
-    <div aria-label="Выбор режима боя" aria-modal="true" className={styles.scrim} role="dialog">
+    <div
+      aria-label="Выбор режима боя"
+      aria-modal="true"
+      className={styles.scrim}
+      role="dialog"
+    >
       {MODE_ARTWORKS.map((artwork) => (
         <div
           key={artwork.id}
@@ -97,13 +121,22 @@ export function ModeMenu() {
 
       <header className={styles.brand}>
         <span>CC//ULTIMATE</span>
-        <small>ВЫБОР РЕЖИМА</small>
+        <small>СЕТЬ И РЕЖИМЫ</small>
+        <button
+          type="button"
+          aria-pressed={mobileMode}
+          className={styles.mobileModeButton}
+          onClick={toggleMobile}
+        >
+          <strong>{mobileMode ? 'Обычная версия' : 'Телефонная версия'}</strong>
+          <span>{mobileMode ? 'Выкл. без локального боя' : 'Вкл. без локального боя'}</span>
+        </button>
       </header>
 
       <div className={styles.layout}>
         <nav aria-label="Режимы боя" className={styles.modeList}>
-          <p>Как будем сражаться?</p>
-          {MODES.map((mode, index) => (
+          <p>Какой режим выбрать?</p>
+          {visibleModes.map((mode, index) => (
             <button
               key={mode.id}
               ref={(element) => {
@@ -126,12 +159,12 @@ export function ModeMenu() {
         </nav>
 
         <aside className={styles.description} aria-live="polite">
-          <span>РЕЖИМ / {String(menuFocus + 1).padStart(2, '0')}</span>
+          <span>МЕНЮ / {modeNumber}</span>
           <h1>{selected.label}</h1>
           <p>{selected.description}</p>
           <dl>
-            <div><dt>Ростер</dt><dd>5 новых бойцов</dd></div>
-            <div><dt>Арена</dt><dd>Null Circle</dd></div>
+            <div><dt>сложность</dt><dd>5 уровней боя</dd></div>
+            <div><dt>режим</dt><dd>Null Circle</dd></div>
           </dl>
         </aside>
       </div>
@@ -139,7 +172,7 @@ export function ModeMenu() {
       <footer className={styles.hints}>
         <span><kbd>A</kbd> Выбрать</span>
         <span><kbd>B</kbd> Назад</span>
-        <span><kbd>↑↓</kbd> Навигация</span>
+        <span><kbd>◄►</kbd> Навигация</span>
       </footer>
     </div>
   );

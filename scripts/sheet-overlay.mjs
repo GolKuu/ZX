@@ -62,11 +62,34 @@ const FAMILIES = [
   { name: 'green', from: 96, to: 152 },
 ];
 
-/** Outlines are healed for every family, including the one whose fill is left alone. */
-const OUTLINE_FAMILIES = [
-  ...FAMILIES,
-  { name: 'red', from: 352, to: 372 },
-];
+/**
+ * The hitbox family, handled separately and by geometry.
+ *
+ * Red cannot join the two above. The argument that licenses them — that a blue or green
+ * pixel can only be the diagram — does not hold for red: IDOL's magenta sits at 339°
+ * and her red-brown linework crosses 352°, and measuring says the wash and the paint
+ * overlap in chroma so completely that no threshold separates them. Correcting by hue
+ * alone bleached her jacket; capping the correction to protect the jacket let most of
+ * the actual wash through.
+ *
+ * What red does have is a reliable *shape*. There is exactly one hitbox per panel, so
+ * its outline forms one connected run of unmistakably red pixels, and the bounding box
+ * of that run is the rectangle — no pairing, no ambiguity. Inside a known rectangle the
+ * wash inverts exactly and the costume is safe.
+ */
+const HITBOX = { name: 'red', from: 350, to: 374 };
+
+/** Smallest bounding box that is believed to be a hitbox rather than a stray mark. */
+const MIN_HITBOX = 16;
+
+/**
+ * How much of the drawing survives under one box fill: `1 − alpha`.
+ *
+ * Only sets how far a recovered rectangle's contrast is stretched back. The tint itself
+ * comes out exactly whatever this is, because the correction is anchored on page seen
+ * through the same box. Measured at about 0.88 on IDOL's collision boxes.
+ */
+const SURVIVES = 0.88;
 
 /**
  * Chroma a pixel needs before its hue is believed, in 0–255 units.
@@ -205,7 +228,7 @@ function measureWash(data, width, height, page, family) {
         chroma: chromaOf(family, r, g, b),
         luminance: luminance(r, g, b),
       };
-      if (inFamily(family, r, g, b)) tinted.push(sample);
+      if (inFamily(family, r, g, b, FILL_CHROMA)) tinted.push(sample);
       else clean.push(sample);
     }
   }
@@ -218,7 +241,11 @@ function measureWash(data, width, height, page, family) {
     tinted.map((sample) => sample.luminance),
   );
   if (chromaAdded < 3) return null;
-  return { base, perChroma: Math.max(0, luminanceLost / chromaAdded) };
+  return {
+    base,
+    added: chromaAdded,
+    perChroma: Math.max(0, luminanceLost / chromaAdded),
+  };
 }
 
 /**
@@ -236,7 +263,7 @@ function unwash(data, width, height, family, wash) {
     const r = data[offset];
     const g = data[offset + 1];
     const b = data[offset + 2];
-    if (!inFamily(family, r, g, b)) continue;
+    if (!inFamily(family, r, g, b, FILL_CHROMA)) continue;
     const excess = chromaOf(family, r, g, b) - wash.base;
     if (excess <= 1) continue;
 
@@ -248,6 +275,98 @@ function unwash(data, width, height, family, wash) {
       data[offset + index_] = Math.max(0, Math.min(255, Math.round(next[index_] + lift)));
     }
     touched += 1;
+  }
+  return touched;
+}
+
+/** Bounding boxes of a mask's connected components, above a minimum size. */
+function componentBoxes(mask, width, height, minimum) {
+  const seen = new Uint8Array(mask.length);
+  const boxes = [];
+  for (let start = 0; start < mask.length; start += 1) {
+    if (mask[start] === 0 || seen[start] === 1) continue;
+    const stack = [start];
+    seen[start] = 1;
+    let left = width;
+    let right = 0;
+    let top = height;
+    let bottom = 0;
+    while (stack.length > 0) {
+      const index = stack.pop();
+      const x = index % width;
+      const y = (index - x) / width;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      top = Math.min(top, y);
+      bottom = Math.max(bottom, y);
+      // Eight-connected, so a dashed outline's corner still joins its two sides.
+      for (let dy = -1; dy <= 1; dy += 1) {
+        for (let dx = -1; dx <= 1; dx += 1) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+          const next = ny * width + nx;
+          if (mask[next] === 0 || seen[next] === 1) continue;
+          seen[next] = 1;
+          stack.push(next);
+        }
+      }
+    }
+    if (right - left < minimum || bottom - top < minimum) continue;
+    boxes.push({ left, right, top, bottom });
+  }
+  return boxes;
+}
+
+/**
+ * Invert the wash inside a known rectangle.
+ *
+ * `obs = m·art + c` inside a box, so given bare page `P` and what that page looks like
+ * through this box, `c = obsPage − m·P` and the whole map collapses to
+ * `art = P + (obs − obsPage) / m`. The fill's colour and its alpha both disappear into
+ * `obsPage`, which is measured — so unlike the hue-window pass this is exact, and safe
+ * to apply to costume as well as to page.
+ */
+function unwashRectangle(data, width, height, page, box) {
+  const inside = [];
+  const outsideBand = [];
+  const band = 6;
+  for (let y = Math.max(0, box.top - band); y <= Math.min(height - 1, box.bottom + band); y += 1) {
+    for (let x = Math.max(0, box.left - band); x <= Math.min(width - 1, box.right + band); x += 1) {
+      if (page[y * width + x] === 0) continue;
+      if (!isFlat(data, width, height, x, y)) continue;
+      const offset = (y * width + x) * 4;
+      const sample = [data[offset], data[offset + 1], data[offset + 2]];
+      const within = x >= box.left && x <= box.right
+        && y >= box.top && y <= box.bottom;
+      (within ? inside : outsideBand).push(sample);
+    }
+  }
+  if (inside.length < 20 || outsideBand.length < 20) return 0;
+
+  const paper = [0, 1, 2].map(
+    (channel) => median(outsideBand.map((sample) => sample[channel])),
+  );
+  const observed = [0, 1, 2].map(
+    (channel) => median(inside.map((sample) => sample[channel])),
+  );
+  const shift = Math.max(
+    ...[0, 1, 2].map((channel) => Math.abs(paper[channel] - observed[channel])),
+  );
+  if (shift < 4) return 0;
+
+  let touched = 0;
+  for (let y = box.top; y <= box.bottom; y += 1) {
+    for (let x = box.left; x <= box.right; x += 1) {
+      const offset = (y * width + x) * 4;
+      if (data[offset + 3] === 0) continue;
+      for (let channel = 0; channel < 3; channel += 1) {
+        const restored = paper[channel]
+          + (data[offset + channel] - observed[channel]) / SURVIVES;
+        data[offset + channel] = Math.max(0, Math.min(255, Math.round(restored)));
+      }
+      touched += 1;
+    }
   }
   return touched;
 }
@@ -358,19 +477,40 @@ export function removeDiagramOverlay(data, width, height, options = {}) {
   const report = [];
   const page = pageMask(data, width, height, options.pageFloor ?? 178);
 
-  // Outlines first. They replaced the drawing rather than tinting it, so there is
-  // nothing to recover — and taking them out before measuring keeps a saturated line
-  // from dragging the wash estimate with it.
-  const outlines = new Uint8Array(width * height);
-  for (const family of OUTLINE_FAMILIES) {
+  const outlineOf = (family) => {
     const tinted = new Uint8Array(width * height);
     for (let index = 0; index < width * height; index += 1) {
       const offset = index * 4;
-      if (inFamily(family, data[offset], data[offset + 1], data[offset + 2])) {
+      if (inFamily(
+        family,
+        data[offset],
+        data[offset + 1],
+        data[offset + 2],
+        OUTLINE_CHROMA,
+      )) {
         tinted[index] = 1;
       }
     }
-    const lines = straightRunsOnly(tinted, width, height);
+    return straightRunsOnly(tinted, width, height);
+  };
+
+  // The hitbox is done first and by geometry, while its outline is still there to
+  // locate it, and before any hue-window pass can touch the costume it sits on.
+  const hitboxes = componentBoxes(outlineOf(HITBOX), width, height, MIN_HITBOX);
+  let hitboxPixels = 0;
+  for (const box of hitboxes) {
+    hitboxPixels += unwashRectangle(data, width, height, page, box);
+  }
+  report.push(
+    `hitbox: ${String(hitboxes.length)} box(es), ${String(hitboxPixels)}px inverted`,
+  );
+
+  // Outlines next. They replaced the drawing rather than tinting it, so there is nothing
+  // to recover — and taking them out before measuring the washes keeps a saturated line
+  // from dragging the estimate with it.
+  const outlines = new Uint8Array(width * height);
+  for (const family of [...FAMILIES, HITBOX]) {
+    const lines = outlineOf(family);
     for (let index = 0; index < lines.length; index += 1) {
       if (lines[index] === 1) outlines[index] = 1;
     }
