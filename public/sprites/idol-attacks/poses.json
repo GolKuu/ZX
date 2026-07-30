@@ -2,26 +2,27 @@
   "source": "public/assets/characters/idol-fighter-reference.webp",
   "displayScale": 1.18,
   "facesRight": true,
+  "textureScale": 2,
   "poses": {
     "lp": {
-      "width": 260,
-      "height": 356,
-      "ground": 1.0225
+      "width": 264,
+      "height": 360,
+      "ground": 1.0167
     },
     "hp": {
-      "width": 231,
-      "height": 376,
-      "ground": 1.0106
+      "width": 235,
+      "height": 380,
+      "ground": 1.0053
     },
     "lk": {
-      "width": 330,
-      "height": 253,
-      "ground": 1.0158
+      "width": 334,
+      "height": 257,
+      "ground": 1.0078
     },
     "hk": {
-      "width": 350,
-      "height": 371,
-      "ground": 1.0081
+      "width": 354,
+      "height": 375,
+      "ground": 1.0027
     }
   }
 }

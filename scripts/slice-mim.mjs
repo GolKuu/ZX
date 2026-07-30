@@ -14,6 +14,30 @@ import {
 } from './mim-sprite-data.mjs';
 import { keepLargestOpaqueComponent } from './mim-alpha.mjs';
 
+const TEXTURE_SCALE = 2;
+const CUTOUT_PADDING = 2;
+
+async function exportCutout(trimmed) {
+  const width = trimmed.info.width + CUTOUT_PADDING * 2;
+  const height = trimmed.info.height + CUTOUT_PADDING * 2;
+  const data = await sharp(trimmed.data)
+    .extend({
+      top: CUTOUT_PADDING,
+      bottom: CUTOUT_PADDING,
+      left: CUTOUT_PADDING,
+      right: CUTOUT_PADDING,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .resize({
+      width: width * TEXTURE_SCALE,
+      height: height * TEXTURE_SCALE,
+      kernel: sharp.kernel.lanczos3,
+    })
+    .png({ adaptiveFiltering: true, compressionLevel: 9 })
+    .toBuffer();
+  return { data, height, width };
+}
+
 function maskSvg(width, height, spec) {
   const shape = spec.ellipse === undefined
     ? `<polygon points="${spec.points.map((point) => point.join(',')).join(' ')}" fill="white"/>`
@@ -44,6 +68,7 @@ async function sliceProfile() {
   const manifest = {
     source: SOURCE,
     view: { ...VIEW, figureHeight: 380 },
+    textureScale: TEXTURE_SCALE,
     facesRight: true,
     origin: ORIGIN,
     parts: {},
@@ -77,13 +102,18 @@ async function sliceProfile() {
     const trimmed = await trimWithInfo(extracted);
     const offsetX = -(trimmed.info.trimOffsetLeft ?? 0);
     const offsetY = -(trimmed.info.trimOffsetTop ?? 0);
-    await writeFile(path.join(PROFILE_DIR, `${name}.png`), trimmed.data);
+    const exported = await exportCutout(trimmed);
+    await writeFile(path.join(PROFILE_DIR, `${name}.png`), exported.data);
     manifest.parts[name] = {
-      width: trimmed.info.width,
-      height: trimmed.info.height,
+      width: exported.width,
+      height: exported.height,
       pivot: [
-        Number(((spec.joint[0] - left - offsetX) / trimmed.info.width).toFixed(4)),
-        Number(((spec.joint[1] - top - offsetY) / trimmed.info.height).toFixed(4)),
+        Number(((
+          spec.joint[0] - left - offsetX + CUTOUT_PADDING
+        ) / exported.width).toFixed(4)),
+        Number(((
+          spec.joint[1] - top - offsetY + CUTOUT_PADDING
+        ) / exported.height).toFixed(4)),
       ],
       joint: spec.joint,
     };
@@ -93,19 +123,21 @@ async function sliceProfile() {
 
 async function sliceAttacks() {
   await mkdir(ATTACK_DIR, { recursive: true });
-  const manifest = { source: SOURCE, poses: {} };
+  const manifest = { source: SOURCE, textureScale: TEXTURE_SCALE, poses: {} };
   for (const [name, box] of Object.entries(ATTACKS)) {
     const { originX, ...crop } = box;
     const extracted = await sharp(SOURCE).extract(crop).png().toBuffer();
     const isolated = await keepLargestOpaqueComponent(extracted);
     const trimmed = await trimWithInfo(isolated);
-    const topInCrop = -(trimmed.info.trimOffsetTop ?? 0);
-    await writeFile(path.join(ATTACK_DIR, `${name}.png`), trimmed.data);
+    const topInCrop = -(trimmed.info.trimOffsetTop ?? 0) - CUTOUT_PADDING;
+    const exported = await exportCutout(trimmed);
+    await writeFile(path.join(ATTACK_DIR, `${name}.png`), exported.data);
+    const originPixels = originX * trimmed.info.width + CUTOUT_PADDING;
     manifest.poses[name] = {
-      width: trimmed.info.width,
-      height: trimmed.info.height,
-      originX,
-      ground: Number(((601 - box.top - topInCrop) / trimmed.info.height).toFixed(4)),
+      width: exported.width,
+      height: exported.height,
+      originX: Number((originPixels / exported.width).toFixed(4)),
+      ground: Number(((601 - box.top - topInCrop) / exported.height).toFixed(4)),
     };
   }
   await writeFile(path.join(ATTACK_DIR, 'poses.json'), `${JSON.stringify(manifest, null, 2)}\n`);

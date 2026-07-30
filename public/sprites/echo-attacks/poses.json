@@ -2,26 +2,27 @@
   "source": "public/echo-character-sheet.png",
   "displayScale": 1.95,
   "facesRight": true,
+  "textureScale": 2,
   "poses": {
     "lp": {
-      "width": 189,
-      "height": 203,
-      "ground": 1.0099
+      "width": 193,
+      "height": 207,
+      "ground": 1
     },
     "hp": {
-      "width": 196,
-      "height": 198,
-      "ground": 1.0101
+      "width": 200,
+      "height": 202,
+      "ground": 1
     },
     "lk": {
-      "width": 206,
-      "height": 166,
-      "ground": 1.012
+      "width": 210,
+      "height": 170,
+      "ground": 1
     },
     "hk": {
-      "width": 214,
-      "height": 203,
-      "ground": 1.0099
+      "width": 218,
+      "height": 207,
+      "ground": 1
     }
   }
 }

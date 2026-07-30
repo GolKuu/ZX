@@ -6,6 +6,7 @@
     "width": 146,
     "height": 326
   },
+  "textureScale": 2,
   "facesRight": true,
   "origin": [
     80,
@@ -13,10 +14,10 @@
   ],
   "parts": {
     "ponytail": {
-      "width": 45,
-      "height": 40,
+      "width": 49,
+      "height": 44,
       "pivot": [
-        0.4,
+        0.4082,
         0.5
       ],
       "joint": [
@@ -25,11 +26,11 @@
       ]
     },
     "head": {
-      "width": 45,
-      "height": 68,
+      "width": 49,
+      "height": 72,
       "pivot": [
-        0.6667,
-        0.9118
+        0.6531,
+        0.8889
       ],
       "joint": [
         82,
@@ -37,11 +38,11 @@
       ]
     },
     "torso": {
-      "width": 60,
-      "height": 112,
+      "width": 64,
+      "height": 116,
       "pivot": [
-        0.6333,
-        0.9821
+        0.625,
+        0.9655
       ],
       "joint": [
         80,
@@ -49,11 +50,11 @@
       ]
     },
     "hips": {
-      "width": 89,
-      "height": 140,
+      "width": 93,
+      "height": 144,
       "pivot": [
-        0.6966,
-        0.0286
+        0.6882,
+        0.0417
       ],
       "joint": [
         78,
@@ -61,11 +62,11 @@
       ]
     },
     "sash": {
-      "width": 60,
-      "height": 130,
+      "width": 64,
+      "height": 134,
       "pivot": [
-        0.7,
-        0.0462
+        0.6875,
+        0.0597
       ],
       "joint": [
         56,
@@ -73,11 +74,11 @@
       ]
     },
     "upperArm": {
-      "width": 44,
-      "height": 55,
+      "width": 48,
+      "height": 59,
       "pivot": [
-        0.2727,
-        0.0909
+        0.2917,
+        0.1186
       ],
       "joint": [
         67,
@@ -85,11 +86,11 @@
       ]
     },
     "forearm": {
-      "width": 22,
-      "height": 35,
+      "width": 26,
+      "height": 39,
       "pivot": [
-        0.2273,
-        0.2
+        0.2692,
+        0.2308
       ],
       "joint": [
         85,
@@ -97,11 +98,11 @@
       ]
     },
     "thigh": {
-      "width": 46,
-      "height": 52,
+      "width": 50,
+      "height": 56,
       "pivot": [
         0.5,
-        0.0577
+        0.0893
       ],
       "joint": [
         95,
@@ -109,11 +110,11 @@
       ]
     },
     "shin": {
-      "width": 27,
-      "height": 27,
+      "width": 31,
+      "height": 31,
       "pivot": [
-        0.7778,
-        -0.0741
+        0.7419,
+        0
       ],
       "joint": [
         95,
@@ -121,11 +122,11 @@
       ]
     },
     "boot": {
-      "width": 54,
-      "height": 26,
+      "width": 58,
+      "height": 30,
       "pivot": [
-        0.5556,
-        0.1154
+        0.5517,
+        0.1667
       ],
       "joint": [
         94,

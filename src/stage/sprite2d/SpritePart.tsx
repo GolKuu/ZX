@@ -42,7 +42,7 @@ export function SpritePart({
     <mesh position={[geometry.offsetX, geometry.offsetY, 0]}>
       <planeGeometry args={[geometry.width, geometry.height]} />
       <meshBasicMaterial
-        alphaTest={0.45}
+        alphaTest={0.08}
         color={tint ?? '#ffffff'}
         map={part.texture}
         side={DoubleSide}

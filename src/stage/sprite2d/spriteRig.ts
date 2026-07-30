@@ -13,6 +13,7 @@
 
 import {
   LinearFilter,
+  LinearMipmapLinearFilter,
   SRGBColorSpace,
   Texture,
   TextureLoader,
@@ -101,10 +102,7 @@ export async function loadAttackPoses(
       const spec = manifest.poses[pose];
       if (spec === undefined) return;
       const texture = await loader.loadAsync(`${base}/${pose}.png`);
-      texture.colorSpace = SRGBColorSpace;
-      texture.minFilter = LinearFilter;
-      texture.magFilter = LinearFilter;
-      texture.generateMipmaps = false;
+      prepareCutoutTexture(texture);
       poses[pose] = { ...spec, texture };
     }),
   );
@@ -161,12 +159,7 @@ export async function loadSpriteRig(name: string): Promise<LoadedSpriteRig> {
       const spec = manifest.parts[part];
       if (spec === undefined) return;
       const texture = await loader.loadAsync(`${base}/${part}.png`);
-      // Cel art, drawn at final size: linear filtering, sRGB, no mipmaps to go
-      // soft on us at this camera distance.
-      texture.colorSpace = SRGBColorSpace;
-      texture.minFilter = LinearFilter;
-      texture.magFilter = LinearFilter;
-      texture.generateMipmaps = false;
+      prepareCutoutTexture(texture);
       rig[part] = { ...spec, texture };
     }),
   );
@@ -184,4 +177,12 @@ export function disposeSpriteRig(rig: LoadedSpriteRig): void {
   for (const part of SPRITE_PARTS) {
     rig[part]?.texture.dispose();
   }
+}
+
+function prepareCutoutTexture(texture: Texture): void {
+  texture.colorSpace = SRGBColorSpace;
+  texture.magFilter = LinearFilter;
+  texture.minFilter = LinearMipmapLinearFilter;
+  texture.generateMipmaps = true;
+  texture.anisotropy = 4;
 }

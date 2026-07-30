@@ -37,6 +37,34 @@ import { ATTACK_POSES, FRONT_VIEWS, PART_RECTS } from './sheet-parts.mjs';
 
 /** Fraction of the crop that turning transparent means the fill leaked. */
 const LEAK_LIMIT = 0.9;
+/** Runtime draws at up to 1.5 DPR, so keep two texture pixels per source pixel. */
+const DEFAULT_TEXTURE_SCALE = 2;
+/** Prevent linear sampling from clipping ink that reaches a tightly trimmed edge. */
+const CUTOUT_PADDING = 2;
+
+async function writeCutoutTexture(trimmed, target, requestedScale) {
+  const textureScale = requestedScale ?? DEFAULT_TEXTURE_SCALE;
+  const width = trimmed.info.width + CUTOUT_PADDING * 2;
+  const height = trimmed.info.height + CUTOUT_PADDING * 2;
+  await sharp(trimmed.data)
+    .extend({
+      top: CUTOUT_PADDING,
+      bottom: CUTOUT_PADDING,
+      left: CUTOUT_PADDING,
+      right: CUTOUT_PADDING,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .resize({
+      width: width * textureScale,
+      height: height * textureScale,
+      // Supersampling the keyed art with Lanczos gives the renderer sub-pixel
+      // alpha coverage instead of magnifying the source crop's stair steps.
+      kernel: sharp.kernel.lanczos3,
+    })
+    .png({ adaptiveFiltering: true, compressionLevel: 9 })
+    .toFile(target);
+  return { height, textureScale, width };
+}
 
 function flatMaskedPart(
   keyed,
@@ -158,6 +186,7 @@ async function sliceCharacter(name) {
   const manifest = {
     source: view.file,
     view: view.crop,
+    textureScale: view.textureScale ?? DEFAULT_TEXTURE_SCALE,
     // Which way the sliced drawing faces. Read by the runtime to decide when to
     // mirror; it differs per sheet.
     facesRight: view.facesRight === true,
@@ -226,27 +255,23 @@ async function sliceCharacter(name) {
     const offsetX = -(trimmed.info.trimOffsetLeft ?? 0);
     const offsetY = -(trimmed.info.trimOffsetTop ?? 0);
 
-    const textureScale = view.textureScale ?? 1;
-    await sharp(trimmed.data)
-      .resize({
-        width: trimmed.info.width * textureScale,
-        height: trimmed.info.height * textureScale,
-        kernel: sharp.kernel.lanczos3,
-      })
-      .png()
-      .toFile(join(directory, `${part}.png`));
+    const exported = await writeCutoutTexture(
+      trimmed,
+      join(directory, `${part}.png`),
+      view.textureScale,
+    );
 
     // `pivot` is the joint as a fraction of this image, which is what the shader
     // needs to offset the quad. It is free to fall outside 0…1: a shoulder can sit
     // above the sleeve it turns, and clamping it would drag the part off its bone.
-    const pivotX = spec.joint[0] - x - offsetX;
-    const pivotY = spec.joint[1] - y - offsetY;
+    const pivotX = spec.joint[0] - x - offsetX + CUTOUT_PADDING;
+    const pivotY = spec.joint[1] - y - offsetY + CUTOUT_PADDING;
     manifest.parts[part] = {
-      width: trimmed.info.width,
-      height: trimmed.info.height,
+      width: exported.width,
+      height: exported.height,
       pivot: [
-        Number((pivotX / trimmed.info.width).toFixed(4)),
-        Number((pivotY / trimmed.info.height).toFixed(4)),
+        Number((pivotX / exported.width).toFixed(4)),
+        Number((pivotY / exported.height).toFixed(4)),
       ],
       // Also kept in crop pixels: the runtime positions each part's group from the
       // difference between its joint and its parent's, so the hierarchy's sockets
@@ -283,6 +308,7 @@ async function sliceAttacks(name) {
     source: spec.file,
     displayScale: spec.displayScale ?? 1.18,
     facesRight: spec.facesRight !== false,
+    textureScale: spec.textureScale ?? DEFAULT_TEXTURE_SCALE,
     poses: {},
   };
 
@@ -304,22 +330,18 @@ async function sliceAttacks(name) {
     const trimmed = await sharp(keyed).trim({ threshold: 1 }).toBuffer({
       resolveWithObject: true,
     });
-    const textureScale = spec.textureScale ?? 1;
-    await sharp(trimmed.data)
-      .resize({
-        width: trimmed.info.width * textureScale,
-        height: trimmed.info.height * textureScale,
-        kernel: sharp.kernel.lanczos3,
-      })
-      .png()
-      .toFile(join(directory, `${pose}.png`));
+    const exported = await writeCutoutTexture(
+      trimmed,
+      join(directory, `${pose}.png`),
+      spec.textureScale,
+    );
 
-    const topInCrop = -(trimmed.info.trimOffsetTop ?? 0);
+    const topInCrop = -(trimmed.info.trimOffsetTop ?? 0) - CUTOUT_PADDING;
     manifest.poses[pose] = {
-      width: trimmed.info.width,
-      height: trimmed.info.height,
+      width: exported.width,
+      height: exported.height,
       // Where the floor sits, as a fraction of the trimmed image's height.
-      ground: Number(((groundInCrop - topInCrop) / trimmed.info.height).toFixed(4)),
+      ground: Number(((groundInCrop - topInCrop) / exported.height).toFixed(4)),
     };
     console.log(
       `  ${pose.padEnd(4)} ${String(trimmed.info.width).padStart(3)}x`

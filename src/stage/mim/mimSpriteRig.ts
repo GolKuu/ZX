@@ -1,5 +1,6 @@
 import {
   LinearFilter,
+  LinearMipmapLinearFilter,
   SRGBColorSpace,
   Texture,
   TextureLoader,
@@ -98,7 +99,8 @@ export function disposeMimAttacks(attacks: LoadedMimAttacks): void {
 
 function prepareTexture(texture: Texture): void {
   texture.colorSpace = SRGBColorSpace;
-  texture.minFilter = LinearFilter;
   texture.magFilter = LinearFilter;
-  texture.generateMipmaps = false;
+  texture.minFilter = LinearMipmapLinearFilter;
+  texture.generateMipmaps = true;
+  texture.anisotropy = 4;
 }

@@ -65,7 +65,7 @@ export function AttackPoseSprite({
           >
             <planeGeometry args={[width, height]} />
             <meshBasicMaterial
-              alphaTest={0.4}
+              alphaTest={0.08}
               map={pose.texture}
               side={DoubleSide}
               toneMapped={false}

@@ -2,26 +2,27 @@
   "source": "../output/imagegen/glitch-character-reference.png",
   "displayScale": 1.18,
   "facesRight": true,
+  "textureScale": 2,
   "poses": {
     "lp": {
-      "width": 286,
-      "height": 287,
-      "ground": 1.0105
+      "width": 290,
+      "height": 291,
+      "ground": 1.0034
     },
     "hp": {
-      "width": 260,
-      "height": 310,
-      "ground": 1.0032
+      "width": 264,
+      "height": 314,
+      "ground": 0.9968
     },
     "lk": {
-      "width": 300,
-      "height": 215,
-      "ground": 1.0047
+      "width": 304,
+      "height": 219,
+      "ground": 0.9954
     },
     "hk": {
-      "width": 280,
-      "height": 330,
-      "ground": 0.9636
+      "width": 284,
+      "height": 334,
+      "ground": 0.9581
     }
   }
 }

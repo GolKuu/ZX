@@ -8,13 +8,14 @@ const ATTACKS = 'public/sprites/mim-attacks';
 const OUTPUT = 'tmp/imagegen/mim-animation-preview.png';
 const CELL = { width: 390, height: 440 };
 const ORIGIN = [205, 411];
+const PIXEL_SCALE = 2.62 / 380;
 const AMOUNTS = [0.25, 0.5, 0.75, 1, 'strike', 0.75, 0.5, 0.25, 0];
 
 const TARGETS = {
-  lp: { torso: -0.08, head: 0.04, scarf: 0.18, leftArm: -0.12, rightArm: 0.46, leftLeg: 0.08, rightLeg: -0.08 },
-  hp: { torso: -0.16, head: 0.08, scarf: 0.32, leftArm: -0.2, rightArm: 0.68, leftLeg: 0.12, rightLeg: -0.12 },
-  lk: { torso: 0.2, head: -0.12, scarf: 0.38, leftArm: 0.18, rightArm: -0.18, leftLeg: -0.16, rightLeg: 0.72 },
-  hk: { torso: -0.22, head: 0.1, scarf: 0.48, leftArm: -0.28, rightArm: 0.22, leftLeg: -0.1, rightLeg: 0.68 },
+  lp: { torso: -0.08, head: 0.04, scarf: 0.18, leftArm: -0.12, rightArm: 0.46, leftLeg: 0.08, rightLeg: -0.08, drift: 0.1 },
+  hp: { torso: -0.16, head: 0.08, scarf: 0.32, leftArm: -0.2, rightArm: 0.68, leftLeg: 0.12, rightLeg: -0.12, drift: 0.16 },
+  lk: { torso: 0.28, head: -0.16, scarf: 0.38, leftArm: 0.18, rightArm: -0.18, leftLeg: 0.12, rightLeg: 0.72, lift: -0.24, drift: 0.08 },
+  hk: { torso: -0.22, head: 0.1, scarf: 0.48, leftArm: -0.28, rightArm: 0.22, leftLeg: -0.1, rightLeg: 0.68, lift: -0.04, drift: 0.12 },
 };
 
 const rig = JSON.parse(await readFile(`${PROFILE}/rig.json`, 'utf8'));
@@ -53,11 +54,14 @@ function rigFrame(target, amount) {
     rotate('rightArm', angle('rightArm')),
     rotate('head', angle('head')),
   ].join('');
-  return [
+  const figure = [
     rotate('leftLeg', angle('leftLeg')),
     rotate('rightLeg', angle('rightLeg')),
     rotate('torso', angle('torso'), torsoChildren),
   ].join('');
+  const x = (target.drift ?? 0) * amount / PIXEL_SCALE;
+  const y = -(target.lift ?? 0) * amount / PIXEL_SCALE;
+  return `<g transform="translate(${x} ${y})">${figure}</g>`;
 }
 
 function strikeFrame(name) {

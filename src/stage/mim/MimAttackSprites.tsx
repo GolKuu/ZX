@@ -48,7 +48,7 @@ export function MimAttackSprites({
           >
             <planeGeometry args={[width, height]} />
             <meshBasicMaterial
-              alphaTest={0.45}
+              alphaTest={0.08}
               map={attack.texture}
               side={DoubleSide}
               toneMapped={false}
