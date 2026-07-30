@@ -5,6 +5,8 @@ import { ECHO_SUPER_MOVES } from '@/src/data/echo-super-moves';
 import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
 import { CHRONO_SUPER_MOVES } from '@/src/data/chrono-super-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
+import { MIM_SUPER_MOVES } from '@/src/data/mim-super-moves';
+import { TAUNT_MOVES } from '@/src/data/taunt-move';
 import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
 import { GLITCH_SUPER_MOVES } from '@/src/data/glitch-super-moves';
 import { totalMoveFrames } from '@/src/sim';
@@ -18,6 +20,8 @@ const MOVES_BY_ID = new Map(
   [
     ...KADE_MOVES,
     ...MIM_MOVES,
+    ...MIM_SUPER_MOVES,
+    ...TAUNT_MOVES,
     ...IDOL_MOVES,
     ...ECHO_MOVES,
     ...ECHO_SUPER_MOVES,

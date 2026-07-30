@@ -1,6 +1,6 @@
 import type { FighterSnapshot } from '../../sim/index.js';
-import { FIXED_SCALE } from '../../sim/index.js';
-import type { MimAttackButton, MimAnimationBeat } from './mimSpriteTimeline.js';
+import { dashPhase, FIXED_SCALE } from '../../sim/index.js';
+import type { MimActionKind, MimAnimationBeat } from './mimSpriteTimeline.js';
 
 export interface MimSpritePose {
   readonly torso: number;
@@ -38,11 +38,24 @@ const KO_POSE: MimSpritePose = pose({
   drift: -0.06,
 });
 
-const TARGETS: Readonly<Record<MimAttackButton, MimSpritePose>> = {
+const TARGETS: Readonly<Record<MimActionKind, MimSpritePose>> = {
   lp: pose({ torso: -0.08, head: 0.04, scarf: 0.18, leftArm: -0.12, rightArm: 0.46, leftLeg: 0.08, rightLeg: -0.08, drift: 0.1 }),
   hp: pose({ torso: -0.16, head: 0.08, scarf: 0.32, leftArm: -0.2, rightArm: 0.68, leftLeg: 0.12, rightLeg: -0.12, drift: 0.16 }),
   lk: pose({ torso: 0.28, head: -0.16, scarf: 0.38, leftArm: 0.18, rightArm: -0.18, leftLeg: 0.12, rightLeg: 0.72, lift: -0.24, drift: 0.08 }),
   hk: pose({ torso: -0.22, head: 0.1, scarf: 0.48, leftArm: -0.28, rightArm: 0.22, leftLeg: -0.1, rightLeg: 0.68, lift: -0.04, drift: 0.12 }),
+  // Both arms drive and the lunge is longer than any normal — the read for
+  // "this cost the whole energy bar".
+  super: pose({ torso: -0.26, head: 0.12, scarf: 0.6, leftArm: -0.38, rightArm: 0.95, leftLeg: 0.22, rightLeg: -0.24, lift: -0.09, drift: 0.24 }),
+  // ALT+F4: both hands thrown up, spine arched, feet leaving the floor.
+  ultimate: pose({ torso: -0.32, head: -0.2, scarf: 0.85, leftArm: 0.9, rightArm: 1.05, leftLeg: 0.3, rightLeg: -0.36, lift: 0.14, drift: 0.1 }),
+  // Standing out of the crouch, one hand up: 55 frames of pure invitation.
+  taunt: pose({ torso: -0.2, head: 0.2, scarf: 0.42, leftArm: 0.58, rightArm: -0.34, leftLeg: 0.02, rightLeg: -0.02, lift: -0.005, drift: -0.03 }),
+};
+
+/** Forward dash drives low; the back dash hops away with the guard up. */
+const DASHES: Readonly<Record<'back' | 'forward', MimSpritePose>> = {
+  forward: pose({ torso: 0.26, head: -0.1, scarf: -0.62, leftArm: -0.5, rightArm: 0.45, leftLeg: 0.6, rightLeg: -0.52, lift: -0.09, drift: 0.05 }),
+  back: pose({ torso: -0.22, head: 0.08, scarf: 0.58, leftArm: 0.35, rightArm: 0.2, leftLeg: 0.46, rightLeg: -0.3, lift: 0.09, drift: -0.04 }),
 };
 
 export function mimSpritePoseFor(
@@ -58,7 +71,7 @@ export function mimSpritePoseFor(
     return pose({ torso: 0.12, leftLeg: 0.52, rightLeg: -0.38, scarf: -0.42 });
   }
   if (beat !== null) {
-    return blended(fightingStance(0), TARGETS[beat.button], beat.amount);
+    return blended(fightingStance(0), TARGETS[beat.kind], beat.amount);
   }
   if (fighter.hitstun > 0) {
     const force = Math.min(1, fighter.hitstun / 14);
@@ -66,6 +79,15 @@ export function mimSpritePoseFor(
   }
   if (fighter.guarding) {
     return pose({ torso: 0.08, head: -0.04, leftArm: 0.28, rightArm: 0.42, lift: -0.03 });
+  }
+  if (fighter.dashFrames > 0) {
+    const forward = fighter.velocity.x * fighter.facing >= 0;
+    const drive = Math.sin(dashPhase(fighter.dashFrames) * Math.PI);
+    return blended(
+      fightingStance(0),
+      DASHES[forward ? 'forward' : 'back'],
+      drive,
+    );
   }
 
   const breath = Math.sin(time * 2.2);

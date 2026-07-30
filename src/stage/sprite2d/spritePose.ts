@@ -35,8 +35,9 @@
 // Relative, with the `.js` extension the sim modules use, so this file compiles
 // under `tsconfig.sim-tests.json` and the joint limits below can be tested without
 // standing up a renderer. The path alias does not survive that emit.
+import { moveKindFor, type MoveKind } from '../../data/move-kind.js';
 import type { FighterSnapshot } from '../../sim/index.js';
-import { FIXED_SCALE } from '../../sim/index.js';
+import { dashPhase, FIXED_SCALE } from '../../sim/index.js';
 
 export interface SpritePose {
   torso: number;
@@ -540,6 +541,57 @@ function walk(base: SpritePose, phase: number, amount: number): SpritePose {
   };
 }
 
+/**
+ * Ground dash, driven by the dash's own countdown rather than by wall time.
+ *
+ * `drive` peaks in the middle of the eight frames, so the burst has a push and a
+ * settle instead of snapping to a held pose. Forward is a low drive with the
+ * trailing limbs strung out behind; back is a hop away with the guard kept up,
+ * because that is what a back dash is *for*.
+ */
+function dash(forward: boolean, phase: number): SpritePose {
+  const drive = Math.sin(Math.max(0, Math.min(1, phase)) * Math.PI);
+  if (!forward) {
+    return pose({
+      torso: -0.1 - drive * 0.22,
+      head: 0.07 + drive * 0.05,
+      ponytail: 0.16 + drive * 0.75,
+      sash: -0.12 + drive * 0.5,
+      upperArm: 0.16 + drive * 0.25,
+      forearm: -0.48 - drive * 0.3,
+      farUpperArm: -0.12 - drive * 0.2,
+      farForearm: -0.52 - drive * 0.25,
+      // Both knees tuck for the hop, then take the landing.
+      thigh: 0.2 + drive * 0.55,
+      shin: -0.32 - drive * 0.5,
+      boot: 0.1 + drive * 0.12,
+      farThigh: -0.22 + drive * 0.45,
+      farShin: -0.3 - drive * 0.45,
+      farBoot: -0.08 + drive * 0.1,
+      lift: -0.055 + drive * 0.12,
+      drift: -drive * 0.04,
+    });
+  }
+  return pose({
+    torso: 0.12 + drive * 0.3,
+    head: 0.06 - drive * 0.12,
+    ponytail: 0.16 - drive * 0.85,
+    sash: -0.1 - drive * 0.55,
+    upperArm: 0.16 - drive * 0.75,
+    forearm: -0.48 - drive * 0.25,
+    farUpperArm: -0.12 + drive * 0.6,
+    farForearm: -0.52 + drive * 0.3,
+    thigh: 0.2 + drive * 0.75,
+    shin: -0.32 + drive * 0.3,
+    boot: 0.1 + drive * 0.2,
+    farThigh: -0.22 - drive * 0.55,
+    farShin: -0.3 - drive * 0.45,
+    farBoot: -0.08 - drive * 0.2,
+    lift: -0.055 - drive * 0.055,
+    drift: drive * 0.05,
+  });
+}
+
 /** Airborne: knees up on the rise, legs reaching down on the fall. */
 function airborne(rising: boolean): SpritePose {
   const tuck = rising ? 1 : 0.4;
@@ -612,6 +664,13 @@ export function spritePoseFor(
 
   if (fighter.hitstun > 0) {
     return withinLimits(hurt(Math.min(1, fighter.hitstun / 14), hurtZone));
+  }
+
+  // Before the walk: a dash is three times walking speed, so the walk cycle
+  // would otherwise play it as a fast waddle.
+  if (fighter.dashFrames > 0) {
+    const forward = fighter.velocity.x * fighter.facing >= 0;
+    return withinLimits(dash(forward, dashPhase(fighter.dashFrames)));
   }
 
   const base = stance(Math.sin(time * 2.2));
