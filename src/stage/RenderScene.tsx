@@ -102,7 +102,6 @@ function primitiveFighter(
   if (sprite !== undefined) {
     return (
       <Sprite2DFighter
-        attackPoseName={sprite.attacks}
         fighterId={fighterId}
         rigName={sprite.rig}
       />
