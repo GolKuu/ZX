@@ -2,7 +2,7 @@
 
 import { useFrame } from '@react-three/fiber';
 import { useRef, type RefObject } from 'react';
-import { DoubleSide, Mesh, type MeshBasicMaterial } from 'three';
+import { DoubleSide, Mesh } from 'three';
 import {
   ATTACK_POSE_NAMES,
   PIXEL,
@@ -73,5 +73,3 @@ export function AttackPoseSprite({
     </>
   );
 }
-
-export type { MeshBasicMaterial };

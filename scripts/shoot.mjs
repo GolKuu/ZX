@@ -143,7 +143,9 @@ async function main() {
   await shot('05-fight-closed-in');
 
   await page.keyboard.press('KeyK'); // heavy punch
-  await wait(150);
+  // Long enough to land inside the active window. A heavy runs ~47 frames, so a
+  // 150ms capture only ever caught the windup.
+  await wait(330);
   await shot('06-attack-active');
   await wait(700);
   await page.keyboard.press('KeyO'); // special

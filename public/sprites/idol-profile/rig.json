@@ -25,11 +25,11 @@
       ]
     },
     "torso": {
-      "width": 69,
-      "height": 108,
+      "width": 88,
+      "height": 110,
       "pivot": [
-        0.5217,
-        0.99
+        0.16,
+        0.96
       ]
     },
     "hips": {
@@ -46,22 +46,6 @@
       "pivot": [
         0.2,
         0.04
-      ]
-    },
-    "upperArm": {
-      "width": 42,
-      "height": 74,
-      "pivot": [
-        0.5,
-        0.09
-      ]
-    },
-    "forearm": {
-      "width": 50,
-      "height": 114,
-      "pivot": [
-        0.54,
-        0.05
       ]
     },
     "thigh": {

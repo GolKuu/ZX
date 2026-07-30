@@ -202,16 +202,11 @@ export const PART_RECTS = {
     boot: { box: [64, 298, 54, 26], pivot: [0.55, 0.12] },
   },
 
-  // GLITCH has no trailing cloth; its corruption spray is baked into every part,
-  // which is exactly right — the artefacts travel with the limb that carries them.
-  'glitch-profile': {
-    head: { box: [196, 12, 102, 108], pivot: [0.53, 0.93] },
-    torso: { box: [192, 102, 102, 152], pivot: [0.49, 0.97] },
-    hips: { box: [192, 238, 98, 68], pivot: [0.49, 0.09] },
-    upperArm: { box: [212, 118, 60, 94], pivot: [0.5, 0.06] },
-    forearm: { box: [206, 202, 62, 82], pivot: [0.52, 0.07] },
-    thigh: { box: [202, 288, 80, 84], pivot: [0.5, 0.07] },
-    shin: { box: [202, 352, 74, 46], pivot: [0.51, 0.09] },
-    boot: { box: [196, 386, 86, 36], pivot: [0.51, 0.11] },
-  },
+  // GLITCH and ECHO are not calibrated yet.
+  //
+  // Their rectangles have to be read off `sheet-grid.mjs <name>-profile --keyed`,
+  // in that crop's own pixel space — measuring on the full sheet instead produces
+  // coordinates outside the crop, which is what the clamp warning catches. ECHO
+  // additionally needs a decision about its near-white armour: the automatic key
+  // cannot separate it from the paper it is drawn on.
 };

@@ -188,10 +188,11 @@ export function Sprite2DFighter({
     group.position.y = fighter.position.y / FIXED_SCALE;
 
     // Mirror the whole rig rather than re-authoring poses for the other
-    // direction. Negated because the sliced profile is drawn facing *left*: a
-    // fighter whose facing is +1 has its opponent to the right and therefore
-    // needs the artwork flipped.
-    group.scale.x = -fighter.facing;
+    // direction. Which way the artwork already faces is per sheet — IDOL's
+    // profile columns face left, CHRONO's and GLITCH's face right — so a fixed
+    // sign would point half the roster away from its opponent.
+    const drawnFacing = rig?.facesRight === true ? 1 : -1;
+    group.scale.x = drawnFacing * fighter.facing;
 
     const progress = fighter.action === null
       ? 0

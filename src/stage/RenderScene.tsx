@@ -84,8 +84,12 @@ function SelectedFighter({
  * drift from its sheet. Adding a character means slicing it —
  * `node scripts/slice-characters.mjs <name>-profile` — and adding a row here.
  */
-const SPRITE_RIGS: Partial<Record<CharacterId, string>> = {
-  idol: 'idol-profile',
+const SPRITE_RIGS: Partial<Record<CharacterId, {
+  readonly rig: string;
+  /** Sliced attack panels, where the sheet draws them in costume colour. */
+  readonly attacks?: string;
+}>> = {
+  idol: { rig: 'idol-profile', attacks: 'idol-attacks' },
 };
 
 function primitiveFighter(
@@ -93,9 +97,15 @@ function primitiveFighter(
   characterId: CharacterId,
   fighterId: 'p1' | 'p2',
 ) {
-  const rigName = SPRITE_RIGS[characterId];
-  if (rigName !== undefined) {
-    return <Sprite2DFighter fighterId={fighterId} rigName={rigName} />;
+  const sprite = SPRITE_RIGS[characterId];
+  if (sprite !== undefined) {
+    return (
+      <Sprite2DFighter
+        attackPoseName={sprite.attacks}
+        fighterId={fighterId}
+        rigName={sprite.rig}
+      />
+    );
   }
   if (characterId === 'chrono') {
     return <ChronoFighter auraColor={auraColor} fighterId={fighterId} />;
