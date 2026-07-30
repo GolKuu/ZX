@@ -1,12 +1,12 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 // Calibration helper for the sprite slicer.
 //
 // Crops one character sheet's front view and overlays a labelled pixel grid, so
 // part rectangles can be read off the drawing instead of guessed. Output goes to
 // a scratch path, never into the repo.
 //
-//   node scripts/sheet-grid.mjs idol out/grid-idol.png
-//   node scripts/sheet-grid.mjs idol-profile out/arm.png --keyed --zoom 85,95,80,200
+//   node scripts/sheet-grid.mjs fighter out/grid-fighter.png
+//   node scripts/sheet-grid.mjs fighter-profile out/arm.png --keyed --zoom 85,95,80,200
 
 import { readFileSync } from 'node:fs';
 import sharp from 'sharp';
@@ -98,3 +98,4 @@ await sharp(base)
   .toFile(destination);
 
 console.log(`wrote ${destination} (${width}x${height} at ${SCALE}x)`);
+

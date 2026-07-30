@@ -1,11 +1,11 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 // Prints a keyed crop as a coarse ASCII colour map.
 //
 // Reading part rectangles off a magnified PNG is guesswork once two pieces of
 // costume share a hue. This classifies every pixel by hue/value instead, so the
 // boundary between skin, white and pink is a character change you can count.
 //
-//   node scripts/sheet-map.mjs idol-profile 20 95 90 200
+//   node scripts/sheet-map.mjs fighter-profile 20 95 90 200
 //
 // Legend: . transparent  P pink  R deep pink/magenta  W white  S skin  Y gold
 //         K ink/dark     ? anything else
@@ -59,3 +59,4 @@ for (let y = Y; y < Y + H; y += 1) {
   }
   console.log(String(y).padStart(3, ' ') + ' ' + row);
 }
+

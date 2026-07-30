@@ -1,11 +1,11 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /* global requestAnimationFrame, window */
 // Checks that impact spray actually reaches the screen.
 //
 // A droplet burst is a handful of pixels for under a second, so a screenshot that
 // happens to miss it is indistinguishable from a burst that never spawned. This
 // walks into a fight, stands still while the AI attacks, and samples the blood
-// instance buffer every frame — reporting how many droplets were ever alive and
+// instance buffer every frame вЂ” reporting how many droplets were ever alive and
 // where they were, which a screenshot cannot tell you.
 //
 //   node scripts/probe-blood.mjs --headless
@@ -50,7 +50,7 @@ await page.keyboard.press('ArrowDown');
 await wait(200);
 await page.keyboard.press('Enter');
 await wait(1_200);
-// P1 = IDOL, the sliced sprite rig.
+// P1 = fighter, the sliced sprite rig.
 for (let step = 0; step < 3; step += 1) {
   await page.keyboard.press('ArrowRight');
   await wait(120);
@@ -141,7 +141,7 @@ const caught = await page.evaluate(async () => {
 });
 if (caught > 0) {
   await page.screenshot({ path: '.shots/blood.png' });
-  console.log(`caught ${String(caught)} droplets in flight → .shots/blood.png`);
+  console.log(`caught ${String(caught)} droplets in flight в†’ .shots/blood.png`);
 } else {
   console.log('no burst caught while watching');
 }
@@ -150,3 +150,4 @@ if (errors.length > 0) {
   for (const error of errors.slice(0, 6)) console.log(`  ${error}`);
 }
 await browser.close();
+

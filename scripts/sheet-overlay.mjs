@@ -1,4 +1,4 @@
-// Removes the hitbox diagram painted over a sheet's attack panels.
+﻿// Removes the hitbox diagram painted over a sheet's attack panels.
 //
 // The attack columns on these sheets are documentation, not art: every pose has blue
 // hurtbox, red hitbox and green collision rectangles drawn on top of it, each a
@@ -6,7 +6,7 @@
 //
 //   1. The fills lift the costume's value, so a background flood-fill keyed on
 //      brightness walks in from the page *through a box* and eats the figure. That is
-//      where the missing thighs and detached boots came from — not the crop, the key
+//      where the missing thighs and detached boots came from вЂ” not the crop, the key
 //      tunnelling along a box.
 //   2. What survives is washed lavender and green in rectangles, with dashed outlines
 //      drawn across it.
@@ -25,13 +25,13 @@
 //
 // So this works per pixel instead, on a fact about the subjects rather than about the
 // geometry: **none of these five characters has any blue or green in their palette.**
-// IDOL is pink, white, gold and skin; her only cool note is violet, and violet is a
+// fighter is pink, white, gold and skin; her only cool note is violet, and violet is a
 // different hue from hurtbox blue. So any blue or green cast *is* the diagram, wherever
 // it is, and the amount to remove can be measured from the page the boxes also cover.
 // No rectangle needs to be found for that.
 //
-// Red is left alone on purpose. It is the one family that collides with a costume —
-// IDOL's and GLITCH's magenta — and a wrong guess there bleaches the character.
+// Red is left alone on purpose. It is the one family that collides with a costume вЂ”
+// fighter's and GLITCH's magenta вЂ” and a wrong guess there bleaches the character.
 
 /**
  * Minimum length of an axis-aligned run before a coloured pixel counts as a box
@@ -40,7 +40,7 @@
  * This gate, not the colour test, is what makes outline removal safe. Colour alone
  * cannot separate the diagram from these characters: hurtbox blue sits right beside
  * the blue-violet these sheets shade whites with. The first attempt used colour alone
- * and repainted a fifth of the drawing — her jacket read as hitbox red and her shadows
+ * and repainted a fifth of the drawing вЂ” her jacket read as hitbox red and her shadows
  * as hurtbox blue. Geometry separates them cleanly: a box outline runs straight and
  * axis-aligned for tens of pixels, and costume linework never does.
  */
@@ -53,8 +53,8 @@ const FLAT_LIMIT = 6;
  * The box palettes, as hue windows, read off a hue histogram of a panel.
  *
  * The diagram and the costume land in clearly separate bands: collision green at
- * 110–130° with nothing of IDOL's within a hundred degrees, hurtbox blue at 200–245°
- * against her violet shading from 255° up. The blue window deliberately stops short of
+ * 110вЂ“130В° with nothing of fighter's within a hundred degrees, hurtbox blue at 200вЂ“245В°
+ * against her violet shading from 255В° up. The blue window deliberately stops short of
  * violet so her purple shorts survive untouched.
  */
 const FAMILIES = [
@@ -65,16 +65,16 @@ const FAMILIES = [
 /**
  * The hitbox family, handled separately and by geometry.
  *
- * Red cannot join the two above. The argument that licenses them — that a blue or green
- * pixel can only be the diagram — does not hold for red: IDOL's magenta sits at 339°
- * and her red-brown linework crosses 352°, and measuring says the wash and the paint
+ * Red cannot join the two above. The argument that licenses them вЂ” that a blue or green
+ * pixel can only be the diagram вЂ” does not hold for red: fighter's magenta sits at 339В°
+ * and her red-brown linework crosses 352В°, and measuring says the wash and the paint
  * overlap in chroma so completely that no threshold separates them. Correcting by hue
  * alone bleached her jacket; capping the correction to protect the jacket let most of
  * the actual wash through.
  *
  * What red does have is a reliable *shape*. There is exactly one hitbox per panel, so
  * its outline forms one connected run of unmistakably red pixels, and the bounding box
- * of that run is the rectangle — no pairing, no ambiguity. Inside a known rectangle the
+ * of that run is the rectangle вЂ” no pairing, no ambiguity. Inside a known rectangle the
  * wash inverts exactly and the costume is safe.
  */
 const HITBOX = { name: 'red', from: 350, to: 374 };
@@ -88,7 +88,7 @@ const MIN_HITBOX = 16;
  * A hitbox frames a fist or a foot; it is never a quarter of the panel. When the
  * outline trace joins two boxes, or joins a box to a stray red mark on the drawing, the
  * bounding box balloons and the affine correction is then measured on the wrong pixels
- * and applied to the character — on IDOL's heavy punch that bleached her head to lilac
+ * and applied to the character вЂ” on fighter's heavy punch that bleached her head to lilac
  * across twenty thousand pixels. A box that is too big, or whose correction is larger
  * than any translucent wash could account for, is not believed.
  */
@@ -99,19 +99,19 @@ const MAX_WASH_SHIFT = 45;
 const MAX_VALUE_PER_CHROMA = 0.8;
 
 /**
- * How much of the drawing survives under one box fill: `1 − alpha`.
+ * How much of the drawing survives under one box fill: `1 в€’ alpha`.
  *
  * Only sets how far a recovered rectangle's contrast is stretched back. The tint itself
  * comes out exactly whatever this is, because the correction is anchored on page seen
- * through the same box. Measured at about 0.88 on IDOL's collision boxes.
+ * through the same box. Measured at about 0.88 on fighter's collision boxes.
  */
 const SURVIVES = 0.88;
 
 /**
- * Chroma a pixel needs before its hue is believed, in 0–255 units.
+ * Chroma a pixel needs before its hue is believed, in 0вЂ“255 units.
  *
  * Absolute chroma, not saturation: a wash over bright page is only about 20 units of
- * chroma on a value of 250, which is a saturation of 0.08 — well under any threshold a
+ * chroma on a value of 250, which is a saturation of 0.08 вЂ” well under any threshold a
  * saturated outline would want, and setting one floor for both found no fills at all.
  * Below roughly 6 units the hue angle is just sensor noise, so that is the floor for a
  * fill; an outline has to be far more definite than that.
@@ -155,8 +155,8 @@ function chromaOf(family, r, g, b) {
  * Which pixels are the page rather than the character.
  *
  * Flooding in from the border through anything still bright. The distinction that
- * matters is not brightness — these costumes are full of white, and IDOL's skirt under
- * a hurtbox is the same value as the page under one — it is enclosure. Page stays
+ * matters is not brightness вЂ” these costumes are full of white, and fighter's skirt under
+ * a hurtbox is the same value as the page under one вЂ” it is enclosure. Page stays
  * connected to the border straight through a box outline; her skirt is fenced in by her
  * own ink, which is far too dark to cross.
  *
@@ -220,9 +220,9 @@ function median(values) {
 /**
  * Measure one family's wash off the page it also covers.
  *
- * A wash both tints and darkens, and the two are locked together — it is one
- * translucent layer — so the page shows the exchange rate directly: how much luminance
- * a box costs per unit of colour it adds. On IDOL's collision boxes that comes out
+ * A wash both tints and darkens, and the two are locked together вЂ” it is one
+ * translucent layer вЂ” so the page shows the exchange rate directly: how much luminance
+ * a box costs per unit of colour it adds. On fighter's collision boxes that comes out
  * around 0.6, which is why removing only the colour leaves a faintly grey rectangle
  * behind and removing both leaves nothing.
  *
@@ -343,10 +343,10 @@ function componentBoxes(mask, width, height, minimum) {
 /**
  * Invert the wash inside a known rectangle.
  *
- * `obs = m·art + c` inside a box, so given bare page `P` and what that page looks like
- * through this box, `c = obsPage − m·P` and the whole map collapses to
- * `art = P + (obs − obsPage) / m`. The fill's colour and its alpha both disappear into
- * `obsPage`, which is measured — so unlike the hue-window pass this is exact, and safe
+ * `obs = mВ·art + c` inside a box, so given bare page `P` and what that page looks like
+ * through this box, `c = obsPage в€’ mВ·P` and the whole map collapses to
+ * `art = P + (obs в€’ obsPage) / m`. The fill's colour and its alpha both disappear into
+ * `obsPage`, which is measured вЂ” so unlike the hue-window pass this is exact, and safe
  * to apply to costume as well as to page.
  */
 function unwashRectangle(data, width, height, page, box) {
@@ -492,14 +492,14 @@ function healOutlines(data, width, height, scars) {
  * Strip the diagram from one RGBA panel, in place.
  *
  * Returns what it did, so the slicer can print it: every failure of this pass looks
- * identical from the outside — a panel that comes back still tinted — and the cause has
+ * identical from the outside вЂ” a panel that comes back still tinted вЂ” and the cause has
  * been different every time.
  */
 export function removeDiagramOverlay(data, width, height, options = {}) {
   const report = [];
   // Kept so the whole pass can be abandoned. Every failure mode found while building
-  // this made a panel *worse* than the diagram did — a bleached head, a grey character,
-  // a fifth of the drawing repainted — and all of them announced themselves as a large
+  // this made a panel *worse* than the diagram did вЂ” a bleached head, a grey character,
+  // a fifth of the drawing repainted вЂ” and all of them announced themselves as a large
   // fraction of the image moving a long way. Cheaper to check that at the end than to
   // enumerate the causes.
   const original = new Uint8Array(data);
@@ -536,7 +536,7 @@ export function removeDiagramOverlay(data, width, height, options = {}) {
   );
 
   // Outlines next. They replaced the drawing rather than tinting it, so there is nothing
-  // to recover — and taking them out before measuring the washes keeps a saturated line
+  // to recover вЂ” and taking them out before measuring the washes keeps a saturated line
   // from dragging the estimate with it.
   const outlines = new Uint8Array(width * height);
   for (const family of [...FAMILIES, HITBOX]) {
@@ -580,8 +580,8 @@ export function removeDiagramOverlay(data, width, height, options = {}) {
  *
  * What survives keying, besides the character, is the sheet's annotation layer: pale
  * salmon motion arcs, impact circles, and whatever of a hitbox rectangle lay on the
- * page. No brightness threshold removes those — measured, a salmon arc is *lighter*
- * than the shaded side of IDOL's white boot, so every cleanup pass aggressive enough
+ * page. No brightness threshold removes those вЂ” measured, a salmon arc is *lighter*
+ * than the shaded side of fighter's white boot, so every cleanup pass aggressive enough
  * to eat the arc ate the boot first.
  *
  * Ink separates them instead. Every piece of these characters is drawn with a dark
@@ -643,3 +643,4 @@ function fractionMoved(before, after, threshold) {
   }
   return counted === 0 ? 0 : moved / counted;
 }
+

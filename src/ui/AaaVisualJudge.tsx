@@ -166,11 +166,12 @@ export function AaaVisualJudge() {
       }));
       setLog((current) => {
         const next = [
-          `[${phase.toUpperCase()}] ${analysisWithMeta.overall}/100 — ${analysisWithMeta.findings[0] ?? 'No show-stopper found'}`,
+          `[${phase.toUpperCase()}] ${analysisWithMeta.overall}/100 - ${analysisWithMeta.findings[0] ?? 'No show-stopper found'}`,
           ...current,
         ];
         return next.slice(0, 16);
       });
+      hasCaptured.current = true;
     }
   }, [screen, snapshot.combo, snapshot.frame, superVersion]);
 
@@ -540,12 +541,12 @@ function buildFindings(
   }
   if (categories.shader < 55 || categories.vfx < 52) {
     findings.push(
-      'Shader pass looks procedural and synthetic; break the flat ramps with hue-shifted contour bands and non-linear response (like Strive/FirerStorm energy layering), not a pure multiply.',
+      'Shader pass looks procedural and synthetic; break the flat ramps with hue-shifted contour bands and non-linear response (like Strive/Naruto Storm energy layering), not a pure multiply.',
     );
   }
   if (categories.animation < 54 && (metrics.phase === 'combo' || metrics.phase === 'super')) {
     findings.push(
-      'Combo/super timing lacks readable weight; add 2–4 hard hold frames and micro-stutter at impact, then recover with eased re-entry.',
+      'Combo/super timing lacks readable weight; add 2-4 hard hold frames and micro-stutter at impact, then recover with eased re-entry.',
     );
   }
   if (metrics.edgeScore < 35 && metrics.motionScore < 24) {
@@ -582,3 +583,5 @@ function buildStrengths(categories: Record<Category, number>, phase: CapturePhas
   if (strengths.length === 0) return ['No meaningful strengths captured yet.'];
   return strengths.slice(0, 1);
 }
+
+

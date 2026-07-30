@@ -1,7 +1,7 @@
-// Background removal for character sheets.
+﻿// Background removal for character sheets.
 //
 // Shared by the slicer and the calibration grid, because part rectangles have to
-// be read off the *keyed* cutout — the transparency is what makes the joints
+// be read off the *keyed* cutout вЂ” the transparency is what makes the joints
 // legible, and measuring against the paper instead is how the first pass ended
 // up with rectangles that missed the limbs entirely.
 
@@ -22,11 +22,11 @@ function luminance(r, g, b) {
  * Flood-fill transparency inward from every border pixel, in place.
  *
  * Deliberately not a global brightness threshold: these characters wear white.
- * IDOL's skirt and boots are the same value as the paper, so "light pixels are
+ * fighter's skirt and boots are the same value as the paper, so "light pixels are
  * background" deletes half the costume. Filling from the edge stops at the
  * character's own ink, so enclosed whites survive.
  *
- * Iterative with an explicit stack — a 165×490 crop is 80k pixels and a
+ * Iterative with an explicit stack вЂ” a 165Г—490 crop is 80k pixels and a
  * recursive fill overflows.
  *
  * @returns fraction of the image cleared, for leak detection.
@@ -37,7 +37,7 @@ export function keyBackground(data, width, height, options = {}) {
   const light = options.light ?? LIGHT;
 
   // ECHO wears near-white armour at the same *value* as the paper it is drawn
-  // on, so no luminance floor can separate them — one ate the shoulder ring and
+  // on, so no luminance floor can separate them вЂ” one ate the shoulder ring and
   // speckled the coat. `tolerance` switches to matching the sampled paper colour
   // instead, which the armour's faint blue shading falls outside of.
   const tolerance = options.tolerance;
@@ -98,7 +98,7 @@ export function keyBackground(data, width, height, options = {}) {
   // lines and compression noise behind as opaque flecks, which then land inside
   // a part rectangle as grey confetti. This pass starts from what the first pass
   // already cleared and eats anything bright touching it, so it can only ever
-  // reach background — it cannot tunnel through the character's ink.
+  // reach background вЂ” it cannot tunnel through the character's ink.
   const cleanup = options.cleanup;
   if (cleanup !== undefined) {
     const grow = (x, y) => {
@@ -127,3 +127,4 @@ export function keyBackground(data, width, height, options = {}) {
 
   return cleared / (width * height);
 }
+
