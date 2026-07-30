@@ -138,21 +138,23 @@ function blendPose(from: SpritePose, to: SpritePose, amount: number): SpritePose
  */
 function stance(breath: number): SpritePose {
   return pose({
-    torso: -0.05,
-    head: 0.04,
-    ponytail: 0.12 + breath * 0.06,
-    sash: -0.08 + breath * 0.05,
-    upperArm: -0.05 + breath * 0.02,
-    forearm: -0.09,
-    farUpperArm: -0.02,
-    farForearm: -0.14,
-    thigh: 0.14,
-    shin: -0.2,
-    boot: 0.07,
-    farThigh: -0.16,
-    farShin: 0.18,
-    farBoot: -0.04,
-    lift: -0.03 + breath * 0.012,
+    torso: -0.1 + breath * 0.012,
+    head: 0.07 - breath * 0.008,
+    ponytail: 0.16 + breath * 0.08,
+    sash: -0.12 + breath * 0.07,
+    // Both hands stay high enough to read as a guard, not hanging turnaround art.
+    upperArm: 0.16 + breath * 0.025,
+    forearm: -0.48,
+    farUpperArm: -0.12 - breath * 0.018,
+    farForearm: -0.52,
+    // Weight sits between two visibly bent knees.
+    thigh: 0.2,
+    shin: -0.32,
+    boot: 0.1,
+    farThigh: -0.22,
+    farShin: -0.3,
+    farBoot: -0.08,
+    lift: -0.055 + breath * 0.014,
   });
 }
 
@@ -392,25 +394,26 @@ function hurt(force: number, zone: HurtZone): SpritePose {
  */
 function walk(base: SpritePose, phase: number, amount: number): SpritePose {
   const swingPhase = Math.sin(phase) * amount;
-  const lift = Math.cos(phase * 2) * amount;
   const trailing = Math.max(0, -swingPhase);
   const farTrailing = Math.max(0, swingPhase);
+  const stepRise = (1 - Math.cos(phase * 2)) * 0.5 * amount;
   return {
     ...base,
-    thigh: base.thigh + swingPhase * 0.36,
-    shin: base.shin - trailing * 0.45,
-    boot: base.boot + trailing * 0.18,
-    farThigh: base.farThigh - swingPhase * 0.36,
-    farShin: base.farShin - farTrailing * 0.45,
-    farBoot: base.farBoot + farTrailing * 0.18,
-    upperArm: base.upperArm - swingPhase * 0.26,
-    forearm: base.forearm - Math.max(0, swingPhase) * 0.14,
-    farUpperArm: base.farUpperArm + swingPhase * 0.26,
-    farForearm: base.farForearm - Math.max(0, -swingPhase) * 0.14,
-    ponytail: base.ponytail - swingPhase * 0.3,
-    sash: base.sash - swingPhase * 0.22,
-    torso: base.torso + Math.abs(swingPhase) * 0.05,
-    lift: base.lift + lift * 0.035,
+    thigh: base.thigh + swingPhase * 0.44,
+    shin: base.shin - trailing * 0.62,
+    boot: base.boot + trailing * 0.24,
+    farThigh: base.farThigh - swingPhase * 0.44,
+    farShin: base.farShin - farTrailing * 0.62,
+    farBoot: base.farBoot + farTrailing * 0.24,
+    upperArm: base.upperArm - swingPhase * 0.2,
+    forearm: base.forearm - Math.max(0, swingPhase) * 0.16,
+    farUpperArm: base.farUpperArm + swingPhase * 0.2,
+    farForearm: base.farForearm - Math.max(0, -swingPhase) * 0.16,
+    ponytail: base.ponytail - swingPhase * 0.36,
+    sash: base.sash - swingPhase * 0.3,
+    torso: base.torso - swingPhase * 0.055,
+    head: base.head + swingPhase * 0.025,
+    lift: base.lift + stepRise * 0.045,
   };
 }
 
@@ -473,7 +476,10 @@ export function spritePoseFor(
 
   const base = stance(Math.sin(time * 2.2));
   const speed = Math.abs(fighter.velocity.x) / FIXED_SCALE;
-  const amount = Math.min(1, speed / 3.5);
+  // Authored ground speed is roughly 0.55–0.65 engine units per sim frame.
+  // Normalising by 3.5 made the old walk play at under one fifth amplitude.
+  const amount = Math.min(1, speed / 0.58);
   if (amount < 0.02) return withinLimits(base);
-  return withinLimits(walk(base, time * 7.4, amount));
+  const travelDirection = fighter.velocity.x * fighter.facing >= 0 ? 1 : -1;
+  return withinLimits(walk(base, time * 8.2 * travelDirection, amount));
 }

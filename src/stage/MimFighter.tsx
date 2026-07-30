@@ -8,7 +8,10 @@ import {
   readCombatFighter,
 } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
-import { withOpponentFacing } from './fighterPresentation';
+import {
+  spriteFacingScale,
+  withOpponentFacing,
+} from './fighterPresentation';
 import { MimAttackSprites } from './mim/MimAttackSprites';
 import {
   MimSpriteBody,
@@ -65,7 +68,10 @@ export function MimFighter({
       fighter,
       readCombatFighter(opponentId),
     );
-    outerGroup.scale.x = presentation.facing;
+    outerGroup.scale.x = spriteFacingScale(
+      sprites.rig?.facesRight ?? true,
+      presentation.facing,
+    );
 
     const beat = fighter.action === null
       ? null

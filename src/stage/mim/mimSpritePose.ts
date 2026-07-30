@@ -41,7 +41,9 @@ export function mimSpritePoseFor(
   if (!fighter.grounded) {
     return pose({ torso: 0.12, leftLeg: 0.52, rightLeg: -0.38, scarf: -0.42 });
   }
-  if (beat !== null) return scaled(TARGETS[beat.button], beat.amount);
+  if (beat !== null) {
+    return blended(fightingStance(0), TARGETS[beat.button], beat.amount);
+  }
   if (fighter.hitstun > 0) {
     const force = Math.min(1, fighter.hitstun / 14);
     return scaled(pose({ torso: -0.4, head: -0.28, scarf: -0.56, leftArm: 0.38, rightArm: 0.5, leftLeg: 0.18, rightLeg: -0.18, drift: -0.1 }), force);
@@ -50,23 +52,46 @@ export function mimSpritePoseFor(
     return pose({ torso: 0.08, head: -0.04, leftArm: 0.28, rightArm: 0.42, lift: -0.03 });
   }
 
-  const speed = Math.min(1, Math.abs(fighter.velocity.x) / FIXED_SCALE / 3.5);
-  const stride = Math.sin(time * 7.4) * speed;
   const breath = Math.sin(time * 2.2);
+  const base = fightingStance(breath);
+  const speed = Math.min(
+    1,
+    Math.abs(fighter.velocity.x) / FIXED_SCALE / 0.58,
+  );
+  if (speed < 0.02) return base;
+
+  const travelDirection = fighter.velocity.x * fighter.facing >= 0 ? 1 : -1;
+  const phase = time * 8.2 * travelDirection;
+  const stride = Math.sin(phase) * speed;
+  const stepRise = (1 - Math.cos(phase * 2)) * 0.5 * speed;
   return pose({
-    torso: breath * 0.012,
-    head: -breath * 0.008,
-    scarf: breath * 0.05 - stride * 0.18,
-    leftArm: -stride * 0.16,
-    rightArm: stride * 0.16,
-    leftLeg: stride * 0.22,
-    rightLeg: -stride * 0.22,
-    lift: Math.cos(time * 14.8) * speed * 0.02,
+    ...base,
+    torso: base.torso - stride * 0.045,
+    head: base.head + stride * 0.025,
+    scarf: base.scarf - stride * 0.3,
+    leftArm: base.leftArm - stride * 0.22,
+    rightArm: base.rightArm + stride * 0.22,
+    leftLeg: base.leftLeg + stride * 0.38,
+    rightLeg: base.rightLeg - stride * 0.38,
+    lift: base.lift + stepRise * 0.04,
   });
 }
 
 function pose(overrides: Partial<MimSpritePose>): MimSpritePose {
   return { ...NEUTRAL, ...overrides };
+}
+
+function fightingStance(breath: number): MimSpritePose {
+  return pose({
+    torso: -0.035 + breath * 0.014,
+    head: 0.025 - breath * 0.009,
+    scarf: 0.1 + breath * 0.065,
+    leftArm: 0.05 + breath * 0.018,
+    rightArm: -0.045 - breath * 0.018,
+    leftLeg: 0.08,
+    rightLeg: -0.08,
+    lift: -0.035 + breath * 0.012,
+  });
 }
 
 function scaled(target: MimSpritePose, amount: number): MimSpritePose {
@@ -80,5 +105,23 @@ function scaled(target: MimSpritePose, amount: number): MimSpritePose {
     rightLeg: target.rightLeg * amount,
     lift: target.lift * amount,
     drift: target.drift * amount,
+  };
+}
+
+function blended(
+  from: MimSpritePose,
+  to: MimSpritePose,
+  amount: number,
+): MimSpritePose {
+  return {
+    torso: from.torso + (to.torso - from.torso) * amount,
+    head: from.head + (to.head - from.head) * amount,
+    scarf: from.scarf + (to.scarf - from.scarf) * amount,
+    leftArm: from.leftArm + (to.leftArm - from.leftArm) * amount,
+    rightArm: from.rightArm + (to.rightArm - from.rightArm) * amount,
+    leftLeg: from.leftLeg + (to.leftLeg - from.leftLeg) * amount,
+    rightLeg: from.rightLeg + (to.rightLeg - from.rightLeg) * amount,
+    lift: from.lift + (to.lift - from.lift) * amount,
+    drift: from.drift + (to.drift - from.drift) * amount,
   };
 }

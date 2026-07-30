@@ -70,7 +70,9 @@ async function sliceProfile() {
   const source = await sharp(SOURCE).extract(VIEW).png().toBuffer();
   const manifest = {
     source: SOURCE,
-    view: { ...VIEW, figureHeight: 380 },
+    // Match the roster's average floor-to-crown height. The source figure is
+    // 387 px tall, so a 406 px scale reference renders it at ~2.50 world units.
+    view: { ...VIEW, figureHeight: 406 },
     textureScale: TEXTURE_SCALE,
     facesRight: true,
     origin: ORIGIN,

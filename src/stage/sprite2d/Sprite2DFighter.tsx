@@ -19,7 +19,10 @@ import {
   isStrikeFrame,
   spriteAnimationProgress,
 } from '../combatAnimationProgress';
-import { withOpponentFacing } from '../fighterPresentation';
+import {
+  spriteFacingScale,
+  withOpponentFacing,
+} from '../fighterPresentation';
 import { AttackPoseSprite } from './AttackPoseSprite';
 import {
   SpriteRigBody,
@@ -186,7 +189,10 @@ export function Sprite2DFighter({
     // profile columns face left, CHRONO's and GLITCH's face right — so a fixed
     // sign would point half the roster away from its opponent.
     const drawnFacing = rig?.facesRight === true ? 1 : -1;
-    group.scale.x = drawnFacing * presentation.facing;
+    group.scale.x = spriteFacingScale(
+      rig?.facesRight === true,
+      presentation.facing,
+    );
     if (poseGroup.current !== null && poses !== null) {
       const attackDrawnFacing = poses.facesRight ? 1 : -1;
       poseGroup.current.scale.x = attackDrawnFacing === drawnFacing ? 1 : -1;

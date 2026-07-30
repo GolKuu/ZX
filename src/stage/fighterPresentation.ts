@@ -42,6 +42,21 @@ export function withOpponentFacing(
   return facing === fighter.facing ? fighter : { ...fighter, facing };
 }
 
+/**
+ * Horizontal scale for flat artwork whose source has an authored direction.
+ *
+ * A negative scale mirrors the sheet. Keeping this in one place prevents a
+ * left-facing turnaround and a right-facing turnaround from using opposite
+ * conventions in different fighter components.
+ */
+export function spriteFacingScale(
+  sourceFacesRight: boolean,
+  desiredFacing: -1 | 1,
+): -1 | 1 {
+  const sourceFacing = sourceFacesRight ? 1 : -1;
+  return (sourceFacing * desiredFacing) as -1 | 1;
+}
+
 export function turnTowardOpponent(
   group: Group,
   head: Group,

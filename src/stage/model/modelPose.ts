@@ -155,7 +155,7 @@ function poseByState(
     return;
   }
 
-  poseLocomotion(joints, fighter, time);
+  poseLocomotion(joints, rest, fighter, time);
 }
 
 /* ------------------------------------------------------------------ */
@@ -169,11 +169,12 @@ function poseByState(
  */
 function poseLocomotion(
   joints: HumanoidJoints,
+  rest: RestPose,
   fighter: FighterSnapshot,
   time: number,
 ): void {
   const speed = Math.abs(fighter.velocity.x) / FIXED_SCALE;
-  const moving = Math.min(1, speed / 3.5);
+  const moving = Math.min(1, speed / 0.58);
   const breath = Math.sin(time * 2.2);
 
   // Fighting stance: side-on, knees bent, guard hand forward. This is the
@@ -203,15 +204,17 @@ function poseLocomotion(
   turn(joints, 'thighR', 0.16, -0.12, -0.14);
   turn(joints, 'shinR', 0.3, 0, 0);
   turn(joints, 'footR', -0.12, 0, 0);
+  lift(joints, rest, -0.045 + breath * 0.008);
 
   if (moving < 0.02) return;
 
   // Walk: legs counter-swing, torso counter-rotates against the hips. A step
   // cycle that does not counter-rotate the shoulders reads as a shuffle.
-  const cycle = time * 7.4;
+  const travelDirection = fighter.velocity.x * fighter.facing >= 0 ? 1 : -1;
+  const cycle = time * 8.2 * travelDirection;
   const swing = Math.sin(cycle) * moving;
   const step = Math.cos(cycle) * moving;
-  const lead = fighter.velocity.x >= 0 ? 1 : -1;
+  const lead = travelDirection;
 
   turn(joints, 'thighL', swing * 0.52 * lead, 0, 0);
   turn(joints, 'shinL', Math.max(0, -swing * lead) * 0.6, 0, 0);
@@ -226,6 +229,8 @@ function poseLocomotion(
   turn(joints, 'head', -step * 0.024, swing * 0.07 * lead, -swing * 0.018);
   turn(joints, 'upperArmL', -swing * 0.18 * lead, 0, 0);
   turn(joints, 'upperArmR', swing * 0.18 * lead, 0, 0);
+  const stepRise = (1 - Math.cos(cycle * 2)) * 0.5 * moving;
+  lift(joints, rest, -0.045 + stepRise * 0.04);
 }
 
 function poseGuard(joints: HumanoidJoints, time: number): void {
