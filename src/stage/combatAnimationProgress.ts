@@ -21,6 +21,30 @@ const MOVES_BY_ID = new Map(
   ].map((move) => [move.id, move]),
 );
 
+/** Frames either side of the active window the strike drawing is still held. */
+const STRIKE_LEAD = 3;
+const STRIKE_TRAIL = 4;
+
+/**
+ * Whether this frame is the one the player reads as the strike.
+ *
+ * Taken from the frame data rather than from a progress float: the two progress
+ * curves above shape time differently — `idolSpriteAnimationProgress` deliberately
+ * steps and holds — so a pair of thresholds on the returned number picks out a
+ * different span for each, and for IDOL picked out most of the move.
+ *
+ * Padded a few frames either side because a light jab is active for two frames.
+ * Held for 33ms, the drawing reads as a flicker rather than as a punch.
+ */
+export function isStrikeFrame(moveId: string, frame: number): boolean {
+  const move = MOVES_BY_ID.get(moveId);
+  if (move === undefined) return false;
+  return (
+    frame >= move.startup - STRIKE_LEAD
+    && frame < move.startup + move.active + STRIKE_TRAIL
+  );
+}
+
 export function combatAnimationProgress(
   moveId: string,
   frame: number,

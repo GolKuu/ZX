@@ -90,6 +90,9 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
   // Attack diagrams are intentionally not mounted: their coloured hitbox
   // rectangles are presentation notes, not character art. The articulated
   // pieces below animate every LP / HP / LK / HK without those overlays.
+  chrono: { rig: 'chrono-profile' },
+  echo: { rig: 'echo-profile' },
+  glitch: { rig: 'glitch-profile' },
   idol: { rig: 'idol-profile' },
 };
 

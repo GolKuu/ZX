@@ -10,7 +10,11 @@ import {
 } from '@/src/sim';
 import { useHudStore } from '@/src/store/hudStore';
 import { useRenderStore } from '@/src/store/renderStore';
-import { publishCombatFrame } from './combatRuntime';
+import {
+  clearCombatHits,
+  publishCombatFrame,
+  publishCombatHits,
+} from './combatRuntime';
 import { AttackInputPolicy } from './attackInputPolicy';
 import {
   createCombatAi,
@@ -63,6 +67,7 @@ export class CombatSession {
     this.maxCombo = 0;
     this.xray.reset();
     this.attackInput.reset();
+    clearCombatHits();
     this.publishInitialState();
   }
 
@@ -92,6 +97,7 @@ export class CombatSession {
     this.attackInput.accept(result.state, result.events);
     this.xray.accept(result.events);
     publishCombatFrame(result.state, 0);
+    publishCombatHits(result.state, result.events);
     this.publishHud(result.state, result.events);
     this.handleImpact(result.events);
     if (

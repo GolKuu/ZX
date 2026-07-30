@@ -49,6 +49,10 @@ async function sliceCharacter(name) {
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
+  // Some sheets use paper-white costume panels. Keep an untouched copy for
+  // manually masked parts because background flood-fill cannot distinguish
+  // those panels from the page when an outline has a deliberate gap.
+  const original = Buffer.from(data);
 
   const clearedFraction = keyBackground(data, width, height, view.key);
   if (clearedFraction > LEAK_LIMIT) {
@@ -102,8 +106,23 @@ async function sliceCharacter(name) {
     let source = keyedCarved;
     const mask = masks.get(part);
     if (mask !== undefined) {
-      const cut = Buffer.from(data);
+      const cut = Buffer.from(spec.preserveSource === true ? original : data);
       keepInside(cut, mask);
+      if (spec.refillCarves === true && carving.length > 0) {
+        const holes = clearInside(cut, unionMasks(carving, width, height));
+        if (spec.carveFill === undefined) {
+          inpaint(cut, width, height, holes);
+        } else {
+          const [red, green, blue] = spec.carveFill;
+          for (let index = 0; index < holes.length; index += 1) {
+            if (holes[index] === 0) continue;
+            cut[index * 4] = red;
+            cut[index * 4 + 1] = green;
+            cut[index * 4 + 2] = blue;
+            cut[index * 4 + 3] = 255;
+          }
+        }
+      }
       source = await sharp(cut, { raw: { channels: 4, width, height } })
         .png()
         .toBuffer();
