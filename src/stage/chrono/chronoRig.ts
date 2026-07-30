@@ -28,9 +28,9 @@ export function readChronoRig(refs: ChronoRigRefs): ChronoRig | null {
 }
 
 export function resetChronoRig(rig: ChronoRig, time: number): void {
-  const breath = Math.sin(time * 2.15) * 0.022;
+  const breath = Math.sin(time * 1.7) * 0.014;
   rig.root.position.set(0, breath, 0);
-  rig.root.rotation.set(0, 0, Math.sin(time * 1.1) * 0.012);
+  rig.root.rotation.set(0, 0, Math.sin(time * 0.82) * 0.006);
   rig.torso.position.set(0, 1.12, 0);
   rig.head.position.set(0, 1.86, 0);
   rig.leftArm.position.set(-0.37, 1.48, 0);
@@ -63,6 +63,13 @@ export function applyChronoCombatAnimation(
     return;
   }
 
+  const facing = fighter.facing;
+  const arm = facing === 1 ? rig.rightArm : rig.leftArm;
+  const supportArm = facing === 1 ? rig.leftArm : rig.rightArm;
+  const leg = facing === 1 ? rig.rightLeg : rig.leftLeg;
+  const supportLeg = facing === 1 ? rig.leftLeg : rig.rightLeg;
+  applyChronoStance(rig, arm, supportArm, facing);
+
   if (fighter.guarding) {
     rig.leftArm.rotation.z = 1.05;
     rig.rightArm.rotation.z = -1.05;
@@ -78,48 +85,101 @@ export function applyChronoCombatAnimation(
   const action = fighter.action;
   if (action === null) return;
   const progress = combatAnimationProgress(action.moveId, action.frame);
-  const strike = Math.sin(progress * Math.PI);
-  const facing = fighter.facing;
-  const arm = facing === 1 ? rig.rightArm : rig.leftArm;
-  const supportArm = facing === 1 ? rig.leftArm : rig.rightArm;
-  const leg = facing === 1 ? rig.rightLeg : rig.leftLeg;
-  const supportLeg = facing === 1 ? rig.leftLeg : rig.rightLeg;
+  const { anticipation, strike, impact } = attackBeats(progress);
 
   if (action.moveId === CHRONO_MOVE_IDS.lp) {
-    arm.position.x += facing * strike * 0.48;
-    arm.position.y += strike * 0.1;
-    arm.rotation.z -= facing * strike * 1.48;
-    supportArm.rotation.z += facing * strike * 0.34;
-    rig.root.position.x += facing * strike * 0.18;
-    rig.torso.rotation.y += facing * strike * 0.26;
-    showClockEffect(rig, facing, strike, 0.76, 1.18, 0.34);
+    arm.position.x += facing * (-anticipation * 0.12 + strike * 0.46);
+    arm.position.y += anticipation * 0.04 + strike * 0.12;
+    arm.rotation.z += facing * (anticipation * 0.4 - strike * 0.78);
+    rig.root.position.x += facing * (-anticipation * 0.035 + strike * 0.16);
+    rig.torso.rotation.y += facing * (-anticipation * 0.12 + strike * 0.2);
+    rig.head.rotation.y -= facing * strike * 0.08;
+    showClockEffect(rig, facing, impact, 0.8, 1.2, 0.34);
   } else if (action.moveId === CHRONO_MOVE_IDS.hp) {
-    arm.position.x += facing * strike * 0.42;
-    arm.rotation.z -= facing * strike * 1.24;
-    supportArm.rotation.z += facing * strike * 0.7;
-    rig.root.position.x += facing * strike * 0.3;
-    rig.torso.rotation.y += facing * strike * 0.52;
-    rig.coat.rotation.z -= facing * strike * 0.16;
-    showClockEffect(rig, facing, strike, 1.16, 1.18, 0.82);
+    arm.position.x += facing * (-anticipation * 0.16 + strike * 0.62);
+    arm.position.y += anticipation * 0.08 + strike * 0.13;
+    arm.rotation.z += facing * (anticipation * 0.58 - strike * 0.86);
+    supportArm.rotation.z += facing * (anticipation * 0.22 + strike * 0.12);
+    rig.root.position.x += facing * (-anticipation * 0.08 + strike * 0.31);
+    rig.torso.rotation.y += facing * (-anticipation * 0.28 + strike * 0.46);
+    rig.head.rotation.y -= facing * strike * 0.18;
+    rig.coat.rotation.z -= facing * strike * 0.15;
+    showClockEffect(rig, facing, impact, 1.18, 1.2, 0.82);
   } else if (action.moveId === CHRONO_MOVE_IDS.lk) {
-    rig.root.position.y -= strike * 0.3;
-    leg.position.x += facing * strike * 0.5;
-    leg.position.y -= strike * 0.12;
-    leg.rotation.z -= facing * strike * 1.48;
-    supportLeg.rotation.z += facing * strike * 0.18;
-    rig.torso.rotation.z += facing * strike * 0.18;
-    rig.coat.rotation.z += facing * strike * 0.22;
-    showClockEffect(rig, facing, strike, 0.9, 0.34, 0.5);
+    const crouch = Math.max(anticipation * 0.92, strike);
+    rig.root.position.x -= facing * anticipation * 0.1;
+    rig.root.position.y -= crouch * 0.3;
+    leg.position.x += facing * (-anticipation * 0.1 + strike * 0.67);
+    leg.position.y -= strike * 0.2;
+    leg.rotation.z += facing * (anticipation * 0.34 - strike * 1.54);
+    supportLeg.rotation.z += facing * crouch * 0.22;
+    supportArm.position.y -= crouch * 0.16;
+    supportArm.rotation.z += facing * crouch * 0.42;
+    rig.torso.rotation.z += facing * crouch * 0.17;
+    rig.coat.rotation.z += facing * strike * 0.2;
+    showClockEffect(rig, facing, impact, 0.94, 0.32, 0.5);
   } else if (action.moveId === CHRONO_MOVE_IDS.hk) {
-    leg.position.x += facing * strike * 0.54;
-    leg.position.y += strike * 0.58;
-    leg.rotation.z -= facing * strike * 2.28;
-    supportLeg.rotation.z += facing * strike * 0.24;
-    rig.torso.rotation.z -= facing * strike * 0.34;
-    rig.root.rotation.y += facing * strike * 0.76;
-    rig.coat.rotation.z -= facing * strike * 0.28;
-    showClockEffect(rig, facing, strike, 1.02, 1.32, 0.68);
+    leg.position.x += facing * (-anticipation * 0.13 + strike * 0.66);
+    leg.position.y += anticipation * 0.24 + strike * 0.62;
+    leg.rotation.z += facing * (anticipation * 0.56 - strike * 1.52);
+    supportLeg.rotation.z += facing * strike * 0.13;
+    arm.rotation.z -= facing * (anticipation * 0.18 + strike * 0.22);
+    supportArm.rotation.z += facing * strike * 0.24;
+    rig.torso.rotation.z -= facing * strike * 0.28;
+    rig.root.rotation.y += facing * (anticipation * 0.16 + strike * 0.28);
+    rig.coat.rotation.z -= facing * strike * 0.24;
+    showClockEffect(rig, facing, impact, 1.08, 1.34, 0.68);
   }
+}
+
+function applyChronoStance(
+  rig: ChronoRig,
+  leadArm: Group,
+  rearArm: Group,
+  facing: -1 | 1,
+): void {
+  leadArm.position.x += facing * 0.08;
+  leadArm.position.y -= 0.035;
+  leadArm.position.z = 0.08;
+  leadArm.rotation.y = -facing * 0.12;
+  leadArm.rotation.z = -facing * 0.72;
+
+  rearArm.position.x += facing * 0.12;
+  rearArm.position.y -= 0.055;
+  rearArm.position.z = -0.2;
+  rearArm.rotation.y = facing * 0.56;
+  rearArm.rotation.z = facing * 0.5;
+
+  rig.torso.rotation.y = facing * 0.055;
+  rig.head.rotation.y = -facing * 0.035;
+}
+
+function attackBeats(progress: number): {
+  readonly anticipation: number;
+  readonly strike: number;
+  readonly impact: number;
+} {
+  if (progress < 0.34) {
+    return {
+      anticipation: smooth(progress / 0.34),
+      strike: 0,
+      impact: 0,
+    };
+  }
+  if (progress < 0.58) {
+    return { anticipation: 0, strike: 1, impact: 1 };
+  }
+  const recovery = smooth((progress - 0.58) / 0.42);
+  return {
+    anticipation: 0,
+    strike: 1 - recovery,
+    impact: Math.max(0, 1 - recovery * 4),
+  };
+}
+
+function smooth(value: number): number {
+  const clamped = Math.max(0, Math.min(1, value));
+  return clamped * clamped * (3 - 2 * clamped);
 }
 
 function applyChronoKnockdown(rig: ChronoRig, facing: -1 | 1): void {
@@ -145,8 +205,8 @@ function showClockEffect(
   y: number,
   size: number,
 ): void {
-  rig.effect.visible = strike > 0.08;
+  rig.effect.visible = strike > 0.02;
   rig.effect.position.set(facing * x, y, 0.18);
-  rig.effect.rotation.z = facing * strike * Math.PI * 1.3;
-  rig.effect.scale.setScalar(size * (0.35 + strike * 0.65));
+  rig.effect.rotation.z = facing * (1 - strike) * Math.PI * 0.7;
+  rig.effect.scale.setScalar(size * (0.52 + (1 - strike) * 0.72));
 }

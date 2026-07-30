@@ -1,11 +1,13 @@
+import type { CSSProperties } from 'react';
 import type { ChronoSuperKind } from '@/src/data/chrono-super-moves';
 import base from './ChronoCinematicScene.module.css';
 import fx from './ChronoCinematicFx.module.css';
 
 const CLOCK_TICKS = Array.from({ length: 12 }, (_, index) => index);
-const OUTCOMES = Array.from({ length: 143 }, (_, index) => index);
+const CLOCK_FIELD = Array.from({ length: 18 }, (_, index) => index);
+const PARALLEL_CHRONOS = Array.from({ length: 7 }, (_, index) => index);
+const TIMELINE_CLOCKS = Array.from({ length: 48 }, (_, index) => index);
 const IMPACTS = Array.from({ length: 6 }, (_, index) => index);
-const DEFEATS = ['KO', 'RING OUT', 'BREAK', 'TIME UP'] as const;
 
 export function ChronoCinematicScene({
   kind,
@@ -24,9 +26,9 @@ export function ChronoCinematicScene({
       role="status"
     >
       <header className={base.header}>
-        <span>{kind === 'rewind' ? 'Level 1 Super' : kind === 'outcomes' ? 'Level 3 Super' : 'Ultimate Finisher'}</span>
+        <span>{kind === 'rewind' ? 'Super 1' : kind === 'outcomes' ? 'Super 2' : 'Ultimate'}</span>
         <strong>{titleFor(kind)}</strong>
-        <i>CHRONO // TEMPORAL AUTHORITY</i>
+        <i>CHRONO // THE EXPECTED RESULT</i>
       </header>
       <Clock />
       {kind === 'rewind' && <Rewind />}
@@ -58,7 +60,12 @@ function Clock() {
 function Rewind() {
   return (
     <div className={fx.rewind} aria-hidden="true">
-      <div className={fx.freezeCode}>00:00:00:00 <span>TIME LOCKED</span></div>
+      <div className={fx.freezeCode}>00:00:00:00 <span>TIME COLLAPSED</span></div>
+      <div className={fx.clockField}>
+        {CLOCK_FIELD.map((clock) => (
+          <i key={clock} style={indexedStyle(clock)}><b /></i>
+        ))}
+      </div>
       <div className={fx.chronoMark}>C</div>
       <div className={fx.targetMark}>×</div>
       <div className={fx.echoes}>
@@ -67,7 +74,10 @@ function Rewind() {
       <div className={fx.impacts}>
         {IMPACTS.map((impact) => <i key={impact}>×</i>)}
       </div>
-      <strong className={fx.damage}>DAMAGE // RELEASED</strong>
+      <blockquote className={fx.clockVerdict}>
+        <span>We can go back.</span>
+        <strong>Time's up.</strong>
+      </blockquote>
     </div>
   );
 }
@@ -75,20 +85,22 @@ function Rewind() {
 function Outcomes() {
   return (
     <div className={fx.outcomes} aria-hidden="true">
-      <div className={fx.outcomeCount}><strong>143</strong><span>ИСХОДА</span></div>
-      <div className={fx.timelineGrid}>
-        {OUTCOMES.map((outcome) => (
-          <i
-            data-result={outcome % 4}
-            data-selected={outcome === 71}
-            key={outcome}
-          >
-            <b>{String(outcome + 1).padStart(3, '0')}</b>
-            <span>{DEFEATS[outcome % DEFEATS.length]}</span>
+      <div className={fx.parallelCount}><strong>100%</strong><span>CONSENSUS</span></div>
+      <div className={fx.parallelChronos}>
+        {PARALLEL_CHRONOS.map((variant) => (
+          <i key={variant} style={indexedStyle(variant)}>
+            <b />
+            <span />
+            <em />
           </i>
         ))}
       </div>
-      <div className={fx.selected}>TIMELINE 071 <b>SELECTED</b></div>
+      <div className={fx.convergence} />
+      <blockquote className={fx.parallelVerdict}>
+        <span>All outcomes agree.</span>
+        <strong>We already won.</strong>
+        <em>Probability: 100%.</em>
+      </blockquote>
     </div>
   );
 }
@@ -96,24 +108,40 @@ function Outcomes() {
 function Inevitability() {
   return (
     <div className={fx.inevitability} aria-hidden="true">
+      <div className={fx.timelineDust}>
+        {TIMELINE_CLOCKS.map((clock) => (
+          <i key={clock} style={indexedStyle(clock)} />
+        ))}
+      </div>
       <div className={fx.realities}><i /><i /><i /><i /></div>
-      <div className={fx.infinity}>1,000+<span>ALTERNATIVE REALITIES</span></div>
-      <blockquote>«Я проверил все варианты.»</blockquote>
-      <div className={fx.snap}><i /><b>SNAP</b></div>
+      <div className={fx.infinity}>1,000+<span>FUTURES EXAMINED</span></div>
+      <div className={fx.chronoWalk}><i /><b /><span /><em /></div>
+      <blockquote>
+        <span>I examined every possible future.</span>
+        <strong>None of them end with your victory.</strong>
+      </blockquote>
+      <div className={fx.snap}><i /><b>REALITY FRACTURE</b></div>
       <div className={fx.finalStrike} />
-      <div className={fx.ejected}>×<i>ARENA LIMIT</i></div>
+      <div className={fx.finalResult}>
+        <strong>The expected result.</strong>
+        <span>There was never another ending.</span>
+      </div>
     </div>
   );
 }
 
 function titleFor(kind: ChronoSuperKind): string {
-  if (kind === 'rewind') return 'ПЕРЕМОТКА';
-  if (kind === 'outcomes') return '143 ИСХОДА';
-  return 'НЕИЗБЕЖНОСТЬ';
+  if (kind === 'rewind') return 'CLOCK COLLAPSE';
+  if (kind === 'outcomes') return 'PARALLEL EXECUTION';
+  return 'ABSOLUTE TIMELINE';
 }
 
 function footerFor(kind: ChronoSuperKind): string {
-  if (kind === 'rewind') return 'DEFERRED IMPACT · SYNCHRONIZED';
-  if (kind === 'outcomes') return 'ONE FUTURE REMAINS';
-  return 'ALL TIMELINES COLLAPSED';
+  if (kind === 'rewind') return 'ALL CLOCKS // ZERO';
+  if (kind === 'outcomes') return 'ALL OUTCOMES // AGREE';
+  return 'NO ALTERNATE ENDING';
+}
+
+function indexedStyle(index: number): CSSProperties {
+  return { '--index': index } as CSSProperties;
 }

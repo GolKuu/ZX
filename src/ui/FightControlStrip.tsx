@@ -55,7 +55,7 @@ function ChronoMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId })
     <MoveGroup
       fighterId={fighterId}
       hint="U В· 1 / 3 В· O ULT"
-      moves="РџР•Р Р•РњРћРўРљРђ В· 143 РРЎРҐРћР”Рђ В· РќР•РР—Р‘Р•Р–РќРћРЎРўР¬"
+      moves="CLOCK COLLAPSE / PARALLEL EXECUTION / ABSOLUTE TIMELINE"
     />
   );
 }
