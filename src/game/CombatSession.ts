@@ -77,6 +77,7 @@ export class CombatSession {
 
   private tick(): void {
     if (this.ended) return;
+    if (this.xray.consumeFrozenFrame()) return;
     const before = this.engine.read();
     const player = readFighter(before, 'p1');
     const opponent = readFighter(before, 'p2');
@@ -106,8 +107,11 @@ export class CombatSession {
     this.publishHud(result.state, result.events);
     this.handleImpact(result.events);
     if (
-      this.timerFrames === 0
-      || result.state.fighters.some((entry) => entry.health === 0)
+      (
+        this.timerFrames === 0
+        || result.state.fighters.some((entry) => entry.health === 0)
+      )
+      && !this.xray.isFrozen
     ) {
       this.finish(result.state);
     }

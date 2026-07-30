@@ -15,6 +15,14 @@ export const CHRONO_SUPER_MOVE_IDS = {
 export const CHRONO_LEVEL_ONE_COST = 34;
 export const CHRONO_LEVEL_THREE_COST = 100;
 
+export const CHRONO_CINEMATIC_FRAMES: Readonly<
+  Record<ChronoSuperKind, number>
+> = {
+  rewind: 150,
+  outcomes: 240,
+  inevitability: 300,
+};
+
 const COSTS: Readonly<Record<string, number>> = {
   [CHRONO_SUPER_MOVE_IDS.rewind]: CHRONO_LEVEL_ONE_COST,
   [CHRONO_SUPER_MOVE_IDS.outcomes]: CHRONO_LEVEL_THREE_COST,

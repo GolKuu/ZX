@@ -1,5 +1,6 @@
 import { XRAY_MOVE_ID } from '@/src/data/combat-moves';
 import {
+  CHRONO_CINEMATIC_FRAMES,
   chronoSuperCostForMove,
   chronoSuperKindForMove,
 } from '@/src/data/chrono-super-moves';
@@ -23,9 +24,11 @@ import { ultimateChargeFromHealth } from '@/src/hud';
 import type { CommandContext } from '@/src/input';
 import type { CombatEvent, FighterSnapshot } from '@/src/sim';
 import { useRenderStore } from '@/src/store/renderStore';
+import { CinematicFreeze } from './CinematicFreeze';
 
 export class XrayController {
   private readonly spentBy = new Map<string, number>();
+  private readonly freeze = new CinematicFreeze();
 
   public inputContext(
     fighter: FighterSnapshot,
@@ -81,16 +84,6 @@ export class XrayController {
             event.moveId,
           );
         }
-        const chronoKind = chronoSuperKindForMove(event.moveId);
-        if (
-          chronoKind !== null
-          && (event.fighterId === 'p1' || event.fighterId === 'p2')
-        ) {
-          useRenderStore.getState().triggerChronoSuper(
-            event.fighterId,
-            chronoKind,
-          );
-        }
         const glitchKind = glitchSuperKindForMove(event.moveId);
         if (
           glitchKind !== null
@@ -109,7 +102,28 @@ export class XrayController {
       ) {
         useRenderStore.getState().triggerXray(event.attackerId);
       }
+      if (
+        event.type === 'hit'
+        && (event.attackerId === 'p1' || event.attackerId === 'p2')
+      ) {
+        const chronoKind = chronoSuperKindForMove(event.moveId);
+        if (chronoKind !== null) {
+          this.freeze.start(CHRONO_CINEMATIC_FRAMES[chronoKind]);
+          useRenderStore.getState().triggerChronoSuper(
+            event.attackerId,
+            chronoKind,
+          );
+        }
+      }
     }
+  }
+
+  public consumeFrozenFrame(): boolean {
+    return this.freeze.consume();
+  }
+
+  public get isFrozen(): boolean {
+    return this.freeze.active;
   }
 
   public spentState(): Readonly<Record<string, boolean>> {
@@ -128,5 +142,6 @@ export class XrayController {
 
   public reset(): void {
     this.spentBy.clear();
+    this.freeze.reset();
   }
 }

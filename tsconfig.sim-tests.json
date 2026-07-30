@@ -27,6 +27,7 @@
     "src/input/command.ts",
     "src/input/core.ts",
     "src/game/attackInputPolicy.ts",
+    "src/game/CinematicFreeze.ts",
     "src/data/combat-moves.ts",
     "src/data/chrono-combat-moves.ts",
     "src/data/chrono-super-moves.ts",
