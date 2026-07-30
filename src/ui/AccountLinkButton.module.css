@@ -5,11 +5,11 @@
   align-items: center;
   gap: 9px;
   padding: 0 13px;
-  color: #a7b5c7;
+  color: var(--color-text-muted);
   cursor: pointer;
-  background: rgb(8 14 24 / 58%);
-  border: 1px solid rgb(113 220 255 / 28%);
-  border-radius: 99px;
+  background: transparent;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-pill);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -20,7 +20,7 @@
 .trigger:focus-visible,
 .trigger[data-connected="true"] {
   color: #e9f9ff;
-  border-color: #71dcff;
+  border-color: var(--color-link-dark);
   outline: none;
 }
 

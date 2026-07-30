@@ -4,7 +4,7 @@
   inset: 0;
   display: grid;
   padding: 24px;
-  background: rgb(2 5 9 / 82%);
+  background: rgb(0 0 0 / 82%);
   backdrop-filter: blur(10px);
   place-items: center;
 }
@@ -13,12 +13,10 @@
   position: relative;
   width: min(440px, 100%);
   padding: 38px;
-  color: #f5f8fd;
-  background:
-    radial-gradient(circle at 100% 0, rgb(42 143 186 / 18%), transparent 48%),
-    #09101a;
-  border: 1px solid rgb(113 220 255 / 26%);
-  border-radius: 8px;
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-dialog);
   box-shadow: 0 28px 80px rgb(0 0 0 / 55%);
 }
 
@@ -42,7 +40,7 @@
 }
 
 .kicker {
-  color: #71dcff;
+  color: var(--color-link-dark);
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.2em;
@@ -51,12 +49,13 @@
 .dialog h2 {
   margin: 10px 0 12px;
   font-size: clamp(1.8rem, 5vw, 2.5rem);
-  letter-spacing: -0.04em;
+  font-weight: 300;
+  letter-spacing: -0.035em;
 }
 
 .dialog p {
   margin: 0;
-  color: #91a0b3;
+  color: var(--color-text-muted);
   line-height: 1.6;
 }
 
@@ -67,7 +66,7 @@
 }
 
 .dialog label {
-  color: #a9b6c7;
+  color: var(--color-text-muted);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -78,15 +77,14 @@
   min-height: 48px;
   padding: 0 14px;
   color: #fff;
-  background: #050a11;
-  border: 1px solid #29394c;
+  background: var(--color-surface);
+  border: 1px solid var(--color-hairline);
   border-radius: 4px;
   font: inherit;
 }
 
 .dialog input:focus {
-  border-color: #71dcff;
-  box-shadow: 0 0 0 3px rgb(113 220 255 / 10%);
+  border-color: var(--color-primary);
   outline: none;
 }
 
@@ -94,18 +92,17 @@
 .connected button {
   min-height: 48px;
   margin-top: 4px;
-  color: #071018;
+  color: #fff;
   cursor: pointer;
-  background: #71dcff;
+  background: var(--color-primary);
   border: 0;
-  border-radius: 4px;
-  font-weight: 850;
-  text-transform: uppercase;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
 }
 
 .dialog form > button:hover,
 .connected button:hover {
-  background: #a2eaff;
+  background: var(--color-primary-pressed);
 }
 
 .dialog form > button:disabled {
@@ -125,7 +122,7 @@
 
 .sent strong,
 .connected strong {
-  color: #dff7ff;
+  color: #fff;
 }
 
 .connected button {

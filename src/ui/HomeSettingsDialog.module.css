@@ -5,7 +5,7 @@
   display: grid;
   padding: 24px;
   overflow-y: auto;
-  background: rgb(2 5 10 / 86%);
+  background: rgb(0 0 0 / 82%);
   backdrop-filter: blur(12px);
   place-items: center;
 }
@@ -13,12 +13,10 @@
 .dialog {
   width: min(580px, 100%);
   padding: clamp(24px, 5vw, 42px);
-  color: #f4f8fd;
-  background:
-    radial-gradient(circle at 100% 0, rgb(47 158 198 / 15%), transparent 40%),
-    #08101a;
-  border: 1px solid rgb(113 220 255 / 23%);
-  border-radius: 10px;
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-dialog);
   box-shadow: 0 34px 100px rgb(0 0 0 / 62%);
 }
 
@@ -31,7 +29,7 @@
 }
 
 .dialog header span {
-  color: #71dcff;
+  color: var(--color-link-dark);
   font-size: 0.61rem;
   font-weight: 900;
   letter-spacing: 0.18em;
@@ -40,13 +38,14 @@
 .dialog h2 {
   margin: 8px 0 7px;
   font-size: clamp(2rem, 6vw, 3.1rem);
-  letter-spacing: -0.055em;
-  line-height: 1;
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
 }
 
 .dialog p {
   margin: 0;
-  color: #7f91a6;
+  color: var(--color-text-muted);
   font-size: 0.78rem;
   line-height: 1.5;
 }
@@ -54,18 +53,18 @@
 .close {
   flex: 0 0 36px;
   height: 36px;
-  color: #8192a6;
+  color: var(--color-text-muted);
   cursor: pointer;
   background: transparent;
-  border: 1px solid rgb(128 164 190 / 18%);
-  border-radius: 50%;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-pill);
   font-size: 1.4rem;
 }
 
 .close:hover,
 .close:focus-visible {
   color: #fff;
-  border-color: #71dcff;
+  border-color: var(--color-link-dark);
   outline: none;
 }
 

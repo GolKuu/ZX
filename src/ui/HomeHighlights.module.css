@@ -1,11 +1,11 @@
 .highlights {
   display: flex;
-  min-height: 88px;
+  min-height: 96px;
   align-items: stretch;
-  margin: 0 calc(clamp(20px, 5vw, 76px) * -1);
-  padding: 0 clamp(20px, 5vw, 76px);
-  background: rgb(4 8 14 / 62%);
-  border-top: 1px solid rgb(132 174 204 / 14%);
+  margin: 0 calc(clamp(20px, 4vw, 64px) * -1);
+  padding: 0 clamp(20px, 4vw, 64px);
+  color: #fff;
+  background: var(--color-primary);
 }
 
 .highlights div {
@@ -13,7 +13,7 @@
   min-width: min(22vw, 250px);
   align-items: center;
   gap: 12px;
-  border-right: 1px solid rgb(132 174 204 / 11%);
+  border-right: 1px solid rgb(255 255 255 / 22%);
 }
 
 .highlights div + div {
@@ -21,17 +21,17 @@
 }
 
 .highlights strong {
-  color: #71dcff;
-  font-size: 1.1rem;
-  font-weight: 900;
+  color: #fff;
+  font-size: 1.65rem;
+  font-weight: 300;
 }
 
 .highlights span,
 .highlights p {
-  color: #6f8094;
-  font-size: 0.58rem;
-  font-weight: 850;
-  letter-spacing: 0.13em;
+  color: rgb(255 255 255 / 76%);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
 }
 
 .highlights p {

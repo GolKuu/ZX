@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { HomeSettingsButton } from './HomeSettingsButton';
 import styles from './HomeHero.module.css';
@@ -7,8 +8,8 @@ export function HomeHero() {
     <section className={styles.hero}>
       <div className={styles.copy}>
         <p className={styles.eyebrow}>
-          <span>3D ФАЙТИНГ В БРАУЗЕРЕ</span>
-          <b>01 / ВЫБЕРИ БОЙ</b>
+          <span>3D-ФАЙТИНГ В БРАУЗЕРЕ</span>
+          <b>СЕЗОН 01</b>
         </p>
         <h1>
           Выбери бойца.
@@ -26,9 +27,23 @@ export function HomeHero() {
           <HomeSettingsButton variant="secondary" />
         </div>
         <p className={styles.inputNote}>
-          <span aria-hidden="true">⌨</span>
-          Клавиатура или геймпад · запуск без установки
+          <span aria-hidden="true">●</span>
+          Играй сразу · без загрузки и установки
         </p>
+      </div>
+      <div className={styles.artwork}>
+        <Image
+          alt="Мим атакует Echo на арене Null Circle"
+          className={styles.artworkImage}
+          fill
+          priority
+          sizes="(max-width: 760px) 100vw, 62vw"
+          src="/assets/modes/ai-battle-preview.webp"
+        />
+        <div className={styles.artworkCaption}>
+          <span>NULL CIRCLE · ARENA 01</span>
+          <strong>Бой против ИИ</strong>
+        </div>
       </div>
     </section>
   );

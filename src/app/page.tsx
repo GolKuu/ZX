@@ -8,8 +8,6 @@ export default function HomePage() {
   return (
     <main className={styles.page}>
       <StructuredData />
-      <div className={styles.ambientGlow} aria-hidden="true" />
-
       <HomeHeader />
       <HomeHero />
       <HomeHighlights />
