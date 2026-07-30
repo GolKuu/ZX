@@ -5,6 +5,7 @@ import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
 import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
 import { totalMoveFrames } from '@/src/sim';
+import { spriteAttackBeat } from './sprite2d/spriteAttackTimeline';
 
 const WINDUP_END = 0.34;
 const ACTIVE_END = 0.58;
@@ -29,8 +30,9 @@ const MOVES_BY_ID = new Map(
  * steps and holds — so a pair of thresholds on the returned number picks out a
  * different span for each, and for IDOL picked out most of the move.
  *
- * Padded a few frames either side because a light jab is active for two frames.
- * Held for 33ms, the drawing reads as a flicker rather than as a punch.
+ * The clean whole-body drawing is held for the move's active frames. Its
+ * duration therefore stays in lockstep with the actual hit, without exposing
+ * the simulation hitbox artwork.
  */
 export function isStrikeFrame(moveId: string, frame: number): boolean {
   const move = MOVES_BY_ID.get(moveId);
@@ -66,10 +68,10 @@ export function combatAnimationProgress(
 }
 
 /**
- * IDOL's paper-doll attacks deliberately use a small hand-authored-looking
- * frame set: four anticipation drawings, one held impact drawing, then four
- * recovery drawings before neutral. Simulation timing stays unchanged; long
- * moves simply hold each drawing for more than one 60 Hz tick.
+ * Paper-doll attacks deliberately use a small hand-authored-looking frame set:
+ * four anticipation drawings, one held clean impact drawing, then four recovery
+ * drawings ending in the guarded fighting stance. Simulation timing stays
+ * unchanged; long moves simply hold each drawing for more than one 60 Hz tick.
  */
 export function spriteAnimationProgress(
   moveId: string,
@@ -77,23 +79,10 @@ export function spriteAnimationProgress(
 ): number {
   const move = MOVES_BY_ID.get(moveId);
   if (move === undefined) return combatAnimationProgress(moveId, frame);
-
-  if (frame < move.startup) {
-    return WINDUP_END * steppedFrame(frame, move.startup) / 5;
-  }
-  if (frame < move.startup + move.active) {
-    return ACTIVE_END;
-  }
-
-  const recoveryFrame = frame - move.startup - move.active;
-  return ACTIVE_END
-    + (1 - ACTIVE_END) * steppedFrame(recoveryFrame, move.recovery) / 4;
-}
-
-/** Returns one of 1, 2, 3, 4 while deliberately excluding both endpoints. */
-function steppedFrame(frame: number, duration: number): number {
-  const safeDuration = Math.max(1, duration);
-  return Math.min(4, Math.floor((Math.max(0, frame) * 4) / safeDuration) + 1);
+  const beat = spriteAttackBeat(frame, move);
+  if (beat.phase === 'approach') return WINDUP_END * beat.amount;
+  if (beat.phase === 'strike') return ACTIVE_END;
+  return ACTIVE_END + (1 - ACTIVE_END) * (1 - beat.amount);
 }
 
 function clamp01(value: number): number {

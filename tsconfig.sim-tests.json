@@ -40,6 +40,7 @@
     "src/stage/fighterPresentation.ts",
     "src/stage/mim/mimSpritePose.ts",
     "src/stage/mim/mimSpriteTimeline.ts",
+    "src/stage/sprite2d/spriteAttackTimeline.ts",
     "src/stage/sprite2d/spritePose.ts",
     "src/data/combat-ai.ts"
   ]
