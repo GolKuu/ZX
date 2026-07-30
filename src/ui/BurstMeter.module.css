@@ -1,0 +1,62 @@
+.burst {
+  --accent: #ffd91a;
+  display: flex;
+  align-items: center;
+  gap: 0.5cqw;
+  width: max-content;
+  margin-top: -0.05cqw;
+  padding: 0.35cqw 1.05cqw 0.45cqw;
+  background: linear-gradient(165deg, rgb(9 15 23 / 94%), rgb(3 6 11 / 94%));
+  clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+}
+
+.burst[data-side="right"] {
+  --accent: #18c9f3;
+  margin-left: auto;
+  flex-direction: row-reverse;
+  clip-path: polygon(0 0, 94% 0, 100% 100%, 6% 100%);
+}
+
+.burst b {
+  color: #f5f7fb;
+  font-size: 0.85cqw;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.burst span {
+  display: flex;
+  gap: 0.28cqw;
+}
+
+.burst i {
+  display: block;
+  width: 1.55cqw;
+  height: 0.95cqw;
+  background: #111925;
+  border: 1px solid #344357;
+  transform: skew(-8deg);
+}
+
+.burst i[data-active="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0.6cqw color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+@container combat-hud (max-width: 760px) {
+  .burst {
+    padding: 0.5cqw 1.2cqw;
+  }
+
+  .burst b {
+    font-size: clamp(0.48rem, 1.3cqw, 0.7rem);
+  }
+
+  .burst i {
+    width: 2cqw;
+    height: 1.25cqw;
+  }
+}

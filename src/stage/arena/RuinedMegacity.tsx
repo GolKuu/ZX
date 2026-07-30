@@ -33,6 +33,19 @@ const WINDOWS = [
   [3.2, 5.4], [4.0, 3.8], [5.8, 2.5], [6.8, 4.7],
 ] as const;
 
+const MONOLITHS = [
+  [-10.2, 3.3, 2.2, 0.8, 6.6, 0.9],
+  [-8.7, 5.2, 0.8, 0.52, 4.8, 0.62],
+  [-6.5, 4.7, 2.7, 0.72, 7.4, 0.82],
+  [-3.5, 5.9, 1.3, 0.58, 5.2, 0.7],
+  [-1.7, 4.9, 3.2, 0.86, 8.1, 0.9],
+  [1.2, 5.4, 1.9, 0.66, 6.4, 0.74],
+  [3.1, 4.5, 3.6, 0.9, 7.8, 1.05],
+  [5.2, 5.7, 1.2, 0.58, 5.9, 0.68],
+  [7.4, 4.8, 2.9, 0.82, 7.2, 0.9],
+  [9.6, 3.6, 1.5, 0.64, 5.8, 0.75],
+] as const;
+
 function makeSkyline() {
   const shapes = TOWERS.map(([x, width, height, damage]) => {
     const tower = new Shape();
@@ -85,6 +98,28 @@ export function RuinedMegacity({ ruinMaterial }: RuinedMegacityProps) {
         <planeGeometry args={[1, 1]} />
         <meshBasicMaterial color="#d26cff" toneMapped={false} fog={false} />
       </instancedMesh>
+
+      {MONOLITHS.map(([x, y, z, width, height, depth], index) => (
+        <group
+          key={`${x}-${z}`}
+          position={[x, y, z]}
+          rotation={[0.02 * (index % 3), 0.08 * (index % 2), 0.025 * ((index % 4) - 2)]}
+        >
+          <mesh material={ruinMaterial}>
+            <boxGeometry args={[width, height, depth]} />
+          </mesh>
+          <mesh position={[0, height * 0.05, depth * 0.51]}>
+            <planeGeometry args={[0.055, height * (0.38 + (index % 3) * 0.08)]} />
+            <meshBasicMaterial
+              color={index % 3 === 0 ? '#8b52ff' : '#386fc4'}
+              depthWrite={false}
+              opacity={0.78}
+              toneMapped={false}
+              transparent
+            />
+          </mesh>
+        </group>
+      ))}
 
       <group position={[0, 0.4, 3]}>
         <mesh material={ruinMaterial} position={[-8.2, 3.1, 0]} rotation={[0.08, 0, -0.15]}>

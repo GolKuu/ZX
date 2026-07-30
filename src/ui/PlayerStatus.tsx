@@ -1,8 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import { CHARACTER_ROSTER } from '@/src/data/characterRoster';
 import type { HudFighterSnapshot } from '@/src/hud/types';
+import { BurstMeter } from './BurstMeter';
+import { FighterPortrait } from './FighterPortrait';
+import { meterSegments } from './meterSegments';
 import styles from './PlayerStatus.module.css';
 
 export function PlayerStatus({ fighter }: {
@@ -13,7 +15,7 @@ export function PlayerStatus({ fighter }: {
     ({ displayName }) => displayName === fighter.displayName,
   );
   const characterId = character?.id ?? 'mim';
-  const burstCharges = Math.min(3, Math.floor(fighter.superCharge / 34));
+  const burstCharges = meterSegments(fighter.superCharge, 3);
 
   return (
     <section
@@ -21,17 +23,11 @@ export function PlayerStatus({ fighter }: {
       className={styles.player}
       data-side={fighter.side}
     >
-      <figure className={styles.portrait}>
-        <span aria-hidden="true">{character?.mark ?? '?'}</span>
-        <Image
-          alt=""
-          fill
-          priority
-          sizes="9vw"
-          src={`/sprites/${characterId}-profile/head.png`}
-          unoptimized
-        />
-      </figure>
+      <FighterPortrait
+        characterId={characterId}
+        mark={character?.mark ?? '?'}
+        side={fighter.side}
+      />
 
       <div className={styles.readout}>
         <div className={styles.name}>
@@ -51,14 +47,7 @@ export function PlayerStatus({ fighter }: {
           <i style={{ width: `${health}%` }} />
           <u aria-hidden="true" />
         </div>
-        <div className={styles.burst}>
-          <b>Burst</b>
-          <span>
-            {[0, 1, 2].map((index) => (
-              <i data-active={index < burstCharges} key={index} />
-            ))}
-          </span>
-        </div>
+        <BurstMeter charges={burstCharges} side={fighter.side} />
       </div>
     </section>
   );
