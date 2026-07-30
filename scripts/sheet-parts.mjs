@@ -151,6 +151,7 @@ export const ATTACK_POSES = {
     file: 'public/assets/characters/idol-fighter-reference.webp',
     // Pale box fills over bare paper get flooded away along with the paper.
     key: { light: 148 },
+    cleanup: 'idol',
     ground: 958,
     poses: {
       lp: { left: 52, top: 580, width: 260, height: 390 },

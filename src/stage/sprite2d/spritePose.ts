@@ -459,15 +459,22 @@ export function spritePoseFor(
   if (fighter.action !== null) {
     const attack = attackFor(fighter.action.moveId);
     const [windup, strike, settle] = beats(progress);
-    const attackPose = attack(windup, strike, settle);
     const fightingStance = stance(0);
     if (strike === 0) {
-      return withinLimits(blendPose(fightingStance, attackPose, windup));
+      // The timeline already supplies four evenly spaced windup amounts. Build
+      // the authored endpoint once and blend to it once; applying `windup`
+      // inside the attack table as well made the first drawing barely move.
+      const woundUpPose = attack(1, 0, 0);
+      return withinLimits(blendPose(fightingStance, woundUpPose, windup));
     }
     if (settle > 0) {
-      return withinLimits(blendPose(attackPose, fightingStance, settle));
+      // Likewise, recover from one stable contact pose. Previously `settle`
+      // shortened the limb inside `attack()` and then blended it again, so the
+      // first return frame snapped back and the last two were nearly identical.
+      const contactPose = attack(1, 1, 0);
+      return withinLimits(blendPose(contactPose, fightingStance, settle));
     }
-    return withinLimits(attackPose);
+    return withinLimits(attack(windup, strike, 0));
   }
 
   if (fighter.hitstun > 0) {

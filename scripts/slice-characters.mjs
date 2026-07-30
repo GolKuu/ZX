@@ -25,6 +25,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
 import { cleanEchoAttack } from './echo-attack-cleaner.mjs';
+import { cleanIdolAttack } from './idol-attack-cleaner.mjs';
 import { keyBackground } from './sheet-key.mjs';
 import {
   clearInside,
@@ -327,9 +328,12 @@ async function sliceAttacks(name) {
       .toBuffer({ resolveWithObject: true });
     keyBackground(data, box.width, box.height, spec.key);
     const groundInCrop = spec.ground - box.top;
-    let cleaned = spec.cleanup === 'echo'
-      ? cleanEchoAttack(data, box.width, box.height, box, groundInCrop)
-      : data;
+    let cleaned = data;
+    if (spec.cleanup === 'echo') {
+      cleaned = cleanEchoAttack(data, box.width, box.height, box, groundInCrop);
+    } else if (spec.cleanup === 'idol') {
+      cleaned = cleanIdolAttack(data, box.width, box.height);
+    }
     if (spec.minimumComponentPixels !== undefined) {
       cleaned = removeSmallAlphaComponents(
         cleaned,
@@ -419,7 +423,12 @@ function removeSmallAlphaComponents(data, width, height, minimumPixels) {
 }
 
 if (process.argv.includes('--attacks')) {
-  for (const name of Object.keys(ATTACK_POSES)) {
+  const requested = process.argv.slice(2)
+    .filter((argument) => !argument.startsWith('--'));
+  const attackTargets = requested.length > 0
+    ? requested
+    : Object.keys(ATTACK_POSES);
+  for (const name of attackTargets) {
     console.log(`${name} attacks:`);
     await sliceAttacks(name);
   }

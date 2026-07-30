@@ -94,7 +94,7 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
   chrono: { rig: 'chrono-profile', attacks: 'chrono-attacks' },
   echo: { rig: 'echo-profile', attacks: 'echo-attacks' },
   glitch: { rig: 'glitch-profile', attacks: 'glitch-attacks' },
-  idol: { rig: 'idol-profile' },
+  idol: { rig: 'idol-profile', attacks: 'idol-attacks' },
 };
 
 function primitiveFighter(
