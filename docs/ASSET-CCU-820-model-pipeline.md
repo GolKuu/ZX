@@ -55,12 +55,6 @@ roster entry at it.
   copyrighted character carries exactly the problem the original roster was
   designed to avoid.
 
-> **Open item.** `src/data/characterRoster.ts` currently ships the display names
-> "Roronoa Zoro" and "Avatar Aang". Those are copyrighted characters and they
-> contradict the original-IP constraint that produced Sesa Nour / Void Walker.
-> They need renaming to their original-roster equivalents before anything ships
-> publicly.
-
 ---
 
 ## 3. Mixamo route — the fastest path to something on screen
@@ -135,8 +129,8 @@ Animation → Animation                       OFF   ← we author our own
 Then, optionally:
 
 ```bash
-npx gltf-transform optimize public/models/void-walker.glb \
-  public/models/void-walker.glb \
+npx gltf-transform optimize public/models/fighter-name.glb \
+  public/models/fighter-name.glb \
   --compress meshopt --texture-compress webp --simplify false
 ```
 

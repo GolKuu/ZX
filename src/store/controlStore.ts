@@ -35,7 +35,7 @@ interface ControlState {
   readonly setKey: (id: ControlId, code: string) => void;
 }
 
-const STORAGE_KEY = 'zoro-key-bindings-v1';
+const STORAGE_KEY = 'cc-key-bindings-v1';
 
 export const useControlStore = create<ControlState>((set) => ({
   bindings: cloneBindings(DEFAULT_BINDINGS),

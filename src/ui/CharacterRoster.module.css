@@ -66,11 +66,6 @@
   font-weight: 950;
 }
 
-.characterList button[data-character="void-walker"] > i {
-  color: #d0a8ff;
-  background: linear-gradient(145deg, #382c50, #141323);
-}
-
 .characterList button[data-character="glitch"] > i {
   color: #16e6ff;
   background: linear-gradient(145deg, #ff2bd6, #080a10 58%);

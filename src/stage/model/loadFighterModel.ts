@@ -76,11 +76,8 @@ const ZONE_KEYWORDS: readonly (readonly [ZoneName, readonly string[]])[] = [
       'visor', 'vanguard',
     ],
   ],
-  // Mixamo's mannequin shells (`Beta_Joints`, `Beta_Surface`, `Beta_HighLimbs`)
-  // are a placeholder *dummy*, not anatomy. Tinting them as skin is what made
-  // the Void Walker read as an undressed art doll; `body` lets the character
-  // palette dress it as the construct it is meant to be. Checked ahead of
-  // `skin` because `Beta_Surface` contains the substring "face".
+  // Mixamo mannequin shells are placeholders, not anatomy. Resolve them as a
+  // body zone ahead of skin so a future stock rig receives a costume palette.
   ['body', ['beta', 'mannequin', 'dummy', 'joint', 'limb']],
   ['skin', ['skin', 'body', 'face', 'head', 'hand', 'arm', 'flesh']],
 ];
@@ -96,7 +93,7 @@ function zoneFor(materialName: string, meshName: string): ZoneName {
 }
 
 export interface FighterModelOptions {
-  /** Public URL, e.g. `/models/void-walker.glb`. */
+  /** Public URL, e.g. `/models/fighter-name.glb`. */
   readonly url: string;
   readonly zones: FighterZones;
   readonly outline: SkinnedOutlineMaterial;
@@ -119,7 +116,7 @@ export interface LoadedFighterModel {
   dispose(): void;
 }
 
-/** Skull-crown anchor from `resetZoroRig`. */
+/** Default crown height used by the hand-authored fighter rigs. */
 const DEFAULT_TARGET_HEIGHT = 2.62;
 
 function isSkinned(object: Object3D): object is SkinnedMesh {

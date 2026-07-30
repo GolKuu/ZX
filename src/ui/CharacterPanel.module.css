@@ -103,14 +103,6 @@
   transform: skew(-3deg);
 }
 
-.panel[data-character="void-walker"] .portrait i {
-  background:
-    radial-gradient(circle at 50% 16%, #9fc9dc 0 8%, transparent 8.4%),
-    linear-gradient(105deg, transparent 29%, #493768 29.5% 49%, transparent 49.5%),
-    linear-gradient(255deg, transparent 29%, #151b32 29.5% 49%, transparent 49.5%);
-  transform: skew(3deg);
-}
-
 .panel[data-character="glitch"] .portrait i {
   background:
     repeating-linear-gradient(0deg, transparent 0 1.1cqw, rgb(22 230 255 / 55%) 1.1cqw 1.28cqw, transparent 1.28cqw 2.2cqw),

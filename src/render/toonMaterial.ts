@@ -47,12 +47,10 @@ export interface ToonMaterialOptions {
   /**
    * Paint the surface by height instead of by a single flat colour.
    *
-   * Every model in `public/models/` ships one or two merged materials, so the
-   * keyword pass in `loadFighterModel` resolves an entire character to a single
-   * zone — which is why Void Walker rendered as a bare flesh-toned mannequin
-   * and Blade Phantom as one green blob. Slicing the palette by bind-pose
-   * height recovers boots, trousers, coat, skin and hair from geometry the
-   * vendor never separated.
+   * A model can ship with one merged material, so the keyword pass in
+   * `loadFighterModel` may resolve the whole character to a single zone.
+   * Slicing the palette by bind-pose height recovers boots, trousers, coat,
+   * skin and hair from geometry the vendor never separated.
    *
    * Bind-pose height, not world height: a crouching fighter must not have their
    * boots ride up their shins.

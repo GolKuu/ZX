@@ -363,33 +363,13 @@ function poseAttack(
 ): void {
   // Character choreography wins over the shared pose table. Move ids are
   // roster-wide, so the scoping has to happen here.
-  const sharedMoveId = aangSharedMoveId(moveId);
   const pose =
     choreography?.[moveId]
     ?? ATTACKS[moveId]
-    ?? (sharedMoveId === null ? undefined : ATTACKS[sharedMoveId])
     ?? straightPunch;
   const [windup, strike, settle] = beats(progress);
   pose(joints, rest, windup, strike, settle);
   void facing;
-}
-
-/** Element-specific simulation ids reuse the matching shared body mechanics. */
-function aangSharedMoveId(moveId: string): string | null {
-  if (/^(air|fire|earth|water)-lp$/.test(moveId)) return '5L';
-  if (/^(air|fire|earth|water)-hp$/.test(moveId)) return '5H';
-  if (/^(air|fire|earth|water)-lk$/.test(moveId)) return '5M';
-  if (/^(air|fire|earth|water)-hk$/.test(moveId)) return '2M';
-  if (
-    moveId === 'air-squall'
-    || moveId === 'earth-wall'
-    || moveId === 'water-diagonal'
-    || moveId === 'elemental-cocoon'
-    || moveId === 'avatar-state'
-  ) {
-    return 'overtake';
-  }
-  return null;
 }
 
 /**

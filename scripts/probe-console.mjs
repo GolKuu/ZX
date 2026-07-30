@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* global window */
 // One-off diagnostic: load /play and print whatever the browser complains about.
 //
 // The screenshot harness swallows a broken first paint — it waits for a canvas
