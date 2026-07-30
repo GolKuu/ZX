@@ -219,10 +219,6 @@ function createFighterZones(
       rimStrength: rim,
       heightZones: bands,
       heightRange: [0, 1],
-      // Fully illustrated. Fighters are drawn figures, not lit scenery: the
-      // stage's lighting must never decide what colour a costume is. See
-      // `flatten` in `toonMaterial.ts`.
-      flatten: 1,
     });
 
   return {

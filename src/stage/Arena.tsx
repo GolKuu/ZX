@@ -21,6 +21,11 @@ export function Arena() {
       // competing with the fighters for attention.
       createToonMaterial({
         color: '#171227',
+        // The one caller that stays *rendered*. The ruins and the disc are lit
+        // scenery — flattening them to two palette bands would erase the form
+        // the three-point rig exists to describe, and the stage would stop
+        // sitting behind the fighters in depth.
+        flatten: 0,
         gradientMap: gradient,
         shadowTint: '#391858',
         shadowStrength: 0.9,
