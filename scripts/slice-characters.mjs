@@ -46,7 +46,9 @@ async function writeCutoutTexture(trimmed, target, requestedScale) {
   const textureScale = requestedScale ?? DEFAULT_TEXTURE_SCALE;
   const width = trimmed.info.width + CUTOUT_PADDING * 2;
   const height = trimmed.info.height + CUTOUT_PADDING * 2;
-  await sharp(trimmed.data)
+  // Sharp executes resize before extend regardless of chain order. Materialise
+  // the padded intermediate so the padding is supersampled as part of the art.
+  const padded = await sharp(trimmed.data)
     .extend({
       top: CUTOUT_PADDING,
       bottom: CUTOUT_PADDING,
@@ -54,6 +56,9 @@ async function writeCutoutTexture(trimmed, target, requestedScale) {
       right: CUTOUT_PADDING,
       background: { r: 0, g: 0, b: 0, alpha: 0 },
     })
+    .png()
+    .toBuffer();
+  await sharp(padded)
     .resize({
       width: width * textureScale,
       height: height * textureScale,

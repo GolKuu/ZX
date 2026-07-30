@@ -18,7 +18,7 @@
     "prebuild": "npm run lint && npm run typecheck && npm test && npm run assets:check",
     "postbuild": "npm run bundle:check",
     "analyze": "node scripts/analyze-bundle.mjs",
-    "assets:check": "node scripts/check-assets.mjs",
+    "assets:check": "node scripts/check-assets.mjs && node scripts/check-sprite-quality.mjs",
     "bundle:check": "node scripts/check-bundle.mjs",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit --pretty false",

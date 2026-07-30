@@ -20,7 +20,7 @@ const CUTOUT_PADDING = 2;
 async function exportCutout(trimmed) {
   const width = trimmed.info.width + CUTOUT_PADDING * 2;
   const height = trimmed.info.height + CUTOUT_PADDING * 2;
-  const data = await sharp(trimmed.data)
+  const padded = await sharp(trimmed.data)
     .extend({
       top: CUTOUT_PADDING,
       bottom: CUTOUT_PADDING,
@@ -28,6 +28,9 @@ async function exportCutout(trimmed) {
       right: CUTOUT_PADDING,
       background: { r: 0, g: 0, b: 0, alpha: 0 },
     })
+    .png()
+    .toBuffer();
+  const data = await sharp(padded)
     .resize({
       width: width * TEXTURE_SCALE,
       height: height * TEXTURE_SCALE,
