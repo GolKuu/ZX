@@ -31,6 +31,8 @@ export interface CommandRow {
    * no player hits two keys on the same 16 ms tick.
    */
   readonly alsoPressed?: readonly Button[];
+  /** Buttons that must be up, used to prevent a failed chord falling through. */
+  readonly forbiddenPressed?: readonly Button[];
   /** Optional gate — stance systems, gauge costs, air-only moves. */
   readonly available?: (context: CommandContext) => boolean;
 }
@@ -121,6 +123,9 @@ export function resolveCommand(
     if (!allButtonsDown(buffer, row.alsoPressed, pressedAgo)) {
       continue;
     }
+    if (!allButtonsUp(buffer, row.forbiddenPressed, pressedAgo)) {
+      continue;
+    }
     if (row.available !== undefined && !row.available(context)) {
       continue;
     }
@@ -135,6 +140,16 @@ export function resolveCommand(
     };
   }
   return null;
+}
+
+function allButtonsUp(
+  buffer: InputBuffer,
+  buttons: readonly Button[] | undefined,
+  pressedAgo: number,
+): boolean {
+  if (buttons === undefined) return true;
+  const held = buffer.at(pressedAgo).held;
+  return buttons.every((button) => !hasButton(held, button));
 }
 
 /**
