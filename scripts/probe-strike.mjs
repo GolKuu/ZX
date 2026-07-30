@@ -91,7 +91,10 @@ for (const [button, label] of [['KeyJ', 'lp'], ['KeyK', 'hp'], ['KeyL', 'lk'], [
       scene?.traverse((node) => {
         const source = node.material?.map?.image?.currentSrc
           ?? node.material?.map?.image?.src;
-        if (typeof source !== 'string' || !source.includes('-attacks/')) return;
+        // Scoped to one character's panels on purpose: both fighters can have
+        // them, and an unscoped traverse happily reports the opponent's drawing
+        // as proof that this one works.
+        if (typeof source !== 'string' || !source.includes('idol-attacks/')) return;
         if (node.visible && visibleChain(node)) {
           drawn = source.slice(source.lastIndexOf('/') + 1);
         }
