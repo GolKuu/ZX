@@ -1,0 +1,84 @@
+.actors {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.idol,
+.opponent {
+  position: absolute;
+  top: 29%;
+  width: 8cqw;
+  height: 44cqh;
+  filter: drop-shadow(0 0 1.6cqw rgb(255 55 166 / 60%));
+  transform-origin: 50% 90%;
+}
+
+.idol { left: 31%; color: #ff4aaf; }
+.opponent {
+  right: 27%;
+  color: #98a9bd;
+  filter: drop-shadow(0 0 1.1cqw rgb(116 236 255 / 38%));
+}
+
+.idol i,
+.opponent i {
+  position: absolute;
+  display: block;
+  background:
+    linear-gradient(100deg, rgb(255 255 255 / 42%), transparent 24% 72%, rgb(0 0 0 / 32%)),
+    currentcolor;
+  box-shadow:
+    inset 0 0 0.8cqw rgb(255 255 255 / 32%),
+    0.18cqw 0.24cqw 0 rgb(5 4 16 / 65%);
+}
+
+.head {
+  top: 0;
+  left: 50%;
+  width: 3.1cqw;
+  aspect-ratio: 0.88;
+  border: 0.18cqw solid #fff;
+  border-radius: 48% 52% 44% 56%;
+  transform: translateX(-50%);
+}
+
+.body {
+  top: 8.2cqh;
+  left: 50%;
+  width: 4.2cqw;
+  height: 14cqh;
+  border-radius: 42% 42% 18% 18%;
+  transform: translateX(-50%);
+}
+
+.armLeft,
+.armRight,
+.legLeft,
+.legRight {
+  width: 1.35cqw;
+  border-radius: 99px;
+  transform-origin: 50% 8%;
+}
+
+.armLeft { top: 10cqh; left: 1.1cqw; height: 14cqh; transform: rotate(24deg); }
+.armRight { top: 10cqh; right: 1.1cqw; height: 14cqh; transform: rotate(-31deg); }
+.legLeft { top: 20cqh; left: 2.15cqw; height: 19cqh; transform: rotate(9deg); }
+.legRight { top: 20cqh; right: 2.15cqw; height: 19cqh; transform: rotate(-9deg); }
+
+.microphone {
+  top: 18cqh;
+  right: -0.3cqw;
+  width: 2.1cqw;
+  height: 0.65cqw;
+  border-radius: 99px;
+  background: #fff !important;
+  transform: rotate(-52deg);
+}
+
+@media (max-width: 720px) {
+  .idol { left: 21%; }
+  .opponent { right: 17%; }
+}

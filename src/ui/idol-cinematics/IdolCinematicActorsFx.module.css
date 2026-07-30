@@ -1,51 +1,4 @@
-.actors {
-  position: absolute;
-  z-index: 4;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.idol,
-.opponent {
-  position: absolute;
-  top: 29%;
-  width: 8cqw;
-  height: 44cqh;
-  filter: drop-shadow(0 0 1.6cqw rgb(255 55 166 / 60%));
-  transform-origin: 50% 90%;
-}
-
-.idol { left: 31%; color: #ff4aaf; }
-.opponent {
-  right: 27%;
-  color: #98a9bd;
-  filter: drop-shadow(0 0 1.1cqw rgb(116 236 255 / 38%));
-}
-
-.idol i,
-.opponent i {
-  position: absolute;
-  display: block;
-  background:
-    linear-gradient(100deg, rgb(255 255 255 / 42%), transparent 24% 72%, rgb(0 0 0 / 32%)),
-    currentcolor;
-  box-shadow:
-    inset 0 0 0.8cqw rgb(255 255 255 / 32%),
-    0.18cqw 0.24cqw 0 rgb(5 4 16 / 65%);
-}
-
-.head {
-  top: 0;
-  left: 50%;
-  width: 3.1cqw;
-  aspect-ratio: 0.88;
-  border: 0.18cqw solid #fff;
-  border-radius: 48% 52% 44% 56%;
-  transform: translateX(-50%);
-}
-
-.idol .head::before {
+.idolHead::before {
   position: absolute;
   top: -18%;
   right: -34%;
@@ -57,8 +10,7 @@
   content: "";
   transform: rotate(18deg);
 }
-
-.idol .head::after {
+.idolHead::after {
   position: absolute;
   top: 47%;
   left: 27%;
@@ -69,17 +21,7 @@
   content: "";
   transform: rotate(-4deg);
 }
-
-.body {
-  top: 8.2cqh;
-  left: 50%;
-  width: 4.2cqw;
-  height: 14cqh;
-  border-radius: 42% 42% 18% 18%;
-  transform: translateX(-50%);
-}
-
-.idol .body::before {
+.idolBody::before {
   position: absolute;
   inset: 12% 15% 48%;
   border-right: 0.18cqw solid rgb(255 255 255 / 75%);
@@ -87,8 +29,7 @@
   content: "";
   transform: skewY(-18deg);
 }
-
-.idol .body::after {
+.idolBody::after {
   position: absolute;
   right: -14%;
   bottom: 12%;
@@ -98,30 +39,6 @@
   box-shadow: 0 0 0.7cqw #ffd86e;
   content: "";
   transform: rotate(-4deg);
-}
-
-.armLeft,
-.armRight,
-.legLeft,
-.legRight {
-  width: 1.35cqw;
-  border-radius: 99px;
-  transform-origin: 50% 8%;
-}
-
-.armLeft { top: 10cqh; left: 1.1cqw; height: 14cqh; transform: rotate(24deg); }
-.armRight { top: 10cqh; right: 1.1cqw; height: 14cqh; transform: rotate(-31deg); }
-.legLeft { top: 20cqh; left: 2.15cqw; height: 19cqh; transform: rotate(9deg); }
-.legRight { top: 20cqh; right: 2.15cqw; height: 19cqh; transform: rotate(-9deg); }
-
-.microphone {
-  top: 18cqh;
-  right: -0.3cqw;
-  width: 2.1cqw;
-  height: 0.65cqw;
-  border-radius: 99px;
-  background: #fff !important;
-  transform: rotate(-52deg);
 }
 
 .impacts i {
@@ -141,7 +58,6 @@
   opacity: 0;
   animation: impact 0.38s ease-out both;
 }
-
 .impacts i::before,
 .impacts i::after {
   position: absolute;
@@ -153,30 +69,32 @@
   content: "";
   transform: translate(-50%, -50%) rotate(28deg);
 }
-
 .impacts i::after { transform: translate(-50%, -50%) rotate(-32deg); }
-
 .impacts i:nth-child(2) { top: 50%; left: 62%; }
 .impacts i:nth-child(3) { top: 38%; left: 61%; }
 .impacts i:nth-child(4) { top: 45%; left: 64%; }
 
-.actors[data-mode="highlight"] .idol { animation: dance-combo 2.25s 0.3s both; }
-.actors[data-mode="highlight"] .idol .armRight { animation: mic-swing 0.42s ease-in-out 4 alternate; }
-.actors[data-mode="highlight"] .idol .legRight { animation: dance-kick 0.84s 0.58s ease-out 2; }
-.actors[data-mode="highlight"] .opponent { animation: hit-stagger 0.42s 0.64s ease-out 4 alternate; }
-
-.actors[data-mode="million"] .idol {
+.effects[data-mode="highlight"] .performer { animation: dance-combo 2.25s 0.3s both; }
+.effects[data-mode="highlight"] .micArm { animation: mic-swing 0.42s ease-in-out 4 alternate; }
+.effects[data-mode="highlight"] .kickLeg { animation: dance-kick 0.84s 0.58s ease-out 2; }
+.effects[data-mode="highlight"] .rival { animation: hit-stagger 0.42s 0.64s ease-out 4 alternate; }
+.effects[data-mode="million"] .performer {
   top: 47%;
   left: 47%;
   scale: 0.78;
   animation: stage-pose 0.62s 0.2s both;
 }
-.actors[data-mode="million"] .opponent,
-.actors[data-mode="million"] .impacts { display: none; }
-
-.actors[data-mode="cancel"] .idol { top: 50%; left: 15%; scale: 0.72; animation: wink-pose 0.3s 2.7s both; opacity: 0; }
-.actors[data-mode="cancel"] .opponent { right: 41%; animation: washed-away 0.8s 1.95s ease-in both; }
-.actors[data-mode="cancel"] .impacts { display: none; }
+.effects[data-mode="million"] .rival,
+.effects[data-mode="million"] .impacts { display: none; }
+.effects[data-mode="cancel"] .performer {
+  top: 50%;
+  left: 15%;
+  scale: 0.72;
+  opacity: 0;
+  animation: wink-pose 0.3s 2.7s both;
+}
+.effects[data-mode="cancel"] .rival { right: 41%; animation: washed-away 0.8s 1.95s ease-in both; }
+.effects[data-mode="cancel"] .impacts { display: none; }
 
 .chant {
   position: absolute;
@@ -219,11 +137,8 @@
 @keyframes wink-pose { to { opacity: 1; transform: rotate(-6deg); } }
 
 @media (max-width: 720px) {
-  .idol { left: 21%; }
-  .opponent { right: 17%; }
-  .actors[data-mode="cancel"] .opponent { right: 24%; }
+  .effects[data-mode="cancel"] .rival { right: 24%; }
 }
-
 @media (prefers-reduced-motion: reduce) {
-  .idol, .opponent, .impacts i, .accountCard { animation-duration: 0.01ms !important; }
+  .performer, .rival, .impacts i, .accountCard { animation-duration: 0.01ms !important; }
 }
