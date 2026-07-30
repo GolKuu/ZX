@@ -11,7 +11,6 @@ import { MimSuperCinematic } from './MimSuperCinematic';
 import { EchoSuperCinematic } from './EchoSuperCinematic';
 import { ChronoSuperCinematic } from './ChronoSuperCinematic';
 import { GlitchSuperCinematic } from './GlitchSuperCinematic';
-import { AaaVisualJudge } from './AaaVisualJudge';
 import styles from './PlayOverlay.module.css';
 
 export function PlayOverlay() {
@@ -42,7 +41,6 @@ function DevelopmentTools() {
   const previewGlitch = useRenderStore((state) => state.triggerGlitchSuper);
   return (
     <aside className={styles.devTools} aria-label="Development tools">
-      <AaaVisualJudge />
       <span className={styles.fps}><FpsMeter /></span>
       <button type="button" onClick={() => preview('p1', 'prank')}>MIM · CLIP</button>
       <button type="button" onClick={() => preview('p1', 'hero')}>MIM · NET</button>
