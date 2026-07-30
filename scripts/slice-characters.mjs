@@ -20,69 +20,11 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
+import { keyBackground } from './sheet-key.mjs';
 import { FRONT_VIEWS, PART_RECTS } from './sheet-parts.mjs';
 
-/**
- * Anything at least this bright is a candidate for background.
- *
- * Sits above pale skin (~217) and below the paper and its grid (~235+). The fill
- * is contained by the character's ink regardless, so this only matters where the
- * outline is thin.
- */
-const LIGHT = 226;
 /** Fraction of the crop that turning transparent means the fill leaked. */
 const LEAK_LIMIT = 0.9;
-
-function luminance(r, g, b) {
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-/**
- * Flood-fill transparency inward from every border pixel.
- *
- * Iterative, with an explicit stack — a 165×490 crop is 80k pixels and a
- * recursive fill would blow the call stack on the first run.
- */
-function keyBackground(data, width, height) {
-  const stack = [];
-  const seen = new Uint8Array(width * height);
-
-  const consider = (x, y) => {
-    if (x < 0 || y < 0 || x >= width || y >= height) return;
-    const index = y * width + x;
-    if (seen[index] === 1) return;
-    const offset = index * 4;
-    if (luminance(data[offset], data[offset + 1], data[offset + 2]) < LIGHT) {
-      return;
-    }
-    seen[index] = 1;
-    stack.push(index);
-  };
-
-  for (let x = 0; x < width; x += 1) {
-    consider(x, 0);
-    consider(x, height - 1);
-  }
-  for (let y = 0; y < height; y += 1) {
-    consider(0, y);
-    consider(width - 1, y);
-  }
-
-  let cleared = 0;
-  while (stack.length > 0) {
-    const index = stack.pop();
-    data[index * 4 + 3] = 0;
-    cleared += 1;
-    const x = index % width;
-    const y = (index - x) / width;
-    consider(x + 1, y);
-    consider(x - 1, y);
-    consider(x, y + 1);
-    consider(x, y - 1);
-  }
-
-  return cleared / (width * height);
-}
 
 async function sliceCharacter(name) {
   const view = FRONT_VIEWS[name];
@@ -97,7 +39,7 @@ async function sliceCharacter(name) {
     .raw()
     .toBuffer({ resolveWithObject: true });
 
-  const clearedFraction = keyBackground(data, width, height);
+  const clearedFraction = keyBackground(data, width, height, view.key);
   if (clearedFraction > LEAK_LIMIT) {
     throw new Error(
       `Background fill cleared ${(clearedFraction * 100).toFixed(0)}% of the `
@@ -113,7 +55,14 @@ async function sliceCharacter(name) {
   const directory = join('public', 'sprites', name);
   mkdirSync(directory, { recursive: true });
 
-  const manifest = { source: view.file, view: view.crop, parts: {} };
+  const manifest = {
+    source: view.file,
+    view: view.crop,
+    // Which way the sliced drawing faces. Read by the runtime to decide when to
+    // mirror; it differs per sheet.
+    facesRight: view.facesRight === true,
+    parts: {},
+  };
 
   for (const [part, spec] of Object.entries(parts)) {
     const [x, y, boxWidth, boxHeight] = spec.box;

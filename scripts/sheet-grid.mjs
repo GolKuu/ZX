@@ -9,6 +9,7 @@
 
 import { readFileSync } from 'node:fs';
 import sharp from 'sharp';
+import { keyBackground } from './sheet-key.mjs';
 import { FRONT_VIEWS } from './sheet-parts.mjs';
 
 const [name, destination] = process.argv.slice(2);
@@ -39,8 +40,34 @@ for (let y = 0; y <= height; y += STEP) {
 }
 svg += '</svg>';
 
-const base = await sharp(readFileSync(view.file))
-  .extract(view.crop)
+// `--keyed` grids the background-removed cutout, which is the only space part
+// rectangles can be read reliably in: against the paper, a limb's edge is
+// invisible and every rectangle ends up guessed.
+const cropped = sharp(readFileSync(view.file)).extract(view.crop);
+let figure;
+if (process.argv.includes('--keyed')) {
+  const { data } = await cropped
+    .clone()
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const cleared = keyBackground(data, width, height, view.key);
+  console.log(`keyed: ${(cleared * 100).toFixed(0)}% cleared`);
+  const cutout = await sharp(data, { raw: { channels: 4, width, height } })
+    .png()
+    .toBuffer();
+  // Composite onto a colour nothing in these palettes uses, so the silhouette
+  // edge is unambiguous.
+  figure = await sharp({
+    create: {
+      width, height, channels: 4, background: { r: 0, g: 170, b: 120, alpha: 1 },
+    },
+  }).composite([{ input: cutout }]).png().toBuffer();
+} else {
+  figure = await cropped.png().toBuffer();
+}
+
+const base = await sharp(figure)
   .resize({ width: width * SCALE, kernel: 'nearest' })
   .png()
   .toBuffer();
