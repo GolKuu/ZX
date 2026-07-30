@@ -31,7 +31,7 @@ export const PARTS = {
       { cx: 132, cy: 126, rx: 52, ry: 31 },
       // Remove the doubled waistband/crotch ink. A clean purple underlay remains
       // and hides the two leg cut-outs as they rotate below the jacket.
-      { cx: 212, cy: 262, rx: 38, ry: 12 },
+      { cx: 224, cy: 263, rx: 18, ry: 7 },
     ],
   },
   leftArm: {
@@ -40,12 +40,6 @@ export const PARTS = {
     points: [[138, 122], [171, 125], [187, 141], [207, 152], [208, 180],
       [195, 202], [183, 222], [157, 231], [131, 221], [113, 202],
       [106, 174], [114, 145]],
-    base: true,
-    excludes: [
-      // The reference scarf crosses this shoulder. It belongs to `scarf`, not
-      // to the arm, otherwise its black edge swings across the jacket.
-      { cx: 132, cy: 127, rx: 47, ry: 19 },
-    ],
   },
   rightArm: {
     box: [251, 113, 90, 114],
@@ -53,10 +47,6 @@ export const PARTS = {
     points: [[267, 122], [292, 116], [319, 125], [334, 140], [340, 165],
       [332, 190], [313, 211], [286, 224], [264, 216], [253, 196],
       [253, 163]],
-    base: true,
-    excludes: [
-      { cx: 267, cy: 122, rx: 30, ry: 15 },
-    ],
   },
   leftLeg: {
     box: [46, 241, 164, 160],
@@ -64,12 +54,6 @@ export const PARTS = {
     points: [[156, 246], [191, 243], [208, 263], [201, 294], [187, 325],
       [175, 350], [164, 374], [138, 391], [80, 394], [48, 383],
       [49, 344], [85, 326], [100, 296], [117, 266], [138, 250]],
-    base: true,
-    excludes: [
-      // The waistband is owned by the torso. Keeping another copy on each leg
-      // creates a dark triangular spot whenever the hip rotates.
-      { cx: 178, cy: 249, rx: 35, ry: 13 },
-    ],
   },
   rightLeg: {
     box: [199, 240, 160, 165],
@@ -77,10 +61,6 @@ export const PARTS = {
     points: [[213, 246], [255, 243], [286, 253], [311, 272], [322, 300],
       [312, 329], [295, 347], [329, 352], [354, 376], [349, 399],
       [280, 400], [252, 383], [237, 359], [240, 330], [247, 304], [225, 283]],
-    base: true,
-    excludes: [
-      { cx: 240, cy: 249, rx: 35, ry: 13 },
-    ],
   },
 };
 

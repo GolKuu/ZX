@@ -88,7 +88,7 @@ async function sliceProfile() {
     let cut = clippedSource;
     if (spec.base === true) {
       const polygon = spec.points.map((point) => point.join(',')).join(' ');
-      const strokeWidth = spec.baseStrokeWidth ?? 0;
+      const strokeWidth = spec.baseStrokeWidth ?? 4;
       const base = Buffer.from(
         `<svg width="${VIEW.width}" height="${VIEW.height}">`
         + `<polygon points="${polygon}" fill="${spec.baseFill ?? '#6739b6'}"`
