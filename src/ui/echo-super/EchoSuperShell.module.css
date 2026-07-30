@@ -18,6 +18,7 @@
   top: 7%;
   left: 6%;
   display: grid;
+  max-width: 88%;
   border-left: 0.28cqw solid var(--echo);
   padding-left: 1.1cqw;
   text-transform: uppercase;
@@ -34,7 +35,7 @@
 }
 
 .header strong {
-  font-size: clamp(2.7rem, 6.2cqw, 6rem);
+  font-size: clamp(2.4rem, 5.2cqw, 5.3rem);
   font-weight: 950;
   letter-spacing: -0.06em;
   line-height: 0.88;

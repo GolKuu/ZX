@@ -18,7 +18,8 @@ export const MIM_COMMANDS: readonly CommandRow[] = [
     button: 'mimF',
     alsoPressed: ['mimQ'],
     stance: 'any',
-    available: ({ ultimateReady }) => ultimateReady === true,
+    available: ({ superMeter, ultimateReady }) =>
+      ultimateReady === true && superMeter >= MIM_LEVEL_THREE_COST,
   },
   {
     moveId: MIM_SUPER_MOVE_IDS.hero,

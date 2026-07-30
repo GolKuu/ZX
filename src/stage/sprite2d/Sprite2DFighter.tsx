@@ -14,6 +14,7 @@ import {
   readLatestHit,
 } from '@/src/game/combatRuntime';
 import { isEchoSpecialMove } from '@/src/data/echo-special-moves';
+import { echoSuperKindForMove } from '@/src/data/echo-super-moves';
 import { FIXED_SCALE } from '@/src/sim';
 import { EchoSpriteEffects } from '../echo/EchoSpriteEffects';
 import { applyEchoSpriteMotion } from '../echo/echoSpriteMotion';
@@ -245,6 +246,7 @@ export function Sprite2DFighter({
           fighter,
           progress,
           true,
+          drawnFacing,
         );
       } else if (rigName === 'echo-profile') {
         applyEchoSpriteMotion(
@@ -259,7 +261,12 @@ export function Sprite2DFighter({
       return;
     }
 
-    const poseFighter = isEchoSpecialMove(presentation.action?.moveId)
+    const echoDirectedMove = rigName === 'echo-profile'
+      && (
+        isEchoSpecialMove(presentation.action?.moveId)
+        || echoSuperKindForMove(presentation.action?.moveId ?? '') !== null
+      );
+    const poseFighter = echoDirectedMove
       ? { ...presentation, action: null }
       : presentation;
     const pose = spritePoseFor(
@@ -280,6 +287,7 @@ export function Sprite2DFighter({
         fighter,
         progress,
         false,
+        drawnFacing,
       );
     } else if (rigName === 'glitch-profile') {
       applyGlitchSpriteCorruption(

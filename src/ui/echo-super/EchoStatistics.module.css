@@ -14,6 +14,35 @@
   mix-blend-mode: screen;
 }
 
+.futureTree {
+  position: absolute;
+  z-index: 2;
+  top: 55%;
+  left: 48%;
+  width: 1px;
+  height: 1px;
+  transform: translate(-50%, -50%);
+}
+
+.futureTree i {
+  position: absolute;
+  width: 43cqw;
+  height: 1px;
+  background: linear-gradient(90deg, var(--echo), rgb(79 140 255 / 12%));
+  box-shadow: 0 0 0.45cqw rgb(114 239 255 / 35%);
+  opacity: 0;
+  transform: rotate(var(--future-angle)) scaleX(0.08);
+  transform-origin: left;
+  animation: future 3.65s var(--future-delay) both;
+}
+
+.futureTree .outcome {
+  height: 2px;
+  background: linear-gradient(90deg, #fff, var(--echo) 40%, #4f8cff);
+  box-shadow: 0 0 1.1cqw var(--echo);
+  animation-name: outcome;
+}
+
 .header {
   top: 6%;
   left: 5%;
@@ -26,7 +55,7 @@
 }
 
 .header strong {
-  font-size: clamp(2.4rem, 5.4cqw, 5.5rem);
+  font-size: clamp(2.2rem, 4.7cqw, 4.9rem);
 }
 
 .quote {
@@ -44,6 +73,16 @@
 
 .quote small { color: var(--echo); font-weight: 900; letter-spacing: 0.24em; text-transform: uppercase; }
 .quote p { margin: 0.2cqw 0 0; font-size: clamp(1.4rem, 2.8cqw, 3.1rem); font-weight: 850; }
+.quote cite {
+  display: block;
+  margin-top: 0.22cqw;
+  color: var(--echo);
+  font-size: clamp(0.72rem, 0.9cqw, 1rem);
+  font-style: normal;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
 
 .blast {
   position: absolute;
@@ -61,6 +100,17 @@
 @keyframes scene { 0% { opacity: 0; } 3%, 92% { opacity: 1; } 100% { visibility: hidden; opacity: 0; } }
 @keyframes quote { from { opacity: 0; transform: translateX(3cqw); } to { opacity: 1; transform: none; } }
 @keyframes blast { 0%, 68%, 100% { opacity: 0; } 71% { opacity: 1; transform: scale(0.2); } 81% { opacity: 0; transform: scale(9); } }
+@keyframes future {
+  0%, 8% { opacity: 0; transform: rotate(var(--future-angle)) scaleX(0.08); }
+  24%, 54% { opacity: 0.52; transform: rotate(var(--future-angle)) scaleX(1); }
+  70%, 100% { opacity: 0; transform: rotate(0deg) scaleX(0.18); }
+}
+@keyframes outcome {
+  0%, 10% { opacity: 0; transform: rotate(var(--future-angle)) scaleX(0.08); }
+  26%, 62% { opacity: 0.9; transform: rotate(var(--future-angle)) scaleX(1); }
+  78%, 94% { opacity: 1; transform: rotate(0deg) scaleX(1.08); }
+  100% { opacity: 0; transform: rotate(0deg) scaleX(1.08); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .scene { animation-duration: 1.6s; }

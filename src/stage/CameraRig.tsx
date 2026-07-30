@@ -129,7 +129,6 @@ export function CameraRig() {
 
     const activeCamera = cameraRef.current;
     const time = clock.elapsedTime;
-    const shake = shakeRef.current;
     shakeRef.current = approach(shakeRef.current, 0, IMPACT_SHAKE_RETURN, delta);
     fovTargetRef.current = approach(fovTargetRef.current, BASE_FOV + 0.35, FOV_RETURN, delta);
     activeCamera.fov = approach(activeCamera.fov, fovTargetRef.current, 7, delta);

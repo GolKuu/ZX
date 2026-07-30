@@ -10,7 +10,7 @@ const SYSTEM_MESSAGES = [
 
 const FINAL_LINES = [
   'GG. Mostly me.',
-  'That’s rough.',
+  "That's rough.",
   'Uninstall optional.',
 ] as const;
 
@@ -28,22 +28,20 @@ export function MimAltF4Cinematic({
       role="status"
     >
       <div className={styles.desktop} aria-hidden="true">
-        <div className={styles.wallpaper}>
-          <i /><i /><i />
-        </div>
+        <div className={styles.wallpaper}><i /><i /><i /></div>
         {SYSTEM_MESSAGES.map(([title, message], index) => (
           <article
             className={styles.dialog}
             key={title}
             style={{ '--order': index } as CSSProperties}
           >
-            <header><i>!</i><b>{title}</b><span>×</span></header>
+            <header><i>!</i><b>{title}</b><span>X</span></header>
             <p>{message}</p>
             <footer><button>OK</button><button>Definitely</button></footer>
           </article>
         ))}
         <footer className={styles.taskbar}>
-          <b>◉</b><i /><i /><span>13:37</span>
+          <b>START</b><i /><i /><span>13:37</span>
         </footer>
       </div>
 
@@ -59,10 +57,10 @@ export function MimAltF4Cinematic({
         <strong>ONE TAP</strong>
       </div>
 
-      <blockquote>“You lost to this.”</blockquote>
+      <blockquote>&quot;You lost to this.&quot;</blockquote>
 
       <div className={styles.gameOver}>
-        <small>Q + F · Full meter</small>
+        <small>Q + F | Full meter + Ultimate Ready</small>
         <strong>SKILL ISSUE</strong>
         <p>{FINAL_LINES.map((line) => <span key={line}>{line}</span>)}</p>
       </div>

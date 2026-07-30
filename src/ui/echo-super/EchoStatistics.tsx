@@ -8,9 +8,19 @@ type ShardStyle = CSSProperties & {
   readonly '--shard-distance': string;
 };
 
+type FutureStyle = CSSProperties & {
+  readonly '--future-angle': string;
+  readonly '--future-delay': string;
+};
+
 const SHARDS = Array.from({ length: 16 }, (_, index) => ({
   angle: `${index * 22.5}deg`,
   distance: `${8 + (index % 4) * 2}cqw`,
+}));
+
+const FUTURES = Array.from({ length: 19 }, (_, index) => ({
+  angle: `${(index - 9) * 5.5}deg`,
+  delay: `${(index % 5) * 22}ms`,
 }));
 
 const METRICS = [
@@ -33,6 +43,18 @@ export function EchoStatistics({
       role="status"
     >
       <div className={styles.noise} aria-hidden="true" />
+      <div className={styles.futureTree} aria-hidden="true">
+        {FUTURES.map((future, index) => (
+          <i
+            className={index === 9 ? styles.outcome : undefined}
+            key={future.angle}
+            style={{
+              '--future-angle': future.angle,
+              '--future-delay': future.delay,
+            } as FutureStyle}
+          />
+        ))}
+      </div>
       <header className={`${shell.header} ${styles.header}`}>
         <span>Q + F // Full meter</span>
         <strong>Final Prediction</strong>
@@ -75,6 +97,7 @@ export function EchoStatistics({
       <blockquote className={styles.quote}>
         <small>ECHO // FINAL FORECAST</small>
         <p>“There was only one outcome.”</p>
+        <cite>“I solved you.”</cite>
       </blockquote>
       <div className={styles.blast} aria-hidden="true" />
     </section>

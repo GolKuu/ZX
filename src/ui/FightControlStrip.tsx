@@ -84,8 +84,8 @@ function EchoMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
   return (
     <MoveGroup
       fighterId={fighterId}
-      hint="U+J / U+I / O"
-      moves="РђРќРђР›РР— В· РџРћР’РўРћР  В· РЎРўРђРўРРЎРўРРљРђ"
+      hint="R SCAN · E MIRROR · F LOCK · Q+E / Q+R / Q+F"
+      moves="PERFECT READ · DATA OVERLOAD · FINAL PREDICTION"
     />
   );
 }

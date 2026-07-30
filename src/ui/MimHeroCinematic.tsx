@@ -38,15 +38,12 @@ export function MimHeroCinematic({
         </div>
         <div className={styles.target}><i /><b /></div>
         <div className={styles.ratioBeam} />
-        <div className={styles.impact}>RATIO'D</div>
+        <div className={styles.impact}>RATIO&apos;D</div>
       </div>
 
       <div className={styles.cards} aria-hidden="true">
         {MEME_CARDS.map(([label, value], index) => (
-          <article
-            key={label}
-            style={{ '--order': index } as CSSProperties}
-          >
+          <article key={label} style={{ '--order': index } as CSSProperties}>
             <small>{label}</small>
             <strong>{value}</strong>
           </article>
@@ -55,19 +52,16 @@ export function MimHeroCinematic({
 
       <div className={styles.mockFeed}>
         {MOCKS.map((line, index) => (
-          <span
-            key={line}
-            style={{ '--order': index } as CSSProperties}
-          >
+          <span key={line} style={{ '--order': index } as CSSProperties}>
             {line}
           </span>
         ))}
       </div>
 
       <div className={styles.title}>
-        <small>Q + R · Level 3 Super</small>
+        <small>Q + R | Level 3 Super</small>
         <strong>INTERNET MOMENT</strong>
-        <p>“Skill issue.”</p>
+        <p>&quot;Skill issue.&quot;</p>
       </div>
     </section>
   );

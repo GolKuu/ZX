@@ -293,6 +293,8 @@ export function AaaVisualJudge() {
                       </i>
                     ))}
                   </div>
+                  {/* Captures are short-lived canvas data URLs and cannot use the Next image optimizer. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={sample.imageUrl} alt={`${phase} visual capture`} />
                   <p>
                     <strong>{sample.findings[0]}</strong>

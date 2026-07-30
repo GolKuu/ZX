@@ -88,7 +88,11 @@ test('MIM owns dedicated E R F specials and Q modifier supers', () => {
     MIM_SUPER_MOVE_IDS.hero,
   );
   assert.equal(
-    resolveMimPress('mimF', ['mimQ'], 0, true)?.moveId,
+    resolveMimPress('mimF', ['mimQ'], 99, true)?.moveId,
+    undefined,
+  );
+  assert.equal(
+    resolveMimPress('mimF', ['mimQ'], 100, true)?.moveId,
     MIM_SUPER_MOVE_IDS.altF4,
   );
 });

@@ -1,5 +1,6 @@
 import { ECHO_MOVE_IDS } from '@/src/data/echo-combat-moves';
 import { ECHO_SPECIAL_MOVE_IDS } from '@/src/data/echo-special-moves';
+import { ECHO_SUPER_MOVE_IDS } from '@/src/data/echo-super-moves';
 import type { FighterSnapshot } from '@/src/sim';
 import type { Group } from 'three';
 import type { SpriteJoints } from '../sprite2d/SpriteRigBody';
@@ -11,6 +12,7 @@ export function applyEchoSpriteMotion(
   fighter: FighterSnapshot,
   progress: number,
   strike: boolean,
+  forward: -1 | 1,
 ): void {
   body.rotation.set(0, 0, 0);
   body.scale.set(1, 1, 1);
@@ -18,7 +20,7 @@ export function applyEchoSpriteMotion(
   const action = fighter.action;
   if (strike) {
     const impact = action?.moveId === ECHO_MOVE_IDS.hk ? 0.026 : 0.012;
-    body.position.x += fighter.facing * impact;
+    body.position.x += forward * impact;
     body.scale.set(1.012, 0.995, 1);
     return;
   }
@@ -37,7 +39,27 @@ export function applyEchoSpriteMotion(
   const moveId = action.moveId;
   rotate(joints.head, -anticipation * 0.055);
 
-  if (moveId === ECHO_SPECIAL_MOVE_IDS.patternScan) {
+  if (moveId === ECHO_SUPER_MOVE_IDS.analysis) {
+    const read = Math.sin(progress * Math.PI);
+    rotate(joints.upperArm, -read * 0.28);
+    rotate(joints.forearm, -read * 0.44);
+    rotate(joints.farUpperArm, read * 0.2);
+    rotate(joints.head, -read * 0.1);
+  } else if (moveId === ECHO_SUPER_MOVE_IDS.repeat) {
+    const command = Math.sin(progress * Math.PI);
+    rotate(joints.upperArm, -command * 0.4);
+    rotate(joints.forearm, command * 0.16);
+    rotate(joints.farUpperArm, command * 0.34);
+    rotate(joints.farForearm, -command * 0.18);
+  } else if (moveId === ECHO_SUPER_MOVE_IDS.statistics) {
+    const stride = Math.sin(progress * Math.PI * 4);
+    rotate(joints.thigh, stride * 0.12);
+    rotate(joints.farThigh, -stride * 0.12);
+    rotate(joints.upperArm, -stride * 0.06);
+    rotate(joints.farUpperArm, stride * 0.06);
+    rotate(joints.head, -0.035);
+    body.position.x += forward * progress * 0.18;
+  } else if (moveId === ECHO_SPECIAL_MOVE_IDS.patternScan) {
     const scan = Math.sin(progress * Math.PI);
     rotate(joints.upperArm, -scan * 0.22);
     rotate(joints.forearm, -scan * 0.34);
@@ -54,14 +76,14 @@ export function applyEchoSpriteMotion(
     rotate(joints.upperArm, -lock * 0.18);
     rotate(joints.forearm, -lock * 0.46);
     rotate(joints.head, -lock * 0.1);
-    body.position.x += fighter.facing * lock * 0.018;
+    body.position.x += forward * lock * 0.018;
   } else if (moveId === ECHO_MOVE_IDS.lp) {
     rotate(joints.farForearm, -anticipation * 0.14);
     rotate(joints.torso, contact * 0.035);
   } else if (moveId === ECHO_MOVE_IDS.hp) {
     rotate(joints.torso, -anticipation * 0.09 + contact * 0.12);
     rotate(joints.farUpperArm, -anticipation * 0.12);
-    body.position.x += fighter.facing * contact * 0.045;
+    body.position.x += forward * contact * 0.045;
   } else if (moveId === ECHO_MOVE_IDS.lk) {
     rotate(joints.head, anticipation * 0.07);
     rotate(joints.torso, anticipation * 0.1);
@@ -69,7 +91,7 @@ export function applyEchoSpriteMotion(
   } else if (moveId === ECHO_MOVE_IDS.hk) {
     rotate(joints.torso, -anticipation * 0.12 + contact * 0.16);
     rotate(joints.sash, -anticipation * 0.18 + contact * 0.3);
-    body.position.x += fighter.facing * contact * 0.035;
+    body.position.x += forward * contact * 0.035;
   }
 }
 

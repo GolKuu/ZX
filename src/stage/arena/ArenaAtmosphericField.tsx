@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable react-hooks/immutability -- The memoized Three.js particle pool is intentionally updated by useFrame, outside React rendering. */
+
 import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
 import { AdditiveBlending, Group, Mesh, MeshBasicMaterial, Vector3 } from 'three';

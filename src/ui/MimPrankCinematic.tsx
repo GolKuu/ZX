@@ -47,10 +47,7 @@ export function MimPrankCinematic({
         <aside>
           <strong>STREAM CHAT</strong>
           {CHAT.map(([user, message], index) => (
-            <p
-              key={user}
-              style={{ '--order': index } as CSSProperties}
-            >
+            <p key={user} style={{ '--order': index } as CSSProperties}>
               <i>{user}</i>
               <span>{message}</span>
             </p>
@@ -59,20 +56,17 @@ export function MimPrankCinematic({
 
         <div className={styles.reactions}>
           {REACTIONS.map((count, index) => (
-            <span
-              key={count}
-              style={{ '--order': index } as CSSProperties}
-            >
-              {index === 0 ? '♥' : index === 1 ? '★' : '☻'} {count}
+            <span key={count} style={{ '--order': index } as CSSProperties}>
+              {index === 0 ? 'LIKE' : index === 1 ? 'STAR' : 'LOL'} {count}
             </span>
           ))}
         </div>
       </div>
 
       <div className={styles.caption}>
-        <small>Q + E · Level 1 Super</small>
+        <small>Q + E | Level 1 Super</small>
         <strong>CLIP FARMING</strong>
-        <p>“Chat, are you seeing this?”</p>
+        <p>&quot;Chat, are you seeing this?&quot;</p>
       </div>
     </section>
   );

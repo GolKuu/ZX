@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable react-hooks/immutability, react-hooks/refs -- Three.js objects are an imperative, non-rendering object pool updated by useFrame. */
+
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import {
