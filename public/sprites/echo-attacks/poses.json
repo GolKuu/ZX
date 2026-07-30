@@ -2,22 +2,22 @@
   "source": "public/echo-character-sheet.png",
   "poses": {
     "lp": {
-      "width": 200,
+      "width": 189,
       "height": 203,
       "ground": 1.0099
     },
     "hp": {
-      "width": 217,
+      "width": 196,
       "height": 198,
       "ground": 1.0101
     },
     "lk": {
-      "width": 230,
+      "width": 206,
       "height": 166,
       "ground": 1.012
     },
     "hk": {
-      "width": 217,
+      "width": 214,
       "height": 203,
       "ground": 1.0099
     }

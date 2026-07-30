@@ -36,7 +36,13 @@ export function cleanEchoAttack(data, width, height, spec, groundInCrop) {
       const paper = red > 210 && green > 210 && blue > 210 && chroma < 18;
       const redLayer = red > green + 20 && red > blue + 16;
       const greenLayer = green > red + 10 && green > blue + 4;
-      const recovered = recovery[pixel] !== 0;
+      const flatRed = (
+        redLayer
+        && red > 205
+        && green > 90
+        && Math.abs(green - blue) < 13
+      );
+      const recovered = recovery[pixel] !== 0 && !flatRed;
       const onFoot = (spec.feet ?? [])
         .some(([start, end]) => x >= start && x < end);
       const belowFloor = y >= groundInCrop - 14 && !onFoot;
@@ -63,6 +69,25 @@ export function cleanEchoAttack(data, width, height, spec, groundInCrop) {
         && level > 92
         && level < 190
       ) ? 1 : 0;
+    }
+  }
+
+  // The source panels draw a thin floor guide through the character's soles.
+  // Keep the sole itself (there are opaque pixels directly above it), but remove
+  // the unsupported horizontal continuation on either side.
+  for (let y = Math.max(0, groundInCrop - 35); y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const pixel = y * width + x;
+      if (keep[pixel] === 0) continue;
+      let bodyAbove = false;
+      for (let rise = 1; rise <= 7 && y - rise >= 0; rise += 1) {
+        for (let drift = -2; drift <= 2; drift += 1) {
+          const sampleX = x + drift;
+          if (sampleX < 0 || sampleX >= width) continue;
+          if (keep[(y - rise) * width + sampleX] !== 0) bodyAbove = true;
+        }
+      }
+      if (!bodyAbove) keep[pixel] = 0;
     }
   }
 

@@ -27,12 +27,15 @@ const PARTS = {
   torso: {
     box: [112, 107, 188, 164],
     joint: [210, 255],
-    points: [[157, 116], [190, 108], [235, 111], [270, 125], [286, 151],
-      [294, 190], [286, 224], [269, 251], [242, 264], [182, 263],
-      [145, 249], [123, 222], [117, 181], [126, 146]],
-    patches: [
-      { cx: 174, cy: 177, rx: 25, ry: 35 },
-      { cx: 278, cy: 186, rx: 18, ry: 31 },
+    points: [[157, 127], [184, 111], [236, 111], [265, 127], [277, 155],
+      [281, 204], [270, 238], [243, 263], [181, 263], [151, 242],
+      [141, 208], [143, 160]],
+    base: true,
+    excludes: [
+      { cx: 149, cy: 180, rx: 33, ry: 62 },
+      { cx: 176, cy: 177, rx: 19, ry: 34 },
+      { cx: 290, cy: 178, rx: 38, ry: 62 },
+      { cx: 132, cy: 126, rx: 52, ry: 31 },
     ],
   },
   leftArm: {
@@ -72,10 +75,20 @@ const ATTACKS = {
   hk: { left: 1600, top: 180, width: 405, height: 435 },
 };
 
-function maskSvg(width, height, points) {
+function maskSvg(width, height, points, excludes = []) {
   const polygon = points.map((point) => point.join(',')).join(' ');
+  if (excludes.length === 0) {
+    return Buffer.from(
+      `<svg width="${width}" height="${height}"><polygon points="${polygon}" fill="white"/></svg>`,
+    );
+  }
+  const holes = excludes.map(({ cx, cy, rx, ry }) => (
+    `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="black"/>`
+  )).join('');
   return Buffer.from(
-    `<svg width="${width}" height="${height}"><polygon points="${polygon}" fill="white"/></svg>`,
+    `<svg width="${width}" height="${height}"><mask id="part">`
+    + `<polygon points="${polygon}" fill="white"/>${holes}</mask>`
+    + `<rect width="${width}" height="${height}" fill="white" mask="url(#part)"/></svg>`,
   );
 }
 
@@ -95,17 +108,32 @@ async function sliceProfile() {
   };
 
   for (const [name, spec] of Object.entries(PARTS)) {
-    let cut = await sharp(source)
-      .composite([{ input: maskSvg(VIEW.width, VIEW.height, spec.points), blend: 'dest-in' }])
+    const sourceMask = maskSvg(
+      VIEW.width,
+      VIEW.height,
+      spec.points,
+      spec.excludes,
+    );
+    const clippedSource = await sharp(source)
+      .composite([{ input: sourceMask, blend: 'dest-in' }])
       .png()
       .toBuffer();
-    if (spec.patches !== undefined) {
-      const patches = spec.patches.map(({ cx, cy, rx, ry }) => (
-        `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#6739b6"/>`
-      )).join('');
-      cut = await sharp(cut).composite([{
-        input: Buffer.from(`<svg width="${VIEW.width}" height="${VIEW.height}">${patches}</svg>`),
-      }]).png().toBuffer();
+    let cut = clippedSource;
+    if (spec.base === true) {
+      const polygon = spec.points.map((point) => point.join(',')).join(' ');
+      const base = Buffer.from(
+        `<svg width="${VIEW.width}" height="${VIEW.height}">`
+        + `<polygon points="${polygon}" fill="#6739b6" stroke="#25105e" stroke-width="4"/>`
+        + '</svg>',
+      );
+      cut = await sharp({
+        create: {
+          width: VIEW.width,
+          height: VIEW.height,
+          channels: 4,
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
+        },
+      }).composite([{ input: base }, { input: clippedSource }]).png().toBuffer();
     }
     const [left, top, width, height] = spec.box;
     const extracted = await sharp(cut).extract({ left, top, width, height }).png().toBuffer();
