@@ -117,7 +117,7 @@ export const FRONT_VIEWS = {
 export const ATTACK_POSES = {
   echo: {
     file: 'public/echo-character-sheet.png',
-    key: { tolerance: 16 },
+    key: { tolerance: 16, cleanup: 218 },
     displayScale: 1.95,
     facesRight: true,
     minimumComponentPixels: 12,
