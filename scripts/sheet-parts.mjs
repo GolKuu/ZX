@@ -87,6 +87,9 @@ export const FRONT_VIEWS = {
   'glitch-profile': {
     file: 'public/glitch-character-sheet.png',
     crop: { left: 1118, top: 82, width: 176, height: 424 },
+    // Calibrated against the other fighters' crown-to-floor height. The source
+    // crop is tight enough that using its raw height makes GLITCH slightly tall.
+    figureHeight: 430,
     facesRight: true,
     origin: [123, 414],
     partFill: [25, 29, 36],
@@ -159,6 +162,9 @@ export const ATTACK_POSES = {
   glitch: {
     file: 'public/glitch-character-sheet.png',
     key: { light: 178 },
+    // The attack panels draw GLITCH much smaller than the profile panel. Match
+    // the upright LP crown-to-floor height to the jointed combat stance.
+    displayScale: 1.63,
     ground: 908,
     poses: {
       lp: { left: 40, top: 600, width: 286, height: 320 },

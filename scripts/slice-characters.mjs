@@ -190,7 +190,9 @@ async function sliceCharacter(name) {
 
   const manifest = {
     source: view.file,
-    view: view.crop,
+    view: view.figureHeight === undefined
+      ? view.crop
+      : { ...view.crop, figureHeight: view.figureHeight },
     textureScale: view.textureScale ?? DEFAULT_TEXTURE_SCALE,
     // Which way the sliced drawing faces. Read by the runtime to decide when to
     // mirror; it differs per sheet.

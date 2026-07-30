@@ -50,7 +50,11 @@ export interface SpriteRigManifest {
   readonly facesRight?: boolean;
   /** Body centre and floor row in source-crop pixels. */
   readonly origin?: readonly [number, number];
-  readonly view?: { readonly height?: number };
+  readonly view?: {
+    readonly height?: number;
+    /** Crown-to-floor calibration height when the crop includes extra margin. */
+    readonly figureHeight?: number;
+  };
 }
 
 /** The four attack panels, as drawn. */
@@ -164,7 +168,11 @@ export async function loadSpriteRig(name: string): Promise<LoadedSpriteRig> {
     }),
   );
 
-  const sourceHeight = manifest.view?.height ?? SPRITE_SHEET_HEIGHT;
+  const sourceHeight = (
+    manifest.view?.figureHeight
+    ?? manifest.view?.height
+    ?? SPRITE_SHEET_HEIGHT
+  );
   return {
     ...rig,
     facesRight: manifest.facesRight === true,
