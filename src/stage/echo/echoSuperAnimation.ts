@@ -6,7 +6,9 @@
  * frame the hitbox lands on.
  */
 import type { FighterRig } from '../fighterRig';
-import { layoutDashboard, layoutHologramSwarm, layoutMirror } from './echoSuperFx';
+import { layoutDashboard } from './echoDashboardFx';
+import { layoutMirror } from './echoMirrorFx';
+import { layoutHologramSwarm } from './echoSwarmFx';
 import type { EchoSuperBeat } from './echoSuperTimeline';
 
 export function applyEchoSuperAnimation(

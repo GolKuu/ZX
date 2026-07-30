@@ -575,6 +575,58 @@ export function removeDiagramOverlay(data, width, height, options = {}) {
   return report;
 }
 
+/**
+ * Drop everything the key left behind that has no ink in it.
+ *
+ * What survives keying, besides the character, is the sheet's annotation layer: pale
+ * salmon motion arcs, impact circles, and whatever of a hitbox rectangle lay on the
+ * page. No brightness threshold removes those — measured, a salmon arc is *lighter*
+ * than the shaded side of IDOL's white boot, so every cleanup pass aggressive enough
+ * to eat the arc ate the boot first.
+ *
+ * Ink separates them instead. Every piece of these characters is drawn with a dark
+ * contour; not one annotation has a dark pixel anywhere in it. So each remaining island
+ * is kept or dropped on whether it contains any ink at all, which cannot mistake a limb
+ * for an arc however pale the limb is.
+ */
+export function dropInklessComponents(data, width, height, options = {}) {
+  const inkBelow = options.inkBelow ?? 120;
+  const minimumInk = options.minimumInk ?? 0.012;
+  const seen = new Uint8Array(width * height);
+  let dropped = 0;
+
+  for (let start = 0; start < seen.length; start += 1) {
+    if (seen[start] === 1 || data[start * 4 + 3] === 0) continue;
+    const region = [];
+    const stack = [start];
+    seen[start] = 1;
+    let ink = 0;
+    while (stack.length > 0) {
+      const index = stack.pop();
+      region.push(index);
+      const offset = index * 4;
+      if (luminance(data[offset], data[offset + 1], data[offset + 2]) < inkBelow) {
+        ink += 1;
+      }
+      const x = index % width;
+      const y = (index - x) / width;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+        const next = ny * width + nx;
+        if (seen[next] === 1 || data[next * 4 + 3] === 0) continue;
+        seen[next] = 1;
+        stack.push(next);
+      }
+    }
+    if (ink / region.length >= minimumInk) continue;
+    for (const index of region) data[index * 4 + 3] = 0;
+    dropped += region.length;
+  }
+  return dropped;
+}
+
 /** Fraction of opaque pixels whose colour moved further than `threshold`. */
 function fractionMoved(before, after, threshold) {
   let moved = 0;

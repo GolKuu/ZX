@@ -83,11 +83,17 @@ test('«Статистика» holds the panel up, then blows the error chart ap
   assert.ok(blown.cast > 0, 'the panel is still readable while it breaks');
 });
 
-test('every super reads differently on its own hit frame', () => {
-  const poses = Object.values(ECHO_SUPER_MOVE_IDS).map((moveId) => {
+test('every super reads the target before it casts, and casts before it hits', () => {
+  for (const moveId of Object.values(ECHO_SUPER_MOVE_IDS)) {
     const [first] = hitFrames(moveId);
-    const beat = echoSuperBeat(moveId, first);
-    return `${beat.kind}:${beat.read.toFixed(3)}:${beat.cast.toFixed(3)}`;
-  });
-  assert.equal(new Set(poses).size, poses.length);
+    const early = echoSuperBeat(moveId, Math.round(first * 0.25));
+    const cast = echoSuperBeat(moveId, first);
+    const done = echoSuperBeat(moveId, first + 12);
+
+    assert.ok(early.read > early.cast, `${moveId} reads before it casts`);
+    assert.equal(early.strike, 0, `${moveId} does not hit during the read`);
+    assert.equal(cast.cast, 1, `${moveId} is fully on stage on the hit frame`);
+    assert.equal(cast.strike, 1, `${moveId} hits on its authored frame`);
+    assert.equal(done.read, 0, `${moveId} drops the reading pose after the hit`);
+  }
 });

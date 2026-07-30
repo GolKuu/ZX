@@ -43,6 +43,18 @@ export function keyBackground(data, width, height, options = {}) {
   const tolerance = options.tolerance;
   const sample = tolerance === undefined ? null : [data[0], data[1], data[2]];
 
+  // These sheets carry an annotation layer as well as a diagram: pale salmon motion
+  // arcs and impact circles drawn over the page, and they touch the figure, so no
+  // component filter separates them. Lowering the luminance floor far enough to reach
+  // them instead reaches the shaded side of IDOL's white boots, which is *darker* than
+  // the arcs are.
+  //
+  // `maximumChroma` is what distinguishes them: an arc is bright and nearly grey, while
+  // every saturated thing on the page is costume. Paired with a floor that her ink
+  // contour is far below, the fill eats the annotations and still cannot get inside her,
+  // because getting inside means crossing that contour.
+  const maximumChroma = options.maximumChroma;
+
   const isBackground = (offset) => {
     const r = data[offset];
     const g = data[offset + 1];
@@ -53,7 +65,9 @@ export function keyBackground(data, width, height, options = {}) {
       const db = b - sample[2];
       return dr * dr + dg * dg + db * db <= tolerance * tolerance;
     }
-    return luminance(r, g, b) >= light;
+    if (luminance(r, g, b) < light) return false;
+    if (maximumChroma === undefined) return true;
+    return Math.max(r, g, b) - Math.min(r, g, b) <= maximumChroma;
   };
 
   const consider = (x, y) => {
