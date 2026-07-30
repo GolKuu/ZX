@@ -1,0 +1,168 @@
+.systemFailure {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+.blackout {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #000;
+  color: #252525;
+  font: 700 0.62rem monospace;
+  letter-spacing: 0.5em;
+  animation: blackout 0.72s steps(2) both;
+}
+
+.crashDialog {
+  position: absolute;
+  z-index: 5;
+  top: 18%;
+  left: 50%;
+  width: min(38rem, 72%);
+  color: #181818;
+  background: #f4f4f4;
+  border: 1px solid #777;
+  box-shadow: 0 2rem 8rem #000;
+  transform: translateX(-50%);
+  animation: crash-dialog 1.65s 0.45s steps(5) both;
+}
+
+.crashDialog > header {
+  padding: 0.55rem 0.8rem;
+  color: white;
+  background: #191919;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+}
+
+.crashDialog main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem;
+}
+
+.crashDialog main > i {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  aspect-ratio: 1;
+  color: white;
+  background: #e1293d;
+  border-radius: 50%;
+  font: normal 2.2rem/1 system-ui;
+}
+
+.crashDialog h2 { margin: 0; font: 750 clamp(1rem, 1.6cqw, 1.6rem) system-ui; }
+.crashDialog p { margin: 0.35rem 0 0; color: #555; font: 0.78rem system-ui; }
+.crashDialog footer { display: flex; justify-content: flex-end; gap: 0.5rem; padding: 0.75rem; background: #ddd; }
+.crashDialog button { padding: 0.45rem 0.9rem; border: 1px solid #888; color: #222; background: white; font-weight: 800; }
+
+.failureRows {
+  position: absolute;
+  z-index: 4;
+  inset: 8% 5% auto;
+  display: grid;
+  gap: 0.55rem;
+  color: #ff3151;
+  font-size: clamp(0.56rem, 0.88cqw, 0.9rem);
+}
+
+.failureRows code {
+  width: max-content;
+  max-width: 92vw;
+  padding: 0.28rem 0.5rem;
+  overflow: hidden;
+  background: #140208;
+  white-space: nowrap;
+  animation: failure-row 0.34s steps(3) both;
+}
+
+.failureRows code:nth-child(2) { animation-delay: 0.18s; }
+.failureRows code:nth-child(3) { animation-delay: 0.34s; }
+.failureRows code:nth-child(4) { animation-delay: 0.52s; }
+
+.voidRift {
+  position: absolute;
+  z-index: 7;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at center, #ff2bd62c, transparent 30%);
+  animation: void-rift 2.3s 1.62s cubic-bezier(.1,.7,.2,1) both;
+}
+
+.voidGlitch {
+  position: relative;
+  width: min(28cqw, 38cqh);
+  height: min(66cqh, 48cqw);
+  filter: drop-shadow(-1.1cqw 0 #16e6ff) drop-shadow(1.1cqw 0 #ff2bd6);
+}
+
+.voidGlitch::before {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 12%, white 0 10%, transparent 11%),
+    linear-gradient(84deg, transparent 28%, white 29% 71%, transparent 72%) 50% 42% / 100% 48% no-repeat,
+    linear-gradient(76deg, transparent 31%, white 32% 68%, transparent 69%) 50% 91% / 100% 50% no-repeat;
+  content: "";
+}
+
+.voidGlitch i {
+  position: absolute;
+  z-index: 2;
+  left: calc(12% + var(--i, 0) * 16%);
+  top: calc(18% + var(--i, 0) * 14%);
+  width: 22%;
+  height: 2.5%;
+  background: #000;
+  box-shadow: -0.5cqw 0 #16e6ff, 0.5cqw 0 #ff2bd6;
+  animation: body-tear 0.12s steps(2) infinite alternate;
+}
+
+.voidGlitch i:nth-child(1) { --i: 0; }
+.voidGlitch i:nth-child(2) { --i: 1; }
+.voidGlitch i:nth-child(3) { --i: 2; }
+.voidGlitch i:nth-child(4) { --i: 3; }
+.voidGlitch i:nth-child(5) { --i: 4; }
+
+.voidRift > b {
+  position: absolute;
+  right: 6%;
+  bottom: 8%;
+  font: 950 clamp(3rem, 8cqw, 8rem) / 0.8 system-ui;
+  letter-spacing: -0.08em;
+  text-shadow: -0.05em 0 #16e6ff, 0.05em 0 #ff2bd6;
+}
+
+.failureFinal {
+  position: absolute;
+  z-index: 10;
+  left: 5%;
+  bottom: 7%;
+  display: grid;
+  gap: 0.3rem;
+  animation: failure-final 0.24s 3.2s steps(2) both;
+}
+
+.failureFinal small { color: #16e6ff; font-size: 0.64rem; letter-spacing: 0.22em; }
+.failureFinal strong { font: 950 clamp(2.2rem, 5.4cqw, 5.5rem) / 0.82 system-ui; letter-spacing: -0.06em; }
+
+@keyframes blackout { 0%, 70% { opacity: 1; } 71%, 100% { opacity: 0; visibility: hidden; } }
+@keyframes crash-dialog { 0% { opacity: 0; transform: translate(-50%, -3rem) scale(0.8); } 12%, 72% { opacity: 1; transform: translateX(-50%); } 82% { clip-path: inset(12% 0 34%); transform: translateX(-53%) skewX(12deg); } 100% { opacity: 0; transform: translateX(40%) scaleX(0.05); } }
+@keyframes failure-row { from { width: 0; opacity: 0; } to { width: 100%; opacity: 1; } }
+@keyframes void-rift { 0% { opacity: 0; transform: scaleX(0.01); filter: brightness(8); } 28% { opacity: 1; transform: scaleX(0.16); } 52%, 100% { opacity: 1; transform: none; filter: none; } }
+@keyframes body-tear { to { transform: translateX(1.4cqw) scaleX(1.8); } }
+@keyframes failure-final { from { opacity: 0; transform: translateX(-6cqw); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 700px) {
+  .crashDialog { width: 88%; }
+  .voidGlitch { width: 38cqw; height: 54cqh; }
+  .voidRift > b { right: 3%; bottom: 5%; }
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, type CSSProperties } from 'react';
 import type { GlitchSuperKind } from '@/src/data/glitch-super-moves';
 import {
   GLITCH_SUPER_MOVE_IDS,
@@ -12,6 +12,7 @@ import {
 import styles from './GlitchFinisher.module.css';
 import motion from './GlitchFinisherMotion.module.css';
 import stage from './GlitchSuperStages.module.css';
+import system from './GlitchSystemFailure.module.css';
 
 const UPDATE_MESSAGES = [
   'Compatibility check failed',
@@ -87,7 +88,7 @@ function CriticalErrorStage() {
       </header>
       <div className={`${stage.realitySlices} ${motion.opponent}`} aria-hidden="true">
         {Array.from({ length: 12 }, (_, index) => (
-          <i key={index} style={{ '--slice': index } as React.CSSProperties} />
+          <i key={index} style={{ '--slice': index } as CSSProperties} />
         ))}
         <strong>GLITCH attacks between frames</strong>
       </div>
@@ -106,7 +107,7 @@ function PatchNotesStage() {
     <section className={stage.patchNotes}>
       <div className={stage.warningFlood} aria-hidden="true">
         {UPDATE_MESSAGES.map((message, index) => (
-          <article key={message} style={{ '--window': index } as React.CSSProperties}>
+          <article key={message} style={{ '--window': index } as CSSProperties}>
             <b>⚠ UPDATE REQUIRED</b>
             <span>{message}</span>
             <i />
@@ -138,11 +139,11 @@ function PatchNotesStage() {
 function SystemFailureStage({ version }: { readonly version: number }) {
   const finalLines = ['FATAL EXCEPTION', 'KERNEL PANIC', 'SYSTEM FAILURE'] as const;
   return (
-    <section className={stage.systemFailure}>
-      <div className={stage.blackout}>
+    <section className={system.systemFailure}>
+      <div className={system.blackout}>
         <span>NO SIGNAL</span>
       </div>
-      <div className={stage.crashDialog}>
+      <div className={system.crashDialog}>
         <header>FIGHTER PROCESS</header>
         <main>
           <i>×</i>
@@ -153,16 +154,16 @@ function SystemFailureStage({ version }: { readonly version: number }) {
         </main>
         <footer><button type="button">WAIT</button><button type="button">END PROCESS</button></footer>
       </div>
-      <div className={stage.failureRows}>
+      <div className={system.failureRows}>
         {FAILURE_ROWS.map((row) => <code key={row}>{row}</code>)}
       </div>
-      <div className={stage.voidRift} aria-hidden="true">
-        <div className={stage.voidGlitch}>
+      <div className={system.voidRift} aria-hidden="true">
+        <div className={system.voidGlitch}>
           <i /><i /><i /><i /><i />
         </div>
         <b>GLITCH</b>
       </div>
-      <div className={stage.failureFinal}>
+      <div className={system.failureFinal}>
         <small>Q + F // ULTIMATE</small>
         <strong>{finalLines[version % finalLines.length]}</strong>
       </div>
