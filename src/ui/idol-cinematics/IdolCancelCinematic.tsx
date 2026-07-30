@@ -1,4 +1,5 @@
 import styles from './IdolCancelCinematic.module.css';
+import { IdolCinematicActors } from './IdolCinematicActors';
 
 const COMMENTS = [
   'L', 'Ratio', 'Uninstall', 'Muted', 'Skill issue', 'L', 'Ratio',
@@ -44,6 +45,7 @@ export function IdolCancelCinematic({
           </b>
         ))}
       </div>
+      <IdolCinematicActors mode="cancel" />
       <div className={styles.ratioWave} aria-hidden="true" />
       <header className={styles.title}>
         <small>Ultimate Finisher</small>

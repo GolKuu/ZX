@@ -5,6 +5,7 @@ import fx from './ChronoCinematicFx.module.css';
 const CLOCK_TICKS = Array.from({ length: 12 }, (_, index) => index);
 const OUTCOMES = Array.from({ length: 143 }, (_, index) => index);
 const IMPACTS = Array.from({ length: 6 }, (_, index) => index);
+const DEFEATS = ['KO', 'RING OUT', 'BREAK', 'TIME UP'] as const;
 
 export function ChronoCinematicScene({
   kind,
@@ -81,7 +82,10 @@ function Outcomes() {
             data-result={outcome % 4}
             data-selected={outcome === 71}
             key={outcome}
-          />
+          >
+            <b>{String(outcome + 1).padStart(3, '0')}</b>
+            <span>{DEFEATS[outcome % DEFEATS.length]}</span>
+          </i>
         ))}
       </div>
       <div className={fx.selected}>TIMELINE 071 <b>SELECTED</b></div>
@@ -97,6 +101,7 @@ function Inevitability() {
       <blockquote>«Я проверил все варианты.»</blockquote>
       <div className={fx.snap}><i /><b>SNAP</b></div>
       <div className={fx.finalStrike} />
+      <div className={fx.ejected}>×<i>ARENA LIMIT</i></div>
     </div>
   );
 }

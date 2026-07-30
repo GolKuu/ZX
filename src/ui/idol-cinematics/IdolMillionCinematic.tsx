@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import styles from './IdolMillionCinematic.module.css';
+import { IdolCinematicActors } from './IdolCinematicActors';
 
 const CROWD = Array.from({ length: 64 }, (_, index) => ({
   delay: `${(index % 9) * -0.07}s`,
@@ -40,6 +41,7 @@ export function IdolMillionCinematic({
           <i key={index} style={{ animationDelay: `${0.62 + index * 0.43}s` }} />
         ))}
       </div>
+      <IdolCinematicActors mode="million" />
       <header className={styles.title}>
         <small>Level 3 Super · Sold Out</small>
         <span>LIVE</span>

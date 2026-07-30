@@ -1,4 +1,5 @@
 import styles from './IdolHighlightCinematic.module.css';
+import { IdolCinematicActors } from './IdolCinematicActors';
 
 const CAMERA_POSITIONS = ['nw', 'n', 'ne', 'w', 'e', 'sw', 'se'] as const;
 
@@ -19,6 +20,7 @@ export function IdolHighlightCinematic({
       <div className={styles.motionTrails} aria-hidden="true">
         <i /><i /><i /><i />
       </div>
+      <IdolCinematicActors mode="highlight" />
       {CAMERA_POSITIONS.map((position, index) => (
         <div
           className={styles.camera}

@@ -131,6 +131,24 @@
   animation: tile-in 0.45s calc(0.35s + var(--delay, 0s)) both;
 }
 
+.timelineGrid i > b,
+.timelineGrid i > span {
+  position: absolute;
+  left: 8%;
+  font: 850 0.32cqw / 1 monospace;
+  letter-spacing: 0.05em;
+}
+
+.timelineGrid i > b { top: 9%; color: #7393aa; }
+.timelineGrid i > span {
+  right: 8%;
+  bottom: 8%;
+  overflow: hidden;
+  color: #dff6ff;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
 .timelineGrid i:nth-child(4n+1) { --delay: .04s; }
 .timelineGrid i:nth-child(4n+2) { --delay: .1s; }
 .timelineGrid i:nth-child(4n+3) { --delay: .16s; }
@@ -242,6 +260,28 @@
   animation: final-strike 0.55s 3.55s both;
 }
 
+.ejected {
+  position: absolute;
+  z-index: 4;
+  top: 42%;
+  left: 62%;
+  display: grid;
+  justify-items: center;
+  color: #fff;
+  font: 950 6cqw / 0.7 monospace;
+  text-shadow: 0 0 1.5cqw #8ed7ff;
+  opacity: 0;
+  animation: ejected 0.8s 3.58s cubic-bezier(.2, .7, .4, 1) both;
+}
+
+.ejected i {
+  margin-top: 1cqw;
+  color: #8ed7ff;
+  font: 850 0.55cqw / 1 monospace;
+  letter-spacing: 0.2em;
+  white-space: nowrap;
+}
+
 @keyframes chrono-dash {
   0%, 12% { transform: translate(0, -50%); }
   34% { opacity: 0.25; transform: translate(28cqw, -50%); }
@@ -258,6 +298,7 @@
 @keyframes verdict { 0%, 12% { opacity: 0; } 25%, 82% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes snap { 0% { opacity: 0; transform: translate(-50%, -50%) scale(2); } 30%, 70% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; } }
 @keyframes final-strike { 0% { opacity: 0; transform: translateX(-30%) rotate(-6deg) scaleX(0); } 35% { opacity: 1; transform: rotate(-6deg) scaleX(1); } 100% { opacity: 0; transform: translateX(30%) rotate(-6deg); } }
+@keyframes ejected { 0% { opacity: 0; transform: scale(1); } 18% { opacity: 1; } 100% { opacity: 0; transform: translate(55cqw, -18cqh) rotate(540deg) scale(0.1); } }
 
 @media (max-aspect-ratio: 4 / 3) {
   .timelineGrid { top: 29%; right: 4%; width: 70%; height: 48%; }
