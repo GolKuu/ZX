@@ -40,6 +40,11 @@ const MODES = [
   description: string;
 }[];
 
+const MODE_ARTWORKS = [
+  { id: 'local', src: '/assets/modes/local-battle-preview.webp' },
+  { id: 'ai', src: '/assets/modes/ai-battle-preview.webp' },
+] as const;
+
 export function ModeMenu() {
   const router = useRouter();
   const menuFocus = useHudStore((state) => state.menuFocus);
@@ -71,20 +76,24 @@ export function ModeMenu() {
 
   return (
     <div aria-label="Выбор режима боя" aria-modal="true" className={styles.scrim} role="dialog">
-      <div
-        aria-hidden="true"
-        className={styles.modeArtwork}
-        data-visible={selected.id === 'ai'}
-      >
-        <Image
-          alt=""
-          className={styles.modeArtworkImage}
-          fill
-          priority
-          sizes="100vw"
-          src="/assets/modes/ai-battle-preview.webp"
-        />
-      </div>
+      {MODE_ARTWORKS.map((artwork) => (
+        <div
+          key={artwork.id}
+          aria-hidden="true"
+          className={styles.modeArtwork}
+          data-variant={artwork.id}
+          data-visible={selected.id === artwork.id}
+        >
+          <Image
+            alt=""
+            className={styles.modeArtworkImage}
+            fill
+            priority={artwork.id === 'local'}
+            sizes="100vw"
+            src={artwork.src}
+          />
+        </div>
+      ))}
 
       <header className={styles.brand}>
         <span>CC//ULTIMATE</span>

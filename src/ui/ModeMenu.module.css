@@ -35,6 +35,13 @@
   content: "";
 }
 
+.modeArtwork[data-variant="local"]::after {
+  background:
+    linear-gradient(90deg, rgb(4 7 11 / 74%) 0 48%, rgb(5 9 14 / 84%) 73% 100%),
+    radial-gradient(circle at 50% 55%, transparent 0 13%, rgb(4 7 11 / 34%) 35%),
+    linear-gradient(180deg, rgb(4 7 11 / 42%), transparent 38%, rgb(4 7 11 / 86%));
+}
+
 .modeArtworkImage {
   object-fit: cover;
   object-position: center 47%;
