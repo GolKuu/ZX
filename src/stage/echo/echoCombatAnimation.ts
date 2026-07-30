@@ -21,6 +21,11 @@ export function applyEchoCombatAnimation(
   rig: FighterRig,
   fighter: FighterSnapshot,
 ): void {
+  if (fighter.health <= 0) {
+    applyKnockdown(rig, fighter.facing);
+    return;
+  }
+
   if (fighter.action !== null) {
     const animation = ANIMATIONS[fighter.action.moveId];
     if (animation !== undefined) {
@@ -40,6 +45,19 @@ export function applyEchoCombatAnimation(
     setRotation(rig.torso, 0, 0, fighter.facing * recoil * 0.42);
     setRotation(rig.head, 0, 0, fighter.facing * recoil * 0.25);
   }
+}
+
+function applyKnockdown(rig: FighterRig, facing: -1 | 1): void {
+  setRotation(rig.root, 0, 0, -facing * 0.52);
+  setRotation(rig.torso, 0, 0, facing * 0.48);
+  setRotation(rig.head, 0, 0, facing * -0.98);
+  setRotation(rig.leftLeg, 0, 0, facing * 0.6);
+  setRotation(rig.rightLeg, 0, 0, -facing * 0.84);
+  setRotation(rig.leftArm, 0, 0, facing * -0.34);
+  setRotation(rig.rightArm, 0, 0, facing * 1.08);
+  rig.root.position.y = -0.84;
+  rig.leftLeg.position.y = 0.4;
+  rig.rightLeg.position.y = 0.46;
 }
 
 function dataJab(rig: FighterRig, progress: number, facing: -1 | 1): void {

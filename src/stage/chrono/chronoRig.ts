@@ -58,6 +58,11 @@ export function applyChronoCombatAnimation(
   rig: ChronoRig,
   fighter: FighterSnapshot,
 ): void {
+  if (fighter.health <= 0) {
+    applyChronoKnockdown(rig, fighter.facing);
+    return;
+  }
+
   if (fighter.guarding) {
     rig.leftArm.rotation.z = 1.05;
     rig.rightArm.rotation.z = -1.05;
@@ -115,6 +120,21 @@ export function applyChronoCombatAnimation(
     rig.coat.rotation.z -= facing * strike * 0.28;
     showClockEffect(rig, facing, strike, 1.02, 1.32, 0.68);
   }
+}
+
+function applyChronoKnockdown(rig: ChronoRig, facing: -1 | 1): void {
+  rig.root.rotation.z = 0;
+  rig.root.position.y = -0.1;
+  rig.torso.rotation.z = facing * 0.34;
+  rig.head.rotation.z = facing * 0.42;
+  rig.leftArm.rotation.z = -0.92;
+  rig.rightArm.rotation.z = 0.92;
+  rig.leftLeg.rotation.z = 0.56;
+  rig.rightLeg.rotation.z = -0.74;
+  rig.coat.rotation.z = facing * 0.18;
+  rig.effect.visible = false;
+  rig.effect.scale.setScalar(0.08);
+  rig.fragments.rotation.z = -facing * 0.08;
 }
 
 function showClockEffect(
