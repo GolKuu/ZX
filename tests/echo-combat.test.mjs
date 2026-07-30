@@ -7,6 +7,7 @@ import { resolveCommand } from '../.sim-test-build/src/input/command.js';
 import { ECHO_COMMANDS } from '../.sim-test-build/src/input/echoCommands.js';
 import { ECHO_MOVES } from '../.sim-test-build/src/data/echo-combat-moves.js';
 import {
+  ECHO_CINEMATIC_FREEZE_FRAMES,
   ECHO_SUPER_MOVES,
   ECHO_SUPER_MOVE_IDS,
 } from '../.sim-test-build/src/data/echo-super-moves.js';
@@ -78,4 +79,9 @@ test('ECHO supers encode the hologram swarm, copied combo, and finisher', () => 
   assert.equal(repeat.hitboxes.length, 7);
   assert.equal(statistics.hitboxes[0].hit.damage, 1_000);
   assert.ok(repeat.hitboxes.at(-1).hit.damage > repeat.hitboxes[0].hit.damage);
+  assert.deepEqual(ECHO_CINEMATIC_FREEZE_FRAMES, {
+    analysis: 150,
+    repeat: 126,
+    statistics: 220,
+  });
 });

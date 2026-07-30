@@ -11,6 +11,14 @@ export type GlitchSuperKind = keyof typeof GLITCH_SUPER_MOVE_IDS;
 
 export const GLITCH_LEVEL_ONE_COST = 34;
 export const GLITCH_LEVEL_THREE_COST = 100;
+export const GLITCH_CINEMATIC_FRAMES: Readonly<Record<
+  GlitchSuperKind,
+  number
+>> = {
+  error: 192,
+  critical: 276,
+  patchNotes: 252,
+};
 
 interface GlitchSuperRow {
   readonly id: string;
@@ -29,7 +37,7 @@ const rows: readonly GlitchSuperRow[] = [
     id: GLITCH_SUPER_MOVE_IDS.error,
     startup: 18,
     active: 4,
-    recovery: 104,
+    recovery: GLITCH_CINEMATIC_FRAMES.error - 18 - 4,
     damage: 110,
     hitstop: [14, 20],
     hitstun: 72,
@@ -40,7 +48,7 @@ const rows: readonly GlitchSuperRow[] = [
     id: GLITCH_SUPER_MOVE_IDS.critical,
     startup: 22,
     active: 5,
-    recovery: 176,
+    recovery: GLITCH_CINEMATIC_FRAMES.critical - 22 - 5,
     damage: 390,
     hitstop: [20, 28],
     hitstun: 128,
@@ -51,7 +59,7 @@ const rows: readonly GlitchSuperRow[] = [
     id: GLITCH_SUPER_MOVE_IDS.patchNotes,
     startup: 14,
     active: 5,
-    recovery: 286,
+    recovery: GLITCH_CINEMATIC_FRAMES.patchNotes - 14 - 5,
     damage: 1_000,
     hitstop: [24, 34],
     hitstun: 210,

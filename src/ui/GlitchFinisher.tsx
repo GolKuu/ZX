@@ -18,6 +18,12 @@ const PIXELS = Array.from({ length: 32 }, (_, index) => ({
   top: `${(index * 53 + 7) % 88}%`,
 }));
 
+const CINEMATIC_LABELS = {
+  error: 'Level 1 Super: Ошибка',
+  critical: 'Level 3 Super: Критическая ошибка',
+  patchNotes: 'Ultimate Finisher: Patch Notes',
+} as const;
+
 export function GlitchFinisher({
   fighterId,
   kind,
@@ -30,7 +36,7 @@ export function GlitchFinisher({
   return (
     <section
       key={version}
-      aria-label={`${fighterId.toUpperCase()} GLITCH ultimate: Patch Notes`}
+      aria-label={`${fighterId.toUpperCase()} GLITCH ${CINEMATIC_LABELS[kind]}`}
       aria-live="assertive"
       className={`${styles.finisher} ${motion.timeline}`}
       data-kind={kind}

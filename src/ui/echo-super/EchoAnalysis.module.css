@@ -67,8 +67,8 @@
 
 .hologram {
   position: absolute;
-  top: var(--y);
-  left: var(--x);
+  top: 52%;
+  left: 50%;
   width: 2.7cqw;
   height: 6.5cqw;
   background:
@@ -77,7 +77,9 @@
     linear-gradient(108deg, transparent 32%, var(--echo) 33% 46%, transparent 47%);
   filter: drop-shadow(0 0 0.55cqw var(--echo));
   opacity: 0;
-  transform: translate(-50%, -50%) rotate(var(--rotation));
+  transform:
+    translate(calc(-50% + var(--x)), calc(-50% + var(--y)))
+    rotate(var(--rotation));
   animation: hologram 2.45s calc(0.55s + var(--delay)) both;
 }
 
@@ -122,7 +124,7 @@
 @keyframes scene { 0% { opacity: 0; } 4%, 89% { opacity: 1; } 100% { visibility: hidden; opacity: 0; } }
 @keyframes grid { from { background-position: 0 0; } to { background-position: 8cqw 12cqw; } }
 @keyframes target { from { opacity: 0; transform: translate(-50%, -50%) scale(1.6); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
-@keyframes hologram { 0% { opacity: 0; } 12%, 58% { opacity: 0.48; } 72% { opacity: 0.9; transform: translate(-50%, -50%) rotate(var(--rotation)); } 100% { opacity: 0; top: 52%; left: 50%; transform: translate(-50%, -50%) scale(0.2); } }
+@keyframes hologram { 0% { opacity: 0; } 12%, 58% { opacity: 0.48; } 72% { opacity: 0.9; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--rotation)); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); } }
 @keyframes quote { from { opacity: 0; transform: translateX(3cqw); } to { opacity: 1; transform: none; } }
 @keyframes impact { 0%, 76%, 100% { opacity: 0; } 79% { opacity: 1; transform: translate(-50%, -50%) scale(0.2); } 89% { opacity: 0; transform: translate(-50%, -50%) scale(8); } }
 

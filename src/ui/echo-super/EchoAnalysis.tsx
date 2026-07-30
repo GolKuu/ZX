@@ -15,8 +15,8 @@ const HOLOGRAMS = Array.from({ length: 24 }, (_, index) => {
   return {
     delay: `${(index % 6) * 34}ms`,
     rotation: `${index % 2 === 0 ? -12 : 12}deg`,
-    x: `${50 + Math.cos(angle) * radius}%`,
-    y: `${53 + Math.sin(angle) * radius * 0.72}%`,
+    x: `${Math.cos(angle) * radius}cqw`,
+    y: `${Math.sin(angle) * radius * 0.72}vh`,
   };
 });
 

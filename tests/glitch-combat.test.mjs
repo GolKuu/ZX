@@ -11,9 +11,11 @@ import {
   GLITCH_MOVES,
 } from '../.sim-test-build/src/data/glitch-combat-moves.js';
 import {
+  GLITCH_CINEMATIC_FRAMES,
   GLITCH_SUPER_MOVE_IDS,
   GLITCH_SUPER_MOVES,
 } from '../.sim-test-build/src/data/glitch-super-moves.js';
+import { totalMoveFrames } from '../.sim-test-build/src/sim/frame-data.js';
 
 const NEUTRAL = 5;
 const DOWN = 2;
@@ -62,6 +64,18 @@ test('GLITCH Patch Notes finisher deletes the remaining health bar', () => {
   assert.ok(critical.hitboxes[0].hit.damage > error.hitboxes[0].hit.damage);
   assert.equal(patchNotes.hitboxes[0].hit.damage, 1_000);
   assert.equal(patchNotes.hitboxes[0].hit.block, undefined);
+  assert.equal(
+    totalMoveFrames(error),
+    GLITCH_CINEMATIC_FRAMES.error,
+  );
+  assert.equal(
+    totalMoveFrames(critical),
+    GLITCH_CINEMATIC_FRAMES.critical,
+  );
+  assert.equal(
+    totalMoveFrames(patchNotes),
+    GLITCH_CINEMATIC_FRAMES.patchNotes,
+  );
 });
 
 test('Packet Loss resolves on quarter-circle forward plus punch', () => {

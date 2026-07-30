@@ -21,6 +21,14 @@ export const ECHO_SUPER_KINDS: Readonly<Record<string, EchoSuperKind>> = {
   [ECHO_SUPER_MOVE_IDS.statistics]: 'statistics',
 };
 
+export const ECHO_CINEMATIC_FREEZE_FRAMES: Readonly<
+  Record<EchoSuperKind, number>
+> = {
+  analysis: 150,
+  repeat: 126,
+  statistics: 220,
+};
+
 export function echoSuperKindForMove(moveId: string): EchoSuperKind | null {
   return ECHO_SUPER_KINDS[moveId] ?? null;
 }

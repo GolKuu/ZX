@@ -5,6 +5,7 @@ import {
   chronoSuperKindForMove,
 } from '@/src/data/chrono-super-moves';
 import {
+  ECHO_CINEMATIC_FREEZE_FRAMES,
   echoSuperCostForMove,
   echoSuperKindForMove,
 } from '@/src/data/echo-super-moves';
@@ -73,6 +74,7 @@ export class XrayController {
           echoKind !== null
           && (event.fighterId === 'p1' || event.fighterId === 'p2')
         ) {
+          this.freeze.start(ECHO_CINEMATIC_FREEZE_FRAMES[echoKind]);
           useRenderStore.getState().triggerEchoSuper(event.fighterId, echoKind);
         }
         if (
