@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/refs -- R3F attaches the supplied refs. */
 import type { RefObject } from 'react';
 import {
   AdditiveBlending,

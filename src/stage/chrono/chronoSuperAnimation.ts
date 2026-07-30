@@ -32,11 +32,14 @@ function clockCollapse(
 ): void {
   const authority = envelope(progress, 0.04, 0.22, 0.78, 0.98);
   const strikes = pulseTrain(progress, 5, 0.26, 0.7);
+  const strikeWave = waveTrain(progress, 5, 0.26, 0.7);
   rig.root.position.x += facing * strikes * 0.22;
   rig.torso.rotation.y += facing * authority * 0.22;
   rig.head.rotation.y -= facing * authority * 0.08;
-  rig.leftArm.rotation.z += authority * 0.72;
-  rig.rightArm.rotation.z -= authority * 0.72;
+  rig.leftArm.rotation.z += authority * 0.42 + Math.max(0, -strikeWave) * 0.9;
+  rig.rightArm.rotation.z -= authority * 0.42 + Math.max(0, strikeWave) * 0.9;
+  rig.leftArm.position.x -= Math.max(0, -strikeWave) * 0.22;
+  rig.rightArm.position.x += Math.max(0, strikeWave) * 0.22;
   rig.coat.rotation.z -= facing * strikes * 0.12;
   showSuperClock(rig, facing, authority, 1.06);
 }
@@ -96,6 +99,18 @@ function pulseTrain(
 ): number {
   const window = MathUtils.clamp((progress - start) / (end - start), 0, 1);
   return Math.pow(Math.max(0, Math.sin(window * Math.PI * count)), 5);
+}
+
+function waveTrain(
+  progress: number,
+  count: number,
+  start: number,
+  end: number,
+): number {
+  if (progress <= start || progress >= end) return 0;
+  const window = (progress - start) / (end - start);
+  const wave = Math.sin(window * Math.PI * count);
+  return Math.sign(wave) * Math.pow(Math.abs(wave), 5);
 }
 
 function envelope(
