@@ -53,6 +53,38 @@ export const FIGHTER_VOICE_PROFILES = {
       { src: '/audio/echo/victory-03.mp3', text: 'Я победил тебя твоим же планом.' },
     ],
   },
+  glitch: {
+    dodge: [
+      { src: '/audio/glitch/dodge-01.mp3', text: 'Ошибка 403.' },
+      {
+        src: '/audio/glitch/dodge-02.mp3',
+        text: 'Попробуйте перезагрузить противника.',
+      },
+      { src: '/audio/glitch/dodge-03.mp3', text: 'Атака не найдена.' },
+    ],
+    taunt: [
+      { src: '/audio/glitch/taunt-01.mp3', text: 'Работает как задумано.' },
+      { src: '/audio/glitch/taunt-02.mp3', text: 'Не баг. Особенность.' },
+      {
+        src: '/audio/glitch/taunt-03.mp3',
+        text: 'Разработчик бы это не одобрил.',
+      },
+    ],
+    victory: [
+      {
+        src: '/audio/glitch/victory-01.mp3',
+        text: 'Opponent.exe перестал отвечать.',
+      },
+      {
+        src: '/audio/glitch/victory-02.mp3',
+        text: 'Критическая ошибка игрока.',
+      },
+      {
+        src: '/audio/glitch/victory-03.mp3',
+        text: 'Патчноуты были против тебя.',
+      },
+    ],
+  },
 } as const satisfies Partial<Record<CharacterId, FighterVoiceProfile>>;
 
 export type VoicedCharacterId = keyof typeof FIGHTER_VOICE_PROFILES;
