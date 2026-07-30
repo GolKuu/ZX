@@ -11,10 +11,10 @@ const ORIGIN = [205, 411];
 const AMOUNTS = [0.25, 0.5, 0.75, 1, 'strike', 0.75, 0.5, 0.25, 0];
 
 const TARGETS = {
-  lp: { torso: -0.08, head: 0.04, scarf: 0.18, leftArm: -0.12, rightArm: 0.78, leftLeg: 0.08, rightLeg: -0.08 },
-  hp: { torso: -0.16, head: 0.08, scarf: 0.32, leftArm: -0.2, rightArm: 1.08, leftLeg: 0.12, rightLeg: -0.12 },
-  lk: { torso: 0.2, head: -0.12, scarf: 0.38, leftArm: 0.18, rightArm: -0.18, leftLeg: -0.16, rightLeg: 0.98 },
-  hk: { torso: -0.34, head: 0.14, scarf: 0.62, leftArm: -0.36, rightArm: 0.28, leftLeg: -0.12, rightLeg: 1.5 },
+  lp: { torso: -0.08, head: 0.04, scarf: 0.18, leftArm: -0.12, rightArm: 0.46, leftLeg: 0.08, rightLeg: -0.08 },
+  hp: { torso: -0.16, head: 0.08, scarf: 0.32, leftArm: -0.2, rightArm: 0.68, leftLeg: 0.12, rightLeg: -0.12 },
+  lk: { torso: 0.2, head: -0.12, scarf: 0.38, leftArm: 0.18, rightArm: -0.18, leftLeg: -0.16, rightLeg: 0.72 },
+  hk: { torso: -0.22, head: 0.1, scarf: 0.48, leftArm: -0.28, rightArm: 0.22, leftLeg: -0.1, rightLeg: 0.68 },
 };
 
 const rig = JSON.parse(await readFile(`${PROFILE}/rig.json`, 'utf8'));

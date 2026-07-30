@@ -1,26 +1,26 @@
 {
-  "source": "output/imagegen/mim-fighter-reference.png",
+  "source": "output/imagegen/mim-fighter-reference-v2.png",
   "poses": {
     "lp": {
-      "width": 393,
+      "width": 378,
       "height": 385,
       "originX": 0.5,
       "ground": 1.0104
     },
     "hp": {
-      "width": 370,
+      "width": 357,
       "height": 386,
       "originX": 0.57,
       "ground": 1.0078
     },
     "lk": {
-      "width": 421,
-      "height": 377,
-      "originX": 0.47,
-      "ground": 0.9973
+      "width": 454,
+      "height": 291,
+      "originX": 0.44,
+      "ground": 1.0034
     },
     "hk": {
-      "width": 392,
+      "width": 379,
       "height": 407,
       "originX": 0.39,
       "ground": 0.9975

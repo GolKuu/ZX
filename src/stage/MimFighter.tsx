@@ -20,8 +20,6 @@ import { mimAnimationBeat } from './mim/mimSpriteTimeline';
 import type { MimAttackName } from './mim/mimSpriteRig';
 import { useMimSprites } from './mim/useMimSprites';
 
-const MIM_PIXEL_SCALE = 2.62 / 381;
-
 export function MimFighter({
   fighterId,
 }: {
@@ -98,7 +96,7 @@ export function MimFighter({
           {sprites.attacks === null ? null : (
             <MimAttackSprites
               attacks={sprites.attacks}
-              pixelScale={MIM_PIXEL_SCALE}
+              pixelScale={sprites.rig?.pixelScale ?? 2.62 / 380}
               shown={shownAttack}
             />
           )}

@@ -1,85 +1,27 @@
 #!/usr/bin/env node
 
 import { mkdir, writeFile } from 'node:fs/promises';
-import path from 'node:path';
 import sharp from 'sharp';
+import path from 'node:path';
+import {
+  ATTACK_DIR,
+  ATTACKS,
+  ORIGIN,
+  PARTS,
+  PROFILE_DIR,
+  SOURCE,
+  VIEW,
+} from './mim-sprite-data.mjs';
+import { keepLargestOpaqueComponent } from './mim-alpha.mjs';
 
-const SOURCE = 'output/imagegen/mim-fighter-reference.png';
-const PROFILE_DIR = 'public/sprites/mim-profile';
-const ATTACK_DIR = 'public/sprites/mim-attacks';
-const VIEW = { left: 20, top: 190, width: 380, height: 430 };
-const ORIGIN = [205, 411];
-
-const PARTS = {
-  scarf: {
-    box: [14, 108, 165, 96],
-    joint: [166, 123],
-    points: [[166, 112], [142, 113], [111, 124], [72, 139], [36, 153],
-      [17, 177], [42, 171], [20, 198], [58, 192], [96, 180],
-      [132, 160], [159, 139], [177, 126]],
-  },
-  head: {
-    box: [164, 22, 108, 106],
-    joint: [219, 119],
-    points: [[190, 27], [228, 25], [257, 43], [269, 70], [264, 98],
-      [246, 118], [220, 126], [191, 118], [173, 99], [168, 73], [175, 47]],
-  },
-  torso: {
-    box: [112, 107, 188, 164],
-    joint: [210, 255],
-    points: [[157, 127], [184, 111], [236, 111], [265, 127], [277, 155],
-      [281, 204], [270, 238], [243, 263], [181, 263], [151, 242],
-      [141, 208], [143, 160]],
-    base: true,
-    excludes: [
-      { cx: 149, cy: 180, rx: 33, ry: 62 },
-      { cx: 176, cy: 177, rx: 19, ry: 34 },
-      { cx: 290, cy: 178, rx: 38, ry: 62 },
-      { cx: 132, cy: 126, rx: 52, ry: 31 },
-    ],
-  },
-  leftArm: {
-    box: [108, 122, 97, 108],
-    joint: [151, 139],
-    points: [[141, 126], [168, 129], [184, 143], [202, 154], [204, 177],
-      [193, 197], [181, 218], [158, 227], [135, 218], [118, 200],
-      [112, 176], [118, 149]],
-  },
-  rightArm: {
-    box: [253, 116, 84, 108],
-    joint: [274, 139],
-    points: [[270, 126], [289, 120], [315, 128], [329, 143], [334, 165],
-      [326, 187], [311, 206], [289, 219], [269, 213], [258, 195],
-      [258, 167]],
-  },
-  leftLeg: {
-    box: [53, 243, 154, 148],
-    joint: [178, 253],
-    points: [[158, 249], [188, 246], [204, 265], [196, 292], [183, 321],
-      [171, 347], [160, 370], [133, 381], [87, 384], [59, 371],
-      [62, 346], [88, 330], [103, 298], [120, 269], [140, 254]],
-  },
-  rightLeg: {
-    box: [203, 243, 140, 151],
-    joint: [240, 253],
-    points: [[216, 249], [253, 247], [282, 256], [307, 274], [317, 299],
-      [307, 326], [291, 347], [323, 355], [340, 378], [328, 391],
-      [285, 391], [257, 380], [241, 358], [244, 331], [250, 304], [229, 283]],
-  },
-};
-
-const ATTACKS = {
-  lp: { left: 425, top: 200, width: 405, height: 410, originX: 0.5 },
-  hp: { left: 815, top: 200, width: 380, height: 410, originX: 0.57 },
-  lk: { left: 1185, top: 210, width: 435, height: 405, originX: 0.47 },
-  hk: { left: 1600, top: 180, width: 405, height: 435, originX: 0.39 },
-};
-
-function maskSvg(width, height, points, excludes = []) {
-  const polygon = points.map((point) => point.join(',')).join(' ');
+function maskSvg(width, height, spec) {
+  const shape = spec.ellipse === undefined
+    ? `<polygon points="${spec.points.map((point) => point.join(',')).join(' ')}" fill="white"/>`
+    : `<ellipse cx="${spec.ellipse.cx}" cy="${spec.ellipse.cy}" rx="${spec.ellipse.rx}" ry="${spec.ellipse.ry}" fill="white"/>`;
+  const excludes = spec.excludes ?? [];
   if (excludes.length === 0) {
     return Buffer.from(
-      `<svg width="${width}" height="${height}"><polygon points="${polygon}" fill="white"/></svg>`,
+      `<svg width="${width}" height="${height}">${shape}</svg>`,
     );
   }
   const holes = excludes.map(({ cx, cy, rx, ry }) => (
@@ -87,7 +29,7 @@ function maskSvg(width, height, points, excludes = []) {
   )).join('');
   return Buffer.from(
     `<svg width="${width}" height="${height}"><mask id="part">`
-    + `<polygon points="${polygon}" fill="white"/>${holes}</mask>`
+    + `${shape}${holes}</mask>`
     + `<rect width="${width}" height="${height}" fill="white" mask="url(#part)"/></svg>`,
   );
 }
@@ -101,19 +43,14 @@ async function sliceProfile() {
   const source = await sharp(SOURCE).extract(VIEW).png().toBuffer();
   const manifest = {
     source: SOURCE,
-    view: { ...VIEW, figureHeight: 381 },
+    view: { ...VIEW, figureHeight: 380 },
     facesRight: true,
     origin: ORIGIN,
     parts: {},
   };
 
   for (const [name, spec] of Object.entries(PARTS)) {
-    const sourceMask = maskSvg(
-      VIEW.width,
-      VIEW.height,
-      spec.points,
-      spec.excludes,
-    );
+    const sourceMask = maskSvg(VIEW.width, VIEW.height, spec);
     const clippedSource = await sharp(source)
       .composite([{ input: sourceMask, blend: 'dest-in' }])
       .png()
@@ -160,7 +97,8 @@ async function sliceAttacks() {
   for (const [name, box] of Object.entries(ATTACKS)) {
     const { originX, ...crop } = box;
     const extracted = await sharp(SOURCE).extract(crop).png().toBuffer();
-    const trimmed = await trimWithInfo(extracted);
+    const isolated = await keepLargestOpaqueComponent(extracted);
+    const trimmed = await trimWithInfo(isolated);
     const topInCrop = -(trimmed.info.trimOffsetTop ?? 0);
     await writeFile(path.join(ATTACK_DIR, `${name}.png`), trimmed.data);
     manifest.poses[name] = {

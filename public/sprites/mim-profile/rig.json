@@ -1,11 +1,11 @@
 {
-  "source": "output/imagegen/mim-fighter-reference.png",
+  "source": "output/imagegen/mim-fighter-reference-v2.png",
   "view": {
     "left": 20,
     "top": 190,
     "width": 380,
     "height": 430,
-    "figureHeight": 381
+    "figureHeight": 380
   },
   "facesRight": true,
   "origin": [
@@ -14,11 +14,11 @@
   ],
   "parts": {
     "scarf": {
-      "width": 141,
-      "height": 75,
+      "width": 148,
+      "height": 88,
       "pivot": [
-        0.922,
-        0.0667
+        0.8851,
+        0.125
       ],
       "joint": [
         166,
@@ -26,11 +26,11 @@
       ]
     },
     "head": {
-      "width": 90,
-      "height": 100,
+      "width": 92,
+      "height": 99,
       "pivot": [
-        0.4444,
-        0.93
+        0.4348,
+        0.9394
       ],
       "joint": [
         219,
@@ -50,11 +50,11 @@
       ]
     },
     "leftArm": {
-      "width": 92,
-      "height": 99,
+      "width": 102,
+      "height": 106,
       "pivot": [
-        0.4239,
-        0.1313
+        0.4412,
+        0.1604
       ],
       "joint": [
         151,
@@ -62,11 +62,11 @@
       ]
     },
     "rightArm": {
-      "width": 76,
-      "height": 94,
+      "width": 86,
+      "height": 104,
       "pivot": [
-        0.2105,
-        0.1702
+        0.2442,
+        0.1923
       ],
       "joint": [
         274,
@@ -74,11 +74,11 @@
       ]
     },
     "leftLeg": {
-      "width": 128,
-      "height": 138,
+      "width": 135,
+      "height": 151,
       "pivot": [
-        0.7969,
-        0.0507
+        0.7778,
+        0.0662
       ],
       "joint": [
         178,
@@ -86,11 +86,11 @@
       ]
     },
     "rightLeg": {
-      "width": 124,
-      "height": 144,
+      "width": 140,
+      "height": 157,
       "pivot": [
-        0.1935,
-        0.0417
+        0.1929,
+        0.0637
       ],
       "joint": [
         240,

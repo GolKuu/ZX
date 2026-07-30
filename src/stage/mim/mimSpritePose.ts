@@ -27,10 +27,10 @@ const NEUTRAL: MimSpritePose = {
 };
 
 const TARGETS: Readonly<Record<MimAttackButton, MimSpritePose>> = {
-  lp: pose({ torso: -0.08, head: 0.04, scarf: 0.18, leftArm: -0.12, rightArm: 0.78, leftLeg: 0.08, rightLeg: -0.08, drift: 0.1 }),
-  hp: pose({ torso: -0.16, head: 0.08, scarf: 0.32, leftArm: -0.2, rightArm: 1.08, leftLeg: 0.12, rightLeg: -0.12, drift: 0.16 }),
-  lk: pose({ torso: 0.2, head: -0.12, scarf: 0.38, leftArm: 0.18, rightArm: -0.18, leftLeg: -0.16, rightLeg: 0.98, lift: -0.12, drift: 0.08 }),
-  hk: pose({ torso: -0.34, head: 0.14, scarf: 0.62, leftArm: -0.36, rightArm: 0.28, leftLeg: -0.12, rightLeg: 1.5, lift: -0.04, drift: 0.14 }),
+  lp: pose({ torso: -0.08, head: 0.04, scarf: 0.18, leftArm: -0.12, rightArm: 0.46, leftLeg: 0.08, rightLeg: -0.08, drift: 0.1 }),
+  hp: pose({ torso: -0.16, head: 0.08, scarf: 0.32, leftArm: -0.2, rightArm: 0.68, leftLeg: 0.12, rightLeg: -0.12, drift: 0.16 }),
+  lk: pose({ torso: 0.2, head: -0.12, scarf: 0.38, leftArm: 0.18, rightArm: -0.18, leftLeg: -0.16, rightLeg: 0.72, lift: -0.12, drift: 0.08 }),
+  hk: pose({ torso: -0.22, head: 0.1, scarf: 0.48, leftArm: -0.28, rightArm: 0.22, leftLeg: -0.1, rightLeg: 0.68, lift: -0.04, drift: 0.12 }),
 };
 
 export function mimSpritePoseFor(
