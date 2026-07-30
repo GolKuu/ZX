@@ -186,13 +186,71 @@ function findRectangles(edges, width, height, chroma) {
             left: xs[left], right: xs[right], top: ys[top], bottom: ys[bottom],
           };
           if (!sidesPresent(edges, width, height, box)) continue;
+          if (!tintStepsInward(chroma, width, height, box)) continue;
           rectangles.push(box);
-
         }
       }
     }
   }
   return rectangles;
+}
+
+/**
+ * Reject candidates whose sides do not have the tint on one side only.
+ *
+ * Projection is generous by design, and the price is that every pairing of a left
+ * with a right and a top with a bottom validates — one long vertical edge plus three
+ * horizontal peaks produced eleven "boxes" from two, layer counts of six where the
+ * truth was one, and anchors measured on regions that did not exist.
+ *
+ * A real edge is the boundary of a wash: sample a band just inside it and a band just
+ * outside, and the inside is tinted more. An edge invented halfway down a real box
+ * has the same tint on both sides and fails. Corners are skipped because two sides
+ * meet there and both contribute.
+ */
+function tintStepsInward(chroma, width, height, box) {
+  const band = 3;
+  const mean = (from, to, at) => {
+    let total = 0;
+    let count = 0;
+    for (let step = from; step <= to; step += 1) {
+      const [x, y] = at(step);
+      if (x < 0 || y < 0 || x >= width || y >= height) continue;
+      total += chroma[y * width + x];
+      count += 1;
+    }
+    return count === 0 ? null : total / count;
+  };
+  const insetX = Math.min(10, Math.floor((box.right - box.left) / 4));
+  const insetY = Math.min(10, Math.floor((box.bottom - box.top) / 4));
+  const steps = [
+    [(x) => [x, box.top + band], (x) => [x, box.top - band], box.left + insetX, box.right - insetX],
+    [(x) => [x, box.bottom - band], (x) => [x, box.bottom + band], box.left + insetX, box.right - insetX],
+    [(y) => [box.left + band, y], (y) => [box.left - band, y], box.top + insetY, box.bottom - insetY],
+    [(y) => [box.right - band, y], (y) => [box.right + band, y], box.top + insetY, box.bottom - insetY],
+  ];
+  for (const [inward, outward, from, to] of steps) {
+    const inside = mean(from, to, inward);
+    const outside = mean(from, to, outward);
+    if (inside === null || outside === null) return false;
+    if (inside - outside < 3) return false;
+  }
+  return true;
+}
+
+/** How strongly each pixel leans towards one family's hue, as a signed amount. */
+function chromaField(data, width, height, family) {
+  const field = new Float32Array(width * height);
+  for (let index = 0; index < field.length; index += 1) {
+    const offset = index * 4;
+    const r = data[offset];
+    const g = data[offset + 1];
+    const b = data[offset + 2];
+    if (family.name === 'blue') field[index] = b - (r + g) / 2;
+    else if (family.name === 'green') field[index] = g - (r + b) / 2;
+    else field[index] = r - (g + b) / 2;
+  }
+  return field;
 }
 
 /** Positions where a projection rises above a threshold, one per local cluster. */
@@ -443,7 +501,12 @@ export function removeDiagramOverlay(data, width, height, options = {}) {
       allEdges[index] = 1;
     }
     if (edgeCount < MIN_RUN) continue;
-    const rectangles = findRectangles(edges, width, height);
+    const rectangles = findRectangles(
+      edges,
+      width,
+      height,
+      chromaField(data, width, height, family),
+    );
     if (rectangles.length === 0) {
       report.push(`${family.name}: ${String(edgeCount)}px of edge, no boxes resolved`);
       continue;
