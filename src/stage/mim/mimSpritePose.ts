@@ -43,6 +43,9 @@ const TARGETS: Readonly<Record<MimActionKind, MimSpritePose>> = {
   hp: pose({ torso: -0.16, head: 0.08, scarf: 0.32, leftArm: -0.2, rightArm: 0.68, leftLeg: 0.12, rightLeg: -0.12, drift: 0.16 }),
   lk: pose({ torso: 0.28, head: -0.16, scarf: 0.38, leftArm: 0.18, rightArm: -0.18, leftLeg: 0.12, rightLeg: 0.72, lift: -0.24, drift: 0.08 }),
   hk: pose({ torso: -0.22, head: 0.1, scarf: 0.48, leftArm: -0.28, rightArm: 0.22, leftLeg: -0.1, rightLeg: 0.68, lift: -0.04, drift: 0.12 }),
+  wall: pose({ torso: -0.12, head: 0.16, scarf: 0.34, leftArm: 0.12, rightArm: 0.72, leftLeg: 0.1, rightLeg: -0.1, drift: 0.03 }),
+  trap: pose({ torso: 0.32, head: -0.14, scarf: 0.5, leftArm: 0.28, rightArm: -0.48, leftLeg: 0.18, rightLeg: -0.18, lift: -0.18, drift: 0.06 }),
+  fake: pose({ torso: -0.34, head: 0.22, scarf: 0.68, leftArm: -0.62, rightArm: 0.92, leftLeg: 0.16, rightLeg: -0.2, lift: -0.07, drift: 0.17 }),
   // Both arms drive and the lunge is longer than any normal — the read for
   // "this cost the whole energy bar".
   super: pose({ torso: -0.26, head: 0.12, scarf: 0.6, leftArm: -0.38, rightArm: 0.95, leftLeg: 0.22, rightLeg: -0.24, lift: -0.09, drift: 0.24 }),

@@ -1,5 +1,9 @@
 import { moveKindFor } from '../../data/move-kind.js';
 import { MIM_MOVES, MIM_MOVE_IDS } from '../../data/mim-moves.js';
+import {
+  MIM_SPECIAL_MOVES,
+  MIM_SPECIAL_MOVE_IDS,
+} from '../../data/mim-special-moves.js';
 import { MIM_SUPER_MOVES } from '../../data/mim-super-moves.js';
 import { TAUNT_MOVES } from '../../data/taunt-move.js';
 import {
@@ -11,7 +15,14 @@ import {
 export type MimAttackButton = 'lp' | 'hp' | 'lk' | 'hk';
 
 /** Everything MIM can be doing that has authored frames behind it. */
-export type MimActionKind = MimAttackButton | 'super' | 'ultimate' | 'taunt';
+export type MimActionKind =
+  | MimAttackButton
+  | 'wall'
+  | 'trap'
+  | 'fake'
+  | 'super'
+  | 'ultimate'
+  | 'taunt';
 
 export interface MimAnimationBeat {
   readonly amount: number;
@@ -38,7 +49,7 @@ const BUTTONS: Readonly<Record<string, MimAttackButton>> = {
  * ALT+F4.
  */
 const MOVES = new Map(
-  [...MIM_MOVES, ...MIM_SUPER_MOVES, ...TAUNT_MOVES].map(
+  [...MIM_MOVES, ...MIM_SPECIAL_MOVES, ...MIM_SUPER_MOVES, ...TAUNT_MOVES].map(
     (move) => [move.id, move],
   ),
 );
@@ -56,6 +67,9 @@ export function mimAnimationBeat(
 }
 
 function kindOf(moveId: string): MimActionKind | null {
+  if (moveId === MIM_SPECIAL_MOVE_IDS.invisibleWall) return 'wall';
+  if (moveId === MIM_SPECIAL_MOVE_IDS.bananaTrap) return 'trap';
+  if (moveId === MIM_SPECIAL_MOVE_IDS.fakeOpening) return 'fake';
   const kind = moveKindFor(moveId);
   return kind === 'normal' ? null : kind;
 }

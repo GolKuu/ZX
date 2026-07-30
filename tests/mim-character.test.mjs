@@ -14,6 +14,10 @@ import {
   MIM_SUPER_MOVES,
   MIM_SUPER_MOVE_IDS,
 } from '../.sim-test-build/src/data/mim-super-moves.js';
+import {
+  MIM_SPECIAL_MOVES,
+  MIM_SPECIAL_MOVE_IDS,
+} from '../.sim-test-build/src/data/mim-special-moves.js';
 
 const expectedByButton = {
   lp: MIM_MOVE_IDS.snap,
@@ -67,6 +71,39 @@ test('MIM ALT+F4 waits for the low-health ultimate unlock', () => {
   );
 });
 
+test('MIM owns dedicated E R F specials and Q modifier supers', () => {
+  assert.equal(resolveMimPress('mimR')?.moveId, MIM_SPECIAL_MOVE_IDS.invisibleWall);
+  assert.equal(resolveMimPress('mimE')?.moveId, MIM_SPECIAL_MOVE_IDS.bananaTrap);
+  assert.equal(resolveMimPress('mimF')?.moveId, MIM_SPECIAL_MOVE_IDS.fakeOpening);
+  assert.equal(
+    resolveMimPress('mimE', ['mimQ'], 34)?.moveId,
+    MIM_SUPER_MOVE_IDS.prank,
+  );
+  assert.equal(
+    resolveMimPress('mimR', ['mimQ'], 100)?.moveId,
+    MIM_SUPER_MOVE_IDS.hero,
+  );
+  assert.equal(
+    resolveMimPress('mimF', ['mimQ'], 0, true)?.moveId,
+    MIM_SUPER_MOVE_IDS.altF4,
+  );
+});
+
+test('MIM specials preserve normals and keep fake opening harmless', () => {
+  assert.deepEqual(
+    MIM_SPECIAL_MOVES.map(({ id }) => id),
+    Object.values(MIM_SPECIAL_MOVE_IDS),
+  );
+  const fake = MIM_SPECIAL_MOVES.find(
+    ({ id }) => id === MIM_SPECIAL_MOVE_IDS.fakeOpening,
+  );
+  const trap = MIM_SPECIAL_MOVES.find(
+    ({ id }) => id === MIM_SPECIAL_MOVE_IDS.bananaTrap,
+  );
+  assert.equal(fake?.hitboxes.length, 0);
+  assert.ok((trap?.hitboxes[0]?.hit.damage ?? 99) <= 12);
+});
+
 test('MIM supers have authored cinematic hit data', () => {
   assert.deepEqual(
     MIM_SUPER_MOVES.map(({ id }) => id),
@@ -83,6 +120,31 @@ function resolvePress(button, superMeter, ultimateReady = false) {
   const buffer = new InputBuffer();
   buffer.push(5, 0);
   buffer.push(5, BUTTON_BIT[button]);
+  return resolveCommand(buffer, MIM_COMMANDS, {
+    grounded: true,
+    stanceId: null,
+    gauge: 0,
+    superMeter,
+    ultimateReady,
+  });
+}
+
+function resolveMimPress(
+  button,
+  heldButtons = [],
+  superMeter = 0,
+  ultimateReady = false,
+) {
+  const held = heldButtons.reduce(
+    (mask, heldButton) => mask | BUTTON_BIT[heldButton],
+    BUTTON_BIT[button],
+  );
+  const buffer = new InputBuffer();
+  buffer.push(5, heldButtons.reduce(
+    (mask, heldButton) => mask | BUTTON_BIT[heldButton],
+    0,
+  ));
+  buffer.push(5, held);
   return resolveCommand(buffer, MIM_COMMANDS, {
     grounded: true,
     stanceId: null,

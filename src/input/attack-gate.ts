@@ -1,12 +1,14 @@
 import {
   ATTACK_BUTTONS,
   BUTTON_BIT,
+  MIM_BUTTONS,
   type ButtonMask,
 } from './bindings.js';
 
 /** Every button that commits a move. Block and dash stay outside the gate. */
 const ATTACK_INPUT_MASK = [
   ...ATTACK_BUTTONS,
+  ...MIM_BUTTONS,
   'super' as const,
   'ultimate' as const,
   'taunt' as const,

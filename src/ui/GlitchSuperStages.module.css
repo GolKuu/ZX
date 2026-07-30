@@ -79,6 +79,27 @@
   height: 74%;
 }
 
+.realitySlices::before {
+  position: absolute;
+  inset: 2% -4% 5% 2%;
+  background: url("/sprites/glitch-attacks/hp.png") center / contain no-repeat;
+  content: "";
+  filter: drop-shadow(-0.8cqw 0 #16e6ff) drop-shadow(0.8cqw 0 #ff2bd6);
+  opacity: 0.78;
+}
+
+.realitySlices::after {
+  position: absolute;
+  top: 47%;
+  left: -35%;
+  width: 148%;
+  height: 1.2%;
+  background: linear-gradient(90deg, transparent, white 25% 72%, transparent);
+  box-shadow: 0 0 2cqw #16e6ff, 0 0 3.4cqw #ff2bd6;
+  content: "";
+  transform: rotate(-9deg);
+}
+
 .realitySlices i {
   position: absolute;
   top: var(--slice-top);

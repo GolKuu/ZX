@@ -15,6 +15,7 @@ import { GLITCH_AI_LOADOUT } from '@/src/data/glitch-ai';
 import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
 import { GLITCH_SUPER_MOVES } from '@/src/data/glitch-super-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
+import { MIM_SPECIAL_MOVES } from '@/src/data/mim-special-moves';
 import { MIM_SUPER_MOVES } from '@/src/data/mim-super-moves';
 import { TAUNT_MOVES } from '@/src/data/taunt-move';
 import { HudBridge } from '@/src/hud';
@@ -33,6 +34,7 @@ import { useHudStore } from '@/src/store/hudStore';
 export const ALL_COMBAT_MOVES = [
   ...KADE_MOVES,
   ...MIM_MOVES,
+  ...MIM_SPECIAL_MOVES,
   ...MIM_SUPER_MOVES,
   ...ECHO_MOVES,
   ...ECHO_SUPER_MOVES,

@@ -20,7 +20,11 @@ export const MODIFIER_BUTTONS = [
 ] as const;
 export type ModifierButton = (typeof MODIFIER_BUTTONS)[number];
 
-export type Button = AttackButton | ModifierButton;
+/** Physical meme keys reserved for MIM. Other command tables ignore them. */
+export const MIM_BUTTONS = ['mimQ', 'mimE', 'mimR', 'mimF'] as const;
+export type MimButton = (typeof MIM_BUTTONS)[number];
+
+export type Button = AttackButton | ModifierButton | MimButton;
 
 /** Bit positions. Stable — the buffer stores these as a packed mask. */
 export const BUTTON_BIT: Readonly<Record<Button, number>> = {
@@ -33,6 +37,10 @@ export const BUTTON_BIT: Readonly<Record<Button, number>> = {
   taunt: 1 << 6,
   super: 1 << 7,
   ultimate: 1 << 8,
+  mimQ: 1 << 9,
+  mimE: 1 << 10,
+  mimR: 1 << 11,
+  mimF: 1 << 12,
 };
 
 export type ButtonMask = number;
@@ -64,6 +72,10 @@ export const DEFAULT_BINDINGS: KeyBindings = {
     taunt: 'KeyT',
     super: 'KeyU',
     ultimate: 'KeyO',
+    mimQ: 'KeyQ',
+    mimE: 'KeyE',
+    mimR: 'KeyR',
+    mimF: 'KeyF',
   },
 };
 
@@ -83,6 +95,10 @@ export const PLAYER_TWO_BINDINGS: KeyBindings = {
     taunt: 'NumpadDecimal',
     super: 'Numpad6',
     ultimate: 'Numpad9',
+    mimQ: 'Numpad7',
+    mimE: 'Numpad8',
+    mimR: 'NumpadDivide',
+    mimF: 'NumpadMultiply',
   },
 };
 
@@ -144,7 +160,7 @@ export function readButtonMask(
   bindings: KeyBindings,
 ): ButtonMask {
   let mask = 0;
-  for (const button of [...ATTACK_BUTTONS, ...MODIFIER_BUTTONS]) {
+  for (const button of [...ATTACK_BUTTONS, ...MODIFIER_BUTTONS, ...MIM_BUTTONS]) {
     if (held.has(bindings.buttons[button])) {
       mask |= BUTTON_BIT[button];
     }

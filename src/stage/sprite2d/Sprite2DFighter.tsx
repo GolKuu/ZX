@@ -14,6 +14,8 @@ import {
   readLatestHit,
 } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
+import { EchoSpriteEffects } from '../echo/EchoSpriteEffects';
+import { applyEchoSpriteMotion } from '../echo/echoSpriteMotion';
 import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
 import {
   applyGlitchSpriteCorruption,
@@ -243,6 +245,15 @@ export function Sprite2DFighter({
           progress,
           true,
         );
+      } else if (rigName === 'echo-profile') {
+        applyEchoSpriteMotion(
+          joints.current,
+          inner,
+          clock.elapsedTime,
+          fighter,
+          progress,
+          true,
+        );
       }
       return;
     }
@@ -257,7 +268,16 @@ export function Sprite2DFighter({
     apply(joints.current, pose);
     inner.position.y = pose.lift;
     inner.position.x = pose.drift;
-    if (rigName === 'glitch-profile') {
+    if (rigName === 'echo-profile') {
+      applyEchoSpriteMotion(
+        joints.current,
+        inner,
+        clock.elapsedTime,
+        fighter,
+        progress,
+        false,
+      );
+    } else if (rigName === 'glitch-profile') {
       applyGlitchSpriteCorruption(
         joints.current,
         inner,
@@ -288,6 +308,12 @@ export function Sprite2DFighter({
         </group>
         {rigName === 'glitch-profile' && rig !== null ? (
           <GlitchSpriteEffects fighterId={fighterId} rig={rig} />
+        ) : null}
+        {rigName === 'echo-profile' && rig !== null ? (
+          <EchoSpriteEffects
+            facesRight={rig.facesRight === true}
+            fighterId={fighterId}
+          />
         ) : null}
       </group>
     </group>

@@ -10,6 +10,7 @@ export {
   ATTACK_BUTTONS,
   BUTTON_BIT,
   DEFAULT_BINDINGS,
+  MIM_BUTTONS,
   MODIFIER_BUTTONS,
   PLAYER_TWO_BINDINGS,
   hasButton,
@@ -25,6 +26,7 @@ export {
   type ButtonMask,
   type Direction,
   type KeyBindings,
+  type MimButton,
   type ModifierButton,
 } from './bindings.js';
 

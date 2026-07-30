@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import type { CSSProperties } from 'react';
-import type { CharacterId } from '@/src/data/characterRoster';
 import shell from './EchoSuperShell.module.css';
 import figure from './EchoRepeatFigure.module.css';
 import styles from './EchoRepeat.module.css';
@@ -12,14 +11,12 @@ type CopyStyle = CSSProperties & {
 
 interface EchoRepeatProps {
   readonly fighterId: 'p1' | 'p2';
-  readonly opponentId: CharacterId;
   readonly opponentMark: string;
   readonly opponentName: string;
 }
 
 export function EchoRepeat({
   fighterId,
-  opponentId,
   opponentMark,
   opponentName,
 }: EchoRepeatProps) {
@@ -47,10 +44,9 @@ export function EchoRepeat({
             delay={`${index * 0.11}s`}
             index={index}
             key={index}
-            opponentId={opponentId}
           />
         ))}
-        <FighterCopy delay="0s" index={7} opponentId={opponentId} primary />
+        <FighterCopy delay="0s" index={7} primary />
       </div>
       <div className={styles.counter} aria-hidden="true">
         <strong>7</strong>
@@ -64,12 +60,10 @@ export function EchoRepeat({
 function FighterCopy({
   delay,
   index,
-  opponentId,
   primary = false,
 }: {
   readonly delay: string;
   readonly index: number;
-  readonly opponentId: CharacterId;
   readonly primary?: boolean;
 }) {
   return (
@@ -82,7 +76,7 @@ function FighterCopy({
           alt=""
           fill
           sizes="8vw"
-          src={`/sprites/${opponentId}-profile/head.png`}
+          src="/sprites/echo-profile/head.png"
           unoptimized
         />
       </span>

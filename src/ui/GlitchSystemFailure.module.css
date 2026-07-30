@@ -107,11 +107,9 @@
 .voidGlitch::before {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 50% 12%, white 0 10%, transparent 11%),
-    linear-gradient(84deg, transparent 28%, white 29% 71%, transparent 72%) 50% 42% / 100% 48% no-repeat,
-    linear-gradient(76deg, transparent 31%, white 32% 68%, transparent 69%) 50% 91% / 100% 50% no-repeat;
+  background: url("/sprites/glitch-attacks/hk.png") center bottom / contain no-repeat;
   content: "";
+  filter: brightness(1.35) contrast(1.45);
 }
 
 .voidGlitch i {

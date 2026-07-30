@@ -11,6 +11,7 @@ import { GlitchGhosts } from './GlitchGhosts';
 import {
   CorruptDataProjectile,
   GlitchImpactTears,
+  GlitchScreenTear,
   LagSpikeField,
 } from './GlitchSpriteVfxMeshes';
 import { speakGlitchMove } from './glitchVoiceLines';
@@ -29,13 +30,20 @@ export function GlitchSpriteEffects({
   const projectile = useRef<Group>(null);
   const lagField = useRef<Group>(null);
   const ghosts = useRef<Group>(null);
+  const screenTear = useRef<Group>(null);
   const lastMove = useRef<string | null>(null);
 
   useFrame(({ clock }) => {
     const fighter = readCombatFighter(fighterId);
     const action = fighter?.action ?? null;
     const moveId = action?.moveId ?? null;
-    hide(tears.current, projectile.current, lagField.current, ghosts.current);
+    hide(
+      tears.current,
+      projectile.current,
+      lagField.current,
+      ghosts.current,
+      screenTear.current,
+    );
 
     if (moveId !== lastMove.current) {
       if (
@@ -62,7 +70,13 @@ export function GlitchSpriteEffects({
     if (activeMoveId === GLITCH_MOVE_IDS.packetLoss) {
       showCorruptData(projectile.current, progress, action.frame);
     } else if (activeMoveId === GLITCH_MOVE_IDS.corruptedZone) {
-      showLagSpike(lagField.current, ghosts.current, progress, action.frame);
+      showLagSpike(
+        lagField.current,
+        ghosts.current,
+        screenTear.current,
+        progress,
+        action.frame,
+      );
     } else if (activeMoveId === GLITCH_MOVE_IDS.desyncJump) {
       showDesync(ghosts.current, tears.current, progress, action.frame);
     }
@@ -73,7 +87,8 @@ export function GlitchSpriteEffects({
       <GlitchImpactTears root={tears} />
       <CorruptDataProjectile root={projectile} />
       <LagSpikeField root={lagField} />
-      <GlitchGhosts root={ghosts} rig={rig} />
+      <GlitchScreenTear root={screenTear} />
+      <GlitchGhosts fighterId={fighterId} root={ghosts} rig={rig} />
     </>
   );
 }
@@ -121,6 +136,7 @@ function showCorruptData(
 function showLagSpike(
   field: Group | null,
   ghosts: Group | null,
+  screenTear: Group | null,
   progress: number,
   frame: number,
 ): void {
@@ -134,6 +150,11 @@ function showLagSpike(
     ghosts.visible = progress > 0.22 && progress < 0.82 && frame % 4 !== 1;
     ghosts.position.x = frame % 2 === 0 ? -0.38 : 0.3;
     ghosts.position.y = frame % 3 === 0 ? 0.06 : -0.02;
+  }
+  if (screenTear !== null) {
+    screenTear.visible = progress > 0.28 && progress < 0.76 && frame % 3 !== 1;
+    screenTear.position.x = frame % 2 === 0 ? -0.82 : 0.64;
+    screenTear.scale.y = frame % 5 === 0 ? 1.15 : 1;
   }
 }
 

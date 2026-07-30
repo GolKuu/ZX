@@ -132,3 +132,29 @@ export function LagSpikeField({
     </group>
   );
 }
+
+export function GlitchScreenTear({
+  root,
+}: {
+  readonly root: RefObject<Group | null>;
+}) {
+  return (
+    <group ref={root} visible={false}>
+      {[-0.8, -0.15, 0.52, 1.2, 1.88, 2.58, 3.22].map((y, index) => (
+        <mesh key={y} position={[index % 2 === 0 ? -0.9 : 0.75, y, 0.48]}>
+          <planeGeometry args={[14 + (index % 3), 0.055 + (index % 2) * 0.035]} />
+          <meshBasicMaterial
+            blending={AdditiveBlending}
+            color={index % 3 === 0 ? '#ffffff' : index % 2 === 0 ? '#16e6ff' : '#ff2bd6'}
+            depthTest={false}
+            depthWrite={false}
+            opacity={index % 3 === 0 ? 0.24 : 0.15}
+            side={DoubleSide}
+            toneMapped={false}
+            transparent
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
