@@ -151,8 +151,17 @@ async function main() {
   await page.keyboard.press('KeyO'); // special
   await wait(280);
   await shot('07-special');
-  await wait(1_500);
-  await shot('08-fight-recovery');
+
+  // Stand still in range and let the AI hit back. The damage reaction and the
+  // blood spray are the only things in the frame the player never triggers, so
+  // without a phase that deliberately takes a hit they were never in a shot.
+  // Several captures because which frame the AI commits on is not fixed.
+  for (let attempt = 1; attempt <= 4; attempt += 1) {
+    await wait(320);
+    await shot(`08-taking-a-hit-${String(attempt)}`);
+  }
+  await wait(1_200);
+  await shot('09-fight-recovery');
 
   const fps = await page.evaluate(async () => {
     let frames = 0;
