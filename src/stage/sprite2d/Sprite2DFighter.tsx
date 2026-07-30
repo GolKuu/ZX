@@ -14,6 +14,11 @@ import {
   readLatestHit,
 } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
+import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
+import {
+  applyGlitchSpriteCorruption,
+  glitchSpriteProgress,
+} from '../glitch/glitchSpriteMotion';
 import {
   isStrikeFrame,
   spriteAnimationProgress,
@@ -197,12 +202,21 @@ export function Sprite2DFighter({
       poseGroup.current.scale.x = attackDrawnFacing === drawnFacing ? 1 : -1;
     }
 
-    const progress = fighter.action === null
+    const rawProgress = fighter.action === null
       ? 0
       : spriteAnimationProgress(
         fighter.action.moveId,
         fighter.action.frame,
       );
+    const progress = rigName === 'glitch-profile'
+      ? glitchSpriteProgress(
+        rawProgress,
+        fighter.action?.frame ?? 0,
+        fighter.action === null
+          ? false
+          : isStrikeFrame(fighter.action.moveId, fighter.action.frame),
+      )
+      : rawProgress;
 
     // Which read is on screen: the drawn attack pose, or the jointed rig.
     const strikePose = fighter.action !== null
@@ -220,6 +234,16 @@ export function Sprite2DFighter({
       // The drawing already contains the whole body, so the rig's lean and lift
       // must not also apply — it would double the motion.
       inner.position.set(0, 0, 0);
+      if (rigName === 'glitch-profile') {
+        applyGlitchSpriteCorruption(
+          joints.current,
+          inner,
+          clock.elapsedTime,
+          fighter,
+          progress,
+          true,
+        );
+      }
       return;
     }
 
@@ -233,6 +257,16 @@ export function Sprite2DFighter({
     apply(joints.current, pose);
     inner.position.y = pose.lift;
     inner.position.x = pose.drift;
+    if (rigName === 'glitch-profile') {
+      applyGlitchSpriteCorruption(
+        joints.current,
+        inner,
+        clock.elapsedTime,
+        fighter,
+        progress,
+        false,
+      );
+    }
   });
 
   return (
@@ -252,6 +286,9 @@ export function Sprite2DFighter({
             />
           )}
         </group>
+        {rigName === 'glitch-profile' && rig !== null ? (
+          <GlitchSpriteEffects fighterId={fighterId} rig={rig} />
+        ) : null}
       </group>
     </group>
   );
