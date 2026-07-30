@@ -32,8 +32,11 @@
  * `LIMITS` makes that impossible, and three tables here used to do it.
  */
 
-import type { FighterSnapshot } from '@/src/sim';
-import { FIXED_SCALE } from '@/src/sim';
+// Relative, with the `.js` extension the sim modules use, so this file compiles
+// under `tsconfig.sim-tests.json` and the joint limits below can be tested without
+// standing up a renderer. The path alias does not survive that emit.
+import type { FighterSnapshot } from '../../sim/index.js';
+import { FIXED_SCALE } from '../../sim/index.js';
 
 export interface SpritePose {
   torso: number;

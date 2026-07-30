@@ -64,6 +64,8 @@ export const FRONT_VIEWS = {
     file: 'public/echo-character-sheet.png',
     crop: { left: 862, top: 58, width: 168, height: 360 },
     origin: [123, 358],
+    partFill: [232, 242, 245],
+    partOutline: [15, 34, 57],
     // Near-white armour: match the paper colour rather than a value floor.
     // No cleanup pass: ECHO's armour highlights are brighter than any safe
     // cleanup threshold, so growing into leftovers tunnels straight into the

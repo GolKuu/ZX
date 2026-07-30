@@ -37,6 +37,54 @@ import { ATTACK_POSES, FRONT_VIEWS, PART_RECTS } from './sheet-parts.mjs';
 /** Fraction of the crop that turning transparent means the fill leaked. */
 const LEAK_LIMIT = 0.9;
 
+function flatMaskedPart(
+  keyed,
+  mask,
+  width,
+  height,
+  fill,
+  outline,
+) {
+  const result = Buffer.alloc(keyed.length);
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const pixel = y * width + x;
+      if (mask[pixel] === 0) continue;
+      const offset = pixel * 4;
+      const edge = (
+        x === 0
+        || y === 0
+        || x === width - 1
+        || y === height - 1
+        || mask[pixel - 1] === 0
+        || mask[pixel + 1] === 0
+        || mask[pixel - width] === 0
+        || mask[pixel + width] === 0
+      );
+      const base = edge ? outline : fill;
+      result[offset] = base[0];
+      result[offset + 1] = base[1];
+      result[offset + 2] = base[2];
+      result[offset + 3] = 255;
+
+      // Put the sheet's dark/cyan ink back over the clean flat fill. Pale,
+      // low-chroma pixels are the paper grid and stay out.
+      if (keyed[offset + 3] === 0) continue;
+      const red = keyed[offset];
+      const green = keyed[offset + 1];
+      const blue = keyed[offset + 2];
+      const chroma = Math.max(red, green, blue) - Math.min(red, green, blue);
+      const lightness = (red + green + blue) / 3;
+      if (chroma < 18 && lightness > 210) continue;
+      result[offset] = red;
+      result[offset + 1] = green;
+      result[offset + 2] = blue;
+      result[offset + 3] = keyed[offset + 3];
+    }
+  }
+  return result;
+}
+
 async function sliceCharacter(name) {
   const view = FRONT_VIEWS[name];
   const parts = PART_RECTS[name];
@@ -106,8 +154,12 @@ async function sliceCharacter(name) {
     let source = keyedCarved;
     const mask = masks.get(part);
     if (mask !== undefined) {
-      const cut = Buffer.from(spec.preserveSource === true ? original : data);
-      keepInside(cut, mask);
+      const fill = spec.baseFill ?? view.partFill;
+      const outline = spec.outline ?? view.partOutline ?? [12, 25, 46];
+      const cut = fill === undefined
+        ? Buffer.from(spec.preserveSource === true ? original : data)
+        : flatMaskedPart(data, mask, width, height, fill, outline);
+      if (fill === undefined) keepInside(cut, mask);
       if (spec.refillCarves === true && carving.length > 0) {
         const holes = clearInside(cut, unionMasks(carving, width, height));
         if (spec.carveFill === undefined) {
