@@ -3,7 +3,9 @@
     radial-gradient(circle at 50% 52%, rgb(48 225 255 / 12%), transparent 28%),
     linear-gradient(112deg, rgb(1 8 16 / 98%), rgb(2 27 38 / 94%), rgb(0 5 12 / 99%));
   animation: scene 3.7s both;
-}.grid {
+}
+
+.grid {
   position: absolute;
   inset: -35%;
   background-image:

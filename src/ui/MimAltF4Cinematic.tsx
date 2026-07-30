@@ -50,6 +50,7 @@ export function MimAltF4Cinematic({
         </footer>
       </div>
       <div className={styles.gameOver}>
+        <i className={styles.goodbye} aria-hidden="true"><b /></i>
         <small>Process terminated</small>
         <strong>GAME OVER</strong>
         <span>MIM wins · flawless disconnect</span>

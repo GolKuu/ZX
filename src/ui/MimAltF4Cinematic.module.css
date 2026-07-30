@@ -347,6 +347,53 @@
   text-shadow: 0.35cqw 0.35cqw 0 #23445a, 0 0 3cqw rgb(87 194 255 / 28%);
 }
 
+.goodbye {
+  position: absolute;
+  right: 8%;
+  bottom: -3%;
+  width: 9cqw;
+  height: 19cqw;
+  background: #10151b;
+  border-radius: 44% 44% 8% 8%;
+  filter: drop-shadow(0 1cqw 1.6cqw #000);
+}
+
+.goodbye::before {
+  position: absolute;
+  top: -4cqw;
+  left: 25%;
+  width: 50%;
+  aspect-ratio: 1;
+  background: #d7d3cc;
+  border: 1.1cqw solid #0b0f14;
+  border-radius: 48%;
+  content: "";
+}
+
+.goodbye b {
+  position: absolute;
+  top: -5cqw;
+  left: -1cqw;
+  width: 1.6cqw;
+  height: 12cqw;
+  background: #11171e;
+  border-radius: 99px;
+  transform: rotate(32deg);
+  transform-origin: 50% 90%;
+  animation: final-wave 0.72s 4.35s ease-in-out 4 alternate;
+}
+
+.goodbye b::before {
+  position: absolute;
+  top: -1.2cqw;
+  left: -0.45cqw;
+  width: 2.5cqw;
+  aspect-ratio: 0.8;
+  background: #d7d3cc;
+  border-radius: 50%;
+  content: "";
+}
+
 @keyframes scene {
   0% { opacity: 0; }
   3%, 96% { opacity: 1; }
@@ -398,6 +445,10 @@
   94%, 100% { transform: rotate(-12deg); }
 }
 
+@keyframes final-wave {
+  to { transform: rotate(-18deg); }
+}
+
 @keyframes shutdown-flash {
   0%, 45%, 100% { opacity: 0; }
   47% { opacity: 0.85; }
@@ -408,5 +459,9 @@
   .scene *,
   .scene::after {
     animation-duration: 1.2s !important;
+  }
+
+  .goodbye b {
+    animation-delay: 0s;
   }
 }

@@ -2,6 +2,7 @@ import Image from 'next/image';
 import type { CSSProperties } from 'react';
 import type { CharacterId } from '@/src/data/characterRoster';
 import shell from './EchoSuperShell.module.css';
+import figure from './EchoRepeatFigure.module.css';
 import styles from './EchoRepeat.module.css';
 
 type CopyStyle = CSSProperties & {
@@ -36,11 +37,11 @@ export function EchoRepeat({
         <strong>Повтор</strong>
         <i>Идеальная модель // {opponentName}</i>
       </header>
-      <div className={styles.mirror} aria-hidden="true">
-        <i className={styles.glass} />
+      <div className={figure.mirror} aria-hidden="true">
+        <i className={figure.glass} />
         <span>{opponentMark}</span>
       </div>
-      <div className={styles.combo} aria-hidden="true">
+      <div className={figure.combo} aria-hidden="true">
         {Array.from({ length: 7 }, (_, index) => (
           <FighterCopy
             delay={`${index * 0.11}s`}
@@ -73,10 +74,10 @@ function FighterCopy({
 }) {
   return (
     <i
-      className={`${styles.copy} ${primary ? styles.primary : ''}`}
+      className={`${figure.copy} ${primary ? figure.primary : ''}`}
       style={{ '--copy-delay': delay, '--copy-index': index } as CopyStyle}
     >
-      <span className={styles.head}>
+      <span className={figure.head}>
         <Image
           alt=""
           fill
