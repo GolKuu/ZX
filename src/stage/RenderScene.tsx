@@ -88,7 +88,6 @@ function SelectedFighter({
  */
 const SPRITE_RIGS: Partial<Record<CharacterId, {
   readonly rig: string;
-  readonly contactEffects?: 'idol';
   /** Sliced clean attack panels, shown at the strike impact frame. */
   readonly attacks?: string;
 }>> = {
@@ -107,7 +106,6 @@ function primitiveFighter(
     return (
       <Sprite2DFighter
         attackPoseName={sprite.attacks}
-        contactEffects={sprite.contactEffects}
         fighterId={fighterId}
         rigName={sprite.rig}
       />

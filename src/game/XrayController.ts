@@ -8,7 +8,6 @@ import {
   echoSuperKindForMove,
 } from '@/src/data/echo-super-moves';
 import { glitchSuperKindForMove } from '@/src/data/glitch-super-moves';
-import { isIdolCinematicMove } from '@/src/data/idol-move-ids';
 import { mimSuperKindForMove } from '@/src/data/mim-super-moves';
 import type { CombatEvent } from '@/src/sim';
 import { useRenderStore } from '@/src/store/renderStore';
@@ -35,15 +34,6 @@ export class XrayController {
         ) {
           this.freeze.start(ECHO_CINEMATIC_FREEZE_FRAMES[echoKind]);
           useRenderStore.getState().triggerEchoSuper(event.fighterId, echoKind);
-        }
-        if (
-          isIdolCinematicMove(event.moveId)
-          && (event.fighterId === 'p1' || event.fighterId === 'p2')
-        ) {
-          useRenderStore.getState().triggerIdolSuper(
-            event.fighterId,
-            event.moveId,
-          );
         }
         const glitchKind = glitchSuperKindForMove(event.moveId);
         if (

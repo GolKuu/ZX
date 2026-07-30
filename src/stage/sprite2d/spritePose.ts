@@ -416,7 +416,7 @@ const KIND_POSES: Readonly<Record<MoveKind, AttackPose | null>> = {
 };
 
 /**
- * Per-character move tables namespace their ids — `idol.hp`, `glitch.lk`. Keying
+ * Per-character move tables namespace their ids — `glitch.lk` is one example. Keying
  * on the button suffix is what lets one set of poses serve the whole roster;
  * without it every id missed the table and all four attacks silently played the
  * jab.

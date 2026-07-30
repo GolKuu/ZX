@@ -84,7 +84,7 @@ const initialSnapshot = (
 });
 
 const initialResult: MatchResult = {
-  winner: 'IDOL',
+  winner: 'TBD',
   rounds: '0-0',
   maxCombo: 6,
   clashes: 2,

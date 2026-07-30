@@ -34,9 +34,8 @@ const MOVES_BY_ID = new Map(
  * Whether this frame is the one the player reads as the strike.
  *
  * Taken from the frame data rather than from a progress float: the two progress
- * curves above shape time differently — `idolSpriteAnimationProgress` deliberately
- * steps and holds — so a pair of thresholds on the returned number picks out a
- * different span for each, and for IDOL picked out most of the move.
+ * curves above shape time differently — so a pair of thresholds on the returned
+ * number picks out a different span for each move.
  *
  * The clean whole-body drawing is held for the move's active frames. Its
  * duration therefore stays in lockstep with the actual hit, without exposing

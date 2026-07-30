@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import type { ChronoSuperKind } from '@/src/data/chrono-super-moves';
 import type { EchoSuperKind } from '@/src/data/echo-super-moves';
 import type { GlitchSuperKind } from '@/src/data/glitch-super-moves';
-import type { IdolCinematicMoveId } from '@/src/data/idol-move-ids';
 import type { MimSuperKind } from '@/src/data/mim-super-moves';
 
 type RenderState = {
@@ -17,9 +16,6 @@ type RenderState = {
   glitchSuperKind: GlitchSuperKind | null;
   glitchSuperVersion: number;
   impactVersion: number;
-  idolSuperFighterId: 'p1' | 'p2' | null;
-  idolSuperMoveId: IdolCinematicMoveId | null;
-  idolSuperVersion: number;
   mimSuperFighterId: 'p1' | 'p2' | null;
   mimSuperKind: MimSuperKind | null;
   mimSuperVersion: number;
@@ -35,10 +31,6 @@ type RenderState = {
   triggerChronoSuper: (
     fighterId: 'p1' | 'p2',
     kind: ChronoSuperKind,
-  ) => void;
-  triggerIdolSuper: (
-    fighterId: 'p1' | 'p2',
-    moveId: IdolCinematicMoveId,
   ) => void;
   triggerEchoSuper: (
     fighterId: 'p1' | 'p2',
@@ -63,9 +55,6 @@ export const useRenderStore = create<RenderState>((set) => ({
   glitchSuperKind: null,
   glitchSuperVersion: 0,
   impactVersion: 0,
-  idolSuperFighterId: null,
-  idolSuperMoveId: null,
-  idolSuperVersion: 0,
   mimSuperFighterId: null,
   mimSuperKind: null,
   mimSuperVersion: 0,
@@ -94,12 +83,6 @@ export const useRenderStore = create<RenderState>((set) => ({
       chronoSuperFighterId,
       chronoSuperKind,
       chronoSuperVersion: state.chronoSuperVersion + 1,
-    })),
-  triggerIdolSuper: (idolSuperFighterId, idolSuperMoveId) =>
-    set((state) => ({
-      idolSuperFighterId,
-      idolSuperMoveId,
-      idolSuperVersion: state.idolSuperVersion + 1,
     })),
   triggerEchoSuper: (echoSuperFighterId, echoSuperKind) =>
     set((state) => ({

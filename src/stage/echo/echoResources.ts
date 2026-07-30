@@ -27,6 +27,12 @@ export function createEchoResources() {
     telemetry: new BoxGeometry(0.035, 0.34, 0.025),
     ring: new TorusGeometry(0.31, 0.025, 5, 20),
     ringNode: new IcosahedronGeometry(0.055, 1),
+    ghostBody: new CapsuleGeometry(0.15, 0.46, 3, 6),
+    ghostHead: new IcosahedronGeometry(0.15, 0),
+    mirrorPane: new BoxGeometry(1.15, 2.1, 0.04),
+    shard: new BoxGeometry(0.2, 0.28, 0.03),
+    chartPanel: new BoxGeometry(2.1, 1.4, 0.04),
+    chartBar: new BoxGeometry(0.28, 1, 0.06),
   };
 }
 

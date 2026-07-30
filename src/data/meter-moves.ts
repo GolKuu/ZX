@@ -10,7 +10,6 @@ import { chronoSuperCostForMove, CHRONO_SUPER_MOVE_IDS } from './chrono-super-mo
 import { XRAY_MOVE_ID } from './combat-moves.js';
 import { echoSuperCostForMove, ECHO_SUPER_MOVE_IDS } from './echo-super-moves.js';
 import { glitchSuperCostForMove, GLITCH_SUPER_MOVE_IDS } from './glitch-super-moves.js';
-import { idolSuperCostForMove, IDOL_MOVE_IDS } from './idol-move-ids.js';
 import { mimSuperCostForMove, MIM_SUPER_MOVE_IDS } from './mim-super-moves.js';
 
 /** One ultimate per character. */
@@ -18,7 +17,6 @@ export const ULTIMATE_MOVE_IDS: ReadonlySet<string> = new Set<string>([
   XRAY_MOVE_ID,
   MIM_SUPER_MOVE_IDS.altF4,
   ECHO_SUPER_MOVE_IDS.statistics,
-  IDOL_MOVE_IDS.cancel,
   CHRONO_SUPER_MOVE_IDS.inevitability,
   GLITCH_SUPER_MOVE_IDS.patchNotes,
 ]);
@@ -34,7 +32,6 @@ export function superCostForMove(moveId: string): number | null {
   }
   return mimSuperCostForMove(moveId)
     ?? echoSuperCostForMove(moveId)
-    ?? idolSuperCostForMove(moveId)
     ?? chronoSuperCostForMove(moveId)
     ?? glitchSuperCostForMove(moveId);
 }

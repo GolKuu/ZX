@@ -2,7 +2,10 @@ import { ECHO_MOVE_IDS } from '@/src/data/echo-combat-moves';
 import type { FighterSnapshot } from '@/src/sim';
 import { combatAnimationProgress } from '../combatAnimationProgress';
 import type { FighterRig } from '../fighterRig';
-import { pulse, setRotation, smooth } from '../fighterRig';
+import { pulse, setRotation } from '../fighterRig';
+import { heldMotion, motionWindow } from './echoMotion';
+import { applyEchoSuperAnimation } from './echoSuperAnimation';
+import { echoSuperBeat } from './echoSuperTimeline';
 
 type EchoAnimation = (
   rig: FighterRig,
@@ -26,12 +29,18 @@ export function applyEchoCombatAnimation(
     return;
   }
 
-  if (fighter.action !== null) {
-    const animation = ANIMATIONS[fighter.action.moveId];
+  const action = fighter.action;
+  if (action !== null) {
+    const beat = echoSuperBeat(action.moveId, action.frame);
+    if (beat !== null) {
+      applyEchoSuperAnimation(rig, beat, fighter.facing);
+      return;
+    }
+    const animation = ANIMATIONS[action.moveId];
     if (animation !== undefined) {
       animation(
         rig,
-        combatAnimationProgress(fighter.action.moveId, fighter.action.frame),
+        combatAnimationProgress(action.moveId, action.frame),
         fighter.facing,
       );
       return;
@@ -128,26 +137,3 @@ function ringPulse(rig: FighterRig, amount: number, roll: number): void {
   rig.echoes.rotation.z += roll * amount;
 }
 
-function heldMotion(
-  progress: number,
-  enterStart: number,
-  enterEnd: number,
-  exitStart: number,
-  exitEnd: number,
-): number {
-  return smoothRange(progress, enterStart, enterEnd)
-    * (1 - smoothRange(progress, exitStart, exitEnd));
-}
-
-function motionWindow(
-  progress: number,
-  enterStart: number,
-  peak: number,
-  exitEnd: number,
-): number {
-  return heldMotion(progress, enterStart, peak, peak, exitEnd);
-}
-
-function smoothRange(value: number, start: number, end: number): number {
-  return smooth(Math.max(0, Math.min(1, (value - start) / (end - start))));
-}

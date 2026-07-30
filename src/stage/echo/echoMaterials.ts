@@ -47,7 +47,22 @@ export function createEchoMaterials(
       toneMapped: false,
       transparent: true,
     }),
+    hologram: superMaterial('#4ceaff', 0.32),
+    mirror: superMaterial('#c3f4ff', 0.5),
+    alert: superMaterial('#ff5d78', 0.62),
   };
+}
+
+/** Flat additive glass for the super props: holograms, mirror, charts. */
+function superMaterial(color: string, opacity: number): MeshBasicMaterial {
+  return new MeshBasicMaterial({
+    blending: AdditiveBlending,
+    color,
+    depthWrite: false,
+    opacity,
+    toneMapped: false,
+    transparent: true,
+  });
 }
 
 export type EchoMaterials = ReturnType<typeof createEchoMaterials>;

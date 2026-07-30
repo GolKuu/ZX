@@ -27,6 +27,7 @@ import sharp from 'sharp';
 import { cleanEchoAttack } from './echo-attack-cleaner.mjs';
 import { cleanIdolAttack } from './idol-attack-cleaner.mjs';
 import { keyBackground } from './sheet-key.mjs';
+import { removeDiagramOverlay } from './sheet-overlay.mjs';
 import {
   clearInside,
   inpaint,

@@ -83,6 +83,22 @@ const HITBOX = { name: 'red', from: 350, to: 374 };
 const MIN_HITBOX = 16;
 
 /**
+ * Bounds on the hitbox path, because unlike the hue-window pass it rewrites costume.
+ *
+ * A hitbox frames a fist or a foot; it is never a quarter of the panel. When the
+ * outline trace joins two boxes, or joins a box to a stray red mark on the drawing, the
+ * bounding box balloons and the affine correction is then measured on the wrong pixels
+ * and applied to the character — on IDOL's heavy punch that bleached her head to lilac
+ * across twenty thousand pixels. A box that is too big, or whose correction is larger
+ * than any translucent wash could account for, is not believed.
+ */
+const MAX_HITBOX_AREA = 0.12;
+const MAX_WASH_SHIFT = 45;
+
+/** Plausible range for the value a wash costs per unit of colour it adds. */
+const MAX_VALUE_PER_CHROMA = 0.8;
+
+/**
  * How much of the drawing survives under one box fill: `1 − alpha`.
  *
  * Only sets how far a recovered rectangle's contrast is stretched back. The tint itself
@@ -244,7 +260,13 @@ function measureWash(data, width, height, page, family) {
   return {
     base,
     added: chromaAdded,
-    perChroma: Math.max(0, luminanceLost / chromaAdded),
+    // Clamped: on a panel where the page is barely visible through a box the estimate
+    // comes from a handful of samples and can run away, and this term is what puts
+    // value back, so an inflated one over-brightens whatever it touches.
+    perChroma: Math.min(
+      MAX_VALUE_PER_CHROMA,
+      Math.max(0, luminanceLost / chromaAdded),
+    ),
   };
 }
 
@@ -353,7 +375,7 @@ function unwashRectangle(data, width, height, page, box) {
   const shift = Math.max(
     ...[0, 1, 2].map((channel) => Math.abs(paper[channel] - observed[channel])),
   );
-  if (shift < 4) return 0;
+  if (shift < 4 || shift > MAX_WASH_SHIFT) return 0;
 
   let touched = 0;
   for (let y = box.top; y <= box.bottom; y += 1) {
@@ -475,6 +497,12 @@ function healOutlines(data, width, height, scars) {
  */
 export function removeDiagramOverlay(data, width, height, options = {}) {
   const report = [];
+  // Kept so the whole pass can be abandoned. Every failure mode found while building
+  // this made a panel *worse* than the diagram did — a bleached head, a grey character,
+  // a fifth of the drawing repainted — and all of them announced themselves as a large
+  // fraction of the image moving a long way. Cheaper to check that at the end than to
+  // enumerate the causes.
+  const original = new Uint8Array(data);
   const page = pageMask(data, width, height, options.pageFloor ?? 178);
 
   const outlineOf = (family) => {
@@ -496,7 +524,9 @@ export function removeDiagramOverlay(data, width, height, options = {}) {
 
   // The hitbox is done first and by geometry, while its outline is still there to
   // locate it, and before any hue-window pass can touch the costume it sits on.
-  const hitboxes = componentBoxes(outlineOf(HITBOX), width, height, MIN_HITBOX);
+  const limit = width * height * MAX_HITBOX_AREA;
+  const hitboxes = componentBoxes(outlineOf(HITBOX), width, height, MIN_HITBOX)
+    .filter((box) => (box.right - box.left) * (box.bottom - box.top) <= limit);
   let hitboxPixels = 0;
   for (const box of hitboxes) {
     hitboxPixels += unwashRectangle(data, width, height, page, box);

@@ -2,6 +2,7 @@
 import { FighterPart } from '../FighterPart';
 import type { FighterRigRefs } from '../fighterRigRefs';
 import { EchoArm, EchoHead, EchoLeg } from './EchoParts';
+import { EchoSuperEffects } from './EchoSuperEffects';
 import type { EchoMaterials } from './echoMaterials';
 import type { EchoResources } from './echoResources';
 import type { Material } from 'three';
@@ -86,9 +87,7 @@ export function EchoBody({
       <group ref={refs.leftSword} />
       <group ref={refs.rightSword} />
       <group ref={refs.mouthSword} />
-      <group ref={refs.slash} />
-      <group ref={refs.projectile} />
-      <group ref={refs.aura} />
+      <EchoSuperEffects {...{ materials, refs, resources }} />
     </group>
   );
 }
