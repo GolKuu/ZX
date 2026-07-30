@@ -8,6 +8,10 @@ import {
   echoSuperKindForMove,
 } from '@/src/data/echo-super-moves';
 import {
+  glitchSuperCostForMove,
+  glitchSuperKindForMove,
+} from '@/src/data/glitch-super-moves';
+import {
   idolSuperCostForMove,
   isIdolCinematicMove,
 } from '@/src/data/idol-move-ids';
@@ -46,7 +50,8 @@ export class XrayController {
           : mimSuperCostForMove(event.moveId)
             ?? echoSuperCostForMove(event.moveId)
             ?? idolSuperCostForMove(event.moveId)
-            ?? chronoSuperCostForMove(event.moveId);
+            ?? chronoSuperCostForMove(event.moveId)
+            ?? glitchSuperCostForMove(event.moveId);
         if (cost !== null) {
           this.spentBy.set(
             event.fighterId,
@@ -84,6 +89,16 @@ export class XrayController {
           useRenderStore.getState().triggerChronoSuper(
             event.fighterId,
             chronoKind,
+          );
+        }
+        const glitchKind = glitchSuperKindForMove(event.moveId);
+        if (
+          glitchKind !== null
+          && (event.fighterId === 'p1' || event.fighterId === 'p2')
+        ) {
+          useRenderStore.getState().triggerGlitchSuper(
+            event.fighterId,
+            glitchKind,
           );
         }
       }

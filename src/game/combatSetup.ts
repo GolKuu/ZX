@@ -15,6 +15,7 @@ import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
 import { CHRONO_SUPER_MOVES } from '@/src/data/chrono-super-moves';
 import { GLITCH_AI_LOADOUT } from '@/src/data/glitch-ai';
 import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
+import { GLITCH_SUPER_MOVES } from '@/src/data/glitch-super-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
 import { MIM_SUPER_MOVES } from '@/src/data/mim-super-moves';
 import { HudBridge } from '@/src/hud';
@@ -40,6 +41,7 @@ export const ALL_COMBAT_MOVES = [
   ...CHRONO_MOVES,
   ...CHRONO_SUPER_MOVES,
   ...GLITCH_MOVES,
+  ...GLITCH_SUPER_MOVES,
 ];
 
 export function createCombatEngine(): CombatEngine {

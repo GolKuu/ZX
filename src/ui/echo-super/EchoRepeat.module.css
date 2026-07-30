@@ -1,18 +1,9 @@
 .scene {
-  --echo: #72efff;
-  position: absolute;
-  z-index: 47;
-  inset: 0;
-  overflow: hidden;
-  color: #f1fdff;
   background:
     radial-gradient(ellipse at 32% 52%, rgb(114 239 255 / 17%), transparent 26%),
     linear-gradient(105deg, #01060d 0 22%, #071822 50%, #02050b 100%);
   animation: scene 4.9s both;
-  pointer-events: none;
 }
-
-.scene[data-side="p2"] { --echo: #c78bff; }
 
 .scanlines {
   position: absolute;
@@ -21,35 +12,6 @@
     repeating-linear-gradient(0deg, transparent 0 5px, rgb(194 250 255 / 5%) 6px),
     linear-gradient(90deg, transparent, rgb(114 239 255 / 6%), transparent);
   mix-blend-mode: screen;
-}
-
-.header {
-  position: absolute;
-  z-index: 8;
-  top: 7%;
-  left: 6%;
-  display: grid;
-  border-left: 0.28cqw solid var(--echo);
-  padding-left: 1.1cqw;
-  text-transform: uppercase;
-  animation: header 0.48s 0.1s both;
-}
-
-.header span,
-.header i {
-  color: var(--echo);
-  font-size: clamp(0.58rem, 0.82cqw, 0.9rem);
-  font-style: normal;
-  font-weight: 850;
-  letter-spacing: 0.25em;
-}
-
-.header strong {
-  font-size: clamp(2.7rem, 6.2cqw, 6rem);
-  font-weight: 950;
-  letter-spacing: -0.06em;
-  line-height: 0.88;
-  text-shadow: 0 0 2cqw color-mix(in srgb, var(--echo) 48%, transparent);
 }
 
 .mirror {
@@ -192,7 +154,6 @@
 }
 
 @keyframes scene { 0% { opacity: 0; } 4%, 91% { opacity: 1; } 100% { visibility: hidden; opacity: 0; } }
-@keyframes header { from { opacity: 0; transform: translateX(-3cqw); } to { opacity: 1; transform: none; } }
 @keyframes mirror { 0% { opacity: 0; transform: translate(-50%, -50%) scaleX(0.05); } 14%, 78% { opacity: 1; transform: translate(-50%, -50%) perspective(40cqw) rotateY(-12deg); } 91%, 100% { opacity: 0; transform: translate(-50%, -50%) scaleX(0.02); } }
 @keyframes sheen { from { transform: translateX(-40%); } to { transform: translateX(45%); } }
 @keyframes copy-combo { 0% { opacity: 0; transform: translate(-120%, -50%) scale(0.7); } 12% { opacity: 0.18; } 35% { transform: translate(calc(var(--copy-index) * 2%), -58%) rotate(calc((var(--copy-index) - 3) * 3deg)); } 62% { opacity: 0.38; transform: translate(450%, -52%) rotate(18deg); } 100% { opacity: 0; transform: translate(610%, -62%) scale(1.2); } }

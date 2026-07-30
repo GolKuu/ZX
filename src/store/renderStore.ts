@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { ChronoSuperKind } from '@/src/data/chrono-super-moves';
 import type { EchoSuperKind } from '@/src/data/echo-super-moves';
+import type { GlitchSuperKind } from '@/src/data/glitch-super-moves';
 import type { IdolCinematicMoveId } from '@/src/data/idol-move-ids';
 import type { MimSuperKind } from '@/src/data/mim-super-moves';
 
@@ -12,6 +13,9 @@ type RenderState = {
   echoSuperKind: EchoSuperKind | null;
   echoSuperVersion: number;
   effectsEnabled: boolean;
+  glitchSuperFighterId: 'p1' | 'p2' | null;
+  glitchSuperKind: GlitchSuperKind | null;
+  glitchSuperVersion: number;
   impactVersion: number;
   idolSuperFighterId: 'p1' | 'p2' | null;
   idolSuperMoveId: IdolCinematicMoveId | null;
@@ -24,6 +28,10 @@ type RenderState = {
   hydratePreferences: () => void;
   toggleEffects: () => void;
   triggerImpact: () => void;
+  triggerGlitchSuper: (
+    fighterId: 'p1' | 'p2',
+    kind: GlitchSuperKind,
+  ) => void;
   triggerChronoSuper: (
     fighterId: 'p1' | 'p2',
     kind: ChronoSuperKind,
@@ -51,6 +59,9 @@ export const useRenderStore = create<RenderState>((set) => ({
   echoSuperKind: null,
   echoSuperVersion: 0,
   effectsEnabled: true,
+  glitchSuperFighterId: null,
+  glitchSuperKind: null,
+  glitchSuperVersion: 0,
   impactVersion: 0,
   idolSuperFighterId: null,
   idolSuperMoveId: null,
@@ -72,6 +83,12 @@ export const useRenderStore = create<RenderState>((set) => ({
     }),
   triggerImpact: () =>
     set((state) => ({ impactVersion: state.impactVersion + 1 })),
+  triggerGlitchSuper: (glitchSuperFighterId, glitchSuperKind) =>
+    set((state) => ({
+      glitchSuperFighterId,
+      glitchSuperKind,
+      glitchSuperVersion: state.glitchSuperVersion + 1,
+    })),
   triggerChronoSuper: (chronoSuperFighterId, chronoSuperKind) =>
     set((state) => ({
       chronoSuperFighterId,

@@ -1,20 +1,9 @@
 .scene {
-  --echo: #72efff;
-  position: absolute;
-  z-index: 47;
-  inset: 0;
-  overflow: hidden;
-  color: #eaffff;
   background:
     radial-gradient(circle at 50% 52%, rgb(48 225 255 / 12%), transparent 28%),
     linear-gradient(112deg, rgb(1 8 16 / 98%), rgb(2 27 38 / 94%), rgb(0 5 12 / 99%));
   animation: scene 3.7s both;
-  pointer-events: none;
-}
-
-.scene[data-side="p2"] { --echo: #c78bff; }
-
-.grid {
+}.grid {
   position: absolute;
   inset: -35%;
   background-image:
@@ -24,35 +13,6 @@
   mask-image: radial-gradient(circle, #000, transparent 68%);
   transform: perspective(40cqw) rotateX(63deg) translateY(22%);
   animation: grid 3.7s linear both;
-}
-
-.header {
-  position: absolute;
-  z-index: 4;
-  top: 7%;
-  left: 6%;
-  display: grid;
-  border-left: 0.28cqw solid var(--echo);
-  padding-left: 1.1cqw;
-  text-transform: uppercase;
-  animation: header 0.45s 0.12s both;
-}
-
-.header span,
-.header i {
-  color: var(--echo);
-  font-size: clamp(0.58rem, 0.82cqw, 0.9rem);
-  font-style: normal;
-  font-weight: 850;
-  letter-spacing: 0.26em;
-}
-
-.header strong {
-  font-size: clamp(2.7rem, 6.2cqw, 6rem);
-  font-weight: 950;
-  letter-spacing: -0.06em;
-  line-height: 0.88;
-  text-shadow: 0 0 2cqw color-mix(in srgb, var(--echo) 52%, transparent);
 }
 
 .target {
@@ -159,7 +119,6 @@
 
 @keyframes scene { 0% { opacity: 0; } 4%, 89% { opacity: 1; } 100% { visibility: hidden; opacity: 0; } }
 @keyframes grid { from { background-position: 0 0; } to { background-position: 8cqw 12cqw; } }
-@keyframes header { from { opacity: 0; transform: translateX(-3cqw); } to { opacity: 1; transform: none; } }
 @keyframes target { from { opacity: 0; transform: translate(-50%, -50%) scale(1.6); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
 @keyframes hologram { 0% { opacity: 0; } 12%, 58% { opacity: 0.48; } 72% { opacity: 0.9; transform: translate(-50%, -50%) rotate(var(--rotation)); } 100% { opacity: 0; top: 52%; left: 50%; transform: translate(-50%, -50%) scale(0.2); } }
 @keyframes quote { from { opacity: 0; transform: translateX(3cqw); } to { opacity: 1; transform: none; } }

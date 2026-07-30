@@ -1,18 +1,9 @@
 .scene {
-  --echo: #72efff;
-  position: absolute;
-  z-index: 47;
-  inset: 0;
-  overflow: hidden;
-  color: #ecfdff;
   background:
     radial-gradient(circle at 76% 62%, rgb(114 239 255 / 12%), transparent 30%),
     linear-gradient(118deg, #01050b, #07141d 52%, #02060c);
   animation: scene 6.2s both;
-  pointer-events: none;
 }
-
-.scene[data-side="p2"] { --echo: #c78bff; }
 
 .noise {
   position: absolute;
@@ -24,32 +15,18 @@
 }
 
 .header {
-  position: absolute;
-  z-index: 8;
   top: 6%;
   left: 5%;
-  display: grid;
-  border-left: 0.28cqw solid var(--echo);
-  padding-left: 1.1cqw;
-  text-transform: uppercase;
-  animation: header 0.48s 0.1s both;
 }
 
 .header span,
 .header i {
-  color: var(--echo);
   font-size: clamp(0.58rem, 0.78cqw, 0.88rem);
-  font-style: normal;
-  font-weight: 850;
   letter-spacing: 0.24em;
 }
 
 .header strong {
   font-size: clamp(2.4rem, 5.4cqw, 5.5rem);
-  font-weight: 950;
-  letter-spacing: -0.06em;
-  line-height: 0.88;
-  text-shadow: 0 0 2cqw color-mix(in srgb, var(--echo) 48%, transparent);
 }
 
 .dashboard {
@@ -181,7 +158,6 @@
 }
 
 @keyframes scene { 0% { opacity: 0; } 3%, 92% { opacity: 1; } 100% { visibility: hidden; opacity: 0; } }
-@keyframes header { from { opacity: 0; transform: translateX(-3cqw); } to { opacity: 1; transform: none; } }
 @keyframes dashboard { from { opacity: 0; transform: scaleY(0.02); } to { opacity: 1; transform: none; } }
 @keyframes bar { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @keyframes quote { from { opacity: 0; transform: translateX(3cqw); } to { opacity: 1; transform: none; } }

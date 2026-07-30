@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import shell from './EchoSuperShell.module.css';
 import styles from './EchoAnalysis.module.css';
 
 type HologramStyle = CSSProperties & {
@@ -28,12 +29,12 @@ export function EchoAnalysis({
     <section
       aria-label={`${fighterId.toUpperCase()} ECHO: Анализ`}
       aria-live="assertive"
-      className={styles.scene}
+      className={`${shell.scene} ${styles.scene}`}
       data-side={fighterId}
       role="status"
     >
       <div className={styles.grid} aria-hidden="true" />
-      <header className={styles.header}>
+      <header className={shell.header}>
         <span>Level 1 Super</span>
         <strong>Анализ</strong>
         <i>24 поведенческих отпечатка синхронизированы</i>

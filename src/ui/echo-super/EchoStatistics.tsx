@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import shell from './EchoSuperShell.module.css';
 import styles from './EchoStatistics.module.css';
 
 type ShardStyle = CSSProperties & {
@@ -26,12 +27,12 @@ export function EchoStatistics({
     <section
       aria-label={`${fighterId.toUpperCase()} ECHO: Статистика`}
       aria-live="assertive"
-      className={styles.scene}
+      className={`${shell.scene} ${styles.scene}`}
       data-side={fighterId}
       role="status"
     >
       <div className={styles.noise} aria-hidden="true" />
-      <header className={styles.header}>
+      <header className={`${shell.header} ${styles.header}`}>
         <span>Ultimate Finisher</span>
         <strong>Статистика</strong>
         <i>Матч завершён // привычки классифицированы</i>

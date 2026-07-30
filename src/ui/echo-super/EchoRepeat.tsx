@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import type { CSSProperties } from 'react';
 import type { CharacterId } from '@/src/data/characterRoster';
+import shell from './EchoSuperShell.module.css';
 import styles from './EchoRepeat.module.css';
 
 type CopyStyle = CSSProperties & {
@@ -25,12 +26,12 @@ export function EchoRepeat({
     <section
       aria-label={`${fighterId.toUpperCase()} ECHO: Повтор`}
       aria-live="assertive"
-      className={styles.scene}
+      className={`${shell.scene} ${styles.scene}`}
       data-side={fighterId}
       role="status"
     >
       <div className={styles.scanlines} aria-hidden="true" />
-      <header className={styles.header}>
+      <header className={shell.header}>
         <span>Level 3 Super</span>
         <strong>Повтор</strong>
         <i>Идеальная модель // {opponentName}</i>

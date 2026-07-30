@@ -9,6 +9,7 @@ import { MimSuperCinematic } from './MimSuperCinematic';
 import { EchoSuperCinematic } from './EchoSuperCinematic';
 import { IdolCinematicLayer } from './idol-cinematics/IdolCinematicLayer';
 import { ChronoSuperCinematic } from './ChronoSuperCinematic';
+import { GlitchSuperCinematic } from './GlitchSuperCinematic';
 import styles from './PlayOverlay.module.css';
 
 export function PlayOverlay() {
@@ -19,6 +20,7 @@ export function PlayOverlay() {
       <EchoSuperCinematic />
       <IdolCinematicLayer />
       <ChronoSuperCinematic />
+      <GlitchSuperCinematic />
       <CombatHud />
       <FightControlStrip />
       {process.env.NODE_ENV !== 'production' && <DevelopmentTools />}
@@ -33,6 +35,7 @@ function DevelopmentTools() {
   const previewEcho = useRenderStore((state) => state.triggerEchoSuper);
   const previewIdol = useRenderStore((state) => state.triggerIdolSuper);
   const previewChrono = useRenderStore((state) => state.triggerChronoSuper);
+  const previewGlitch = useRenderStore((state) => state.triggerGlitchSuper);
   return (
     <aside className={styles.devTools} aria-label="Development tools">
       <span className={styles.fps}><FpsMeter /></span>
@@ -48,6 +51,9 @@ function DevelopmentTools() {
       <button type="button" onClick={() => previewChrono('p1', 'rewind')}>CHRONO L1</button>
       <button type="button" onClick={() => previewChrono('p1', 'outcomes')}>CHRONO L3</button>
       <button type="button" onClick={() => previewChrono('p1', 'inevitability')}>CHRONO FIN</button>
+      <button type="button" onClick={() => previewGlitch('p1', 'error')}>GLITCH L1</button>
+      <button type="button" onClick={() => previewGlitch('p1', 'critical')}>GLITCH L3</button>
+      <button type="button" onClick={() => previewGlitch('p1', 'patchNotes')}>GLITCH FIN</button>
       <button
         aria-pressed={effectsEnabled}
         type="button"

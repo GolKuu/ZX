@@ -6,6 +6,7 @@ import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
 import { CHRONO_SUPER_MOVES } from '@/src/data/chrono-super-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
 import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
+import { GLITCH_SUPER_MOVES } from '@/src/data/glitch-super-moves';
 import { totalMoveFrames } from '@/src/sim';
 import { spriteAttackBeat } from './sprite2d/spriteAttackTimeline';
 
@@ -23,6 +24,7 @@ const MOVES_BY_ID = new Map(
     ...CHRONO_MOVES,
     ...CHRONO_SUPER_MOVES,
     ...GLITCH_MOVES,
+    ...GLITCH_SUPER_MOVES,
   ].map((move) => [move.id, move]),
 );
 

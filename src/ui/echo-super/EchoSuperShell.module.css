@@ -1,0 +1,47 @@
+.scene {
+  --echo: #72efff;
+  position: absolute;
+  z-index: 47;
+  inset: 0;
+  overflow: hidden;
+  color: #ecfdff;
+  pointer-events: none;
+}
+
+.scene[data-side="p2"] {
+  --echo: #c78bff;
+}
+
+.header {
+  position: absolute;
+  z-index: 8;
+  top: 7%;
+  left: 6%;
+  display: grid;
+  border-left: 0.28cqw solid var(--echo);
+  padding-left: 1.1cqw;
+  text-transform: uppercase;
+  animation: header-in 0.48s 0.1s both;
+}
+
+.header span,
+.header i {
+  color: var(--echo);
+  font-size: clamp(0.58rem, 0.82cqw, 0.9rem);
+  font-style: normal;
+  font-weight: 850;
+  letter-spacing: 0.25em;
+}
+
+.header strong {
+  font-size: clamp(2.7rem, 6.2cqw, 6rem);
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  line-height: 0.88;
+  text-shadow: 0 0 2cqw color-mix(in srgb, var(--echo) 48%, transparent);
+}
+
+@keyframes header-in {
+  from { opacity: 0; transform: translateX(-3cqw); }
+  to { opacity: 1; transform: none; }
+}
