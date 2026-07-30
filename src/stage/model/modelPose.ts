@@ -124,6 +124,11 @@ function poseByState(
   time: number,
   choreography?: Readonly<Record<string, AttackPose>>,
 ): void {
+  if (fighter.health <= 0) {
+    poseKnockout(joints, rest, fighter);
+    return;
+  }
+
   if (!fighter.grounded) {
     poseAirborne(joints, rest, fighter);
     return;
@@ -156,6 +161,37 @@ function poseByState(
   }
 
   poseLocomotion(joints, rest, fighter, time);
+}
+
+function poseKnockout(
+  joints: HumanoidJoints,
+  rest: RestPose,
+  fighter: FighterSnapshot,
+): void {
+  turn(joints, 'hips', 0.1, -0.32, -0.52);
+  turn(joints, 'spine', -0.2, 1.08, 0);
+  turn(joints, 'chest', -0.28, 0.56, 0.02);
+  turn(joints, 'neck', -0.26, 0.22, -0.08);
+  turn(joints, 'head', -0.22, 0.32, 0);
+
+  turn(joints, 'shoulderL', 0, 0, -0.34);
+  turn(joints, 'upperArmL', 0.6, 0.34, 0.58);
+  turn(joints, 'forearmL', -0.22, 0, 0);
+  turn(joints, 'handL', -0.2, 0.1, 0.1);
+
+  turn(joints, 'shoulderR', 0, 0, 0.72);
+  turn(joints, 'upperArmR', 0.26, -0.2, -0.72);
+  turn(joints, 'forearmR', -1.38, 0, 0);
+  turn(joints, 'handR', 0.2, -0.2, -0.14);
+
+  turn(joints, 'thighL', 1.16, -0.3, 0.4);
+  turn(joints, 'shinL', -1.26, -0.16, 0);
+  turn(joints, 'footL', -0.52, 0.12, 0);
+  turn(joints, 'thighR', 1.28, 0.08, -0.28);
+  turn(joints, 'shinR', -0.8, -0.06, 0);
+  turn(joints, 'footR', -0.26, 0.08, 0);
+
+  lift(joints, rest, -0.12 + fighter.facing * 0.004);
 }
 
 /* ------------------------------------------------------------------ */
