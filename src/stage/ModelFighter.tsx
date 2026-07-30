@@ -43,6 +43,14 @@ import { applyFighterPose } from './model/modelPose';
  * difference between a playable build and a blank screen.
  */
 
+/**
+ * Extra body yaw toward the opponent, on top of the stance yaw in the pose
+ * tables. Together they land near 40° — a three-quarter read, so the costume
+ * front stays legible while the attack silhouette still points along the
+ * combat axis.
+ */
+const STANCE_YAW = 0.38;
+
 interface ModelFighterProps {
   readonly url: string;
   readonly auraColor: string;
@@ -64,7 +72,17 @@ export function ModelFighter({
   const [ready, setReady] = useState(false);
 
   const gradient = useMemo(() => createCelGradient(), []);
-  const outline = useMemo(() => createSkinnedOutlineMaterial(), []);
+  // Inked, not shaded. The character sheets are defined by a heavy, even black
+  // contour that does not thin with distance, so the falloff is off and the
+  // colour is a true near-black rather than the old blue-grey.
+  const outline = useMemo(
+    () => createSkinnedOutlineMaterial({
+      color: '#07070c',
+      falloff: false,
+      pixelWidth: 3.6,
+    }),
+    [],
+  );
   const zones = useMemo(
     () => createFighterZones(gradient, auraColor, paletteFor(characterId)),
     [auraColor, characterId, gradient],
@@ -141,6 +159,11 @@ export function ModelFighter({
       + (fighter.position.x - fighter.previousPosition.x) * alpha
     ) / FIXED_SCALE;
     group.position.y = fighter.position.y / FIXED_SCALE;
+    // Turn into the opponent. The pose tables carry ~19° of stance yaw at the
+    // hips, which reads almost frontal; the sheets draw a three-quarter profile,
+    // so the rest of the turn happens here where it costs one assignment and
+    // stays consistent across every pose.
+    group.rotation.y = fighter.facing * STANCE_YAW;
 
     applyFighterPose(
       loaded.joints,
@@ -196,8 +219,10 @@ function createFighterZones(
       rimStrength: rim,
       heightZones: bands,
       heightRange: [0, 1],
-      // Fighters are drawn figures, not lit scenery. See `flatten`.
-      flatten: 0.88,
+      // Fully illustrated. Fighters are drawn figures, not lit scenery: the
+      // stage's lighting must never decide what colour a costume is. See
+      // `flatten` in `toonMaterial.ts`.
+      flatten: 1,
     });
 
   return {
