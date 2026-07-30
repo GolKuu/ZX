@@ -2,7 +2,7 @@
   background:
     radial-gradient(circle at 50% 52%, rgb(48 225 255 / 12%), transparent 28%),
     linear-gradient(112deg, rgb(1 8 16 / 98%), rgb(2 27 38 / 94%), rgb(0 5 12 / 99%));
-  animation: scene 3.7s both;
+  animation: scene 2.5s both;
 }
 
 .grid {
@@ -14,7 +14,7 @@
   background-size: 4cqw 4cqw;
   mask-image: radial-gradient(circle, #000, transparent 68%);
   transform: perspective(40cqw) rotateX(63deg) translateY(22%);
-  animation: grid 3.7s linear both;
+  animation: grid 2.5s linear both;
 }
 
 .target {
@@ -80,7 +80,7 @@
   transform:
     translate(calc(-50% + var(--x)), calc(-50% + var(--y)))
     rotate(var(--rotation));
-  animation: hologram 2.45s calc(0.55s + var(--delay)) both;
+  animation: hologram 1.55s calc(0.35s + var(--delay)) both;
 }
 
 .hologram::after {
@@ -101,7 +101,7 @@
   text-align: right;
   background: rgb(2 12 20 / 78%);
   border-right: 0.28cqw solid var(--echo);
-  animation: quote 0.35s 1.45s both;
+  animation: quote 0.35s 1.05s both;
 }
 
 .quote small { color: var(--echo); font-weight: 900; letter-spacing: 0.25em; text-transform: uppercase; }
@@ -118,7 +118,7 @@
   border-radius: 50%;
   box-shadow: 0 0 8cqw 4cqw var(--echo);
   transform: translate(-50%, -50%);
-  animation: impact 3.7s both;
+  animation: impact 2.5s both;
 }
 
 @keyframes scene { 0% { opacity: 0; } 4%, 89% { opacity: 1; } 100% { visibility: hidden; opacity: 0; } }

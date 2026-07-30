@@ -2,7 +2,7 @@
   background:
     radial-gradient(ellipse at 32% 52%, rgb(114 239 255 / 17%), transparent 26%),
     linear-gradient(105deg, #01060d 0 22%, #071822 50%, #02050b 100%);
-  animation: scene 4.9s both;
+  animation: scene 2.1s both;
 }
 
 .scanlines {
@@ -23,7 +23,7 @@
   align-items: baseline;
   gap: 0.8cqw;
   text-transform: uppercase;
-  animation: counter 0.35s 2.8s both;
+  animation: counter 0.3s 1.15s both;
 }
 
 .counter strong { color: var(--echo); font-size: 5cqw; font-style: italic; line-height: 0.8; }
@@ -39,7 +39,7 @@
   background: white;
   border-radius: 50%;
   box-shadow: 0 0 9cqw 4cqw var(--echo);
-  animation: finish 4.9s both;
+  animation: finish 2.1s both;
 }
 
 @keyframes scene { 0% { opacity: 0; } 4%, 91% { opacity: 1; } 100% { visibility: hidden; opacity: 0; } }

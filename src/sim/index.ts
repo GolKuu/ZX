@@ -17,6 +17,7 @@ export {
   type GroundBounceData,
   type HitData,
   type MoveFrameData,
+  type MoveObstacleData,
   type MovePhase,
   type WallBounceData,
 } from './frame-data.js';

@@ -10,7 +10,7 @@
   border-radius: 50%;
   box-shadow: 0 0 1.2cqw var(--echo), 0 0 5cqw rgb(114 239 255 / 32%), inset 0 0 4cqw rgb(114 239 255 / 24%);
   transform: translate(-50%, -50%) perspective(40cqw) rotateY(-12deg);
-  animation: mirror 4.9s both;
+  animation: mirror 2.1s both;
 }
 
 .mirror::before,
@@ -38,7 +38,7 @@
   inset: -50%;
   background: linear-gradient(110deg, transparent 35%, rgb(255 255 255 / 72%) 49%, transparent 55%);
   content: "";
-  animation: sheen 1.4s 0.55s both;
+  animation: sheen 0.7s 0.32s both;
 }
 
 .mirror > span {
@@ -63,7 +63,7 @@
   filter: drop-shadow(0 0 0.8cqw var(--echo));
   opacity: 0;
   transform-origin: 50% 92%;
-  animation: copy-combo 2.7s calc(1.25s + var(--copy-delay)) both;
+  animation: copy-combo 0.95s calc(0.68s + var(--copy-delay)) both;
 }
 
 .primary {

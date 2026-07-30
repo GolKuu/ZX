@@ -19,6 +19,13 @@ export const MIM_SPECIAL_MOVES: readonly MoveFrameData[] = [
     active: 72,
     recovery: 16,
     hitboxes: [],
+    obstacle: {
+      box: {
+        offset: { x: fixed(1.12), y: fixed(1.15) },
+        halfSize: { x: fixed(0.12), y: fixed(1.15) },
+      },
+      hitsToBreak: 1,
+    },
   },
   {
     id: MIM_SPECIAL_MOVE_IDS.bananaTrap,

@@ -89,7 +89,7 @@
   box-shadow: 0 0 0.7cqw #ff405c;
   clip-path: polygon(0 0, 100% 46%, 24% 100%);
   opacity: 0;
-  animation: shard 1.2s 4.25s ease-out both;
+  animation: shard 0.9s 2.5s ease-out both;
 }
 
 @keyframes dashboard { from { opacity: 0; transform: scaleY(0.02); } to { opacity: 1; transform: none; } }

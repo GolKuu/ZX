@@ -59,6 +59,13 @@ export interface CancelWindow {
   readonly into: readonly string[];
 }
 
+export interface MoveObstacleData {
+  /** Local-space obstacle volume, mirrored by fighter facing. */
+  readonly box: FixedBox;
+  /** The obstacle disappears after this many confirmed attack contacts. */
+  readonly hitsToBreak: number;
+}
+
 export interface MoveFrameData {
   readonly id: string;
   readonly startup: number;
@@ -67,6 +74,8 @@ export interface MoveFrameData {
   readonly hitboxes: readonly AuthoredHitbox[];
   readonly hurtboxes?: readonly AuthoredHurtbox[];
   readonly cancels?: readonly CancelWindow[];
+  /** Optional movement blocker active only during this move's active frames. */
+  readonly obstacle?: MoveObstacleData;
 }
 
 export type MovePhase = 'startup' | 'active' | 'recovery';

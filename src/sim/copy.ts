@@ -59,6 +59,15 @@ export function copyMove(move: MoveFrameData): MoveFrameData {
       frames: { ...cancel.frames },
       into: [...cancel.into],
     })),
+    obstacle: move.obstacle === undefined
+      ? undefined
+      : {
+          box: {
+            offset: { ...move.obstacle.box.offset },
+            halfSize: { ...move.obstacle.box.halfSize },
+          },
+          hitsToBreak: move.obstacle.hitsToBreak,
+        },
   };
 }
 

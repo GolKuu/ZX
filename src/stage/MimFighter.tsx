@@ -108,25 +108,27 @@ export function MimFighter({
   });
 
   return (
-    <group ref={outer}>
+    <>
       <MimSpecialEffects fighterId={fighterId} />
-      <group ref={body}>
-        <group ref={rigGroup}>
-          {sprites.rig === null ? null : (
-            <MimSpriteBody rig={sprites.rig} setJoint={setJoint} />
-          )}
-        </group>
-        <group ref={attackGroup} visible={false}>
-          {sprites.attacks === null ? null : (
-            <MimAttackSprites
-              attacks={sprites.attacks}
-              pixelScale={sprites.rig?.pixelScale ?? 2.62 / 380}
-              shown={shownAttack}
-            />
-          )}
+      <group ref={outer}>
+        <group ref={body}>
+          <group ref={rigGroup}>
+            {sprites.rig === null ? null : (
+              <MimSpriteBody rig={sprites.rig} setJoint={setJoint} />
+            )}
+          </group>
+          <group ref={attackGroup} visible={false}>
+            {sprites.attacks === null ? null : (
+              <MimAttackSprites
+                attacks={sprites.attacks}
+                pixelScale={sprites.rig?.pixelScale ?? 2.62 / 380}
+                shown={shownAttack}
+              />
+            )}
+          </group>
         </group>
       </group>
-    </group>
+    </>
   );
 }
 

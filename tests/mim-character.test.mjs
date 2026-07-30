@@ -18,6 +18,10 @@ import {
   MIM_SPECIAL_MOVES,
   MIM_SPECIAL_MOVE_IDS,
 } from '../.sim-test-build/src/data/mim-special-moves.js';
+import {
+  resolveMoveObstacles,
+} from '../.sim-test-build/src/sim/move-obstacles.js';
+import { fixed } from '../.sim-test-build/src/sim/math.js';
 
 const expectedByButton = {
   lp: MIM_MOVE_IDS.snap,
@@ -104,6 +108,43 @@ test('MIM specials preserve normals and keep fake opening harmless', () => {
   assert.ok((trap?.hitboxes[0]?.hit.damage ?? 99) <= 12);
 });
 
+test('MIM wall blocks crossing during active frames and breaks in one hit', () => {
+  const wallMove = MIM_SPECIAL_MOVES.find(
+    ({ id }) => id === MIM_SPECIAL_MOVE_IDS.invisibleWall,
+  );
+  assert.equal(wallMove?.obstacle?.hitsToBreak, 1);
+
+  const owner = obstacleFighter({
+    id: 'p1',
+    team: 1,
+    position: fixed(0),
+    previousPosition: fixed(0),
+    facing: 1,
+    action: {
+      moveId: MIM_SPECIAL_MOVE_IDS.invisibleWall,
+      frame: wallMove.startup,
+      serial: 1,
+      hitLedger: [],
+    },
+  });
+  const walker = obstacleFighter({
+    id: 'p2',
+    team: 2,
+    position: fixed(1.05),
+    previousPosition: fixed(1.5),
+    facing: -1,
+    velocity: fixed(-0.12),
+  });
+
+  resolveMoveObstacles(
+    [owner, walker],
+    new Map(MIM_SPECIAL_MOVES.map((move) => [move.id, move])),
+  );
+
+  assert.equal(walker.position.x, fixed(1.24));
+  assert.equal(walker.velocity.x, 0);
+});
+
 test('MIM supers have authored cinematic hit data', () => {
   assert.deepEqual(
     MIM_SUPER_MOVES.map(({ id }) => id),
@@ -152,4 +193,51 @@ function resolveMimPress(
     superMeter,
     ultimateReady,
   });
+}
+
+function obstacleFighter({
+  id,
+  team,
+  position,
+  previousPosition,
+  facing,
+  velocity = 0,
+  action = null,
+}) {
+  return {
+    id,
+    team,
+    maxHealth: 1_000,
+    defaultHurtboxes: [],
+    movement: {
+      forwardPerFrame: fixed(0.05),
+      backwardPerFrame: fixed(0.04),
+      jumpPerFrame: fixed(0.2),
+    },
+    health: 1_000,
+    position: { x: position, y: 0 },
+    previousPosition: { x: previousPosition, y: 0 },
+    velocity: { x: velocity, y: 0 },
+    facing,
+    grounded: true,
+    guarding: false,
+    hitstop: 0,
+    hitstun: 0,
+    recoveryPercent: 100,
+    dashFrames: 0,
+    dashDirection: 0,
+    lungeFrames: 0,
+    action,
+    bounce: {
+      wallRemaining: 0,
+      wallHorizontalSpeed: 0,
+      wallVerticalSpeed: 0,
+      wallMinimumHitstun: 0,
+      groundRemaining: 0,
+      groundVerticalSpeed: 0,
+      groundHorizontalNumerator: 1,
+      groundHorizontalDenominator: 1,
+      groundMinimumHitstun: 0,
+    },
+  };
 }

@@ -41,7 +41,7 @@ export function EchoRepeat({
       <div className={figure.combo} aria-hidden="true">
         {Array.from({ length: 7 }, (_, index) => (
           <FighterCopy
-            delay={`${index * 0.11}s`}
+            delay={`${index * 0.055}s`}
             index={index}
             key={index}
           />

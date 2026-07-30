@@ -17,6 +17,7 @@ import {
 } from './facing.js';
 import { effectiveMoveFrames, type MoveFrameData } from './frame-data.js';
 import { integrateFighter } from './physics.js';
+import { resolveMoveObstacles } from './move-obstacles.js';
 import { resolveHit } from './resolve.js';
 import type {
   CombatInputs,
@@ -93,6 +94,7 @@ export class CombatEngine {
       integrateFighter(fighter, this.config, this.completedFrames, events);
     }
 
+    resolveMoveObstacles(this.fighters, this.moves);
     faceAirborneFightersTowardOpponents(this.fighters);
     const candidates = collectHitCandidates(
       this.fighters,
