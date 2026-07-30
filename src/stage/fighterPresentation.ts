@@ -23,7 +23,7 @@ export function facingOpponent(
 ): -1 | 1 {
   if (opponent === null) return fighter.facing;
   const distance = opponent.position.x - fighter.position.x;
-  if (Math.abs(distance) < 1) return fighter.facing;
+  if (distance === 0) return fighter.facing;
   return distance > 0 ? 1 : -1;
 }
 
