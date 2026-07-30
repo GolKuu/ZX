@@ -5,11 +5,10 @@ import {
   type WorldSnapshot,
 } from '@/src/sim';
 import {
-  FIGHTER_VOICE_PROFILES,
   hasVoiceProfile,
   type VoicedCharacterId,
-  type VoiceCategory,
 } from './fighterVoiceProfiles';
+import { VoicePlayer } from './VoicePlayer';
 
 const DODGE_COOLDOWN_FRAMES = 5 * 60;
 const TAUNT_COOLDOWN_FRAMES = 7 * 60;
@@ -20,11 +19,10 @@ const SECOND_PLAYER_ID = 'p2';
 export class FighterVoiceController {
   private readonly voicedFighters = new Map<string, VoicedCharacterId>();
   private readonly whiffAttempts = new Map<string, boolean>();
-  private readonly nextLine = new Map<string, number>();
   private readonly lastDodgeFrame = new Map<string, number>();
   private readonly lastTauntFrame = new Map<string, number>();
   private readonly successfulHits = new Map<string, number>();
-  private active: HTMLAudioElement | null = null;
+  private readonly player = new VoicePlayer();
 
   public constructor(selection: CharacterSelection) {
     this.addFighter(FIRST_PLAYER_ID, selection[0]);
@@ -52,7 +50,10 @@ export class FighterVoiceController {
   }
 
   public celebrate(winnerId: string): void {
-    this.play(winnerId, 'victory', true);
+    const characterId = this.voicedFighters.get(winnerId);
+    if (characterId !== undefined) {
+      this.player.play(winnerId, characterId, 'victory', true);
+    }
   }
 
   public reset(): void {
@@ -60,7 +61,7 @@ export class FighterVoiceController {
     this.lastDodgeFrame.clear();
     this.lastTauntFrame.clear();
     this.successfulHits.clear();
-    this.stopActive();
+    this.player.stop();
   }
 
   private trackAttack(world: WorldSnapshot, attackerId: string): void {
@@ -116,30 +117,11 @@ export class FighterVoiceController {
 
   private play(
     fighterId: string,
-    category: VoiceCategory,
-    interrupt = false,
+    category: 'dodge' | 'taunt',
   ): boolean {
     const characterId = this.voicedFighters.get(fighterId);
-    if (characterId === undefined || typeof window === 'undefined') return false;
-    if (!interrupt && this.active !== null && !this.active.ended) return false;
-    this.stopActive();
-
-    const lines = FIGHTER_VOICE_PROFILES[characterId][category];
-    const lineKey = `${fighterId}:${category}`;
-    const index = (this.nextLine.get(lineKey) ?? 0) % lines.length;
-    this.nextLine.set(lineKey, index + 1);
-    const line = lines[index] ?? lines[0];
-    const audio = new window.Audio(line.src);
-    audio.preload = 'auto';
-    audio.volume = 0.96;
-    this.active = audio;
-    audio.addEventListener('ended', () => {
-      if (this.active === audio) this.active = null;
-    }, { once: true });
-    void audio.play().catch(() => {
-      if (this.active === audio) this.active = null;
-    });
-    return true;
+    return characterId !== undefined
+      && this.player.play(fighterId, characterId, category);
   }
 
   private addFighter(
@@ -151,10 +133,6 @@ export class FighterVoiceController {
     }
   }
 
-  private stopActive(): void {
-    this.active?.pause();
-    this.active = null;
-  }
 }
 
 function fightersAreNearby(

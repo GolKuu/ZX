@@ -1,0 +1,95 @@
+{
+  "character": "glitch",
+  "voice": {
+    "type": "corrupted digital male",
+    "tone": [
+      "chaotic",
+      "unpredictable",
+      "humorous but unsettling",
+      "video-game bug personality",
+      "anime villain energy"
+    ],
+    "locale": "ru-RU",
+    "sourceVoice": "ru-RU-DmitryNeural",
+    "processing": [
+      "variable rate and pitch",
+      "buffer-repeat stutters",
+      "packet-loss gaps",
+      "bit-crush windows",
+      "ring modulation",
+      "digital transient clicks"
+    ]
+  },
+  "lines": {
+    "dodge": [
+      {
+        "file": "dodge-01.mp3",
+        "text": "Ошибка 403.",
+        "rate": "-6%",
+        "pitch": "-20Hz",
+        "faultLevel": 2
+      },
+      {
+        "file": "dodge-02.mp3",
+        "text": "Попробуйте перезагрузить противника.",
+        "rate": "+8%",
+        "pitch": "-24Hz",
+        "faultLevel": 1
+      },
+      {
+        "file": "dodge-03.mp3",
+        "text": "Атака не найдена.",
+        "rate": "-13%",
+        "pitch": "-17Hz",
+        "faultLevel": 2
+      }
+    ],
+    "taunt": [
+      {
+        "file": "taunt-01.mp3",
+        "text": "Работает как задумано.",
+        "rate": "+5%",
+        "pitch": "-22Hz",
+        "faultLevel": 1
+      },
+      {
+        "file": "taunt-02.mp3",
+        "text": "Не баг. Особенность.",
+        "rate": "-9%",
+        "pitch": "-26Hz",
+        "faultLevel": 3
+      },
+      {
+        "file": "taunt-03.mp3",
+        "text": "Разработчик бы это не одобрил.",
+        "rate": "+11%",
+        "pitch": "-18Hz",
+        "faultLevel": 2
+      }
+    ],
+    "victory": [
+      {
+        "file": "victory-01.mp3",
+        "text": "Opponent.exe перестал отвечать.",
+        "spokenText": "Оппонент точка экзе перестал отвечать.",
+        "rate": "-11%",
+        "pitch": "-25Hz",
+        "faultLevel": 3
+      },
+      {
+        "file": "victory-02.mp3",
+        "text": "Критическая ошибка игрока.",
+        "rate": "+4%",
+        "pitch": "-20Hz",
+        "faultLevel": 2
+      },
+      {
+        "file": "victory-03.mp3",
+        "text": "Патчноуты были против тебя.",
+        "rate": "-7%",
+        "pitch": "-23Hz",
+        "faultLevel": 2
+      }
+    ]
+  }
+}
