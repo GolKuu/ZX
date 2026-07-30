@@ -219,7 +219,6 @@ export const PART_RECTS = {
   // decorative slots are generic trailing pieces, named for the first character
   // that needed them.
   'echo-profile': {
-    ponytail: { box: [38, 38, 44, 72], joint: [82, 91] },
     head: {
       box: [92, 20, 64, 70],
       joint: [121, 86],

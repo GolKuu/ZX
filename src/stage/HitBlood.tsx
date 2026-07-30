@@ -118,6 +118,7 @@ export function HitBlood() {
     <instancedMesh
       args={[undefined, undefined, POOL]}
       frustumCulled={false}
+      name="hit-blood"
       ref={mesh}
     >
       {/* Seven segments: at this size a droplet is a handful of pixels, and any

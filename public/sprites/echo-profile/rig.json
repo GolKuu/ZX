@@ -12,18 +12,6 @@
     358
   ],
   "parts": {
-    "ponytail": {
-      "width": 44,
-      "height": 72,
-      "pivot": [
-        1,
-        0.7361
-      ],
-      "joint": [
-        82,
-        91
-      ]
-    },
     "head": {
       "width": 58,
       "height": 62,
