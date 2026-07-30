@@ -137,7 +137,11 @@ function characterMask(data, ink, width, height) {
   }
 
   const figure = largestMaskComponent(anchors, width, height);
-  const barrier = dilate(figure, width, height, 2);
+  const closed = erode(dilate(figure, width, height, 5), width, height, 5);
+  const barrier = new Uint8Array(width * height);
+  for (let pixel = 0; pixel < barrier.length; pixel += 1) {
+    if (figure[pixel] !== 0 || closed[pixel] !== 0) barrier[pixel] = 1;
+  }
   const outside = new Uint8Array(width * height);
   const stack = [];
   const consider = (pixel) => {
@@ -226,6 +230,34 @@ function dilate(mask, width, height, radius) {
     }
   }
   return expanded;
+}
+
+function erode(mask, width, height, radius) {
+  const reduced = new Uint8Array(mask.length);
+  for (let pixel = 0; pixel < mask.length; pixel += 1) {
+    if (mask[pixel] === 0) continue;
+    const x = pixel % width;
+    const y = Math.floor(pixel / width);
+    let surrounded = true;
+    for (let dy = -radius; dy <= radius && surrounded; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        const nextX = x + dx;
+        const nextY = y + dy;
+        if (
+          nextX < 0
+          || nextY < 0
+          || nextX >= width
+          || nextY >= height
+          || mask[nextY * width + nextX] === 0
+        ) {
+          surrounded = false;
+          break;
+        }
+      }
+    }
+    if (surrounded) reduced[pixel] = 1;
+  }
+  return reduced;
 }
 
 function clearBackgroundWashes(data, character, width, height) {
