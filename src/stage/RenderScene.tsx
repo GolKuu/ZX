@@ -94,7 +94,9 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
   chrono: { rig: 'chrono-profile', attacks: 'chrono-attacks' },
   echo: { rig: 'echo-profile', attacks: 'echo-attacks' },
   glitch: { rig: 'glitch-profile', attacks: 'glitch-attacks' },
-  idol: { rig: 'idol-profile', attacks: 'idol-attacks' },
+  // IDOL's source panels have debug volumes painted over missing body pixels.
+  // Keep her clean jointed contact pose until intact attack artwork exists.
+  idol: { rig: 'idol-profile' },
 };
 
 function primitiveFighter(

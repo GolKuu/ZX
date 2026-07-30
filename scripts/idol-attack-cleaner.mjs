@@ -11,7 +11,7 @@ export function cleanIdolAttack(data, width, height) {
   const character = characterMask(data, ink, width, height);
   restoreDebugInk(data, ink, width, height);
   clearBackgroundWashes(data, character, width, height);
-  keepLargestComponent(data, width, height);
+  clearOutsideCharacter(data, character);
   return data;
 }
 
@@ -136,8 +136,8 @@ function characterMask(data, ink, width, height) {
     }
   }
 
-  const figure = largestMaskComponent(anchors, width, height);
-  const closed = erode(dilate(figure, width, height, 5), width, height, 5);
+  const figure = meaningfulMaskComponents(anchors, width, height);
+  const closed = erode(dilate(figure, width, height, 12), width, height, 12);
   const barrier = new Uint8Array(width * height);
   for (let pixel = 0; pixel < barrier.length; pixel += 1) {
     if (figure[pixel] !== 0 || closed[pixel] !== 0) barrier[pixel] = 1;
@@ -175,22 +175,57 @@ function characterMask(data, ink, width, height) {
   for (let pixel = 0; pixel < character.length; pixel += 1) {
     if (barrier[pixel] !== 0 || outside[pixel] === 0) character[pixel] = 1;
   }
-  return character;
+  return bridgeNarrowGaps(character, width, height, 7);
 }
 
-function largestMaskComponent(mask, width, height) {
+function bridgeNarrowGaps(mask, width, height, reach) {
+  const bridged = Uint8Array.from(mask);
+  for (let pixel = 0; pixel < mask.length; pixel += 1) {
+    if (mask[pixel] !== 0) continue;
+    const x = pixel % width;
+    const y = Math.floor(pixel / width);
+    const horizontal = hasMaskWithin(mask, width, height, x, y, -1, 0, reach)
+      && hasMaskWithin(mask, width, height, x, y, 1, 0, reach);
+    const vertical = hasMaskWithin(mask, width, height, x, y, 0, -1, reach)
+      && hasMaskWithin(mask, width, height, x, y, 0, 1, reach);
+    if (horizontal || vertical) bridged[pixel] = 1;
+  }
+  return bridged;
+}
+
+function hasMaskWithin(mask, width, height, x, y, dx, dy, reach) {
+  for (let distance = 1; distance <= reach; distance += 1) {
+    const sampleX = x + dx * distance;
+    const sampleY = y + dy * distance;
+    if (sampleX < 0 || sampleY < 0 || sampleX >= width || sampleY >= height) {
+      return false;
+    }
+    if (mask[sampleY * width + sampleX] !== 0) return true;
+  }
+  return false;
+}
+
+function meaningfulMaskComponents(mask, width, height) {
   const seen = new Uint8Array(width * height);
-  let largest = [];
+  const kept = new Uint8Array(width * height);
   for (let start = 0; start < mask.length; start += 1) {
     if (seen[start] !== 0 || mask[start] === 0) continue;
     const component = [];
     const stack = [start];
+    let minimumX = width;
+    let maximumX = 0;
+    let minimumY = height;
+    let maximumY = 0;
     seen[start] = 1;
     while (stack.length > 0) {
       const pixel = stack.pop();
       component.push(pixel);
       const x = pixel % width;
       const y = Math.floor(pixel / width);
+      minimumX = Math.min(minimumX, x);
+      maximumX = Math.max(maximumX, x);
+      minimumY = Math.min(minimumY, y);
+      maximumY = Math.max(maximumY, y);
       for (let dy = -1; dy <= 1; dy += 1) {
         for (let dx = -1; dx <= 1; dx += 1) {
           const nextX = x + dx;
@@ -205,11 +240,12 @@ function largestMaskComponent(mask, width, height) {
         }
       }
     }
-    if (component.length > largest.length) largest = component;
+    const boxArea = (maximumX - minimumX + 1) * (maximumY - minimumY + 1);
+    const density = component.length / boxArea;
+    if (component.length < 18 || density < 0.035) continue;
+    for (const pixel of component) kept[pixel] = 1;
   }
-  const largestMask = new Uint8Array(width * height);
-  for (const pixel of largest) largestMask[pixel] = 1;
-  return largestMask;
+  return kept;
 }
 
 function dilate(mask, width, height, radius) {
@@ -301,41 +337,9 @@ function isBackgroundWash(red, green, blue) {
   return red > green + 22 && red > blue + 22 && Math.min(green, blue) > 132;
 }
 
-function keepLargestComponent(data, width, height) {
-  const seen = new Uint8Array(width * height);
-  let largest = [];
-  for (let start = 0; start < seen.length; start += 1) {
-    if (seen[start] !== 0 || data[start * 4 + 3] === 0) continue;
-    const component = [];
-    const stack = [start];
-    seen[start] = 1;
-    while (stack.length > 0) {
-      const pixel = stack.pop();
-      component.push(pixel);
-      const x = pixel % width;
-      const y = Math.floor(pixel / width);
-      for (let dy = -1; dy <= 1; dy += 1) {
-        for (let dx = -1; dx <= 1; dx += 1) {
-          if (dx === 0 && dy === 0) continue;
-          const nextX = x + dx;
-          const nextY = y + dy;
-          if (nextX < 0 || nextY < 0 || nextX >= width || nextY >= height) {
-            continue;
-          }
-          const next = nextY * width + nextX;
-          if (seen[next] !== 0 || data[next * 4 + 3] === 0) continue;
-          seen[next] = 1;
-          stack.push(next);
-        }
-      }
-    }
-    if (component.length > largest.length) largest = component;
-  }
-
-  const keep = new Uint8Array(width * height);
-  for (const pixel of largest) keep[pixel] = 1;
-  for (let pixel = 0; pixel < keep.length; pixel += 1) {
-    if (keep[pixel] === 0) data[pixel * 4 + 3] = 0;
+function clearOutsideCharacter(data, character) {
+  for (let pixel = 0; pixel < character.length; pixel += 1) {
+    if (character[pixel] === 0) data[pixel * 4 + 3] = 0;
   }
 }
 

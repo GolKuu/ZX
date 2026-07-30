@@ -6,23 +6,23 @@
   "poses": {
     "lp": {
       "width": 264,
-      "height": 353,
-      "ground": 1.0368
+      "height": 354,
+      "ground": 1.0339
     },
     "hp": {
-      "width": 187,
-      "height": 292,
-      "ground": 1.2705
+      "width": 235,
+      "height": 361,
+      "ground": 1.0249
     },
     "lk": {
-      "width": 229,
-      "height": 232,
-      "ground": 1.0948
+      "width": 334,
+      "height": 251,
+      "ground": 1.012
     },
     "hk": {
       "width": 341,
-      "height": 370,
-      "ground": 1.0027
+      "height": 368,
+      "ground": 1.0082
     }
   }
 }
