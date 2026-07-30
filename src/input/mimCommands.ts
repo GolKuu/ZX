@@ -5,31 +5,32 @@ import {
   MIM_SUPER_MOVE_IDS,
 } from '../data/mim-super-moves.js';
 import type { CommandRow } from './command.js';
+import { TAUNT_COMMAND } from './sharedCommands.js';
 
 /** MIM keeps the shared four-button layout while owning unique move ids. */
 export const MIM_COMMANDS: readonly CommandRow[] = [
   {
     moveId: MIM_SUPER_MOVE_IDS.altF4,
     motion: 'none',
-    button: 'special',
+    button: 'ultimate',
     stance: 'any',
-    available: ({ finisherReady, superMeter }) =>
-      finisherReady === true && superMeter >= MIM_LEVEL_THREE_COST,
+    available: ({ ultimateReady }) => ultimateReady === true,
   },
   {
     moveId: MIM_SUPER_MOVE_IDS.hero,
     motion: 'none',
-    button: 'special',
+    button: 'super',
     stance: 'any',
     available: ({ superMeter }) => superMeter >= MIM_LEVEL_THREE_COST,
   },
   {
     moveId: MIM_SUPER_MOVE_IDS.prank,
     motion: 'none',
-    button: 'special',
+    button: 'super',
     stance: 'any',
     available: ({ superMeter }) => superMeter >= MIM_LEVEL_ONE_COST,
   },
+  TAUNT_COMMAND,
   { moveId: MIM_MOVE_IDS.snap, motion: 'none', button: 'lp', stance: 'any' },
   { moveId: MIM_MOVE_IDS.cursor, motion: 'none', button: 'hp', stance: 'any' },
   { moveId: MIM_MOVE_IDS.banana, motion: 'none', button: 'lk', stance: 'any' },

@@ -13,7 +13,10 @@ export interface HudFighterIdentity {
 export interface HudFighterSnapshot extends HudFighterIdentity {
   readonly health: number;
   readonly maxHealth: number;
+  /** Energy bar, 0–100. */
   readonly superCharge: number;
+  /** Low health has unlocked the ultimate and it is still unused. */
+  readonly ultimateReady: boolean;
   readonly roundWins: number;
 }
 
@@ -35,6 +38,7 @@ export interface HudMatchState {
   readonly round: number;
   readonly timerFrames: number;
   readonly roundWins: Readonly<Record<string, number | undefined>>;
-  readonly ultimateSpent?: Readonly<Record<string, boolean | undefined>>;
-  readonly superSpent?: Readonly<Record<string, number | undefined>>;
+  /** Energy each fighter currently holds, 0–100. Owned by the meter controller. */
+  readonly superCharge?: Readonly<Record<string, number | undefined>>;
+  readonly ultimateReady?: Readonly<Record<string, boolean | undefined>>;
 }

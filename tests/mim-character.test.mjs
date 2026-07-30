@@ -53,12 +53,16 @@ test('MIM attacks preserve their intended reach order', () => {
   assert.ok(reach[MIM_MOVE_IDS.banana] < reach[MIM_MOVE_IDS.chair]);
 });
 
-test('MIM special button upgrades through prank, hero, and ALT+F4', () => {
-  assert.equal(resolveSpecial(33)?.moveId, undefined);
-  assert.equal(resolveSpecial(34)?.moveId, MIM_SUPER_MOVE_IDS.prank);
-  assert.equal(resolveSpecial(100)?.moveId, MIM_SUPER_MOVE_IDS.hero);
+test('MIM super button upgrades from prank to hero with the energy bar', () => {
+  assert.equal(resolvePress('super', 33)?.moveId, undefined);
+  assert.equal(resolvePress('super', 34)?.moveId, MIM_SUPER_MOVE_IDS.prank);
+  assert.equal(resolvePress('super', 100)?.moveId, MIM_SUPER_MOVE_IDS.hero);
+});
+
+test('MIM ALT+F4 waits for the low-health ultimate unlock', () => {
+  assert.equal(resolvePress('ultimate', 100)?.moveId, undefined);
   assert.equal(
-    resolveSpecial(100, true)?.moveId,
+    resolvePress('ultimate', 0, true)?.moveId,
     MIM_SUPER_MOVE_IDS.altF4,
   );
 });
@@ -75,15 +79,15 @@ test('MIM supers have authored cinematic hit data', () => {
   }
 });
 
-function resolveSpecial(superMeter, finisherReady = false) {
+function resolvePress(button, superMeter, ultimateReady = false) {
   const buffer = new InputBuffer();
   buffer.push(5, 0);
-  buffer.push(5, BUTTON_BIT.special);
+  buffer.push(5, BUTTON_BIT[button]);
   return resolveCommand(buffer, MIM_COMMANDS, {
     grounded: true,
     stanceId: null,
     gauge: 0,
     superMeter,
-    finisherReady,
+    ultimateReady,
   });
 }

@@ -8,6 +8,7 @@
 
 import type { Button, Direction } from './bindings.js';
 import { XRAY_MOVE_ID } from '../data/combat-moves.js';
+import { TAUNT_COMMAND } from './sharedCommands.js';
 import { hasButton, isCrouching } from './bindings.js';
 import { INPUT_LEEWAY_FRAMES, type InputBuffer } from './buffer.js';
 import { matchesMotion, type MotionId } from './motion.js';
@@ -19,7 +20,7 @@ export interface CommandRow {
   readonly motion: MotionId;
   /** Button that commits the move. */
   readonly button: Button;
-  /** Requires the special/super modifier to be held. */
+  /** Requires the Super button to be held as a modifier. */
   readonly requiresModifier?: boolean;
   /** `'crouching'` and `'standing'` gate on the direction at press time. */
   readonly stance?: 'standing' | 'crouching' | 'any';
@@ -38,8 +39,14 @@ export interface CommandContext {
   readonly grounded: boolean;
   readonly stanceId: string | null;
   readonly gauge: number;
+  /** The energy bar, 0–100. Supers are paid for out of this. */
   readonly superMeter: number;
-  readonly finisherReady?: boolean;
+  /**
+   * The comeback gate: this fighter's own health has fallen to the ultimate
+   * threshold and the ultimate is still unused this round. Ultimates cost no
+   * energy — this flag is their whole price.
+   */
+  readonly ultimateReady?: boolean;
 }
 
 export const DEFAULT_CONTEXT: CommandContext = {
@@ -47,6 +54,7 @@ export const DEFAULT_CONTEXT: CommandContext = {
   stanceId: null,
   gauge: 0,
   superMeter: 0,
+  ultimateReady: false,
 };
 
 /**
@@ -60,11 +68,12 @@ export const KADE_COMMANDS: readonly CommandRow[] = [
   {
     moveId: XRAY_MOVE_ID,
     motion: 'none',
-    button: 'special',
+    button: 'ultimate',
     stance: 'any',
-    available: ({ superMeter }) => superMeter >= 100,
+    available: ({ ultimateReady }) => ultimateReady === true,
   },
-  { moveId: 'overtake', motion: 'none', button: 'special', stance: 'any' },
+  { moveId: 'overtake', motion: 'none', button: 'super', stance: 'any' },
+  TAUNT_COMMAND,
   // Specials first — they share buttons with the normals below.
   { moveId: 'overtake', motion: 'qcf', button: 'hp', stance: 'any' },
   { moveId: 'overtake', motion: 'qcf', button: 'lp', stance: 'any' },
@@ -103,7 +112,7 @@ export function resolveCommand(
     if (pressedAgo === null || pressedAgo >= leeway) {
       continue;
     }
-    if (row.requiresModifier === true && !buffer.isHeld('special')) {
+    if (row.requiresModifier === true && !buffer.isHeld('super')) {
       continue;
     }
     if (!matchesStance(buffer.at(pressedAgo).direction, row.stance)) {

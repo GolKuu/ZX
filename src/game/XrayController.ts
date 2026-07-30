@@ -1,67 +1,26 @@
 import { XRAY_MOVE_ID } from '@/src/data/combat-moves';
 import {
   CHRONO_CINEMATIC_FRAMES,
-  chronoSuperCostForMove,
   chronoSuperKindForMove,
 } from '@/src/data/chrono-super-moves';
 import {
   ECHO_CINEMATIC_FREEZE_FRAMES,
-  echoSuperCostForMove,
   echoSuperKindForMove,
 } from '@/src/data/echo-super-moves';
-import {
-  glitchSuperCostForMove,
-  glitchSuperKindForMove,
-} from '@/src/data/glitch-super-moves';
-import {
-  idolSuperCostForMove,
-  isIdolCinematicMove,
-} from '@/src/data/idol-move-ids';
-import {
-  mimSuperCostForMove,
-  mimSuperKindForMove,
-} from '@/src/data/mim-super-moves';
-import { ultimateChargeFromHealth } from '@/src/hud';
-import type { CommandContext } from '@/src/input';
-import type { CombatEvent, FighterSnapshot } from '@/src/sim';
+import { glitchSuperKindForMove } from '@/src/data/glitch-super-moves';
+import { isIdolCinematicMove } from '@/src/data/idol-move-ids';
+import { mimSuperKindForMove } from '@/src/data/mim-super-moves';
+import type { CombatEvent } from '@/src/sim';
 import { useRenderStore } from '@/src/store/renderStore';
 import { CinematicFreeze } from './CinematicFreeze';
 
+/** Cinematics only: the meters live in `MeterController`. */
 export class XrayController {
-  private readonly spentBy = new Map<string, number>();
   private readonly freeze = new CinematicFreeze();
-
-  public inputContext(
-    fighter: FighterSnapshot,
-    opponent?: FighterSnapshot,
-  ): CommandContext {
-    const earned = ultimateChargeFromHealth(fighter.health, fighter.maxHealth);
-    return {
-      grounded: fighter.grounded,
-      stanceId: null,
-      gauge: 0,
-      superMeter: Math.max(0, earned - (this.spentBy.get(fighter.id) ?? 0)),
-      finisherReady: opponent !== undefined
-        && opponent.health / opponent.maxHealth <= 0.3,
-    };
-  }
 
   public accept(events: readonly CombatEvent[]): void {
     for (const event of events) {
       if (event.type === 'moveStarted') {
-        const cost = event.moveId === XRAY_MOVE_ID
-          ? 100
-          : mimSuperCostForMove(event.moveId)
-            ?? echoSuperCostForMove(event.moveId)
-            ?? idolSuperCostForMove(event.moveId)
-            ?? chronoSuperCostForMove(event.moveId)
-            ?? glitchSuperCostForMove(event.moveId);
-        if (cost !== null) {
-          this.spentBy.set(
-            event.fighterId,
-            Math.min(100, (this.spentBy.get(event.fighterId) ?? 0) + cost),
-          );
-        }
         const kind = mimSuperKindForMove(event.moveId);
         if (
           kind !== null
@@ -128,22 +87,7 @@ export class XrayController {
     return this.freeze.active;
   }
 
-  public spentState(): Readonly<Record<string, boolean>> {
-    return {
-      p1: (this.spentBy.get('p1') ?? 0) >= 100,
-      p2: (this.spentBy.get('p2') ?? 0) >= 100,
-    };
-  }
-
-  public spentCharge(): Readonly<Record<string, number>> {
-    return {
-      p1: this.spentBy.get('p1') ?? 0,
-      p2: this.spentBy.get('p2') ?? 0,
-    };
-  }
-
   public reset(): void {
-    this.spentBy.clear();
     this.freeze.reset();
   }
 }

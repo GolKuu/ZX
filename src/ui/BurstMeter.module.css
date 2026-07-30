@@ -40,6 +40,12 @@
   transform: skew(-8deg);
 }
 
+/* Ultimate armed: the strip changes colour, so it reads at a glance. */
+.burst[data-ultimate="true"] {
+  --accent: #ff3d5e;
+  box-shadow: 0 0 0.7cqw color-mix(in srgb, #ff3d5e 55%, transparent);
+}
+
 .burst i[data-active="true"] {
   background: var(--accent);
   border-color: var(--accent);

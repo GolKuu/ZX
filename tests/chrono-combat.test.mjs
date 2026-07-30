@@ -43,23 +43,28 @@ test('CHRONO attacks have distinct frame data and hit regions', () => {
   assert.ok(hp.hitboxes[0].hit.damage > lp.hitboxes[0].hit.damage);
 });
 
-test('CHRONO upgrades the special button with charge and finisher state', () => {
-  const special = (superMeter, finisherReady = false) => {
+test('CHRONO spends the energy bar on supers and low health on the ultimate', () => {
+  const press = (button, superMeter, ultimateReady = false) => {
     const buffer = new InputBuffer();
-    buffer.push(5, BUTTON_BIT.special);
+    buffer.push(5, BUTTON_BIT[button]);
     return resolveCommand(buffer, CHRONO_COMMANDS, {
       grounded: true,
       stanceId: null,
       gauge: 0,
       superMeter,
-      finisherReady,
+      ultimateReady,
     })?.moveId;
   };
 
-  assert.equal(special(33), undefined);
-  assert.equal(special(34), CHRONO_SUPER_MOVE_IDS.rewind);
-  assert.equal(special(100), CHRONO_SUPER_MOVE_IDS.outcomes);
-  assert.equal(special(100, true), CHRONO_SUPER_MOVE_IDS.inevitability);
+  assert.equal(press('super', 33), undefined);
+  assert.equal(press('super', 34), CHRONO_SUPER_MOVE_IDS.rewind);
+  assert.equal(press('super', 100), CHRONO_SUPER_MOVE_IDS.outcomes);
+  // An empty bar is no obstacle to the ultimate; full health is.
+  assert.equal(press('ultimate', 100), undefined);
+  assert.equal(
+    press('ultimate', 0, true),
+    CHRONO_SUPER_MOVE_IDS.inevitability,
+  );
 });
 
 test('CHRONO super damage collapses into one unblockable hit', () => {

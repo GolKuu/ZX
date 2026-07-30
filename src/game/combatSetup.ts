@@ -18,6 +18,7 @@ import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
 import { GLITCH_SUPER_MOVES } from '@/src/data/glitch-super-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
 import { MIM_SUPER_MOVES } from '@/src/data/mim-super-moves';
+import { TAUNT_MOVES } from '@/src/data/taunt-move';
 import { HudBridge } from '@/src/hud';
 import {
   CombatEngine,
@@ -42,6 +43,7 @@ export const ALL_COMBAT_MOVES = [
   ...CHRONO_SUPER_MOVES,
   ...GLITCH_MOVES,
   ...GLITCH_SUPER_MOVES,
+  ...TAUNT_MOVES,
 ];
 
 export function createCombatEngine(): CombatEngine {

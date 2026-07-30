@@ -1,6 +1,7 @@
 'use client';
 
 import { CHARACTER_ROSTER } from '@/src/data/characterRoster';
+import { SUPER_METER_STOCKS } from '@/src/hud/superMeter';
 import type { HudFighterSnapshot } from '@/src/hud/types';
 import { BurstMeter } from './BurstMeter';
 import { FighterPortrait } from './FighterPortrait';
@@ -15,7 +16,7 @@ export function PlayerStatus({ fighter }: {
     ({ displayName }) => displayName === fighter.displayName,
   );
   const characterId = character?.id ?? 'mim';
-  const burstCharges = meterSegments(fighter.superCharge, 3);
+  const burstCharges = meterSegments(fighter.superCharge, SUPER_METER_STOCKS);
 
   return (
     <section
@@ -47,7 +48,11 @@ export function PlayerStatus({ fighter }: {
           <i style={{ width: `${health}%` }} />
           <u aria-hidden="true" />
         </div>
-        <BurstMeter charges={burstCharges} side={fighter.side} />
+        <BurstMeter
+          charges={burstCharges}
+          side={fighter.side}
+          ultimateReady={fighter.ultimateReady}
+        />
       </div>
     </section>
   );

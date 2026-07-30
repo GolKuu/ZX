@@ -1,5 +1,6 @@
 export { CombatEngine, type CombatEngineOptions, type CombatTickResult } from './combat-engine.js';
 export { DEFAULT_WORLD_CONFIG, type CombatWorldConfig } from './config.js';
+export { DASH_FRAMES, DASH_SPEED_MULTIPLIER } from './dash.js';
 export type { CombatEvent, FighterDebugFrame, WorldBox } from './events.js';
 export {
   movePhaseAt,

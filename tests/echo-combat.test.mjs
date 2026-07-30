@@ -45,28 +45,41 @@ test('sweep stays low while forward kick reaches farther and higher', () => {
   assert.ok(kickBox.offset.x > sweepBox.offset.x);
 });
 
-function superCommand(button, superMeter, finisherReady = false) {
+function superCommand(button, superMeter, ultimateReady = false) {
   const buffer = new InputBuffer();
-  buffer.push(5, BUTTON_BIT.special);
-  buffer.push(5, BUTTON_BIT.special | BUTTON_BIT[button]);
+  buffer.push(5, BUTTON_BIT.super);
+  buffer.push(5, BUTTON_BIT.super | BUTTON_BIT[button]);
   return resolveCommand(buffer, ECHO_COMMANDS, {
     grounded: true,
     stanceId: null,
     gauge: 0,
     superMeter,
-    finisherReady,
+    ultimateReady,
   })?.moveId;
 }
 
-test('ECHO supers use modifier combos and respect meter levels', () => {
+function ultimateCommand(superMeter, ultimateReady) {
+  const buffer = new InputBuffer();
+  buffer.push(5, BUTTON_BIT.ultimate);
+  return resolveCommand(buffer, ECHO_COMMANDS, {
+    grounded: true,
+    stanceId: null,
+    gauge: 0,
+    superMeter,
+    ultimateReady,
+  })?.moveId;
+}
+
+test('ECHO supers use Super-held combos and respect meter levels', () => {
   assert.equal(superCommand('lp', 33), 'echo.lp');
   assert.equal(superCommand('lp', 34), ECHO_SUPER_MOVE_IDS.analysis);
   assert.equal(superCommand('hp', 100), ECHO_SUPER_MOVE_IDS.repeat);
   assert.equal(superCommand('hk', 100), 'echo.hk');
-  assert.equal(
-    superCommand('hk', 100, true),
-    ECHO_SUPER_MOVE_IDS.statistics,
-  );
+});
+
+test('ECHO statistics needs the ultimate unlock, not energy', () => {
+  assert.equal(ultimateCommand(100, false), undefined);
+  assert.equal(ultimateCommand(0, true), ECHO_SUPER_MOVE_IDS.statistics);
 });
 
 test('ECHO supers encode the hologram swarm, copied combo, and finisher', () => {

@@ -39,20 +39,21 @@ test('GLITCH maps all four attack buttons to unique normals', () => {
   assert.equal(play([], 'hk'), GLITCH_MOVE_IDS.hk);
 });
 
-test('GLITCH upgrades the special button across all super levels', () => {
-  const special = (superMeter, finisherReady = false) =>
-    play([], 'special', {
+test('GLITCH upgrades the super button across both super levels', () => {
+  const press = (button, superMeter, ultimateReady = false) =>
+    play([], button, {
       grounded: true,
       stanceId: null,
       gauge: 0,
       superMeter,
-      finisherReady,
+      ultimateReady,
     });
 
-  assert.equal(special(33), undefined);
-  assert.equal(special(34), GLITCH_SUPER_MOVE_IDS.error);
-  assert.equal(special(100), GLITCH_SUPER_MOVE_IDS.critical);
-  assert.equal(special(100, true), GLITCH_SUPER_MOVE_IDS.patchNotes);
+  assert.equal(press('super', 33), undefined);
+  assert.equal(press('super', 34), GLITCH_SUPER_MOVE_IDS.error);
+  assert.equal(press('super', 100), GLITCH_SUPER_MOVE_IDS.critical);
+  assert.equal(press('ultimate', 100), undefined);
+  assert.equal(press('ultimate', 0, true), GLITCH_SUPER_MOVE_IDS.patchNotes);
 });
 
 test('GLITCH Patch Notes finisher deletes the remaining health bar', () => {

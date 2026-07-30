@@ -57,6 +57,7 @@ function snapshotFighter(fighter: MutableFighterState): FighterSnapshot {
     facing: fighter.facing,
     grounded: fighter.grounded,
     guarding: fighter.guarding,
+    dashing: fighter.dashFrames > 0,
     hitstop: fighter.hitstop,
     hitstun: fighter.hitstun,
     action:

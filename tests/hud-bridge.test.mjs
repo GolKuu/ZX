@@ -31,7 +31,7 @@ test('HUD bridge publishes no faster than 15 Hz from a 60 Hz simulation', () => 
   );
 });
 
-test('HUD bridge maps health, ultimate charge, sides, timer, and rounds', () => {
+test('HUD bridge maps health, energy, sides, timer, and rounds', () => {
   const published = [];
   const bridge = new HudBridge(identities, (snapshot) => published.push(snapshot));
   bridge.accept(
@@ -41,7 +41,10 @@ test('HUD bridge maps health, ultimate charge, sides, timer, and rounds', () => 
       reverseOrder: true,
     }),
     [],
-    match({ round: 2, timerFrames: 3210, alphaWins: 1, bravoWins: 2 }),
+    {
+      ...match({ round: 2, timerFrames: 3210, alphaWins: 1, bravoWins: 2 }),
+      superCharge: { alpha: 33, bravo: 67 },
+    },
   );
 
   const snapshot = published[0];
@@ -56,36 +59,41 @@ test('HUD bridge maps health, ultimate charge, sides, timer, and rounds', () => 
   assert.equal(snapshot.fighters[1].roundWins, 2);
 });
 
-test('X-Ray becomes ready at 25 percent health and empties after use', () => {
+test('energy is what the controller reports, not what health implies', () => {
   const published = [];
   const bridge = new HudBridge(identities, (snapshot) => published.push(snapshot));
   bridge.accept(
-    world(0, { alphaHealth: 250, bravoHealth: 250 }),
+    world(0, { alphaHealth: 120, bravoHealth: 1000 }),
     [],
     {
       ...match(),
-      ultimateSpent: { alpha: false, bravo: true },
+      superCharge: { alpha: 0, bravo: 140 },
     },
   );
 
-  assert.equal(published[0].fighters[0].superCharge, 100);
-  assert.equal(published[0].fighters[1].superCharge, 0);
+  assert.equal(published[0].fighters[0].superCharge, 0);
+  assert.equal(published[0].fighters[1].superCharge, 100);
 });
 
-test('HUD subtracts spent super segments from earned charge', () => {
+test('the ultimate flag follows low health and the controller can revoke it', () => {
   const published = [];
   const bridge = new HudBridge(identities, (snapshot) => published.push(snapshot));
   bridge.accept(
-    world(0, { alphaHealth: 500, bravoHealth: 250 }),
+    world(0, { alphaHealth: 300, bravoHealth: 301 }),
     [],
-    {
-      ...match(),
-      superSpent: { alpha: 34, bravo: 68 },
-    },
+    match(),
   );
 
-  assert.equal(published[0].fighters[0].superCharge, 33);
-  assert.equal(published[0].fighters[1].superCharge, 32);
+  assert.equal(published[0].fighters[0].ultimateReady, true);
+  assert.equal(published[0].fighters[1].ultimateReady, false);
+
+  bridge.accept(
+    world(4, { alphaHealth: 300, bravoHealth: 301 }),
+    [],
+    { ...match(), ultimateReady: { alpha: false, bravo: false } },
+  );
+
+  assert.equal(published[1].fighters[0].ultimateReady, false);
 });
 
 test('HUD combo aggregates hit events and clears after defender recovery', () => {

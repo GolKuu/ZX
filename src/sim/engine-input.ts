@@ -1,3 +1,4 @@
+import { advanceDash, endDash, requestDash } from './dash.js';
 import type { MoveStartedEvent } from './events.js';
 import type { MoveFrameData } from './frame-data.js';
 import type {
@@ -27,6 +28,14 @@ export function validateCombatInputs(
     if (input?.jump !== undefined && typeof input.jump !== 'boolean') {
       throw new Error(`Invalid jump input for fighter "${fighter.id}"`);
     }
+    if (
+      input?.dash !== undefined
+      && input.dash !== -1
+      && input.dash !== 0
+      && input.dash !== 1
+    ) {
+      throw new Error(`Invalid dash input for fighter "${fighter.id}"`);
+    }
   }
 }
 
@@ -36,21 +45,35 @@ export function applyNeutralInput(
 ): void {
   if (fighter.health === 0 || fighter.hitstun > 0) {
     fighter.guarding = false;
+    endDash(fighter);
     return;
   }
   if (fighter.action !== null) {
     fighter.guarding = false;
+    endDash(fighter);
     if (fighter.grounded) fighter.velocity.x = 0;
     return;
   }
   fighter.guarding = input?.guard ?? false;
   if (!fighter.grounded) {
+    endDash(fighter);
     return;
   }
   const movement = fighter.guarding ? 0 : (input?.movement ?? 0);
-  if (input?.jump === true && !fighter.guarding) {
+  const jumping = input?.jump === true && !fighter.guarding;
+  if (fighter.guarding || jumping) {
+    endDash(fighter);
+  } else {
+    requestDash(fighter, input);
+  }
+  if (jumping) {
     fighter.velocity.y = fighter.movement.jumpPerFrame;
     fighter.grounded = false;
+  }
+  // A dash owns the horizontal velocity for its whole length, so the walk speed
+  // below never overwrites it.
+  if (advanceDash(fighter)) {
+    return;
   }
   const speed =
     movement >= 0
@@ -81,6 +104,7 @@ export function tryStartMove(
     serial: actionSerial,
     hitLedger: [],
   };
+  endDash(fighter);
   if (fighter.grounded) fighter.velocity.x = 0;
   return {
     type: 'moveStarted',

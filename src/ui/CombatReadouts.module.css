@@ -141,6 +141,28 @@
   justify-self: end;
 }
 
+/* Ultimate unlocked: the bar reads as armed even when energy is spent. */
+.energy[data-ultimate="true"] {
+  --accent: #ff3d5e;
+  --accent-deep: #b3002a;
+  animation: energy-armed 0.9s ease-in-out infinite alternate;
+}
+
+.energy[data-ultimate="true"] > div > span {
+  border-color: #ff3d5e;
+}
+
+@keyframes energy-armed {
+  from { filter: drop-shadow(0 0.45cqw 0.45cqw #000); }
+  to { filter: drop-shadow(0 0 0.9cqw #ff3d5e) drop-shadow(0 0.45cqw 0.45cqw #000); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .energy[data-ultimate="true"] {
+    animation: none;
+  }
+}
+
 @container combat-hud (max-width: 760px) {
   .combo {
     top: 26cqw;

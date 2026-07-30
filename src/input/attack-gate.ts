@@ -4,10 +4,13 @@ import {
   type ButtonMask,
 } from './bindings.js';
 
-const ATTACK_INPUT_MASK = [...ATTACK_BUTTONS, 'special' as const].reduce(
-  (mask, button) => mask | BUTTON_BIT[button],
-  0,
-);
+/** Every button that commits a move. Block and dash stay outside the gate. */
+const ATTACK_INPUT_MASK = [
+  ...ATTACK_BUTTONS,
+  'super' as const,
+  'ultimate' as const,
+  'taunt' as const,
+].reduce((mask, button) => mask | BUTTON_BIT[button], 0);
 
 /**
  * Drops attacks made while a fighter cannot act.

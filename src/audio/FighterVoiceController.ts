@@ -1,4 +1,5 @@
 import type { CharacterSelection } from '@/src/data/characterRoster';
+import { TAUNT_MOVE_ID } from '@/src/data/taunt-move';
 import {
   FIXED_SCALE,
   type CombatEvent,
@@ -33,6 +34,10 @@ export class FighterVoiceController {
     if (this.voicedFighters.size === 0) return;
     for (const event of events) {
       if (event.type === 'moveStarted') {
+        if (event.moveId === TAUNT_MOVE_ID) {
+          this.taunt(event.fighterId, event.frame);
+          continue;
+        }
         this.trackAttack(world, event.fighterId);
         continue;
       }
@@ -97,6 +102,18 @@ export class FighterVoiceController {
       && this.play(defenderId, 'dodge')
     ) {
       this.lastDodgeFrame.set(defenderId, frame);
+    }
+  }
+
+  /** The taunt button: the line plays on demand, still on its own cooldown. */
+  private taunt(fighterId: string, frame: number): void {
+    const lastFrame = this.lastTauntFrame.get(fighterId)
+      ?? Number.NEGATIVE_INFINITY;
+    if (
+      frame - lastFrame >= TAUNT_COOLDOWN_FRAMES
+      && this.play(fighterId, 'taunt')
+    ) {
+      this.lastTauntFrame.set(fighterId, frame);
     }
   }
 

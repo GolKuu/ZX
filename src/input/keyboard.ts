@@ -13,6 +13,7 @@ import {
   readButtonMask,
   resolveDirection,
   toFacingRelative,
+  type Direction,
   type KeyBindings,
 } from './bindings.js';
 import { InputBuffer } from './buffer.js';
@@ -114,11 +115,13 @@ export class KeyboardInputSource {
 
     const guard = isGuarding(this.buffer);
     const command = resolveCommand(this.buffer, this.commands, context);
+    const dash = guard ? 0 : this.readDashPress(direction);
 
     return {
       movement: guard ? 0 : horizontalOf(direction),
       guard,
       jump: !guard && isJumping(direction),
+      dash,
       ...(command === null ? {} : { move: command.moveId }),
     };
   }
@@ -133,6 +136,19 @@ export class KeyboardInputSource {
   /** Exposed for the input display and for replay capture. */
   public get history(): InputBuffer {
     return this.buffer;
+  }
+
+  /**
+   * Dash is a press, not a hold: only the frame the key goes down starts one.
+   * With no direction held the dash goes forward, which is what a player who
+   * taps dash out of neutral means.
+   */
+  private readDashPress(direction: Direction): -1 | 0 | 1 {
+    if (this.buffer.framesSincePress('dash') !== 0) {
+      return 0;
+    }
+    const horizontal = horizontalOf(direction);
+    return horizontal === 0 ? 1 : horizontal;
   }
 
   private isBound(code: string): boolean {

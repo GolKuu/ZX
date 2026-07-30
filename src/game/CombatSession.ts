@@ -24,6 +24,7 @@ import {
   createCombatHud,
   readFighter,
 } from './combatSetup';
+import { MeterController } from './MeterController';
 import { XrayController } from './XrayController';
 
 const ROUND_FRAMES = 99 * 60;
@@ -52,6 +53,7 @@ export class CombatSession {
   private championAtRoundEnd: ChampionSide = null;
   private readonly fighterVoice: FighterVoiceController;
   private readonly xray = new XrayController();
+  private readonly meters = new MeterController();
   private readonly attackInput = new AttackInputPolicy(ALL_COMBAT_MOVES);
 
   public constructor(
@@ -86,6 +88,7 @@ export class CombatSession {
     this.maxCombo = 0;
     this.fighterVoice.reset();
     this.xray.reset();
+    this.meters.reset();
     this.attackInput.reset();
     clearCombatHits();
     this.publishInitialState();
@@ -121,20 +124,21 @@ export class CombatSession {
       ? this.playerTwo.sample(
           opponent.facing,
           this.attackInput.isLocked(opponent),
-          this.xray.inputContext(opponent, player),
+          this.meters.inputContext(opponent),
         )
       : this.ai.decide(before, this.lastEvents).input;
     const result = this.engine.tick({
       p1: this.playerOne.sample(
         player.facing,
         this.attackInput.isLocked(player),
-        this.xray.inputContext(player, opponent),
+        this.meters.inputContext(player),
       ),
       p2: opponentInput,
     });
     this.timerFrames = Math.max(0, this.timerFrames - 1);
     this.lastEvents = result.events;
     this.attackInput.accept(result.state, result.events);
+    this.meters.accept(result.events);
     this.xray.accept(result.events);
     publishCombatFrame(result.state, 0);
     publishCombatHits(result.state, result.events);
@@ -167,7 +171,8 @@ export class CombatSession {
       round: this.matchRound,
       timerFrames: this.timerFrames,
       roundWins: this.roundWins,
-      superSpent: this.xray.spentCharge(),
+      superCharge: this.meters.superChargeState(world.fighters),
+      ultimateReady: this.meters.ultimateReadyState(world.fighters),
     });
   }
 
@@ -222,7 +227,7 @@ export class CombatSession {
       useHudStore.getState().fighterSelection[winnerIndex],
     );
     useHudStore.getState().openResult({
-      winner: `${winner} · ${winnerCharacter.displayName}`,
+      winner: `${winner} - ${winnerCharacter.displayName}`,
       rounds: `${this.roundWins.p1}-${this.roundWins.p2}`,
       maxCombo: this.maxCombo,
       clashes: 0,
@@ -242,6 +247,7 @@ export class CombatSession {
     this.roundWins = { ...this.roundWins };
     this.comboHits = 0;
     this.xray.reset();
+    this.meters.reset();
     this.attackInput.reset();
     clearCombatHits();
     this.publishInitialState();

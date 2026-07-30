@@ -11,7 +11,13 @@ export type Direction = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export const ATTACK_BUTTONS = ['lp', 'hp', 'lk', 'hk'] as const;
 export type AttackButton = (typeof ATTACK_BUTTONS)[number];
 
-export const MODIFIER_BUTTONS = ['block', 'special'] as const;
+export const MODIFIER_BUTTONS = [
+  'block',
+  'dash',
+  'taunt',
+  'super',
+  'ultimate',
+] as const;
 export type ModifierButton = (typeof MODIFIER_BUTTONS)[number];
 
 export type Button = AttackButton | ModifierButton;
@@ -23,7 +29,10 @@ export const BUTTON_BIT: Readonly<Record<Button, number>> = {
   lk: 1 << 2,
   hk: 1 << 3,
   block: 1 << 4,
-  special: 1 << 5,
+  dash: 1 << 5,
+  taunt: 1 << 6,
+  super: 1 << 7,
+  ultimate: 1 << 8,
 };
 
 export type ButtonMask = number;
@@ -36,19 +45,25 @@ export interface KeyBindings {
   readonly buttons: Readonly<Record<Button, string>>;
 }
 
-/** Default layout, per the Phase 3 brief. */
+/**
+ * Default layout. `up` is the jump key: the direction model needs an upward key
+ * for the 7/8/9 diagonals, and up never means anything except jump.
+ */
 export const DEFAULT_BINDINGS: KeyBindings = {
-  up: 'KeyW',
+  up: 'Space',
   down: 'KeyS',
   left: 'KeyA',
   right: 'KeyD',
   buttons: {
     lp: 'KeyJ',
-    hp: 'KeyK',
-    lk: 'KeyL',
-    hk: 'KeyU',
-    block: 'KeyI',
-    special: 'KeyO',
+    hp: 'KeyI',
+    lk: 'KeyK',
+    hk: 'KeyL',
+    block: 'ShiftLeft',
+    dash: 'ControlLeft',
+    taunt: 'KeyT',
+    super: 'KeyU',
+    ultimate: 'KeyO',
   },
 };
 
@@ -64,7 +79,10 @@ export const PLAYER_TWO_BINDINGS: KeyBindings = {
     lk: 'Numpad3',
     hk: 'Numpad4',
     block: 'Numpad5',
-    special: 'Numpad6',
+    dash: 'Numpad0',
+    taunt: 'NumpadDecimal',
+    super: 'Numpad6',
+    ultimate: 'Numpad9',
   },
 };
 

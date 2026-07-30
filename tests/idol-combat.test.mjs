@@ -50,16 +50,27 @@ test('IDOL attacks keep four distinct frame-data profiles', () => {
   );
 });
 
-test('IDOL supers resolve from modifier combos at their meter levels', () => {
-  const superMove = (button, superMeter, finisherReady = false) => {
+test('IDOL supers resolve from Super-held combos at their meter levels', () => {
+  const superMove = (button, superMeter, ultimateReady = false) => {
     const buffer = new InputBuffer();
-    buffer.push(5, BUTTON_BIT.special | BUTTON_BIT[button]);
+    buffer.push(5, BUTTON_BIT.super | BUTTON_BIT[button]);
     return resolveCommand(buffer, IDOL_COMMANDS, {
       grounded: true,
       stanceId: null,
       gauge: 0,
       superMeter,
-      finisherReady,
+      ultimateReady,
+    })?.moveId;
+  };
+  const ultimate = (ultimateReady) => {
+    const buffer = new InputBuffer();
+    buffer.push(5, BUTTON_BIT.ultimate);
+    return resolveCommand(buffer, IDOL_COMMANDS, {
+      grounded: true,
+      stanceId: null,
+      gauge: 0,
+      superMeter: 0,
+      ultimateReady,
     })?.moveId;
   };
 
@@ -67,7 +78,8 @@ test('IDOL supers resolve from modifier combos at their meter levels', () => {
   assert.equal(superMove('lp', 33), IDOL_MOVE_IDS.highlight);
   assert.equal(superMove('hp', 100), IDOL_MOVE_IDS.million);
   assert.equal(superMove('hk', 100), IDOL_MOVE_IDS.hk);
-  assert.equal(superMove('hk', 100, true), IDOL_MOVE_IDS.cancel);
+  assert.equal(ultimate(false), undefined);
+  assert.equal(ultimate(true), IDOL_MOVE_IDS.cancel);
 });
 
 test('Million Followers and Cancel apply a sequence of damaging comments', () => {

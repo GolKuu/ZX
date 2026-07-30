@@ -21,6 +21,8 @@ export interface FighterInput {
   readonly movement?: -1 | 0 | 1;
   readonly guard?: boolean;
   readonly jump?: boolean;
+  /** Ground dash request on the press frame, facing-relative: 1 forward, −1 back. */
+  readonly dash?: -1 | 0 | 1;
 }
 
 export type CombatInputs = Readonly<Record<string, FighterInput | undefined>>;
@@ -65,6 +67,9 @@ export interface MutableFighterState {
    * stays exact.
    */
   recoveryPercent: number;
+  /** Dash frames left; 0 when not dashing. */
+  dashFrames: number;
+  dashDirection: -1 | 0 | 1;
   action: ActiveMoveState | null;
   bounce: BounceState;
 }
@@ -80,6 +85,7 @@ export interface FighterSnapshot {
   readonly facing: -1 | 1;
   readonly grounded: boolean;
   readonly guarding: boolean;
+  readonly dashing: boolean;
   readonly hitstop: number;
   readonly hitstun: number;
   readonly action: Readonly<Omit<ActiveMoveState, 'hitLedger'>> | null;

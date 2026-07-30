@@ -16,14 +16,17 @@ export interface ControlRow {
 export const CONTROL_ROWS: readonly ControlRow[] = [
   { id: 'up', label: 'Прыжок / вверх', detail: 'Движение' },
   { id: 'down', label: 'Присесть / вниз', detail: 'Движение' },
-  { id: 'left', label: 'Влево', detail: 'Движение' },
-  { id: 'right', label: 'Вправо', detail: 'Движение' },
+  { id: 'left', label: 'Назад', detail: 'Движение' },
+  { id: 'right', label: 'Вперёд', detail: 'Движение' },
   { id: 'lp', label: 'LP — рукоять', detail: 'Обычный удар' },
   { id: 'hp', label: 'HP — двойной рубящий', detail: 'Обычный удар' },
   { id: 'lk', label: 'LK — колено', detail: 'Обычный удар' },
   { id: 'hk', label: 'HK — подсечка', detail: 'Обычный удар' },
   { id: 'block', label: 'Блок', detail: 'Защита' },
-  { id: 'special', label: 'Песня Льва', detail: 'Спецприём' },
+  { id: 'dash', label: 'Рывок', detail: 'Движение' },
+  { id: 'taunt', label: 'Насмешка', detail: 'Провокация' },
+  { id: 'super', label: 'Супер', detail: 'Тратит шкалу энергии' },
+  { id: 'ultimate', label: 'Ультимейт', detail: 'Только на низком HP' },
 ];
 
 interface ControlState {
@@ -77,13 +80,20 @@ export function keyLabel(code: string): string {
   if (code.startsWith('Key')) return code.slice(3);
   if (code.startsWith('Digit')) return code.slice(5);
   if (code.startsWith('Numpad')) return `Num ${code.slice(6)}`;
-  const arrows: Readonly<Record<string, string>> = {
+  const named: Readonly<Record<string, string>> = {
     ArrowUp: '↑',
     ArrowDown: '↓',
     ArrowLeft: '←',
     ArrowRight: '→',
+    Space: 'Space',
+    ShiftLeft: 'Shift',
+    ShiftRight: 'R Shift',
+    ControlLeft: 'Ctrl',
+    ControlRight: 'R Ctrl',
+    AltLeft: 'Alt',
+    AltRight: 'R Alt',
   };
-  return arrows[code] ?? code;
+  return named[code] ?? code;
 }
 
 function withBinding(

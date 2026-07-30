@@ -33,7 +33,10 @@ export function FightControlStrip() {
         )}
       />
       <ControlGroup label="Блок" codes={[bindingCode(bindings, 'block')]} />
-      <ControlGroup label="Спец" codes={[bindingCode(bindings, 'special')]} />
+      <ControlGroup label="Рывок" codes={[bindingCode(bindings, 'dash')]} />
+      <ControlGroup label="Супер" codes={[bindingCode(bindings, 'super')]} />
+      <ControlGroup label="Ульта" codes={[bindingCode(bindings, 'ultimate')]} />
+      <ControlGroup label="Насмешка" codes={[bindingCode(bindings, 'taunt')]} />
       {selection[0] === 'idol' && <IdolMoveGroup fighterId="p1" />}
       {selection[1] === 'idol' && <IdolMoveGroup fighterId="p2" />}
       {selection[0] === 'chrono' && <ChronoMoveGroup fighterId="p1" />}
@@ -53,7 +56,7 @@ function IdolMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
   return (
     <MoveGroup
       fighterId={fighterId}
-      hint="O+J / O+K / O+U"
+      hint="U+J / U+I / O"
       moves="ХАЙЛАЙТ · МИЛЛИОН ПОДПИСЧИКОВ · ОТМЕНА"
     />
   );
@@ -63,7 +66,7 @@ function ChronoMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId })
   return (
     <MoveGroup
       fighterId={fighterId}
-      hint="SPECIAL · 1 / 3 / FINISH"
+      hint="U · 1 / 3 · O ULT"
       moves="ПЕРЕМОТКА · 143 ИСХОДА · НЕИЗБЕЖНОСТЬ"
     />
   );
@@ -73,7 +76,7 @@ function MimMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
   return (
     <MoveGroup
       fighterId={fighterId}
-      hint="SPECIAL · 1 / 3 / FINISH"
+      hint="U · 1 / 3 · O ULT"
       moves="ПРАНК · ГЛАВНЫЙ ГЕРОЙ · ALT+F4"
     />
   );
@@ -93,7 +96,7 @@ function EchoMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
   return (
     <MoveGroup
       fighterId={fighterId}
-      hint="O+J / O+K / O+U"
+      hint="U+J / U+I / O"
       moves="АНАЛИЗ · ПОВТОР · СТАТИСТИКА"
     />
   );

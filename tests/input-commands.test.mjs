@@ -161,29 +161,43 @@ test('the same button without a motion yields the normal', () => {
   assert.equal(resolveCommand(buffer, KADE_COMMANDS)?.moveId, '5H');
 });
 
-test('the dedicated special button starts Overtake without a motion', () => {
+test('the dedicated super button starts Overtake without a motion', () => {
   const buffer = new InputBuffer();
   feed(buffer, [
     [5, []],
-    [5, ['special']],
+    [5, ['super']],
   ]);
   assert.equal(resolveCommand(buffer, KADE_COMMANDS)?.moveId, 'overtake');
 });
 
-test('a full ultimate charge upgrades the special button to X-Ray', () => {
+test('the ultimate button only answers once low health has unlocked it', () => {
   const buffer = new InputBuffer();
   feed(buffer, [
     [5, []],
-    [5, ['special']],
+    [5, ['ultimate']],
   ]);
-  const context = {
+  const context = (ultimateReady) => ({
     grounded: true,
     stanceId: null,
     gauge: 0,
     superMeter: 100,
-  };
+    ultimateReady,
+  });
 
-  assert.equal(resolveCommand(buffer, KADE_COMMANDS, context)?.moveId, 'xray');
+  assert.equal(resolveCommand(buffer, KADE_COMMANDS, context(false)), null);
+  assert.equal(
+    resolveCommand(buffer, KADE_COMMANDS, context(true))?.moveId,
+    'xray',
+  );
+});
+
+test('the taunt button is available to every character', () => {
+  const buffer = new InputBuffer();
+  feed(buffer, [
+    [5, []],
+    [5, ['taunt']],
+  ]);
+  assert.equal(resolveCommand(buffer, KADE_COMMANDS)?.moveId, 'taunt');
 });
 
 test('crouching selects the crouching normal', () => {

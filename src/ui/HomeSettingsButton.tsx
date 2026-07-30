@@ -17,8 +17,9 @@ type SettingsButtonProps = {
   readonly variant: 'compact' | 'secondary';
 };
 
-const MOVE_IDS = ['up', 'left', 'down', 'right'] as const;
-const ATTACK_IDS = ['lp', 'hp', 'lk', 'hk', 'block', 'special'] as const;
+const MOVE_IDS = ['up', 'left', 'down', 'right', 'dash'] as const;
+const ATTACK_IDS = ['lp', 'hp', 'lk', 'hk', 'block'] as const;
+const METER_IDS = ['super', 'ultimate', 'taunt'] as const;
 
 export function HomeSettingsButton({ variant }: SettingsButtonProps) {
   const titleId = useId();
@@ -46,6 +47,7 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
 
   const movement = MOVE_IDS.map((id) => keyLabel(bindingCode(bindings, id)));
   const attacks = ATTACK_IDS.map((id) => keyLabel(bindingCode(bindings, id)));
+  const meters = METER_IDS.map((id) => keyLabel(bindingCode(bindings, id)));
 
   return (
     <>
@@ -113,6 +115,7 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
               </div>
               <KeyRow label="Движение" keys={movement} />
               <KeyRow label="Удары" keys={attacks} />
+              <KeyRow label="Супер · Ульта" keys={meters} />
             </section>
 
             <button className={panelStyles.done} type="button" onClick={() => setOpen(false)}>

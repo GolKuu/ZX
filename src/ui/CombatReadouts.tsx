@@ -1,3 +1,4 @@
+import { SUPER_METER_STOCKS } from '@/src/hud/superMeter';
 import type { HudSnapshot } from '@/src/hud/types';
 import { meterSegments } from './meterSegments';
 import styles from './CombatReadouts.module.css';
@@ -18,13 +19,17 @@ export function CombatReadouts({ snapshot }: {
 function EnergyMeter({ fighter }: {
   readonly fighter: HudSnapshot['fighters'][number];
 }) {
-  const level = meterSegments(fighter.superCharge, 3);
+  const level = meterSegments(fighter.superCharge, SUPER_METER_STOCKS);
   return (
-    <aside className={styles.energy} data-side={fighter.side}>
+    <aside
+      className={styles.energy}
+      data-side={fighter.side}
+      data-ultimate={fighter.ultimateReady}
+    >
       <strong>{level}</strong>
       <div>
         <span><i style={{ width: `${fighter.superCharge}%` }} /></span>
-        <b>Energy</b>
+        <b>{fighter.ultimateReady ? 'Energy · Ultimate' : 'Energy'}</b>
       </div>
     </aside>
   );

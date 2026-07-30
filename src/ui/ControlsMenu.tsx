@@ -73,7 +73,7 @@ export function ControlsMenu() {
         ))}
         <div className={styles.controlActions}>
           <button type="button" onClick={openPause}>Назад</button>
-          <button type="button" onClick={reset}>Сбросить WASD + JKLUIO</button>
+          <button type="button" onClick={reset}>Сбросить раскладку</button>
         </div>
       </section>
       <footer className={styles.hintBar}>

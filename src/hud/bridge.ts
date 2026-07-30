@@ -1,6 +1,7 @@
 import type { CombatEvent } from '../sim/events.js';
 import type { FighterSnapshot, WorldSnapshot } from '../sim/state.js';
-import { ultimateChargeFromHealth } from './ultimateCharge.js';
+import { clampSuperMeter } from './superMeter.js';
+import { ultimateReadyFromHealth } from './ultimateCharge.js';
 import {
   HUD_PUBLISH_INTERVAL_FRAMES,
   type HudComboSnapshot,
@@ -108,19 +109,15 @@ export class HudBridge {
     }
     const maxHealth = positiveInteger(fighter.maxHealth, 'maxHealth');
     const health = Math.max(0, Math.min(maxHealth, fighter.health));
-    const ultimateSpent = match.ultimateSpent?.[fighter.id] === true;
-    const superSpent = Math.max(
-      0,
-      Math.min(100, match.superSpent?.[fighter.id] ?? 0),
-    );
-    const earnedCharge = ultimateChargeFromHealth(health, maxHealth);
     return {
       ...identity,
       health,
       maxHealth,
-      superCharge: ultimateSpent
-        ? 0
-        : Math.max(0, earnedCharge - superSpent),
+      superCharge: clampSuperMeter(match.superCharge?.[fighter.id] ?? 0),
+      // The controller owns the flag; health alone is the fallback so a HUD
+      // fed straight from the engine still lights the ultimate up.
+      ultimateReady: match.ultimateReady?.[fighter.id]
+        ?? ultimateReadyFromHealth(health, maxHealth),
       roundWins: Math.min(3, nonNegativeInteger(match.roundWins[fighter.id] ?? 0, 'roundWins')),
     };
   }
