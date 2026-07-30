@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* global document */
+/* global requestAnimationFrame, window */
 // Checks that impact spray actually reaches the screen.
 //
 // A droplet burst is a handful of pixels for under a second, so a screenshot that
@@ -115,6 +115,36 @@ const observed = await page.evaluate(async () => {
 });
 
 console.log(`observed: ${JSON.stringify(observed)}`);
+
+// Screenshot the moment a burst is actually in the air. Polling from outside the
+// page cannot hit a 600ms burst reliably, so wait inside it for a frame with
+// droplets alive and only then grab the frame.
+const caught = await page.evaluate(async () => {
+  const scene = window.__ccu?.scene;
+  let mesh = null;
+  scene?.traverse((node) => {
+    if (node.name === 'hit-blood') mesh = node;
+  });
+  if (mesh === null) return 0;
+  const start = performance.now();
+  while (performance.now() - start < 12_000) {
+    await new Promise((done) => requestAnimationFrame(() => done(undefined)));
+    let alive = 0;
+    const array = mesh.instanceMatrix.array;
+    for (let index = 0; index < mesh.count; index += 1) {
+      const base = index * 16;
+      if (Math.abs(array[base]) + Math.abs(array[base + 1]) > 1e-6) alive += 1;
+    }
+    if (alive >= 8) return alive;
+  }
+  return 0;
+});
+if (caught > 0) {
+  await page.screenshot({ path: '.shots/blood.png' });
+  console.log(`caught ${String(caught)} droplets in flight → .shots/blood.png`);
+} else {
+  console.log('no burst caught while watching');
+}
 if (errors.length > 0) {
   console.log(`console errors (${String(errors.length)}):`);
   for (const error of errors.slice(0, 6)) console.log(`  ${error}`);
