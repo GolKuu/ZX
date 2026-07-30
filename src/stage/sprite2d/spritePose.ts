@@ -304,6 +304,93 @@ const roundhouse: AttackPose = (windup, strike, settle) => {
 };
 
 /**
+ * Super — the committed two-handed blow the energy bar is spent on.
+ *
+ * It has to read as more than a heavy punch, so everything is bigger than `swing`:
+ * a deeper coil, both arms driving instead of one, a longer lunge, and the hips
+ * dropping into it.
+ */
+const superBlow: AttackPose = (windup, strike, settle) => {
+  const coil = windup * (1 - strike);
+  const out = reach(strike, settle);
+  return pose({
+    torso: -0.06 + coil * 0.38 - out * 0.48,
+    head: 0.06 - out * 0.2,
+    ponytail: 0.16 - coil * 0.5 + out * 0.9,
+    sash: -0.1 + coil * 0.3 - out * 0.6,
+    upperArm: -0.12 - coil * 0.75 + out * 1.55,
+    forearm: -0.2 - coil * 0.45 + out * 0.3,
+    // The far arm commits too. One arm out is a normal; two is a super.
+    farUpperArm: -0.1 - coil * 0.4 + out * 0.95,
+    farForearm: -0.32 - coil * 0.3 + out * 0.4,
+    thigh: 0.22 + out * 0.5,
+    shin: -0.32 - coil * 0.2 + out * 0.25,
+    boot: 0.1 + out * 0.15,
+    farThigh: -0.26 - out * 0.35,
+    farShin: -0.3 + out * 0.28,
+    lift: -0.07 - out * 0.09,
+    drift: out * 0.24,
+  });
+};
+
+/**
+ * Ultimate — the comeback finisher, so it goes up rather than forward.
+ *
+ * The rear knee drives, the spine arches back and both arms are thrown open at
+ * the top. The cinematic overlay takes the screen a beat later; this is the frame
+ * that has to earn it.
+ */
+const ultimateBlow: AttackPose = (windup, strike, settle) => {
+  const coil = windup * (1 - strike);
+  const out = reach(strike, settle);
+  return pose({
+    torso: -0.06 + coil * 0.45 - out * 0.5,
+    head: 0.06 - out * 0.35,
+    ponytail: 0.16 - coil * 0.6 + out * 1,
+    sash: -0.1 + coil * 0.4 - out * 0.75,
+    upperArm: -0.12 - coil * 0.85 + out * 1.7,
+    forearm: -0.5 - coil * 0.4 + out * 0.5,
+    farUpperArm: -0.1 - coil * 0.7 + out * 1.5,
+    farForearm: -0.5 - coil * 0.3 + out * 0.5,
+    thigh: 0.22 + coil * 0.35 + out * 0.95,
+    shin: -0.3 - coil * 0.7 + out * 0.45,
+    boot: 0.12 + out * 0.2,
+    farThigh: -0.2 - out * 0.3,
+    farShin: -0.28 + out * 0.2,
+    lift: -0.05 + out * 0.16,
+    drift: out * 0.12,
+  });
+};
+
+/**
+ * Taunt — no hitbox, all attitude: chest open, chin up, lead hand beckoning,
+ * rear hand on the hip, knees straightening out of the fighting crouch.
+ *
+ * Standing up out of the stance is the point. It is what makes 55 frames of
+ * being wide open read as a choice rather than an animation glitch.
+ */
+const taunt: AttackPose = (windup, strike, settle) => {
+  const out = Math.max(windup * 0.35, reach(strike, settle));
+  return pose({
+    torso: -0.06 - out * 0.2,
+    head: 0.05 + out * 0.18,
+    ponytail: 0.16 + out * 0.55,
+    sash: -0.1 - out * 0.3,
+    upperArm: 0.16 + out * 0.85,
+    forearm: -0.48 - out * 0.5,
+    farUpperArm: -0.12 + out * 0.5,
+    farForearm: -0.52 - out * 0.55,
+    thigh: 0.2 - out * 0.14,
+    shin: -0.32 + out * 0.12,
+    boot: 0.1 - out * 0.06,
+    farThigh: -0.22 + out * 0.08,
+    farShin: -0.3 + out * 0.1,
+    lift: -0.055 + out * 0.035,
+    drift: -out * 0.03,
+  });
+};
+
+/**
  * Move id → pose. Unmapped ids fall through to the jab so a new move is always
  * visible rather than silently frozen in idle.
  */
@@ -319,15 +406,29 @@ const ATTACKS: Readonly<Record<string, AttackPose>> = {
   hk: roundhouse,
 };
 
+/** One pose per tier, for the moves no per-button row can cover. */
+const KIND_POSES: Readonly<Record<MoveKind, AttackPose | null>> = {
+  normal: null,
+  super: superBlow,
+  ultimate: ultimateBlow,
+  taunt,
+};
+
 /**
  * Per-character move tables namespace their ids — `idol.hp`, `glitch.lk`. Keying
  * on the button suffix is what lets one set of poses serve the whole roster;
  * without it every id missed the table and all four attacks silently played the
  * jab.
+ *
+ * Supers, ultimates and the taunt have no button suffix to key on, so they are
+ * resolved by tier instead — otherwise every one of them was a jab as well.
  */
 function attackFor(moveId: string): AttackPose {
   const suffix = moveId.slice(moveId.lastIndexOf('.') + 1);
-  return ATTACKS[moveId] ?? ATTACKS[suffix] ?? jab;
+  return ATTACKS[moveId]
+    ?? ATTACKS[suffix]
+    ?? KIND_POSES[moveKindFor(moveId)]
+    ?? jab;
 }
 
 /**

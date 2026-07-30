@@ -53,6 +53,14 @@ export function endDash(fighter: MutableFighterState): void {
   fighter.dashDirection = 0;
 }
 
-export function isDashing(fighter: MutableFighterState): boolean {
-  return fighter.dashFrames > 0;
+/**
+ * How far through a dash the fighter is, 0…1, for animation.
+ *
+ * `dashFrames` counts down, and the first rendered frame already had one frame
+ * consumed, so the phase spans the inside of the window rather than hitting 0
+ * and 1 exactly — which is right: a dash is never seen standing still.
+ */
+export function dashPhase(dashFrames: number): number {
+  if (dashFrames <= 0) return 0;
+  return 1 - Math.min(DASH_FRAMES, dashFrames) / DASH_FRAMES;
 }

@@ -85,7 +85,8 @@ export interface FighterSnapshot {
   readonly facing: -1 | 1;
   readonly grounded: boolean;
   readonly guarding: boolean;
-  readonly dashing: boolean;
+  /** Dash frames left; 0 when not dashing. Animation reads it as a timeline. */
+  readonly dashFrames: number;
   readonly hitstop: number;
   readonly hitstun: number;
   readonly action: Readonly<Omit<ActiveMoveState, 'hitLedger'>> | null;
