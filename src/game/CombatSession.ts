@@ -1,4 +1,5 @@
 import type { KeyboardInputSource } from '@/src/input';
+import { MimVoiceController } from '@/src/audio/MimVoiceController';
 import {
   getCharacterDefinition,
   type CharacterSelection,
@@ -37,6 +38,7 @@ export class CombatSession {
   private ended = false;
   private comboHits = 0;
   private maxCombo = 0;
+  private readonly mimVoice: MimVoiceController;
   private readonly xray = new XrayController();
   private readonly attackInput = new AttackInputPolicy(ALL_COMBAT_MOVES);
 
@@ -46,6 +48,7 @@ export class CombatSession {
     private readonly fighterSelection: CharacterSelection,
   ) {
     this.ai = createCombatAi(fighterSelection[1]);
+    this.mimVoice = new MimVoiceController(fighterSelection);
     this.publishInitialState();
   }
 
@@ -65,6 +68,7 @@ export class CombatSession {
     this.ended = false;
     this.comboHits = 0;
     this.maxCombo = 0;
+    this.mimVoice.reset();
     this.xray.reset();
     this.attackInput.reset();
     clearCombatHits();
@@ -98,6 +102,7 @@ export class CombatSession {
     this.xray.accept(result.events);
     publishCombatFrame(result.state, 0);
     publishCombatHits(result.state, result.events);
+    this.mimVoice.accept(result.state, result.events);
     this.publishHud(result.state, result.events);
     this.handleImpact(result.events);
     if (
@@ -142,6 +147,7 @@ export class CombatSession {
     const [first, second] = world.fighters;
     const winner = (first?.health ?? 0) >= (second?.health ?? 0) ? 'P1' : 'P2';
     const winnerIndex = winner === 'P1' ? 0 : 1;
+    this.mimVoice.celebrate(winner === 'P1' ? 'p1' : 'p2');
     const winnerCharacter = getCharacterDefinition(
       useHudStore.getState().fighterSelection[winnerIndex],
     );
