@@ -84,6 +84,7 @@ export const FRONT_VIEWS = {
     file: '../output/imagegen/glitch-character-reference.png',
     crop: { left: 1118, top: 82, width: 176, height: 424 },
     facesRight: true,
+    origin: [123, 414],
   },
   glitch: {
     file: '../output/imagegen/glitch-character-reference.png',
@@ -241,11 +242,32 @@ export const PART_RECTS = {
     boot: { box: [64, 298, 54, 26], joint: [94, 301] },
   },
 
-  // GLITCH and ECHO are not calibrated yet.
-  //
-  // Their rectangles have to be read off `sheet-grid.mjs <name>-profile --keyed`,
-  // in that crop's own pixel space — measuring on the full sheet instead produces
-  // coordinates outside the crop, which is what the clamp warning catches. ECHO
-  // additionally needs a decision about its near-white armour: the automatic key
-  // cannot separate it from the paper it is drawn on.
+  // GLITCH's intact half supplies the actual anatomy while the wider boxes keep
+  // the cyan/magenta breakup attached to each moving part.
+  'glitch-profile': {
+    head: { box: [82, 8, 88, 80], joint: [123, 84] },
+    torso: { box: [78, 80, 90, 110], joint: [122, 185] },
+    hips: { box: [82, 178, 82, 88], joint: [122, 184] },
+    upperArm: {
+      box: [108, 86, 57, 84],
+      joint: [126, 94],
+      carve: true,
+      mask: [
+        [116, 88], [139, 87], [153, 99], [162, 120], [163, 140],
+        [155, 154], [143, 168], [128, 168], [118, 154], [115, 130],
+      ],
+    },
+    forearm: {
+      box: [116, 156, 48, 102],
+      joint: [141, 164],
+      carve: true,
+      mask: [
+        [130, 158], [148, 157], [158, 171], [159, 194], [154, 220],
+        [150, 244], [141, 256], [126, 250], [121, 229], [124, 202],
+      ],
+    },
+    thigh: { box: [94, 246, 62, 78], joint: [121, 258] },
+    shin: { box: [92, 310, 58, 78], joint: [121, 319] },
+    boot: { box: [88, 374, 84, 42], joint: [121, 380] },
+  },
 };
