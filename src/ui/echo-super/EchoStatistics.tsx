@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import shell from './EchoSuperShell.module.css';
+import dashboard from './EchoStatisticsDashboard.module.css';
 import styles from './EchoStatistics.module.css';
 
 type ShardStyle = CSSProperties & {
@@ -13,9 +14,9 @@ const SHARDS = Array.from({ length: 16 }, (_, index) => ({
 }));
 
 const METRICS = [
-  { className: styles.jumps, label: 'Прыжков', value: '37' },
-  { className: styles.spam, label: 'Спама', value: '82%' },
-  { className: styles.errors, label: 'Ошибок', value: '94%' },
+  { className: dashboard.jumps, label: 'Прыжков', value: '37' },
+  { className: dashboard.spam, label: 'Спама', value: '82%' },
+  { className: dashboard.errors, label: 'Ошибок', value: '94%' },
 ] as const;
 
 export function EchoStatistics({
@@ -37,25 +38,25 @@ export function EchoStatistics({
         <strong>Статистика</strong>
         <i>Матч завершён // привычки классифицированы</i>
       </header>
-      <div className={styles.dashboard}>
-        <div className={styles.axis} aria-hidden="true">
+      <div className={dashboard.dashboard}>
+        <div className={dashboard.axis} aria-hidden="true">
           <span>100</span><span>75</span><span>50</span><span>25</span><span>0</span>
         </div>
-        <div className={styles.cards}>
+        <div className={dashboard.cards}>
           {METRICS.map((metric) => (
             <article
-              className={`${styles.card} ${metric.className}`}
+              className={`${dashboard.card} ${metric.className}`}
               key={metric.label}
             >
               <header>
                 <span>{metric.label}</span>
                 <strong>{metric.value}</strong>
               </header>
-              <div className={styles.chart} aria-hidden="true">
+              <div className={dashboard.chart} aria-hidden="true">
                 {Array.from({ length: 12 }, (_, index) => <i key={index} />)}
               </div>
               {metric.label === 'Ошибок' && (
-                <div className={styles.shards} aria-hidden="true">
+                <div className={dashboard.shards} aria-hidden="true">
                   {SHARDS.map((shard, index) => (
                     <i
                       key={index}
