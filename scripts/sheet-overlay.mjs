@@ -270,6 +270,51 @@ function layerCounts(rectangles, width, height) {
  */
 const SURVIVES = 0.88;
 
+/**
+ * Which pixels are the page rather than the character.
+ *
+ * Flooding in from the border through anything still bright. The distinction that
+ * matters is not brightness — these costumes are full of white, and IDOL's skirt
+ * under a hurtbox is the same value as the page under one — it is enclosure. Page
+ * stays connected to the border straight through a box edge; her skirt is fenced in
+ * by her own ink, which is far too dark to cross.
+ *
+ * Without this the anchors were measured partly off her costume, and the correction
+ * came out reading her white skirt as the colour of paper.
+ */
+function pageMask(data, width, height, floor) {
+  const page = new Uint8Array(width * height);
+  const stack = [];
+  const consider = (x, y) => {
+    if (x < 0 || y < 0 || x >= width || y >= height) return;
+    const index = y * width + x;
+    if (page[index] === 1) return;
+    const offset = index * 4;
+    if (data[offset + 3] === 0) return;
+    if (luminance(data[offset], data[offset + 1], data[offset + 2]) < floor) return;
+    page[index] = 1;
+    stack.push(index);
+  };
+  for (let x = 0; x < width; x += 1) {
+    consider(x, 0);
+    consider(x, height - 1);
+  }
+  for (let y = 0; y < height; y += 1) {
+    consider(0, y);
+    consider(width - 1, y);
+  }
+  while (stack.length > 0) {
+    const index = stack.pop();
+    const x = index % width;
+    const y = (index - x) / width;
+    consider(x + 1, y);
+    consider(x - 1, y);
+    consider(x, y + 1);
+    consider(x, y - 1);
+  }
+  return page;
+}
+
 /** Flat, bright pixels: bare paper, seen through however many box layers. */
 function flatBrightSamples(data, width, height, accept, paperFloor) {
   const samples = [];
