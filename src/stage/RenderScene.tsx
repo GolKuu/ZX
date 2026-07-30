@@ -89,19 +89,17 @@ function SelectedFighter({
 const SPRITE_RIGS: Partial<Record<CharacterId, {
   readonly rig: string;
   /**
-   * Sliced attack panels, shown at the strike. Opt-in per character, because only
-   * some sheets draw those panels in costume colour: ECHO's and CHRONO's are solid
-   * blue hurtbox volumes with no character art in them at all, so they keep the
-   * articulated rig on all four buttons. IDOL's and GLITCH's are full colour, and
-   * carry a residue of the diagram's rectangles — that is the trade, the artist's
-   * own drawing of the strike with faint boxes over it.
+   * Sliced attack panels, shown only when their source is clean presentation art.
+   * Hitbox diagrams are deliberately not wired here: even a precise full-body
+   * pose looks worse than the articulated rig once coloured boxes are baked over
+   * the costume.
    */
   readonly attacks?: string;
 }>> = {
   chrono: { rig: 'chrono-profile' },
-  echo: { rig: 'echo-profile', attacks: 'echo-attacks' },
-  glitch: { rig: 'glitch-profile', attacks: 'glitch-attacks' },
-  idol: { rig: 'idol-profile', attacks: 'idol-attacks' },
+  echo: { rig: 'echo-profile' },
+  glitch: { rig: 'glitch-profile' },
+  idol: { rig: 'idol-profile' },
 };
 
 function primitiveFighter(
