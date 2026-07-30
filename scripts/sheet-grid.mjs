@@ -22,9 +22,11 @@ if (destination === undefined) {
   process.exit(1);
 }
 
-const SCALE = 2;
-const STEP = 20;
 const { width, height } = view.crop;
+// Adaptive: a single figure wants magnification and a fine grid; a whole sheet
+// wants 1:1 and coarse lines, or the labels bury the drawing.
+const SCALE = width > 700 ? 1 : 2;
+const STEP = width > 700 ? 50 : 20;
 
 let svg = `<svg width="${width * SCALE}" height="${height * SCALE}" xmlns="http://www.w3.org/2000/svg">`;
 for (let x = 0; x <= width; x += STEP) {

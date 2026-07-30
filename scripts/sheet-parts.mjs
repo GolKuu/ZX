@@ -9,7 +9,28 @@
 // MIM is absent on purpose: its sheet has never been saved into the repository.
 // Drop it at `public/mim-character-sheet.png` and add an entry here.
 
+/** Full sheets, for reading panel boxes off a coarse grid. */
+export const WHOLE_SHEETS = {
+  'echo-sheet': {
+    file: 'public/echo-character-sheet.png',
+    crop: { left: 0, top: 0, width: 1152, height: 768 },
+  },
+  'chrono-sheet': {
+    file: 'public/chrono-character-sheet.png',
+    crop: { left: 0, top: 0, width: 1152, height: 648 },
+  },
+  'idol-sheet': {
+    file: 'public/assets/characters/idol-fighter-reference.webp',
+    crop: { left: 0, top: 0, width: 1536, height: 1024 },
+  },
+  'glitch-sheet': {
+    file: '../output/imagegen/glitch-character-reference.png',
+    crop: { left: 0, top: 0, width: 1536, height: 1024 },
+  },
+};
+
 export const FRONT_VIEWS = {
+  ...WHOLE_SHEETS,
   echo: {
     file: 'public/echo-character-sheet.png',
     crop: { left: 20, top: 40, width: 290, height: 390 },
