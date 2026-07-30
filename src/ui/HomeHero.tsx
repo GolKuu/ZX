@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { HomeArenaPreview } from './HomeArenaPreview';
 import { HomeSettingsButton } from './HomeSettingsButton';
 import styles from './HomeHero.module.css';
 
@@ -31,7 +30,6 @@ export function HomeHero() {
           Клавиатура или геймпад · запуск без установки
         </p>
       </div>
-      <HomeArenaPreview />
     </section>
   );
 }
