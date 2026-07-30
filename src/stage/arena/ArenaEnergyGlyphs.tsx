@@ -66,7 +66,7 @@ export function ArenaEnergyGlyphs() {
         <boxGeometry args={[1, 0.018, 0.045]} />
         <meshBasicMaterial
           blending={AdditiveBlending}
-          color="#d478ff"
+          color="#726cff"
           depthWrite={false}
           opacity={0.55}
           toneMapped={false}
@@ -77,7 +77,7 @@ export function ArenaEnergyGlyphs() {
         <boxGeometry args={[1, 0.016, 0.025]} />
         <meshBasicMaterial
           blending={AdditiveBlending}
-          color="#883dff"
+          color="#3e74ba"
           depthWrite={false}
           opacity={0.38}
           toneMapped={false}

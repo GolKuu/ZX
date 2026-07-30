@@ -29,7 +29,7 @@ export function RenderScene({
 }) {
   return (
     <>
-      <color attach="background" args={['#120d29']} />
+      <color attach="background" args={['#030714']} />
       <StageLighting />
 
       <Arena />

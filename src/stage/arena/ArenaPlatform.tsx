@@ -24,18 +24,18 @@ export function ArenaPlatform({ stoneMaterial }: ArenaPlatformProps) {
   const floorMaterial: ArenaFloorMaterial = useMemo(
     () =>
       createArenaFloorMaterial({
-        base: '#3a2b58',
-        edge: '#d78cff',
-        line: '#7b46c8',
+        base: '#20243b',
+        edge: '#765cff',
+        line: '#5153a7',
         radius: ARENA_RADIUS,
-        reflection: '#8c46e0',
+        reflection: '#267fb7',
       }),
     [],
   );
   const edgeMaterial = useMemo(
     () =>
       new MeshBasicMaterial({
-        color: new Color('#c067ff'),
+        color: new Color('#765cff'),
         toneMapped: false,
         transparent: true,
         opacity: 0.62,

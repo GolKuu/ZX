@@ -2,23 +2,18 @@
 
 import { ARENA_RADIUS } from './arena/arenaData';
 
-/**
- * Lighting is reserved for the fighters. The arena itself uses unlit planes,
- * keeping the new side-on background visibly flat and graphic.
- */
-
 const SHADOW_EXTENT = ARENA_RADIUS + 3.4;
 
 export function StageLighting() {
   return (
     <>
-      <hemisphereLight args={['#7168a5', '#2b1727', 0.4]} />
-      <ambientLight color="#332843" intensity={0.14} />
+      <hemisphereLight args={['#516da2', '#090914', 0.46]} />
+      <ambientLight color="#1b2540" intensity={0.18} />
 
       <directionalLight
         castShadow
-        color="#ffe1bd"
-        intensity={3}
+        color="#ffe8c9"
+        intensity={3.25}
         position={[-5.2, 8.6, 5.4]}
         shadow-bias={-0.0006}
         shadow-camera-bottom={-SHADOW_EXTENT}
@@ -34,30 +29,30 @@ export function StageLighting() {
       />
 
       <directionalLight
-        color="#df7774"
-        intensity={2.05}
+        color="#697bff"
+        intensity={1.65}
         position={[4.6, 5.8, -6.2]}
       />
 
       <directionalLight
-        color="#617ac4"
-        intensity={0.8}
+        color="#43cfff"
+        intensity={1.05}
         position={[6.4, 2.1, 4.2]}
       />
 
       <pointLight
-        color="#f1a275"
+        color="#7b5cff"
         decay={2}
         distance={34}
-        intensity={15}
-        position={[4.8, 4.8, -9]}
+        intensity={12}
+        position={[-4.8, 4.8, -9]}
       />
 
       <pointLight
-        color="#8c536e"
+        color="#1e9bd1"
         decay={2}
         distance={9}
-        intensity={3.2}
+        intensity={2.8}
         position={[0, 0.55, 0.6]}
       />
     </>

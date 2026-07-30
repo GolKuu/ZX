@@ -1,83 +1,107 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
-import {
-  AdditiveBlending,
-  Color,
-  DoubleSide,
-  MeshBasicMaterial,
-  Shape,
-  ShapeGeometry,
-} from 'three';
+import { useFrame } from '@react-three/fiber';
+import { useRef } from 'react';
+import { AdditiveBlending, Group } from 'three';
 
-function makeRift(width: number) {
-  const shape = new Shape();
-  const left = [-0.08, -0.46, -0.2, -0.64, -0.3, -0.78, -0.22];
-  const right = [0.12, 0.5, 0.24, 0.72, 0.32, 0.62, 0.2];
-  const step = 10 / (left.length - 1);
-  shape.moveTo((left[0] ?? 0) * width, -5);
-  left.slice(1).forEach((x, index) => shape.lineTo(x * width, -5 + step * (index + 1)));
-  [...right].reverse().forEach((x, index) => shape.lineTo(x * width, 5 - step * index));
-  shape.closePath();
-  return new ShapeGeometry(shape, 1);
-}
+const SEGMENTS = Array.from({ length: 18 }, (_, index) => ({
+  angle: (index / 18) * Math.PI * 2,
+  bright: index % 5 === 0 || index % 7 === 0,
+  scale: 0.72 + (index % 4) * 0.1,
+}));
 
 export function VoidRift() {
-  const outerGeometry = useMemo(() => makeRift(4.8), []);
-  const middleGeometry = useMemo(() => makeRift(2.8), []);
-  const coreGeometry = useMemo(() => makeRift(0.9), []);
-  const outerMaterial = useMemo(
-    () =>
-      new MeshBasicMaterial({
-        color: new Color('#6e21d2'),
-        blending: AdditiveBlending,
-        depthWrite: false,
-        fog: false,
-        opacity: 0.44,
-        side: DoubleSide,
-        transparent: true,
-        toneMapped: false,
-      }),
-    [],
-  );
+  const outerRef = useRef<Group>(null);
+  const innerRef = useRef<Group>(null);
 
-  useEffect(
-    () => () => {
-      outerGeometry.dispose();
-      middleGeometry.dispose();
-      coreGeometry.dispose();
-      outerMaterial.dispose();
-    },
-    [coreGeometry, middleGeometry, outerGeometry, outerMaterial],
-  );
+  useFrame(({ clock }) => {
+    if (outerRef.current !== null) {
+      outerRef.current.rotation.z = clock.elapsedTime * 0.018;
+    }
+    if (innerRef.current !== null) {
+      innerRef.current.rotation.z = -clock.elapsedTime * 0.025;
+    }
+  });
 
   return (
-    <group position={[0, 4.7, -15.5]} renderOrder={-7}>
-      <mesh geometry={outerGeometry} material={outerMaterial} scale={1.18} />
-      <mesh geometry={middleGeometry}>
+    <group position={[-5.8, 4.15, -14.8]} renderOrder={-7} scale={1.25}>
+      <mesh>
+        <ringGeometry args={[1.52, 2.12, 64]} />
         <meshBasicMaterial
-          blending={AdditiveBlending}
-          color="#b53dff"
+          color="#0a1022"
           depthWrite={false}
           fog={false}
-          opacity={0.72}
-          side={DoubleSide}
+          opacity={0.94}
+          transparent
+        />
+      </mesh>
+      <mesh position-z={0.02}>
+        <ringGeometry args={[1.72, 1.8, 64]} />
+        <meshBasicMaterial
+          blending={AdditiveBlending}
+          color="#7d3dff"
+          depthWrite={false}
+          fog={false}
+          opacity={0.8}
           toneMapped={false}
           transparent
         />
       </mesh>
-      <mesh geometry={coreGeometry} position-z={0.02}>
+      <mesh position-z={0.03}>
+        <ringGeometry args={[1.4, 1.44, 64]} />
         <meshBasicMaterial
           blending={AdditiveBlending}
-          color="#f7d7ff"
+          color="#bc63ff"
           depthWrite={false}
           fog={false}
-          opacity={0.92}
-          side={DoubleSide}
+          opacity={0.56}
           toneMapped={false}
           transparent
         />
       </mesh>
+
+      <group ref={outerRef} position-z={0.04}>
+        {SEGMENTS.map(({ angle, bright, scale }, index) => (
+          <mesh
+            key={angle}
+            position={[Math.cos(angle) * 2.02, Math.sin(angle) * 2.02, 0]}
+            rotation-z={angle + Math.PI / 2}
+            scale-x={scale}
+          >
+            <planeGeometry args={[0.72, 0.16]} />
+            <meshBasicMaterial
+              blending={AdditiveBlending}
+              color={bright ? '#b46cff' : '#3a326e'}
+              depthWrite={false}
+              fog={false}
+              opacity={index % 6 === 0 ? 0.34 : 0.82}
+              toneMapped={false}
+              transparent
+            />
+          </mesh>
+        ))}
+      </group>
+
+      <group ref={innerRef} position-z={0.05} scale={0.78}>
+        {SEGMENTS.filter((_, index) => index % 2 === 0).map(({ angle }) => (
+          <mesh
+            key={angle}
+            position={[Math.cos(angle) * 2.02, Math.sin(angle) * 2.02, 0]}
+            rotation-z={angle + Math.PI / 2}
+          >
+            <planeGeometry args={[0.38, 0.08]} />
+            <meshBasicMaterial
+              blending={AdditiveBlending}
+              color="#795bff"
+              depthWrite={false}
+              fog={false}
+              opacity={0.64}
+              toneMapped={false}
+              transparent
+            />
+          </mesh>
+        ))}
+      </group>
     </group>
   );
 }

@@ -1,27 +1,39 @@
 .strip {
   position: absolute;
   z-index: 68;
-  bottom: 1rem;
+  bottom: 0.75rem;
   left: 50%;
   display: flex;
   align-items: center;
   gap: 0.45rem;
   padding: 0.45rem;
-  color: #eafff2;
-  background: rgb(5 15 11 / 88%);
-  border: 1px solid rgb(85 255 159 / 24%);
-  border-radius: 0.8rem;
+  color: #e8f4ff;
+  background: rgb(4 8 15 / 78%);
+  border: 1px solid rgb(90 176 255 / 22%);
+  border-radius: 0.35rem;
   box-shadow: 0 0.8rem 2.2rem rgb(0 0 0 / 32%);
   pointer-events: auto;
   transform: translateX(-50%);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px);
+  opacity: 0.46;
+  transition: opacity 140ms ease;
+}
+
+.strip:hover,
+.strip:focus-within {
+  opacity: 1;
 }
 
 .strip > span {
-  display: grid;
+  display: none;
   min-width: 4.7rem;
   padding: 0.35rem 0.55rem;
   border-right: 1px solid rgb(255 255 255 / 8%);
+}
+
+.strip:hover > span,
+.strip:focus-within > span {
+  display: grid;
 }
 
 .strip > .elementGroup {
@@ -50,8 +62,9 @@
 .strip button {
   min-height: 2.55rem;
   padding: 0 0.8rem;
-  color: #07130d;
-  background: #55ff9f;
+  color: #d9efff;
+  background: transparent;
+  border: 1px solid rgb(90 176 255 / 35%);
   border: 0;
   border-radius: 0.55rem;
   cursor: pointer;
@@ -63,8 +76,9 @@
 
 .strip button:hover,
 .strip button:focus-visible {
-  background: #fff;
-  outline: 2px solid #55ff9f;
+  color: #07111c;
+  background: #5ad0ff;
+  outline: 2px solid #5ad0ff;
 }
 
 @container play-overlay (width < 760px) {

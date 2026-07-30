@@ -20,7 +20,7 @@ export function LightShafts() {
     () =>
       new ShaderMaterial({
         uniforms: {
-          uColor: { value: new Color('#b95cff') },
+          uColor: { value: new Color('#526dff') },
         },
         vertexShader: shaftVertex,
         fragmentShader: shaftFragment,

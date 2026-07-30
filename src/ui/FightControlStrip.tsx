@@ -42,7 +42,7 @@ export function FightControlStrip() {
       {selection[1] === 'mim' && <MimMoveGroup fighterId="p2" />}
       {selection[0] === 'glitch' && <GlitchMoveGroup fighterId="p1" />}
       {selection[1] === 'glitch' && <GlitchMoveGroup fighterId="p2" />}
-      <button type="button" onClick={openControls}>Изменить</button>
+      <button type="button" onClick={openControls}>Управление</button>
     </section>
   );
 }

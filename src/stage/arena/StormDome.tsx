@@ -9,13 +9,9 @@ export function StormDome() {
     () =>
       new ShaderMaterial({
         uniforms: {
-          // Raised across the board. These values were authored against an
-          // untone-mapped frame; once the ACES curve moved into the composite
-          // chain it applies to the dome too, and at the old levels the sky
-          // crushed to black and took the skyline's separation with it.
-          uTop: { value: new Color('#150c28') },
-          uHorizon: { value: new Color('#50208a') },
-          uStorm: { value: new Color('#b455ff') },
+          uTop: { value: new Color('#030714') },
+          uHorizon: { value: new Color('#242357') },
+          uStorm: { value: new Color('#4c2b75') },
         },
         vertexShader: domeVertex,
         fragmentShader: domeFragment,
