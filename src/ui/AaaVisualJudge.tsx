@@ -47,81 +47,81 @@ const MAX_UI_LOG = 16;
 
 const PHASE_TARGETS: Record<CapturePhase, Record<Category, number>> = {
   'main-menu': {
-    character: 38,
-    animation: 30,
-    arena: 52,
-    lighting: 55,
-    shader: 48,
-    vfx: 34,
-    ui: 65,
-    presentation: 52,
-    spectacle: 34,
+    character: 66,
+    animation: 52,
+    arena: 72,
+    lighting: 78,
+    shader: 74,
+    vfx: 70,
+    ui: 86,
+    presentation: 84,
+    spectacle: 78,
   },
   'character-select': {
-    character: 42,
-    animation: 34,
-    arena: 42,
-    lighting: 50,
-    shader: 46,
-    vfx: 32,
-    ui: 72,
-    presentation: 56,
-    spectacle: 32,
+    character: 62,
+    animation: 54,
+    arena: 68,
+    lighting: 76,
+    shader: 78,
+    vfx: 72,
+    ui: 88,
+    presentation: 86,
+    spectacle: 80,
   },
   'match-start': {
-    character: 56,
-    animation: 50,
-    arena: 64,
-    lighting: 66,
-    shader: 60,
-    vfx: 58,
-    ui: 60,
-    presentation: 66,
-    spectacle: 60,
+    character: 78,
+    animation: 66,
+    arena: 84,
+    lighting: 86,
+    shader: 84,
+    vfx: 84,
+    ui: 84,
+    presentation: 88,
+    spectacle: 82,
   },
   'neutral-gameplay': {
-    character: 64,
-    animation: 58,
-    arena: 72,
-    lighting: 68,
-    shader: 66,
-    vfx: 62,
-    ui: 58,
-    presentation: 72,
-    spectacle: 60,
+    character: 84,
+    animation: 82,
+    arena: 86,
+    lighting: 88,
+    shader: 86,
+    vfx: 82,
+    ui: 82,
+    presentation: 90,
+    spectacle: 88,
   },
   'combo': {
-    character: 72,
-    animation: 72,
-    arena: 74,
-    lighting: 70,
-    shader: 72,
-    vfx: 72,
-    ui: 55,
-    presentation: 76,
-    spectacle: 74,
-  },
-  'super': {
-    character: 78,
-    animation: 84,
-    arena: 80,
-    lighting: 82,
-    shader: 82,
-    vfx: 88,
-    ui: 66,
-    presentation: 86,
+    character: 86,
+    animation: 88,
+    arena: 86,
+    lighting: 88,
+    shader: 88,
+    vfx: 92,
+    ui: 64,
+    presentation: 92,
     spectacle: 90,
   },
+  'super': {
+    character: 88,
+    animation: 92,
+    arena: 90,
+    lighting: 94,
+    shader: 94,
+    vfx: 95,
+    ui: 70,
+    presentation: 96,
+    spectacle: 94,
+  },
   'victory': {
-    character: 76,
-    animation: 72,
-    arena: 78,
-    lighting: 84,
-    shader: 80,
-    vfx: 78,
-    ui: 74,
-    presentation: 82,
-    spectacle: 84,
+    character: 84,
+    animation: 80,
+    arena: 86,
+    lighting: 90,
+    shader: 90,
+    vfx: 88,
+    ui: 82,
+    presentation: 92,
+    spectacle: 90,
   },
 };
 
@@ -376,18 +376,25 @@ function evaluateFrame(
   const zFightScore = clamp(
     Math.round((dominancePenalty * 0.82) + (aliasingScore * 0.18) + (zFightRawScore * 0.32)),
   );
+  const motionReadability = clamp(
+    Math.round(
+      (motionScore * 1.5) + (contrastScore * 0.38) - (aliasingScore * 0.28),
+    ),
+  );
 
   const character = clamp(
     Math.round(
       (contrastScore * 0.46)
       + (edgeScore * 0.38)
       + (saturationScore * 0.16)
-      - dominancePenalty * 0.2,
+      - dominancePenalty * 0.42,
     ),
   );
   const animation = clamp(
     Math.round(
-      (motionScore * 0.65)
+      (motionScore * 0.62)
+      + motionReadability * 0.18
+      + (lumaStd * 0.85)
       + Math.min(100, saturationStd * 80)
       + (phase === 'combo' || phase === 'super' ? 24 : 0),
     ),
@@ -395,7 +402,8 @@ function evaluateFrame(
   const arena = clamp(
     Math.round(
       (entropyScore * 0.58)
-      + (lumaStd * 1.4)
+      + (lumaStd * 1.5)
+      + Math.max(0, Math.min(14, lumaMean - 48)) * 0.42
       + (phase === 'match-start' || phase === 'victory' ? 12 : 0),
     ),
   );
@@ -403,7 +411,8 @@ function evaluateFrame(
     Math.round(
       (contrastScore * 0.8)
       + Math.min(24, (lumaMean - 40) * 0.15)
-      + 10,
+      + lightingScore(shadowToLuma(spread))
+      + 12,
     ),
   );
   const shader = clamp(
@@ -411,20 +420,24 @@ function evaluateFrame(
       (entropyScore * 0.48)
       + (saturationScore * 0.33)
       + (contrastScore * 0.19)
-      - dominancePenalty,
+      - dominancePenalty * 1.22
+      - aliasingScore * 0.25,
     ),
   );
   const vfx = clamp(
     Math.round(
       (edgeScore * 0.47)
       + (motionScore * 0.23)
-      + (phase === 'super' ? 22 : 8),
+      - bandingScore * 0.18
+      + (phase === 'super' ? 28 : 12),
     ),
   );
   const ui = clamp(
     Math.round(
-      (100 - clamp(Math.round(dominantShare * 150)))
-      + (phase === 'victory' ? 16 : 0),
+      (100 - clamp(Math.round(dominantShare * 170)))
+      + (phase === 'victory' ? 16 : 0)
+      - (edgeScore < 28 ? 10 : 0)
+      - (aliasingScore > 34 ? 12 : 0),
     ),
   );
   const presentation = clamp(
@@ -461,11 +474,11 @@ function evaluateFrame(
   );
   const target = PHASE_TARGETS[phase];
   const targetMissPenalty = Object.entries(target)
-    .reduce((sum, [category, required]) => {
+      .reduce((sum, [category, required]) => {
       const current = categories[category as Category];
       return sum + Math.max(0, required - current);
     }, 0);
-  const overall = clamp(baseOverall - Math.round(targetMissPenalty * 0.35));
+  const overall = clamp(baseOverall - Math.round(targetMissPenalty * 0.42));
 
   const findings = buildFindings(
     { character, animation, arena, lighting, shader, vfx, ui, presentation, spectacle },
@@ -669,67 +682,72 @@ function buildFindings(
   },
 ) {
   const findings: string[] = [];
-  if (categories.lighting < 58) {
+  if (categories.lighting < 78) {
     findings.push(
-      'Lighting is flat like a generic browser post-filter; add harder rim + directional key light shifts 12-18% apart and a second shadow pivot from the opposite side.',
+      'Lighting still feels generic: add stronger 3-point hierarchy (cold rim + hard contrast key + motivated backlight) with time-shifted shadows so the body reads like 3D stage spectacle.',
     );
   }
-  if (categories.character < 56) {
+  if (categories.character < 80) {
     findings.push(
-      'Silhouette read is weak; each fighter must keep a bold 1px+ outline contrast band that does not collapse at distance, even at 40m in this stage.',
+      'Character silhouette and read are still unstable; widen profile contrast, raise outer silhouette intensity, and force a secondary value shadow pass to keep each fighter readable against busy VFX.',
     );
   }
-  if (categories.shader < 55 || categories.vfx < 52) {
+  if (categories.shader < 82 || categories.vfx < 82) {
     findings.push(
-      'Shader pass looks procedural and synthetic; break the flat ramps with hue-shifted contour bands and non-linear response (like Strive/Naruto Storm energy layering), not a pure multiply.',
+      'Shading layer still leaks "single-pass" look; introduce non-linear cel bands, rim edge falloff response, and secondary specular contour so materials feel carved, not painted.',
     );
   }
-  if (metrics.aliasingScore > 38) {
+  if (metrics.aliasingScore > 28) {
     findings.push(
-      'Aliasing/temporal shimmer is visible on thin edges; add jitter-resistant post-composite sampling and soften razor-thin geometry silhouettes.',
+      'Aliasing/stutter appears on fast edges; add conservative MSAA/FXAA pass strategy in render chain and anti-shimmer damping for sub-pixel silhouettes.',
     );
   }
-  if (metrics.bandingScore > 36) {
+  if (metrics.bandingScore > 30) {
     findings.push(
-      'Banding visible in skies/ground transitions; inject low-amplitude dithering and avoid hard posterized ramps at distant depths.',
+      'Banding/posterization remains in distant gradients; inject temporal dither/noise and avoid straight-linear tone ramps on floor/sky transitions.',
     );
   }
-  if (metrics.zFightScore > 52) {
+  if (metrics.zFightScore > 40) {
     findings.push(
-      'Likely z-fighting pattern detected; separate coplanar planes, add per-layer depth bias, and push decals to a safer offset.',
+      'Z-conflict detected; separate coplanar planes, add per-layer depth bias, and detach decals from hero geometry by micro-offsets to avoid shimmer.',
     );
   }
-  if (metrics.readabilityScore < 52) {
+  if (metrics.readabilityScore < 58) {
     findings.push(
-      'Readability for characters/impact and HUD layers is weak; increase local contrast around read windows and silhouette edges.',
+      'Readability is still below AAA standard; increase local contrast windows around fighters, impact telegraphs, HUD text and edge cues before heavy particle moments.',
     );
   }
-  if (categories.animation < 54 && (metrics.phase === 'combo' || metrics.phase === 'super')) {
+  if (categories.animation < 84 && (metrics.phase === 'combo' || metrics.phase === 'super')) {
     findings.push(
-      'Combo/super timing lacks readable weight; add 2-4 hard hold frames and micro-stutter at impact, then recover with eased re-entry.',
+      'Combo/super timing still reads too linear; add 2-3 hard anticipation frames, readable impact pauses, then delayed recovery so cadence feels like real fight-cinema.',
     );
   }
-  if (metrics.edgeScore < 35 && metrics.motionScore < 24) {
+  if (metrics.edgeScore < 36 && metrics.motionScore < 26) {
     findings.push(
-      'Impact readability is low; add screen-space impact shockwave + rim-pop + debris shards with independent parallax delay.',
+      'Impact readability is insufficient for super-level spectacle; add a separate hit-park layer (screen-space shockwave, dust shard burst, and parallax lens pop).',
     );
   }
-  if (categories.ui < 58 && metrics.phase === 'main-menu') {
+  if (categories.ui < 80 && metrics.phase === 'main-menu') {
     findings.push(
-      'Main/UI plane looks like a static poster; scale contrast on menu type and make selection rails breathe with directional glow pulses.',
+      'Main menu remains too static; build a moving hero state, depth in card stacks, and stronger high-contrast call-to-action pulses to match pro UI rhythm.',
     );
   }
-  if (categories.spectacle < 60 && (metrics.phase === 'super' || metrics.phase === 'victory')) {
+  if (categories.spectacle < 84 && (metrics.phase === 'super' || metrics.phase === 'victory')) {
     findings.push(
-      'No spectacle floor; supers must land with a world-scale reaction (arena bloom gate, lens flash, and post-burst smoke wash).',
+      'No AAA spectacle event on major moments; supers and finishers need world-scale lighting reaction (arena bloom gate + lens flare bloom + delayed smoke wash).',
+    );
+  }
+  if (categories.ui < 68 && metrics.phase === 'victory') {
+    findings.push(
+      'Victory screen lacks prestige; elevate composition hierarchy and cinematic spacing so the outcome moment communicates match context instantly.',
     );
   }
   if (findings.length === 0) {
-    findings.push('No catastrophic issues found, but still below AAA standard parity if any score stays < 80 in this phase.');
+    findings.push('No catastrophic issues found; still force-check VFX readability against movement/aliasing under stress and keep pushing toward 88+ consistency.');
   }
   if (metrics.dominancePenalty > 15) {
     findings.push(
-      'Banding/flat surfaces detected; push palette noise or anisotropic breakup in floor/FX textures so surfaces break at large scale.',
+      'Flat surfaces too uniform at camera distance; layer micro-noise and anisotropic breakup in floor/FX materials to prevent skyline flatness.',
     );
   }
   return findings.slice(0, 3);
@@ -737,9 +755,10 @@ function buildFindings(
 
 function buildStrengths(categories: Record<Category, number>, phase: CapturePhase) {
   const strengths: string[] = [];
-  if (categories.arena >= 68) strengths.push(`Arena geometry density is above baseline for ${phase}.`);
-  if (categories.animation >= 62) strengths.push(`Movement cadence has punch at this phase.`);
-  if (categories.lighting >= 64) strengths.push(`Lighting curve has decent depth and color hierarchy.`);
+  if (categories.arena >= 86) strengths.push(`Arena reads as a live stage, not a background card, for ${phase}.`);
+  if (categories.animation >= 84) strengths.push('Combat cadence contains readable weight and clear hit rhythm.');
+  if (categories.lighting >= 84) strengths.push('Lighting pass has layered contrast depth with directional hierarchy.');
+  if (categories.spectacle >= 88) strengths.push('Major cinematic moments begin to show modern combat presentation scale.');
   if (strengths.length === 0) return ['No meaningful strengths captured yet.'];
   return strengths.slice(0, 1);
 }
