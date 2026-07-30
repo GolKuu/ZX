@@ -1,6 +1,6 @@
 import type { FighterInput } from '../sim/state.js';
 
-export type AiDifficulty = 'easy' | 'normal' | 'hard';
+export type AiDifficulty = 'easy' | 'normal' | 'hard' | 'impossible';
 
 export type AiIntent =
   | 'idle'

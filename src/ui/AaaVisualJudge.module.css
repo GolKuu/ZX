@@ -1,0 +1,185 @@
+.judgeRoot {
+  position: fixed;
+  z-index: 120;
+  right: 0.85rem;
+  top: 0.85rem;
+  width: min(26rem, 42vw);
+  max-height: calc(100% - 1.7rem);
+  color: #e9eefb;
+  pointer-events: auto;
+  background: rgb(2 7 14 / 84%);
+  border: 1px solid rgb(111 158 207 / 35%);
+  border-radius: 0.5rem;
+  box-shadow: 0 1.2rem 2.2rem rgb(0 0 0 / 45%);
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  background: rgb(5 11 18 / 86%);
+  border-bottom: 1px solid rgb(111 158 207 / 25%);
+}
+
+.header button {
+  cursor: pointer;
+  color: #9dc5ff;
+  background: transparent;
+  border: 1px solid rgb(111 158 207 / 35%);
+  border-radius: 999px;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header button small {
+  margin-left: 0.45rem;
+  color: #8f9fbb;
+  font-size: 0.56rem;
+}
+
+.header strong {
+  font-size: 0.74rem;
+  color: #f9faff;
+}
+
+.content {
+  padding: 0.75rem;
+  overflow: auto;
+  max-height: calc(100vh - 8rem);
+}
+
+.goal {
+  margin: 0 0 0.6rem;
+  color: #97aecf;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.phaseList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.phaseList li {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.62rem;
+  border: 1px solid rgb(112 151 198 / 30%);
+  background: rgb(5 10 16 / 78%);
+}
+
+.phaseHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.45rem;
+  text-transform: uppercase;
+  font-size: 0.64rem;
+  letter-spacing: 0.07em;
+}
+
+.phaseHeader b {
+  color: #9fd8ff;
+}
+
+.categoryRow {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.categoryRow i {
+  display: inline-flex;
+  align-items: center;
+  min-width: 2.4rem;
+  justify-content: center;
+  border: 1px solid rgb(95 131 178 / 30%);
+  border-radius: 0.3rem;
+  padding: 0.12rem 0.25rem;
+  color: #c5d2e5;
+  font-size: 0.54rem;
+  font-style: normal;
+  letter-spacing: 0.05em;
+}
+
+.categoryRow i u {
+  margin-left: 0.25rem;
+  color: #e8effa;
+  font-weight: 800;
+}
+
+.categoryRow i[data-low="true"] {
+  color: #ff9da6;
+  border-color: rgb(255 130 145 / 45%);
+}
+
+.phaseList img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid rgb(97 121 155 / 38%);
+}
+
+.phaseList p {
+  margin: 0;
+  line-height: 1.28;
+  font-size: 0.62rem;
+  color: #b8c6da;
+}
+
+.good {
+  color: #8df0b9 !important;
+  font-weight: 800;
+}
+
+.logWrap {
+  margin-top: 0.85rem;
+  border-top: 1px solid rgb(111 158 207 / 25%);
+  padding-top: 0.6rem;
+}
+
+.logWrap h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.67rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9dc8ff;
+}
+
+.logWrap ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 7rem;
+  overflow: auto;
+  display: grid;
+  gap: 0.28rem;
+}
+
+.logWrap li {
+  padding: 0.25rem 0.4rem;
+  border-left: 0.18rem solid rgb(159 210 255 / 46%);
+  background: rgb(6 10 16 / 70%);
+  color: #deebfc;
+  font-size: 0.58rem;
+  line-height: 1.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .judgeRoot {
+    backdrop-filter: none;
+  }
+}

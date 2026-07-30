@@ -163,7 +163,7 @@ export function ModeMenu() {
           <h1>{selected.label}</h1>
           <p>{selected.description}</p>
           <dl>
-            <div><dt>сложность</dt><dd>5 уровней боя</dd></div>
+            <div><dt>сложность</dt><dd>4 уровня</dd></div>
             <div><dt>режим</dt><dd>Null Circle</dd></div>
           </dl>
         </aside>

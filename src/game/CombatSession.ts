@@ -71,7 +71,10 @@ export class CombatSession {
     private readonly playerTwo: FighterInputSource,
     private readonly fighterSelection: CharacterSelection,
   ) {
-    this.ai = createCombatAi(this.fighterSelection[1]);
+    this.ai = createCombatAi(
+      this.fighterSelection[1],
+      useHudStore.getState().aiDifficulty,
+    );
     this.fighterVoice = new FighterVoiceController(this.fighterSelection);
     this.publishInitialState();
   }
@@ -83,7 +86,10 @@ export class CombatSession {
 
   public reset(): void {
     this.engine = createCombatEngine();
-    this.ai = createCombatAi(this.fighterSelection[1]);
+    this.ai = createCombatAi(
+      this.fighterSelection[1],
+      useHudStore.getState().aiDifficulty,
+    );
     this.hud = createCombatHud();
     this.runner.reset();
     this.hud.reset();
@@ -247,7 +253,10 @@ export class CombatSession {
 
   private startNextRound(): void {
     this.engine = createCombatEngine();
-    this.ai = createCombatAi(this.fighterSelection[1]);
+    this.ai = createCombatAi(
+      this.fighterSelection[1],
+      useHudStore.getState().aiDifficulty,
+    );
     this.hud = createCombatHud();
     this.runner.reset();
     this.hud.reset();

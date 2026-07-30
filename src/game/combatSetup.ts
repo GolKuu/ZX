@@ -1,4 +1,4 @@
-import { CombatAiAgent } from '@/src/ai';
+import { CombatAiAgent, type AiDifficulty } from '@/src/ai';
 import { KADE_AI_LOADOUT } from '@/src/data/combat-ai';
 import {
   getCharacterDefinition,
@@ -54,11 +54,14 @@ export function createCombatEngine(): CombatEngine {
   });
 }
 
-export function createCombatAi(characterId: CharacterId = 'mim'): CombatAiAgent {
+export function createCombatAi(
+  characterId: CharacterId = 'mim',
+  difficulty: AiDifficulty = 'normal',
+): CombatAiAgent {
   return new CombatAiAgent({
     fighterId: 'p2',
     opponentId: 'p1',
-    difficulty: 'normal',
+    difficulty,
     moves: ALL_COMBAT_MOVES,
     loadout: characterId === 'echo'
       ? ECHO_AI_LOADOUT

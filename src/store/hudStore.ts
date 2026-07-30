@@ -4,10 +4,20 @@ import {
   getCharacterDefinition,
   type CharacterSelection,
 } from '@/src/data/characterRoster';
+import type { AiDifficulty } from '@/src/ai';
 import type { HudSnapshot } from '@/src/hud/types';
+
+const AI_DIFFICULTY_ORDER: readonly AiDifficulty[] = [
+  'easy',
+  'normal',
+  'hard',
+  'impossible',
+];
+const initialAiDifficulty: AiDifficulty = 'normal';
 
 export type HudScreen =
   | 'mode'
+  | 'difficulty'
   | 'character'
   | 'versus'
   | 'fight'
@@ -31,6 +41,7 @@ type HudState = {
   screen: HudScreen;
   mobileMode: boolean;
   mode: MatchMode | null;
+  aiDifficulty: AiDifficulty;
   fighterSelection: CharacterSelection;
   menuFocus: number;
   result: MatchResult;
@@ -42,7 +53,9 @@ type HudState = {
   openResult: (result: MatchResult) => void;
   openModeMenu: () => void;
   openCharacterSelect: () => void;
+  openDifficultySelect: () => void;
   selectMode: (mode: MatchMode) => void;
+  selectAiDifficulty: (difficulty: AiDifficulty) => void;
   toggleMobileMode: () => void;
   startMatch: (selection: CharacterSelection) => void;
   enterFight: () => void;
@@ -96,6 +109,7 @@ export const useHudStore = create<HudState>((set) => ({
   screen: 'mode',
   mobileMode: false,
   mode: null,
+  aiDifficulty: initialAiDifficulty,
   fighterSelection: DEFAULT_CHARACTER_SELECTION,
   menuFocus: 0,
   result: initialResult,
@@ -115,15 +129,34 @@ export const useHudStore = create<HudState>((set) => ({
   openResult: (result) => set({ screen: 'result', menuFocus: 0, result }),
   openModeMenu: () => set({ screen: 'mode', menuFocus: 0 }),
   openCharacterSelect: () => set({ screen: 'character', menuFocus: 0 }),
+  openDifficultySelect: () => set((state) => {
+    const menuFocus = AI_DIFFICULTY_ORDER.indexOf(state.aiDifficulty);
+    return {
+      screen: 'difficulty',
+      menuFocus: menuFocus >= 0 ? menuFocus : 0,
+    };
+  }),
   selectMode: (mode) => set((state) => {
     const requestedMode = state.mobileMode && mode === 'local' ? 'ai' : mode;
+    const requestedMenuFocus = requestedMode === 'ai'
+      ? AI_DIFFICULTY_ORDER.indexOf(state.aiDifficulty)
+      : 0;
     return {
       mode: requestedMode,
-      screen: requestedMode === 'online' ? 'online' : 'character',
+      screen: requestedMode === 'online'
+        ? 'online'
+        : requestedMode === 'ai'
+          ? 'difficulty'
+          : 'character',
       fighterSelection: DEFAULT_CHARACTER_SELECTION,
       snapshot: initialSnapshot(requestedMode, DEFAULT_CHARACTER_SELECTION),
-      menuFocus: 0,
+      menuFocus: requestedMenuFocus >= 0 ? requestedMenuFocus : 0,
     };
+  }),
+  selectAiDifficulty: (difficulty) => set({
+    aiDifficulty: difficulty,
+    screen: 'character',
+    menuFocus: 0,
   }),
   toggleMobileMode: () => set((state) => {
     const mobileMode = !state.mobileMode;
@@ -153,6 +186,7 @@ export function resetHudStore(): void {
     snapshot: initialSnapshot(),
     screen: 'mode',
     mode: null,
+    aiDifficulty: initialAiDifficulty,
     fighterSelection: DEFAULT_CHARACTER_SELECTION,
     menuFocus: 0,
     result: initialResult,

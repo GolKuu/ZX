@@ -7,6 +7,7 @@ import { useHudStore, type HudScreen } from '@/src/store/hudStore';
 import { ControlsMenu } from './ControlsMenu';
 import { CharacterSelectMenu } from './CharacterSelectMenu';
 import { ModeMenu } from './ModeMenu';
+import { DifficultyMenu } from './DifficultyMenu';
 import { OnlineNotice } from './OnlineNotice';
 import { VersusScreen } from './VersusScreen';
 import styles from './CombatHud.module.css';
@@ -21,6 +22,7 @@ export function MatchMenus() {
   const screen = useHudStore((state) => state.screen);
   if (screen === 'mode') return <ModeMenu />;
   if (screen === 'character') return <CharacterSelectMenu />;
+  if (screen === 'difficulty') return <DifficultyMenu />;
   if (screen === 'versus') return <VersusScreen />;
   if (screen === 'online') return <OnlineNotice />;
   return <InMatchMenus />;

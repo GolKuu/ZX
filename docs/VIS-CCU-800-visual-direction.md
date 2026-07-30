@@ -10,8 +10,8 @@ filter over it, an unlit mannequin.
 
 ## 0. The thesis — the sheets are the specification
 
-The five character sheets in `public/` and `public/assets/characters/` are not
-concept art or mood reference. **They are the spec.** MIM, ECHO, IDOL, GLITCH and
+The four character sheets in `public/` and `public/assets/characters/` are not
+concept art or mood reference. **They are the spec.** MIM, ECHO, GLITCH and
 CHRONO each ship a four-view turnaround and four attack poses (LP, HP, LK, HK).
 Where this document and a sheet disagree, *the sheet wins* and this document is
 wrong and must be corrected.
@@ -88,7 +88,6 @@ one line each, so a wrong-looking build can be diagnosed without the sheet open:
 |---|---|
 | **MIM** | Purple hoodie, flat yellow smiley face, long yellow scarf, clean white sneakers |
 | **ECHO** | White and pale-blue plating, dark navy underlayer, floating rings at the shoulders, cyan eye |
-| **IDOL** | Hot pink jacket and twin-tails, white pleated skirt, gold trim, white boots |
 | **GLITCH** | Near-black bodysuit, cyan circuit lines, magenta corruption blocks shedding off one side |
 | **CHRONO** | Dark navy coat, pale steel trim and boots, blue eye |
 
