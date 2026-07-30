@@ -1,23 +1,23 @@
 {
-  "source": "../output/imagegen/glitch-character-reference.png",
+  "source": "public/glitch-character-sheet.png",
   "displayScale": 1.18,
   "facesRight": true,
   "textureScale": 2,
   "poses": {
     "lp": {
-      "width": 290,
-      "height": 291,
-      "ground": 1.0034
+      "width": 276,
+      "height": 281,
+      "ground": 1.0178
     },
     "hp": {
-      "width": 264,
-      "height": 314,
-      "ground": 0.9968
+      "width": 227,
+      "height": 309,
+      "ground": 1.0097
     },
     "lk": {
-      "width": 304,
-      "height": 219,
-      "ground": 0.9954
+      "width": 280,
+      "height": 205,
+      "ground": 1.0341
     },
     "hk": {
       "width": 284,

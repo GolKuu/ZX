@@ -24,7 +24,7 @@ export const WHOLE_SHEETS = {
     crop: { left: 0, top: 0, width: 1536, height: 1024 },
   },
   'glitch-sheet': {
-    file: '../output/imagegen/glitch-character-reference.png',
+    file: 'public/glitch-character-sheet.png',
     crop: { left: 0, top: 0, width: 1536, height: 1024 },
   },
 };
@@ -85,7 +85,7 @@ export const FRONT_VIEWS = {
     carveFill: [12, 16, 29],
   },
   'glitch-profile': {
-    file: '../output/imagegen/glitch-character-reference.png',
+    file: 'public/glitch-character-sheet.png',
     crop: { left: 1118, top: 82, width: 176, height: 424 },
     facesRight: true,
     origin: [123, 414],
@@ -93,7 +93,7 @@ export const FRONT_VIEWS = {
     partOutline: [4, 8, 13],
   },
   glitch: {
-    file: '../output/imagegen/glitch-character-reference.png',
+    file: 'public/glitch-character-sheet.png',
     crop: { left: 90, top: 60, width: 280, height: 470 },
   },
 };
@@ -110,59 +110,38 @@ export const FRONT_VIEWS = {
  * different bounding boxes (a sweep is half the height of a high kick) and any
  * other anchor makes the fighter bob between moves.
  *
- * Caveat, unavoidable: the panels are hitbox *diagrams*. Blue hurtbox and green
- * collision rectangles are drawn over the figure, and the aggressive key below
- * only removes the ones lying over bare paper. Where a box overlaps the character
- * it tints it. IDOL and GLITCH are drawn in full colour and survive this well;
- * ECHO and CHRONO render their attack figures as solid blue hurtbox volumes with
- * no costume colour at all, so they are deliberately absent here and keep the rig.
+ * The ECHO, CHRONO, and GLITCH source sheets contain clean strike renders. Debug
+ * hitbox, hurtbox, and collision overlays were removed from those sources before
+ * slicing, so the runtime never needs to key gameplay diagrams away.
  */
 export const ATTACK_POSES = {
   echo: {
     file: 'public/echo-character-sheet.png',
     key: { tolerance: 16 },
-    cleanup: 'echo',
     displayScale: 1.95,
     facesRight: true,
+    minimumComponentPixels: 12,
     textureScale: 2,
     ground: 680,
     poses: {
-      lp: {
-        left: 24, top: 472, width: 205, height: 210,
-        feet: [[0, 31], [132, 172]],
-        recover: [[
-          [158, 34], [190, 34], [200, 42], [199, 55],
-          [188, 63], [158, 61], [151, 53], [152, 41],
-        ]],
-      },
-      hp: {
-        left: 280, top: 472, width: 220, height: 210,
-        feet: [[0, 35], [142, 190]],
-        recover: [[
-          [164, 36], [202, 36], [216, 44], [217, 55],
-          [207, 63], [177, 63], [166, 57], [160, 47],
-        ]],
-      },
-      lk: {
-        left: 592, top: 477, width: 230, height: 205,
-        feet: [[0, 60], [192, 230]],
-        recover: [[
-          [105, 98], [125, 99], [146, 108], [170, 121],
-          [195, 136], [220, 151], [228, 162], [226, 180],
-          [217, 192], [204, 194], [185, 183], [163, 168],
-          [140, 152], [117, 139], [104, 128],
-        ]],
-      },
-      hk: {
-        left: 865, top: 472, width: 240, height: 210,
-        feet: [[52, 112]],
-        recover: [[
-          [82, 77], [105, 73], [130, 79], [157, 87],
-          [186, 92], [218, 94], [234, 101], [238, 111],
-          [232, 121], [208, 124], [181, 117], [153, 111],
-          [124, 107], [99, 104], [86, 96],
-        ]],
-      },
+      lp: { left: 24, top: 472, width: 205, height: 210 },
+      hp: { left: 280, top: 472, width: 220, height: 210 },
+      lk: { left: 592, top: 477, width: 230, height: 205 },
+      hk: { left: 865, top: 472, width: 240, height: 210 },
+    },
+  },
+  chrono: {
+    file: 'public/chrono-character-sheet.png',
+    key: { tolerance: 20 },
+    displayScale: 1.9,
+    facesRight: true,
+    textureScale: 2,
+    ground: 610,
+    poses: {
+      lp: { left: 26, top: 438, width: 220, height: 180 },
+      hp: { left: 292, top: 438, width: 272, height: 180 },
+      lk: { left: 590, top: 445, width: 245, height: 170 },
+      hk: { left: 882, top: 435, width: 210, height: 180 },
     },
   },
   idol: {
@@ -178,11 +157,11 @@ export const ATTACK_POSES = {
     },
   },
   glitch: {
-    file: '../output/imagegen/glitch-character-reference.png',
+    file: 'public/glitch-character-sheet.png',
     key: { light: 178 },
     ground: 908,
     poses: {
-      lp: { left: 40, top: 600, width: 300, height: 320 },
+      lp: { left: 40, top: 600, width: 286, height: 320 },
       hp: { left: 366, top: 590, width: 260, height: 330 },
       lk: { left: 748, top: 660, width: 300, height: 260 },
       hk: { left: 1086, top: 590, width: 280, height: 330 },

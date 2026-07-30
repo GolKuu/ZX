@@ -88,17 +88,12 @@ function SelectedFighter({
  */
 const SPRITE_RIGS: Partial<Record<CharacterId, {
   readonly rig: string;
-  /**
-   * Sliced attack panels, shown only when their source is clean presentation art.
-   * Hitbox diagrams are deliberately not wired here: even a precise full-body
-   * pose looks worse than the articulated rig once coloured boxes are baked over
-   * the costume.
-   */
+  /** Sliced clean attack panels, shown at the strike impact frame. */
   readonly attacks?: string;
 }>> = {
-  chrono: { rig: 'chrono-profile' },
-  echo: { rig: 'echo-profile' },
-  glitch: { rig: 'glitch-profile' },
+  chrono: { rig: 'chrono-profile', attacks: 'chrono-attacks' },
+  echo: { rig: 'echo-profile', attacks: 'echo-attacks' },
+  glitch: { rig: 'glitch-profile', attacks: 'glitch-attacks' },
   idol: { rig: 'idol-profile' },
 };
 

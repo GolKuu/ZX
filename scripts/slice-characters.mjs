@@ -325,9 +325,17 @@ async function sliceAttacks(name) {
       .toBuffer({ resolveWithObject: true });
     keyBackground(data, box.width, box.height, spec.key);
     const groundInCrop = spec.ground - box.top;
-    const cleaned = spec.cleanup === 'echo'
+    let cleaned = spec.cleanup === 'echo'
       ? cleanEchoAttack(data, box.width, box.height, box, groundInCrop)
       : data;
+    if (spec.minimumComponentPixels !== undefined) {
+      cleaned = removeSmallAlphaComponents(
+        cleaned,
+        box.width,
+        box.height,
+        spec.minimumComponentPixels,
+      );
+    }
 
     const keyed = await sharp(cleaned, {
       raw: { channels: 4, width: box.width, height: box.height },
@@ -360,6 +368,52 @@ async function sliceAttacks(name) {
     `${JSON.stringify(manifest, null, 2)}\n`,
   );
   console.log(`  → ${directory}/poses.json`);
+}
+
+/**
+ * Remove isolated paper flecks left inside closed gaps in pale source artwork.
+ *
+ * Eight-way connectivity keeps antialiased diagonals together. This is opt-in:
+ * GLITCH deliberately scatters tiny detached pixels, while ECHO's equivalent
+ * flecks are only the technical-paper texture visible through its silhouette.
+ */
+function removeSmallAlphaComponents(data, width, height, minimumPixels) {
+  const seen = new Uint8Array(width * height);
+  const output = Buffer.from(data);
+  const stack = [];
+  const component = [];
+
+  for (let start = 0; start < width * height; start += 1) {
+    if (seen[start] !== 0 || output[start * 4 + 3] === 0) continue;
+    stack.push(start);
+    seen[start] = 1;
+    component.length = 0;
+
+    while (stack.length > 0) {
+      const pixel = stack.pop();
+      component.push(pixel);
+      const x = pixel % width;
+      const y = Math.floor(pixel / width);
+      for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+        for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+          if (offsetX === 0 && offsetY === 0) continue;
+          const nextX = x + offsetX;
+          const nextY = y + offsetY;
+          if (nextX < 0 || nextX >= width || nextY < 0 || nextY >= height) {
+            continue;
+          }
+          const next = nextY * width + nextX;
+          if (seen[next] !== 0 || output[next * 4 + 3] === 0) continue;
+          seen[next] = 1;
+          stack.push(next);
+        }
+      }
+    }
+
+    if (component.length >= minimumPixels) continue;
+    for (const pixel of component) output[pixel * 4 + 3] = 0;
+  }
+  return output;
 }
 
 if (process.argv.includes('--attacks')) {

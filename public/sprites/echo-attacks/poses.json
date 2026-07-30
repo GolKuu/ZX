@@ -5,24 +5,24 @@
   "textureScale": 2,
   "poses": {
     "lp": {
-      "width": 193,
-      "height": 207,
-      "ground": 1
+      "width": 195,
+      "height": 210,
+      "ground": 0.981
     },
     "hp": {
-      "width": 200,
-      "height": 202,
-      "ground": 1
+      "width": 224,
+      "height": 206,
+      "ground": 0.9806
     },
     "lk": {
-      "width": 210,
-      "height": 170,
-      "ground": 1
+      "width": 213,
+      "height": 171,
+      "ground": 0.9883
     },
     "hk": {
-      "width": 218,
-      "height": 207,
-      "ground": 1
+      "width": 224,
+      "height": 208,
+      "ground": 0.9904
     }
   }
 }
