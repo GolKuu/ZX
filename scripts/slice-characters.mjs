@@ -75,7 +75,7 @@ function flatMaskedPart(
       const blue = keyed[offset + 2];
       const chroma = Math.max(red, green, blue) - Math.min(red, green, blue);
       const lightness = (red + green + blue) / 3;
-      if (chroma < 18 && lightness > 210) continue;
+      if (chroma < 7 && lightness > 210) continue;
       result[offset] = red;
       result[offset + 1] = green;
       result[offset + 2] = blue;

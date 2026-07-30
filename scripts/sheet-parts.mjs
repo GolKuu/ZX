@@ -216,6 +216,7 @@ export const PART_RECTS = {
   // decorative slots are generic trailing pieces, named for the first character
   // that needed them.
   'echo-profile': {
+    ponytail: { box: [38, 38, 44, 72], joint: [82, 91] },
     head: {
       box: [92, 20, 64, 70],
       joint: [121, 86],
@@ -318,8 +319,24 @@ export const PART_RECTS = {
     torso: { box: [42, 60, 78, 112], joint: [80, 170] },
     hips: { box: [16, 158, 104, 140], joint: [78, 162] },
     sash: { box: [14, 190, 60, 130], joint: [56, 196] },
-    upperArm: { box: [76, 76, 44, 72], joint: [98, 81] },
-    forearm: { box: [80, 138, 46, 80], joint: [104, 143] },
+    upperArm: {
+      box: [70, 98, 42, 56],
+      joint: [82, 106],
+      carve: true,
+      mask: [
+        [75, 102], [91, 100], [103, 110], [109, 126], [105, 142],
+        [97, 151], [84, 146], [78, 132], [72, 116],
+      ],
+    },
+    forearm: {
+      box: [90, 136, 30, 40],
+      joint: [101, 145],
+      carve: true,
+      mask: [
+        [97, 138], [110, 139], [117, 149], [115, 164], [106, 174],
+        [95, 170], [91, 157],
+      ],
+    },
     thigh: { box: [72, 252, 46, 52], joint: [95, 255] },
     shin: { box: [74, 282, 42, 32], joint: [95, 285] },
     boot: { box: [64, 298, 54, 26], joint: [94, 301] },
