@@ -1,5 +1,15 @@
+import type { CSSProperties } from 'react';
 import type { MimCinematicSide } from './MimSuperCinematic';
 import styles from './MimPrankCinematic.module.css';
+
+const CHAT = [
+  ['mod_circle', 'CLIP IT'],
+  ['bananaFan', 'HE BLOCKED AIR'],
+  ['framePerfect', 'PEAK GAMEPLAY'],
+  ['totallyReal92', 'COMMON MIM W'],
+] as const;
+
+const REACTIONS = ['+9,204', '+14,811', '+31,337'] as const;
 
 export function MimPrankCinematic({
   side,
@@ -8,40 +18,62 @@ export function MimPrankCinematic({
 }) {
   return (
     <section
-      aria-label={`${side.toUpperCase()} MIM Level 1 Super: Пранк`}
+      aria-label={`${side.toUpperCase()} MIM Level 1 Super: Clip Farming`}
       aria-live="assertive"
       className={styles.scene}
       data-side={side}
       role="status"
     >
-      <header>
-        <small>Level 1 Super</small>
-        <strong>Пранк</strong>
-      </header>
-      <div className={styles.action} aria-hidden="true">
-        <div className={`${styles.actor} ${styles.mim}`}>
-          <i className={styles.head} />
-          <i className={styles.body} />
-          <i className={styles.arm} />
-          <i className={styles.leg} />
+      <div className={styles.broadcast} aria-hidden="true">
+        <header>
+          <span><i /> LIVE</span>
+          <b>MIM // totally ranked</b>
+          <small>84,291 watching</small>
+        </header>
+
+        <div className={styles.stage}>
+          <div className={styles.spotlight} />
+          <div className={styles.mim}>
+            <i className={styles.scarf} />
+            <i className={styles.body} />
+            <i className={styles.face}><b /><b /><span /></i>
+            <i className={styles.arm} />
+          </div>
+          <div className={styles.opponent}><i /><b /></div>
+          <div className={styles.fakeHit}>WHIFF</div>
+          <div className={styles.recordRing} />
         </div>
-        <div className={styles.banana}>
-          <i />
-          <i />
+
+        <aside>
+          <strong>STREAM CHAT</strong>
+          {CHAT.map(([user, message], index) => (
+            <p
+              key={user}
+              style={{ '--order': index } as CSSProperties}
+            >
+              <i>{user}</i>
+              <span>{message}</span>
+            </p>
+          ))}
+        </aside>
+
+        <div className={styles.reactions}>
+          {REACTIONS.map((count, index) => (
+            <span
+              key={count}
+              style={{ '--order': index } as CSSProperties}
+            >
+              {index === 0 ? '♥' : index === 1 ? '★' : '☻'} {count}
+            </span>
+          ))}
         </div>
-        <div className={`${styles.actor} ${styles.enemy}`}>
-          <i className={styles.head} />
-          <i className={styles.body} />
-          <i className={styles.arm} />
-          <i className={styles.leg} />
-        </div>
-        <div className={styles.impact}>ЩЁЛК!</div>
-        <div className={styles.shockwave} />
       </div>
-      <footer>
-        <span>01</span>
-        Банановая кожура · идеальный тайминг
-      </footer>
+
+      <div className={styles.caption}>
+        <small>Q + E · Level 1 Super</small>
+        <strong>CLIP FARMING</strong>
+        <p>“Chat, are you seeing this?”</p>
+      </div>
     </section>
   );
 }

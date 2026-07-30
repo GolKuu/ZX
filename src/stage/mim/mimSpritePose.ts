@@ -71,7 +71,7 @@ export function mimSpritePoseFor(
     return pose({ torso: 0.12, leftLeg: 0.52, rightLeg: -0.38, scarf: -0.42 });
   }
   if (beat !== null) {
-    return blended(fightingStance(0), TARGETS[beat.kind], beat.amount);
+    return actionPose(fightingStance(0), TARGETS[beat.kind], beat);
   }
   if (fighter.hitstun > 0) {
     const force = Math.min(1, fighter.hitstun / 14);
@@ -113,6 +113,64 @@ export function mimSpritePoseFor(
     rightLeg: base.rightLeg - stride * 0.38,
     lift: base.lift + stepRise * 0.04,
   });
+}
+
+/**
+ * Preserve the simulation timing while giving every authored action a clear
+ * animation sentence: recoil away from the hit, snap through impact, settle
+ * back into the exact idle stance.
+ */
+function actionPose(
+  idle: MimSpritePose,
+  target: MimSpritePose,
+  beat: MimAnimationBeat,
+): MimSpritePose {
+  if (beat.phase === 'approach') {
+    const amount = beat.amount;
+    if (amount < 0.5) {
+      const anticipation = Math.sin((amount / 0.5) * Math.PI) * 0.24;
+      return blended(idle, anticipationPose(target), anticipation);
+    }
+    const drive = easeOutBack((amount - 0.5) * 2);
+    return blended(idle, target, drive);
+  }
+
+  if (beat.phase === 'strike') {
+    const impact = scaled(target, 1.075);
+    return pose({
+      ...impact,
+      head: impact.head - 0.045,
+      scarf: impact.scarf + 0.12,
+      lift: impact.lift + 0.025,
+      drift: impact.drift + 0.035,
+    });
+  }
+
+  return blended(idle, target, smoothstep(beat.amount));
+}
+
+function anticipationPose(target: MimSpritePose): MimSpritePose {
+  return pose({
+    torso: -target.torso * 0.42 - 0.04,
+    head: -target.head * 0.3 + 0.035,
+    scarf: -target.scarf * 0.24,
+    leftArm: -target.leftArm * 0.28,
+    rightArm: -target.rightArm * 0.28,
+    leftLeg: -target.leftLeg * 0.16,
+    rightLeg: -target.rightLeg * 0.16,
+    lift: Math.min(-0.045, target.lift * 0.2),
+    drift: -target.drift * 0.24,
+  });
+}
+
+function smoothstep(value: number): number {
+  return value * value * (3 - 2 * value);
+}
+
+function easeOutBack(value: number): number {
+  const overshoot = 1.24;
+  const shifted = value - 1;
+  return 1 + (overshoot + 1) * shifted ** 3 + overshoot * shifted ** 2;
 }
 
 function pose(overrides: Partial<MimSpritePose>): MimSpritePose {
