@@ -200,7 +200,7 @@ export class CombatSession {
       this.fighterVoice.celebrate(winnerSide === 'p1' ? 'p1' : 'p2');
     }
     const isTie = winnerSide === null;
-    const reachedMatchWin = !isTie
+    const reachedMatchWin = winnerSide !== null
       && this.roundWins[winnerSide] >= ROUNDS_TO_WIN;
     if (!isTie && reachedMatchWin) {
       this.championAtRoundEnd = winnerSide;
@@ -223,7 +223,7 @@ export class CombatSession {
     );
     useHudStore.getState().openResult({
       winner: `${winner} · ${winnerCharacter.displayName}`,
-      rounds: `${this.roundWins.p1}–${this.roundWins.p2}`,
+      rounds: `${this.roundWins.p1}-${this.roundWins.p2}`,
       maxCombo: this.maxCombo,
       clashes: 0,
       duration: formatDuration(ROUND_FRAMES - this.timerFrames),
@@ -252,3 +252,4 @@ function formatDuration(frames: number): string {
   const seconds = Math.floor(frames / 60);
   return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 }
+
