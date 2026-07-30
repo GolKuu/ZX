@@ -7,12 +7,10 @@ import {
   readCombatResetVersion,
 } from '@/src/game/combatRuntime';
 import {
-  AANG_COMMANDS,
   CHRONO_COMMANDS,
   ECHO_COMMANDS,
   GLITCH_COMMANDS,
   IDOL_COMMANDS,
-  KADE_COMMANDS,
   KeyboardInputSource,
   MIM_COMMANDS,
   PLAYER_TWO_BINDINGS,
@@ -89,11 +87,9 @@ export function CombatGameLoop({
 }
 
 function commandsFor(characterId: CharacterId) {
-  if (characterId === 'aang') return AANG_COMMANDS;
   if (characterId === 'chrono') return CHRONO_COMMANDS;
   if (characterId === 'echo') return ECHO_COMMANDS;
   if (characterId === 'glitch') return GLITCH_COMMANDS;
   if (characterId === 'idol') return IDOL_COMMANDS;
-  if (characterId === 'mim') return MIM_COMMANDS;
-  return KADE_COMMANDS;
+  return MIM_COMMANDS;
 }

@@ -5,8 +5,6 @@ import type {
   CharacterSelection,
 } from '@/src/data/characterRoster';
 import { modelUrlFor } from '@/src/data/characterModels';
-import { AangFighter } from './AangFighter';
-import { AangElementVfx } from './AangElementVfx';
 import { Arena } from './Arena';
 import { LazyModelFighter } from './LazyModelFighter';
 import { CameraRig } from './CameraRig';
@@ -20,8 +18,6 @@ import { LazyPostEffects } from './LazyPostEffects';
 import { MimFighter } from './MimFighter';
 import { RenderDebugBridge } from './RenderDebugBridge';
 import { StageLighting } from './StageLighting';
-import { VoidWalkerFighter } from './VoidWalkerFighter';
-import { ZoroFighter } from './ZoroFighter';
 
 export function RenderScene({
   fighterSelection,
@@ -49,8 +45,6 @@ export function RenderScene({
         characterId={fighterSelection[1]}
         fighterId="p2"
       />
-      {fighterSelection[0] === 'aang' && <AangElementVfx fighterId="p1" />}
-      {fighterSelection[1] === 'aang' && <AangElementVfx fighterId="p2" />}
       <CameraRig />
       <LazyPostEffects />
       <FrameProfiler />
@@ -91,12 +85,6 @@ function primitiveFighter(
   characterId: CharacterId,
   fighterId: 'p1' | 'p2',
 ) {
-  if (characterId === 'zoro') {
-    return <ZoroFighter auraColor={auraColor} fighterId={fighterId} />;
-  }
-  if (characterId === 'aang') {
-    return <AangFighter auraColor={auraColor} fighterId={fighterId} />;
-  }
   if (characterId === 'chrono') {
     return <ChronoFighter auraColor={auraColor} fighterId={fighterId} />;
   }
@@ -112,5 +100,5 @@ function primitiveFighter(
   if (characterId === 'mim') {
     return <MimFighter auraColor={auraColor} fighterId={fighterId} />;
   }
-  return <VoidWalkerFighter auraColor={auraColor} fighterId={fighterId} />;
+  return null;
 }

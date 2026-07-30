@@ -27,7 +27,6 @@ import {
   type LoadedFighterModel,
 } from './model/loadFighterModel';
 import { applyArmSilhouette } from './model/armSilhouette';
-import { choreographyFor } from './model/characterChoreography';
 import { applyFighterPose } from './model/modelPose';
 
 /**
@@ -86,10 +85,6 @@ export function ModelFighter({
   const zones = useMemo(
     () => createFighterZones(gradient, auraColor, paletteFor(characterId)),
     [auraColor, characterId, gradient],
-  );
-  const choreography = useMemo(
-    () => choreographyFor(characterId),
-    [characterId],
   );
 
   const viewportHeight = useThree((state) => state.size.height);
@@ -170,7 +165,6 @@ export function ModelFighter({
       loaded.rest,
       fighter,
       clock.elapsedTime,
-      choreography,
     );
     applyArmSilhouette(loaded.joints);
 

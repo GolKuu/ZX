@@ -1,14 +1,9 @@
 export type CharacterId =
   | 'mim'
   | 'echo'
-  | 'zoro'
-  | 'aang'
   | 'idol'
   | 'glitch'
-  | 'chrono'
-  | 'void-walker'
-  | 'velocity-king'
-  | 'elastic-brawler';
+  | 'chrono';
 
 export type CharacterSelection = readonly [CharacterId, CharacterId];
 
@@ -20,11 +15,7 @@ export interface CharacterDefinition {
   readonly mark: string;
 }
 
-/**
- * Every definition stays available for old replays and saved selections.
- * Only `CHARACTER_ROSTER` below is exposed in the local/AI selection screen.
- */
-const CHARACTER_DEFINITIONS = [
+export const CHARACTER_ROSTER = [
   {
     id: 'mim',
     displayName: 'MIM',
@@ -38,81 +29,33 @@ const CHARACTER_DEFINITIONS = [
     displayName: 'ECHO',
     archetype: 'Предвидение · адаптация',
     description:
-      'Считывает поведение соперника и отвечает точными ударами: быстрым джебом, предсказанным выпадом, подсечкой и прямым пинком.',
+      'Считывает соперника и отвечает точными ударами: быстрым джебом, выпадом, подсечкой и прямым пинком.',
     mark: 'E',
-  },
-  {
-    id: 'zoro',
-    displayName: 'Клинковый Призрак',
-    archetype: 'Мечник · ближний бой',
-    description:
-      'Мастер трёх клинков с быстрыми сериями, сильным давлением и тяжёлыми завершающими ударами.',
-    mark: 'B',
-  },
-  {
-    id: 'aang',
-    displayName: 'Мудрец Стихий',
-    archetype: 'Мудрец · контроль стихий',
-    description:
-      'Быстрый мастер четырёх стихий с превосходным контролем пространства и высоким комбо-потенциалом.',
-    mark: 'E',
-  },
-  {
-    id: 'idol',
-    displayName: 'IDOL',
-    archetype: 'Перформер · сила аудитории',
-    description:
-      'Боевая поп-звезда: колет микрофоном, сбивает низким скольжением и завершает серию звёздным танцевальным вращением.',
-    mark: '★',
   },
   {
     id: 'glitch',
     displayName: 'GLITCH',
     archetype: 'Баг игры · искажение данных',
     description:
-      'Сломанный боец из повреждённого билда: колет пикселями, стирает дистанцию телепорт-пинком и выбрасывает кубы ошибок.',
+      'Сломанный боец из повреждённого билда: колет пикселями, телепортируется и выбрасывает кубы ошибок.',
     mark: 'G',
+  },
+  {
+    id: 'idol',
+    displayName: 'IDOL',
+    archetype: 'Перформер · сила аудитории',
+    description:
+      'Боевая поп-звезда: колет микрофоном, скользит по арене и завершает серию звёздным вращением.',
+    mark: '★',
   },
   {
     id: 'chrono',
     displayName: 'CHRONO',
     archetype: 'Хроно-боец · власть времени',
     description:
-      'Манипулирует темпом боя: мгновенно колет из будущего, рассекает временной волной и наказывает низкой подсечкой или круговым ударом.',
+      'Управляет темпом боя: атакует из будущего, рассекает временной волной и наказывает точными подсечками.',
     mark: 'C',
   },
-  {
-    id: 'void-walker',
-    displayName: 'Странник Пустоты',
-    archetype: 'Странник · контроль дистанции',
-    description:
-      'Воин из разлома, который удерживает дистанцию клинками пустоты и наказывает противника за ошибки.',
-    mark: 'V',
-  },
-  {
-    id: 'velocity-king',
-    displayName: 'Владыка Скорости',
-    archetype: 'Раш · фрейм-трап',
-    description:
-      'Давит без остановки: мгновенный рывок, командный бросок и пассивка, сокращающая восстановление за каждый стак.',
-    mark: 'K',
-  },
-  {
-    id: 'elastic-brawler',
-    displayName: 'Упругий Боец',
-    archetype: 'Средняя дистанция · стойки',
-    description:
-      'Тянущиеся удары со средней дистанции и переключение передач: вторая даёт скорость, четвёртая — гипер-броню.',
-    mark: 'T',
-  },
-] as const satisfies readonly CharacterDefinition[];
-
-export const CHARACTER_ROSTER = [
-  requireCharacterDefinition('mim'),
-  requireCharacterDefinition('echo'),
-  requireCharacterDefinition('glitch'),
-  requireCharacterDefinition('idol'),
-  requireCharacterDefinition('chrono'),
 ] as const satisfies readonly CharacterDefinition[];
 
 export const DEFAULT_CHARACTER_SELECTION: CharacterSelection = [
@@ -123,13 +66,7 @@ export const DEFAULT_CHARACTER_SELECTION: CharacterSelection = [
 export function getCharacterDefinition(
   characterId: CharacterId,
 ): CharacterDefinition {
-  return requireCharacterDefinition(characterId);
-}
-
-function requireCharacterDefinition(
-  characterId: CharacterId,
-): CharacterDefinition {
-  const character = CHARACTER_DEFINITIONS.find(({ id }) => id === characterId);
+  const character = CHARACTER_ROSTER.find(({ id }) => id === characterId);
   if (character === undefined) {
     throw new Error(`Unknown character "${characterId}"`);
   }

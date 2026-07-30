@@ -38,10 +38,6 @@ export {
 export { detectMotion, matchesMotion, type MotionId } from './motion.js';
 
 export {
-  AANG_COMMANDS,
-} from './aangCommands.js';
-
-export {
   IDOL_COMMANDS,
 } from './idolCommands.js';
 

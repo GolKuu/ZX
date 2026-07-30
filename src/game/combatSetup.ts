@@ -5,8 +5,6 @@ import {
   type CharacterId,
 } from '@/src/data/characterRoster';
 import { KADE_HURTBOXES, KADE_MOVES } from '@/src/data/combat-moves';
-import { AANG_NORMAL_MOVES } from '@/src/data/aang-combat-moves';
-import { AANG_SPECIAL_MOVES } from '@/src/data/aang-special-moves';
 import { IDOL_AI_LOADOUT } from '@/src/data/idol-ai';
 import { IDOL_MOVES } from '@/src/data/idol-combat-moves';
 import { ECHO_AI_LOADOUT } from '@/src/data/echo-ai';
@@ -16,7 +14,6 @@ import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
 import { GLITCH_AI_LOADOUT } from '@/src/data/glitch-ai';
 import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
-import { ROSTER_ADDITION_MOVES } from '@/src/data/roster-moves';
 import { HudBridge } from '@/src/hud';
 import {
   CombatEngine,
@@ -33,9 +30,6 @@ import { useHudStore } from '@/src/store/hudStore';
 export const ALL_COMBAT_MOVES = [
   ...KADE_MOVES,
   ...MIM_MOVES,
-  ...ROSTER_ADDITION_MOVES,
-  ...AANG_NORMAL_MOVES,
-  ...AANG_SPECIAL_MOVES,
   ...IDOL_MOVES,
   ...ECHO_MOVES,
   ...CHRONO_MOVES,
@@ -53,7 +47,7 @@ export function createCombatEngine(): CombatEngine {
   });
 }
 
-export function createCombatAi(characterId: CharacterId = 'zoro'): CombatAiAgent {
+export function createCombatAi(characterId: CharacterId = 'mim'): CombatAiAgent {
   return new CombatAiAgent({
     fighterId: 'p2',
     opponentId: 'p1',

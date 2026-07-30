@@ -15,10 +15,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.9,
     },
-    {
-      url: new URL('/aang', siteUrl).toString(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
   ];
 }

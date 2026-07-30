@@ -1,7 +1,4 @@
 import { KADE_MOVES } from '@/src/data/combat-moves';
-import { ROSTER_ADDITION_MOVES } from '@/src/data/roster-moves';
-import { AANG_NORMAL_MOVES } from '@/src/data/aang-combat-moves';
-import { AANG_SPECIAL_MOVES } from '@/src/data/aang-special-moves';
 import { IDOL_MOVES } from '@/src/data/idol-combat-moves';
 import { ECHO_MOVES } from '@/src/data/echo-combat-moves';
 import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
@@ -17,9 +14,6 @@ const MOVES_BY_ID = new Map(
   [
     ...KADE_MOVES,
     ...MIM_MOVES,
-    ...ROSTER_ADDITION_MOVES,
-    ...AANG_NORMAL_MOVES,
-    ...AANG_SPECIAL_MOVES,
     ...IDOL_MOVES,
     ...ECHO_MOVES,
     ...CHRONO_MOVES,

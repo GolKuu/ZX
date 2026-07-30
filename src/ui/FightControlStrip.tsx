@@ -2,13 +2,9 @@
 
 import { bindingCode, keyLabel, useControlStore } from '@/src/store/controlStore';
 import { useHudStore } from '@/src/store/hudStore';
-import {
-  AANG_ELEMENTS,
-  AANG_ELEMENT_INFO,
-  type CombatFighterId,
-} from '@/src/aang/combat/elements';
-import { useRenderStore } from '@/src/store/renderStore';
 import styles from './FightControlStrip.module.css';
+
+type CombatFighterId = 'p1' | 'p2';
 
 export function FightControlStrip() {
   const bindings = useControlStore((state) => state.bindings);
@@ -38,8 +34,6 @@ export function FightControlStrip() {
       />
       <ControlGroup label="Блок" codes={[bindingCode(bindings, 'block')]} />
       <ControlGroup label="Спец" codes={[bindingCode(bindings, 'special')]} />
-      {selection[0] === 'aang' && <ElementGroup fighterId="p1" />}
-      {selection[1] === 'aang' && <ElementGroup fighterId="p2" />}
       {selection[0] === 'idol' && <IdolMoveGroup fighterId="p1" />}
       {selection[1] === 'idol' && <IdolMoveGroup fighterId="p2" />}
       {selection[0] === 'chrono' && <ChronoMoveGroup fighterId="p1" />}
@@ -53,52 +47,59 @@ export function FightControlStrip() {
   );
 }
 
-function ElementGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
-  const active = useRenderStore((state) => state.aangElements[fighterId]);
-  const elements = AANG_ELEMENTS.map((element) => {
-    const label = AANG_ELEMENT_INFO[element].label;
-    return active === element ? `[${label}]` : label;
-  }).join(' ');
-  return (
-    <span className={styles.elementGroup}>
-      <small>{fighterId.toUpperCase()} · ↓↓ + J/K/L/U</small>
-      <b>{elements}</b>
-    </span>
-  );
-}
-
 function IdolMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
   return (
-    <span className={styles.elementGroup}>
-      <small>{fighterId.toUpperCase()} · LP / HP / LK / HK</small>
-      <b>МИКРО-ДЖЕБ · ЗВЕЗДА · СКОЛЬЖЕНИЕ · ТАНЕЦ</b>
-    </span>
+    <MoveGroup
+      fighterId={fighterId}
+      hint="LP / HP / LK / HK"
+      moves="МИКРО-ДЖЕБ · ЗВЕЗДА · СКОЛЬЖЕНИЕ · ТАНЕЦ"
+    />
   );
 }
 
 function ChronoMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
   return (
-    <span className={styles.elementGroup}>
-      <small>{fighterId.toUpperCase()} · LP / HP / LK / HK</small>
-      <b>TIME JAB · TEMPORAL STRIKE · TIME SWEEP · ROUNDHOUSE</b>
-    </span>
+    <MoveGroup
+      fighterId={fighterId}
+      hint="LP / HP / LK / HK"
+      moves="TIME JAB · TEMPORAL STRIKE · TIME SWEEP · ROUNDHOUSE"
+    />
   );
 }
 
 function MimMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
   return (
-    <span className={styles.elementGroup}>
-      <small>{fighterId.toUpperCase()} · LP / HP / LK / HK</small>
-      <b>ЩЕЛЧОК · КУРСОР · БАНАН · СТУЛ</b>
-    </span>
+    <MoveGroup
+      fighterId={fighterId}
+      hint="LP / HP / LK / HK"
+      moves="ЩЕЛЧОК · КУРСОР · БАНАН · СТУЛ"
+    />
   );
 }
 
 function GlitchMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
   return (
+    <MoveGroup
+      fighterId={fighterId}
+      hint="QCF / QCB / DP + J/K"
+      moves="PACKET LOSS · CORRUPTED ZONE · DESYNC JUMP"
+    />
+  );
+}
+
+function MoveGroup({
+  fighterId,
+  hint,
+  moves,
+}: {
+  readonly fighterId: CombatFighterId;
+  readonly hint: string;
+  readonly moves: string;
+}) {
+  return (
     <span className={styles.elementGroup}>
-      <small>{fighterId.toUpperCase()} · QCF / QCB / DP + J/K</small>
-      <b>PACKET LOSS · CORRUPTED ZONE · DESYNC JUMP</b>
+      <small>{fighterId.toUpperCase()} · {hint}</small>
+      <b>{moves}</b>
     </span>
   );
 }

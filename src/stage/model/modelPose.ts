@@ -35,13 +35,11 @@ import {
 import type { FighterSnapshot } from '@/src/sim';
 import { FIXED_SCALE } from '@/src/sim';
 import { combatAnimationProgress } from '../combatAnimationProgress';
-import { ELASTIC_BRAWLER_POSES } from './elasticBrawlerPoses';
 import {
   HUMANOID_JOINTS,
   type HumanoidJointName,
   type HumanoidJoints,
 } from './humanoidBones';
-import { VELOCITY_KING_POSES } from './velocityKingPoses';
 
 /** Phase boundaries, matching `combatAnimationProgress`. */
 const WINDUP_END = 0.34;
@@ -685,6 +683,4 @@ const ATTACKS: Readonly<Record<string, AttackPose>> = {
   '2L': lowStrike,
   '2M': sweep,
   overtake,
-  ...VELOCITY_KING_POSES,
-  ...ELASTIC_BRAWLER_POSES,
 };

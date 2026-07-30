@@ -12,7 +12,6 @@ import { useHudStore } from '@/src/store/hudStore';
 import { useRenderStore } from '@/src/store/renderStore';
 import { publishCombatFrame } from './combatRuntime';
 import { AttackInputPolicy } from './attackInputPolicy';
-import { AangCombatLoadout } from './AangCombatLoadout';
 import {
   createCombatAi,
   createCombatEngine,
@@ -36,7 +35,6 @@ export class CombatSession {
   private maxCombo = 0;
   private readonly xray = new XrayController();
   private readonly attackInput = new AttackInputPolicy(ALL_COMBAT_MOVES);
-  private readonly aangCombat: AangCombatLoadout;
 
   public constructor(
     private readonly playerOne: KeyboardInputSource,
@@ -44,7 +42,6 @@ export class CombatSession {
     private readonly fighterSelection: CharacterSelection,
   ) {
     this.ai = createCombatAi(fighterSelection[1]);
-    this.aangCombat = new AangCombatLoadout(fighterSelection);
     this.publishInitialState();
   }
 
@@ -66,7 +63,6 @@ export class CombatSession {
     this.maxCombo = 0;
     this.xray.reset();
     this.attackInput.reset();
-    this.aangCombat.reset();
     this.publishInitialState();
   }
 
@@ -84,12 +80,12 @@ export class CombatSession {
         )
       : this.ai.decide(before, this.lastEvents).input;
     const result = this.engine.tick({
-      p1: this.aangCombat.resolve('p1', this.playerOne.sample(
+      p1: this.playerOne.sample(
         player.facing,
         this.attackInput.isLocked(player),
         this.xray.inputContext(player),
-      )),
-      p2: this.aangCombat.resolve('p2', opponentInput),
+      ),
+      p2: opponentInput,
     });
     this.timerFrames = Math.max(0, this.timerFrames - 1);
     this.lastEvents = result.events;
