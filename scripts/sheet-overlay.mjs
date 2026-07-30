@@ -43,34 +43,90 @@ const FLAT_LIMIT = 6;
 const LEAK_LIMIT = 0.55;
 
 /**
- * The three box palettes, as hue tests rather than colours.
+ * Minimum length of an axis-aligned run before a coloured pixel counts as a box
+ * edge.
  *
- * Tests, because the strokes are antialiased and the fills are washed out, so no
- * fixed colour matches either reliably. Blue and green cannot occur in any of these
- * costumes. Red is the one that needs care: IDOL and GLITCH are full of magenta, so
- * the red test demands that green *and* blue both collapse, which magenta never
- * does.
+ * This gate, not the colour test, is what makes the pass safe. Colour alone cannot
+ * separate the diagram from these characters: a hurtbox's blue sits right beside the
+ * blue-violet these sheets shade their whites with, and a hitbox's red sits right
+ * beside IDOL's magenta. The first attempt used colour alone and repainted a fifth
+ * of the drawing — her jacket read as hitbox red and her shadows as hurtbox blue.
+ *
+ * Geometry separates them cleanly instead. A box edge is a straight line tens of
+ * pixels long; costume linework, however saturated, never runs straight and
+ * axis-aligned for twenty pixels.
+ */
+const MIN_RUN = 20;
+
+/**
+ * The three box palettes, as hue windows.
+ *
+ * Read off a hue histogram of a panel, where the diagram and the costume land in
+ * clearly separate bands: collision green at 110–130° with nothing of IDOL's in a
+ * hundred degrees of it, hurtbox blue at 200–245° against her violet shading from
+ * 255° up, and hitbox red at 0–12° against her magenta piled up at 330–350°.
  */
 const FAMILIES = [
-  {
-    name: 'blue',
-    is: (r, g, b) => b > r + 30 && b > g + 20,
-    isStroke: (r, g, b) => b > r + 60 && b > g + 45 && b > 90,
-  },
-  {
-    name: 'green',
-    is: (r, g, b) => g > r + 12 && g > b + 12,
-    isStroke: (r, g, b) => g > r + 45 && g > b + 45,
-  },
-  {
-    name: 'red',
-    is: (r, g, b) => r > g + 45 && r > b + 35 && g < 150 && b < 165,
-    isStroke: (r, g, b) => r > g + 90 && r > b + 75 && g < 110,
-  },
+  { name: 'blue', from: 196, to: 248, minimumSaturation: 0.16 },
+  { name: 'green', from: 96, to: 152, minimumSaturation: 0.13 },
+  { name: 'red', from: 352, to: 372, minimumSaturation: 0.3 },
 ];
 
 function luminance(r, g, b) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function hueOf(r, g, b) {
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const chroma = max - min;
+  if (chroma === 0) return { hue: 0, saturation: 0, value: max };
+  let hue;
+  if (max === r) hue = 60 * (((g - b) / chroma) % 6);
+  else if (max === g) hue = 60 * ((b - r) / chroma + 2);
+  else hue = 60 * ((r - g) / chroma + 4);
+  if (hue < 0) hue += 360;
+  return { hue, saturation: chroma / max, value: max };
+}
+
+function inFamily(family, r, g, b) {
+  const { hue, saturation, value } = hueOf(r, g, b);
+  if (saturation < family.minimumSaturation || value < 40) return false;
+  // `to` may run past 360 so a window can straddle red.
+  const wrapped = hue < family.from ? hue + 360 : hue;
+  return wrapped >= family.from && wrapped <= family.to;
+}
+
+/**
+ * Keep only the pixels of a mask that sit in a long straight run of it.
+ *
+ * Both axes, so a box's horizontal and vertical edges both survive while an isolated
+ * saturated speck in the artwork does not.
+ */
+function straightRunsOnly(mask, width, height) {
+  const kept = new Uint8Array(mask.length);
+  const sweep = (length, stride, count) => {
+    for (let line = 0; line < count; line += 1) {
+      let run = 0;
+      for (let step = 0; step <= length; step += 1) {
+        const index = step < length ? line * stride.line + step * stride.step : -1;
+        const on = index >= 0 && mask[index] === 1;
+        if (on) {
+          run += 1;
+          continue;
+        }
+        if (run >= MIN_RUN) {
+          for (let back = 1; back <= run; back += 1) {
+            kept[line * stride.line + (step - back) * stride.step] = 1;
+          }
+        }
+        run = 0;
+      }
+    }
+  };
+  sweep(width, { line: width, step: 1 }, height);
+  sweep(height, { line: 1, step: width }, width);
+  return kept;
 }
 
 function grow(mask, width, height, radius) {
@@ -92,58 +148,114 @@ function grow(mask, width, height, radius) {
 }
 
 /**
- * Find what the boxes enclose, by sealing their outlines and flooding around them.
+ * Recover the box rectangles from where their edges project onto each axis.
  *
- * Pairing edges into rectangles was the first attempt and it found nothing: these
- * outlines are dashed, their corners are rounded by more than the tolerance any
- * pairing rule can afford, and each one breaks wherever it crosses dark hair. So
- * instead of reconstructing the rectangles, grow the outlines until they are
- * continuous and flood inward from the border. The character's own ink is not in
- * the mask — it is brown, not blue — so the flood passes straight through her and
- * only the boxes stop it. Whatever it cannot reach is inside a box.
+ * Two earlier attempts failed on the same fact: these outlines are not continuous.
+ * They are dashed, their corners are rounded, and each one vanishes wherever it
+ * crosses dark hair, because a blue line over near-black is not blue. Pairing edge
+ * runs directly found nothing. Growing the outlines and flooding inward leaked out
+ * of every box through those gaps and cleaned one region out of twenty.
  *
- * Every family's outlines seal together, so a blue box crossing a green one still
- * divides both.
- *
- * @returns a 0/1 mask of covered pixels, or null if the flood leaked.
+ * Projection is tolerant of all of it. A box side contributes to one column of the
+ * projection along its whole length, so gaps only lower a spike rather than break it.
+ * Candidate sides are the spikes; a candidate rectangle is accepted when all four of
+ * its sides can still be found in the mask along enough of their extent, which is
+ * what keeps the combinatorial pairing from inventing boxes.
  */
-function sealedRegions(barrier, width, height) {
-  const reached = new Uint8Array(width * height);
-  const stack = [];
-  const consider = (x, y) => {
-    if (x < 0 || y < 0 || x >= width || y >= height) return;
-    const index = y * width + x;
-    if (reached[index] === 1 || barrier[index] === 1) return;
-    reached[index] = 1;
-    stack.push(index);
-  };
-  for (let x = 0; x < width; x += 1) {
-    consider(x, 0);
-    consider(x, height - 1);
-  }
+function findRectangles(edges, width, height) {
+  const columns = new Int32Array(width);
+  const rows = new Int32Array(height);
   for (let y = 0; y < height; y += 1) {
-    consider(0, y);
-    consider(width - 1, y);
-  }
-  while (stack.length > 0) {
-    const index = stack.pop();
-    const x = index % width;
-    const y = (index - x) / width;
-    consider(x + 1, y);
-    consider(x - 1, y);
-    consider(x, y + 1);
-    consider(x, y - 1);
+    for (let x = 0; x < width; x += 1) {
+      if (edges[y * width + x] === 0) continue;
+      columns[x] += 1;
+      rows[y] += 1;
+    }
   }
 
-  const covered = new Uint8Array(width * height);
-  let inside = 0;
-  for (let index = 0; index < covered.length; index += 1) {
-    if (reached[index] === 1 || barrier[index] === 1) continue;
-    covered[index] = 1;
-    inside += 1;
+  const xs = peaks(columns, MIN_RUN);
+  const ys = peaks(rows, MIN_RUN);
+  const rectangles = [];
+  for (let left = 0; left < xs.length; left += 1) {
+    for (let right = left + 1; right < xs.length; right += 1) {
+      if (xs[right] - xs[left] < MIN_RUN) continue;
+      for (let top = 0; top < ys.length; top += 1) {
+        for (let bottom = top + 1; bottom < ys.length; bottom += 1) {
+          if (ys[bottom] - ys[top] < MIN_RUN) continue;
+          const box = {
+            left: xs[left], right: xs[right], top: ys[top], bottom: ys[bottom],
+          };
+          if (!sidesPresent(edges, width, height, box)) continue;
+          rectangles.push(box);
+        }
+      }
+    }
   }
-  if (inside > covered.length * LEAK_LIMIT) return null;
-  return covered;
+  return rectangles;
+}
+
+/** Positions where a projection rises above a threshold, one per local cluster. */
+function peaks(profile, threshold) {
+  const found = [];
+  let best = -1;
+  for (let index = 0; index <= profile.length; index += 1) {
+    const value = index < profile.length ? profile[index] : 0;
+    if (value >= threshold) {
+      if (best === -1 || value > profile[best]) best = index;
+      continue;
+    }
+    if (best !== -1) found.push(best);
+    best = -1;
+  }
+  return found;
+}
+
+/** How much of a candidate rectangle's perimeter is actually drawn. */
+function sidesPresent(edges, width, height, box) {
+  const near = (x, y) => {
+    for (let dy = -2; dy <= 2; dy += 1) {
+      for (let dx = -2; dx <= 2; dx += 1) {
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+        if (edges[ny * width + nx] === 1) return true;
+      }
+    }
+    return false;
+  };
+  const coverage = (from, to, at) => {
+    let hits = 0;
+    let total = 0;
+    for (let step = from; step <= to; step += 1) {
+      total += 1;
+      if (near(...at(step))) hits += 1;
+    }
+    return total === 0 ? 0 : hits / total;
+  };
+  // Rounded corners mean the last few pixels of every side are missing by design,
+  // so the ends are excluded before measuring.
+  const insetX = Math.min(8, Math.floor((box.right - box.left) / 4));
+  const insetY = Math.min(8, Math.floor((box.bottom - box.top) / 4));
+  const sides = [
+    coverage(box.left + insetX, box.right - insetX, (x) => [x, box.top]),
+    coverage(box.left + insetX, box.right - insetX, (x) => [x, box.bottom]),
+    coverage(box.top + insetY, box.bottom - insetY, (y) => [box.left, y]),
+    coverage(box.top + insetY, box.bottom - insetY, (y) => [box.right, y]),
+  ];
+  return sides.every((value) => value >= 0.45);
+}
+
+/** How many rectangles cover each pixel. */
+function layerCounts(rectangles, width, height) {
+  const layers = new Uint8Array(width * height);
+  for (const box of rectangles) {
+    for (let y = Math.max(0, box.top); y <= Math.min(height - 1, box.bottom); y += 1) {
+      for (let x = Math.max(0, box.left); x <= Math.min(width - 1, box.right); x += 1) {
+        layers[y * width + x] += 1;
+      }
+    }
+  }
+  return layers;
 }
 
 /**
@@ -229,14 +341,13 @@ function components(mask, width, height) {
  * of how many layers are stacked here disappears into `obsPaper`, which is measured.
  * Only `m` is assumed, and it merely scales contrast.
  */
-function restoreRegion(data, region, paper, observedPaper) {
-  for (const index of region) {
-    const offset = index * 4;
-    for (let channel = 0; channel < 3; channel += 1) {
-      const restored = paper[channel]
-        + (data[offset + channel] - observedPaper[channel]) / SURVIVES;
-      data[offset + channel] = Math.max(0, Math.min(255, Math.round(restored)));
-    }
+function restorePixel(data, index, paper, observedPaper, depth) {
+  const offset = index * 4;
+  const survives = SURVIVES ** depth;
+  for (let channel = 0; channel < 3; channel += 1) {
+    const restored = paper[channel]
+      + (data[offset + channel] - observedPaper[channel]) / survives;
+    data[offset + channel] = Math.max(0, Math.min(255, Math.round(restored)));
   }
 }
 
@@ -250,102 +361,110 @@ export function removeDiagramOverlay(data, width, height, options = {}) {
   const paperFloor = options.paperFloor ?? 195;
   const report = [];
 
-  // Every family's outlines seal together: a blue box crossing a green one has to
-  // divide both, or the flood escapes one through the other.
-  let barrier = new Uint8Array(width * height);
-  let strokeCount = 0;
-  for (let index = 0; index < width * height; index += 1) {
-    const offset = index * 4;
-    const r = data[offset];
-    const g = data[offset + 1];
-    const b = data[offset + 2];
-    if (FAMILIES.some((family) => family.isStroke(r, g, b))) {
-      barrier[index] = 1;
-      strokeCount += 1;
+  const allEdges = new Uint8Array(width * height);
+  const found = [];
+
+  for (const family of FAMILIES) {
+    const tinted = new Uint8Array(width * height);
+    for (let index = 0; index < width * height; index += 1) {
+      const offset = index * 4;
+      if (inFamily(family, data[offset], data[offset + 1], data[offset + 2])) {
+        tinted[index] = 1;
+      }
+    }
+    const edges = straightRunsOnly(tinted, width, height);
+    let edgeCount = 0;
+    for (let index = 0; index < edges.length; index += 1) {
+      if (edges[index] === 0) continue;
+      edgeCount += 1;
+      allEdges[index] = 1;
+    }
+    if (edgeCount < MIN_RUN) continue;
+    const rectangles = findRectangles(edges, width, height);
+    if (rectangles.length === 0) {
+      report.push(`${family.name}: ${String(edgeCount)}px of edge, no boxes resolved`);
+      continue;
+    }
+    found.push({ family, rectangles });
+  }
+
+  if (found.length === 0 && allEdges.every((flag) => flag === 0)) {
+    return ['no diagram found'];
+  }
+
+  // Bare paper, measured where nothing covers it.
+  const anyLayer = new Uint8Array(width * height);
+  for (const { rectangles } of found) {
+    const layers = layerCounts(rectangles, width, height);
+    for (let index = 0; index < anyLayer.length; index += 1) {
+      if (layers[index] > 0) anyLayer[index] = 1;
     }
   }
-  if (strokeCount === 0) return ['no diagram found'];
-  barrier = grow(barrier, width, height, SEAL);
+  const paper = median(flatBrightSamples(
+    data,
+    width,
+    height,
+    (index) => anyLayer[index] === 0 && allEdges[index] === 0,
+    paperFloor,
+  ));
 
-  const covered = sealedRegions(barrier, width, height);
-  if (covered === null) {
-    report.push('outline trace leaked; fills left alone');
-  } else {
-    const outside = (index) => covered[index] === 0 && barrier[index] === 0;
-    const paper = median(
-      flatBrightSamples(data, width, height, outside, paperFloor),
-    );
+  for (const { family, rectangles } of found) {
     if (paper === null) {
-      report.push('no bare paper to anchor against; fills left alone');
-    } else {
-      let cleaned = 0;
-      let unanchored = 0;
-      for (const region of components(covered, width, height)) {
-        if (region.length < 64) continue;
-        const inside = new Set(region);
-        const observedPaper = median(flatBrightSamples(
-          data,
-          width,
-          height,
-          (index) => inside.has(index),
-          paperFloor,
-        ));
-        // A box drawn entirely over the figure shows no paper, so there is nothing
-        // to measure its tint against. Left as drawn rather than guessed at.
-        if (observedPaper === null) {
-          unanchored += 1;
-          continue;
-        }
-        const shift = Math.max(
-          ...[0, 1, 2].map((c) => Math.abs(paper[c] - observedPaper[c])),
-        );
-        if (shift < 4) continue;
-        restoreRegion(data, region, paper, observedPaper);
-        cleaned += 1;
-      }
-      report.push(
-        `paper [${paper.join(',')}], ${String(cleaned)} tinted regions cleared`
-        + (unanchored > 0 ? `, ${String(unanchored)} with no paper to anchor` : ''),
-      );
+      report.push(`${family.name}: ${String(rectangles.length)} boxes, no bare paper to anchor against`);
+      continue;
     }
+    const layers = layerCounts(rectangles, width, height);
+    // One anchor per layer depth: paper under one box is a different colour from
+    // paper under two, and correcting both with the same offset leaves the overlaps
+    // visibly darker than everything around them.
+    const anchors = new Map();
+    for (let depth = 1; depth <= 6; depth += 1) {
+      const sample = median(flatBrightSamples(
+        data,
+        width,
+        height,
+        (index) => layers[index] === depth && allEdges[index] === 0,
+        paperFloor,
+      ));
+      if (sample !== null) anchors.set(depth, sample);
+    }
+    if (anchors.size === 0) {
+      report.push(`${family.name}: ${String(rectangles.length)} boxes, no paper visible through them`);
+      continue;
+    }
+    // Depths with no paper of their own extrapolate from the shallowest that has
+    // some, compounding the same map for the extra layers.
+    const shallowest = Math.min(...anchors.keys());
+    const base = anchors.get(shallowest);
+    for (let depth = 1; depth <= 6; depth += 1) {
+      if (anchors.has(depth)) continue;
+      let value = base;
+      for (let extra = shallowest; extra < depth; extra += 1) {
+        value = value.map(
+          (channel, index) => channel * SURVIVES + (base[index] - paper[index] * SURVIVES),
+        );
+      }
+      anchors.set(depth, value);
+    }
+
+    for (let index = 0; index < width * height; index += 1) {
+      const depth = layers[index];
+      if (depth === 0) continue;
+      restorePixel(data, index, paper, anchors.get(Math.min(depth, 6)), depth);
+    }
+    report.push(
+      `${family.name}: ${String(rectangles.length)} boxes cleared, `
+      + `paper reads [${anchors.get(1).join(',')}] through one`,
+    );
   }
 
   // The outlines replaced the drawing rather than tinting it, so there is nothing
-  // to recover — they get masked and painted over from either side. Re-detected
-  // after the fills are undone, because that shifts their colours too.
-  const scars = strokeMask(data, width, height);
-  const healed = healScars(data, width, height, scars);
+  // to recover — they get masked and painted over from either side. Grown by one so
+  // an antialiased shoulder goes with its line; a leftover halo reads as a coloured
+  // line just as clearly as the line did.
+  const healed = healScars(data, width, height, grow(allEdges, width, height, 1));
   report.push(`outlines: ${String(healed)}px repainted`);
   return report;
-}
-
-/** Every remaining pixel that still belongs to a box outline, dilated by one. */
-function strokeMask(data, width, height) {
-  const raw = new Uint8Array(width * height);
-  for (let index = 0; index < width * height; index += 1) {
-    const offset = index * 4;
-    const r = data[offset];
-    const g = data[offset + 1];
-    const b = data[offset + 2];
-    if (FAMILIES.some((family) => family.is(r, g, b))) raw[index] = 1;
-  }
-  // Grow by one so the antialiased shoulder of a stroke goes with it; a leftover
-  // halo reads as a coloured line just as clearly as the line did.
-  const grown = new Uint8Array(width * height);
-  for (let y = 0; y < height; y += 1) {
-    for (let x = 0; x < width; x += 1) {
-      if (raw[y * width + x] === 0) continue;
-      for (let dy = -1; dy <= 1; dy += 1) {
-        for (let dx = -1; dx <= 1; dx += 1) {
-          const nx = x + dx;
-          const ny = y + dy;
-          if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
-          grown[ny * width + nx] = 1;
-        }
-      }
-    }
-  }
-  return grown;
 }
 
 /**
