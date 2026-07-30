@@ -225,6 +225,17 @@ const ATTACKS: Readonly<Record<string, AttackPose>> = {
   hk: roundhouse,
 };
 
+/**
+ * Per-character move tables namespace their ids — `idol.hp`, `glitch.lk`. Keying
+ * on the button suffix is what lets one set of poses serve the whole roster;
+ * without it every id missed the table and all four attacks silently played the
+ * jab.
+ */
+function attackFor(moveId: string): AttackPose {
+  const suffix = moveId.slice(moveId.lastIndexOf('.') + 1);
+  return ATTACKS[moveId] ?? ATTACKS[suffix] ?? jab;
+}
+
 /** Struck: head snaps back, arms trail, weight drops. */
 function hurt(force: number): SpritePose {
   return pose({
@@ -297,7 +308,7 @@ export function spritePoseFor(
   if (!fighter.grounded) return airborne(fighter.velocity.y > 0);
 
   if (fighter.action !== null) {
-    const attack = ATTACKS[fighter.action.moveId] ?? jab;
+    const attack = attackFor(fighter.action.moveId);
     const [windup, strike, settle] = beats(progress);
     return attack(windup, strike, settle);
   }
