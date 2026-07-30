@@ -124,7 +124,18 @@ async function sliceCharacter(name) {
     .map(([part]) => masks.get(part));
   if (carving.length > 0) {
     const holes = clearInside(carved, unionMasks(carving, width, height));
-    inpaint(carved, width, height, holes);
+    if (view.carveFill === undefined) {
+      inpaint(carved, width, height, holes);
+    } else {
+      const [red, green, blue] = view.carveFill;
+      for (let index = 0; index < holes.length; index += 1) {
+        if (holes[index] === 0) continue;
+        carved[index * 4] = red;
+        carved[index * 4 + 1] = green;
+        carved[index * 4 + 2] = blue;
+        carved[index * 4 + 3] = 255;
+      }
+    }
     const emptied = holes.reduce((total, flag) => total + flag, 0);
     console.log(`  carved ${String(carving.length)} part(s), refilled ${String(emptied)}px`);
   }

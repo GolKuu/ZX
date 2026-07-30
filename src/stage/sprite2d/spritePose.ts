@@ -118,17 +118,25 @@ function withinLimits(pose: SpritePose): SpritePose {
   return pose;
 }
 
-/** Neutral fighting stance: weight back, knees bent, guard hand up. */
+/**
+ * Neutral fighting stance: weight back, knees bent, breath in the shoulders.
+ *
+ * The near arm stays close to where it was drawn. It is cut from the drawing, so
+ * behind it is the patch of costume that was filled in when it was lifted out —
+ * invisible while the arm covers it, a smudge the moment it swings clear. Neutral
+ * is the frame that is on screen most of the time, so it is the one frame that has
+ * to sit on its own hole; the walk and the damage reactions are free to move.
+ */
 function stance(breath: number): SpritePose {
   return pose({
     torso: -0.05,
     head: 0.04,
     ponytail: 0.12 + breath * 0.06,
     sash: -0.08 + breath * 0.05,
-    upperArm: -0.16 + breath * 0.02,
-    forearm: -0.3,
-    farUpperArm: -0.08,
-    farForearm: -0.22,
+    upperArm: -0.05 + breath * 0.02,
+    forearm: -0.09,
+    farUpperArm: -0.02,
+    farForearm: -0.14,
     thigh: 0.14,
     shin: -0.2,
     boot: 0.07,

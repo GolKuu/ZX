@@ -94,6 +94,7 @@ const SEARCH = 6;
  */
 export function inpaint(data, width, height, holes) {
   for (let y = 0; y < height; y += 1) {
+    const reference = rowAverage(data, width, y, holes);
     let x = 0;
     while (x < width) {
       const index = y * width + x;
@@ -109,7 +110,7 @@ export function inpaint(data, width, height, holes) {
       }
       const left = sampleRow(data, width, y, x - 1 - EDGE_SKIP, -1);
       const right = sampleRow(data, width, y, end + 1 + EDGE_SKIP, 1);
-      paintRun(data, width, y, x, end, left, right);
+      paintRun(data, width, y, x, end, pickSource(left, right, reference));
       x = end + 1;
     }
   }
@@ -136,25 +137,62 @@ function sampleRow(data, width, y, from, step) {
   return null;
 }
 
-function paintRun(data, width, y, from, to, left, right) {
-  if (left === null && right === null) return;
-  const span = to - from;
+/**
+ * Mean colour of the row's *surviving* costume, used to decide which side of a
+ * hole to fill it from.
+ *
+ * The two edges of a hole are often different garments — a hand cut out of a skirt
+ * has white pleats on one side and the sash's magenta on the other. Blending
+ * between them fills the skirt with a pink-grey wash that reads as a smudge the
+ * moment the arm swings off it. Comparing each candidate against what the row is
+ * mostly made of picks the garment instead of the accessory beside it, and is also
+ * what stopped a collar's braid from being extended across a shoulder.
+ */
+function rowAverage(data, width, y, holes) {
+  const totals = [0, 0, 0];
+  let found = 0;
+  for (let x = 0; x < width; x += 1) {
+    const index = y * width + x;
+    if (holes[index] === 1 || data[index * 4 + 3] === 0) continue;
+    for (let channel = 0; channel < 3; channel += 1) {
+      totals[channel] += data[index * 4 + channel];
+    }
+    found += 1;
+  }
+  if (found === 0) return null;
+  return totals.map((total) => total / found);
+}
+
+function pickSource(left, right, reference) {
+  if (left === null) return right;
+  if (right === null) return left;
+  if (reference === null) return left;
+  return distance(left, reference) <= distance(right, reference) ? left : right;
+}
+
+function distance(colour, reference) {
+  let total = 0;
+  for (let channel = 0; channel < 3; channel += 1) {
+    const delta = (colour[channel] ?? 0) - (reference[channel] ?? 0);
+    total += delta * delta;
+  }
+  return total;
+}
+
+/** Flat fill: cel art has no gradients, so a gradient here is a visible seam. */
+function paintRun(data, width, y, from, to, source) {
+  if (source === null || source === undefined) return;
   for (let x = from; x <= to; x += 1) {
     const index = (y * width + x) * 4;
-    const blend = span === 0 ? 0 : (x - from) / span;
     for (let channel = 0; channel < 3; channel += 1) {
-      const near = left?.[channel];
-      const far = right?.[channel];
-      if (near === undefined) data[index + channel] = far ?? 0;
-      else if (far === undefined) data[index + channel] = near;
-      else data[index + channel] = Math.round(near + (far - near) * blend);
+      data[index + channel] = source[channel] ?? 0;
     }
     data[index + 3] = 255;
   }
 }
 
 /** Vertical box blur, confined to pixels the fill created. */
-function softenFill(data, width, height, holes, radius = 4, passes = 2) {
+function softenFill(data, width, height, holes, radius = 2, passes = 1) {
   const source = new Uint8Array(data.length);
   for (let pass = 0; pass < passes; pass += 1) {
     source.set(data);

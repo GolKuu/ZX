@@ -13,14 +13,14 @@
   ],
   "parts": {
     "ponytail": {
-      "width": 54,
+      "width": 44,
       "height": 72,
       "pivot": [
-        0.9815,
+        1,
         0.7361
       ],
       "joint": [
-        91,
+        82,
         91
       ]
     },
