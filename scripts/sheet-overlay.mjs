@@ -1,76 +1,84 @@
 // Removes the hitbox diagram painted over a sheet's attack panels.
 //
-// The attack columns on these sheets are documentation, not art: every pose has
-// blue hurtbox, red hitbox and green collision rectangles drawn on top of it, each
-// a saturated outline around a translucent fill. That does two kinds of damage.
+// The attack columns on these sheets are documentation, not art: every pose has blue
+// hurtbox, red hitbox and green collision rectangles drawn on top of it, each a
+// saturated outline around a translucent fill. That does two kinds of damage.
 //
 //   1. The fills lift the costume's value, so a background flood-fill keyed on
-//      brightness walks in from the paper *through a box* and eats the figure. That
-//      is where the missing thighs and the detached boots came from — not from the
-//      crop, from the key tunnelling along a box.
-//   2. What survives is tinted lavender in rectangles, with dashed outlines across
-//      it.
+//      brightness walks in from the page *through a box* and eats the figure. That is
+//      where the missing thighs and detached boots came from — not the crop, the key
+//      tunnelling along a box.
+//   2. What survives is washed lavender and green in rectangles, with dashed outlines
+//      drawn across it.
 //
-// Both are reversible, because a translucent rectangle is an affine map. Over a box
-// the sheet shows `obs = m·art + c`, with `m = 1 − alpha` and `c = alpha·colour`,
-// constant inside the rectangle. Recover the rectangles, measure `m` and `c` from
-// the bare paper, and the original drawing comes back out.
+// ## Why this does not reconstruct the rectangles
 //
-// Nothing here is character-specific: the box palette is fixed by the sheets, and
-// everything else is measured per panel.
-
-/**
- * How far to grow the outlines before sealing.
- *
- * The outlines are dashed, and where one crosses dark hair its blue stops reading
- * as blue at all, so the traced boundary has gaps. Growing it bridges those: a gap
- * up to twice this closes. Too small and the fill leaks out and the box goes
- * uncorrected; too large and thin costume detail between two nearby boxes gets
- * swallowed into the mask and repainted.
- */
-const SEAL = 4;
-
-/** Local gradient below which a pixel is flat enough to be bare paper. */
-const FLAT_LIMIT = 6;
-
-/**
- * Fraction of the panel a single sealed region may claim before it is disbelieved.
- *
- * A leak makes the flood spill outward and the "inside" become most of the image.
- * Rejecting that keeps a broken trace from tinting the whole drawing, which is a
- * far worse failure than leaving one box uncleaned.
- */
-const LEAK_LIMIT = 0.55;
+// It looks like it should: a translucent rectangle is an affine map, so with the
+// rectangles known the drawing inverts exactly. Three attempts at recovering them all
+// failed on the same facts. The outlines are dashed. Their corners are rounded past
+// any pairing tolerance. Each one disappears wherever it crosses dark hair, because a
+// blue line over near-black is not blue. And they are clipped by the panel crop,
+// nested, and overlapping. Pairing edge runs found nothing; sealing the outlines and
+// flooding inward leaked out of every box through the gaps; projecting edges onto each
+// axis found eleven boxes where there were two, because every left pairs with every
+// right.
+//
+// So this works per pixel instead, on a fact about the subjects rather than about the
+// geometry: **none of these five characters has any blue or green in their palette.**
+// IDOL is pink, white, gold and skin; her only cool note is violet, and violet is a
+// different hue from hurtbox blue. So any blue or green cast *is* the diagram, wherever
+// it is, and the amount to remove can be measured from the page the boxes also cover.
+// No rectangle needs to be found for that.
+//
+// Red is left alone on purpose. It is the one family that collides with a costume —
+// IDOL's and GLITCH's magenta — and a wrong guess there bleaches the character.
 
 /**
  * Minimum length of an axis-aligned run before a coloured pixel counts as a box
- * edge.
+ * outline.
  *
- * This gate, not the colour test, is what makes the pass safe. Colour alone cannot
- * separate the diagram from these characters: a hurtbox's blue sits right beside the
- * blue-violet these sheets shade their whites with, and a hitbox's red sits right
- * beside IDOL's magenta. The first attempt used colour alone and repainted a fifth
- * of the drawing — her jacket read as hitbox red and her shadows as hurtbox blue.
- *
- * Geometry separates them cleanly instead. A box edge is a straight line tens of
- * pixels long; costume linework, however saturated, never runs straight and
- * axis-aligned for twenty pixels.
+ * This gate, not the colour test, is what makes outline removal safe. Colour alone
+ * cannot separate the diagram from these characters: hurtbox blue sits right beside
+ * the blue-violet these sheets shade whites with. The first attempt used colour alone
+ * and repainted a fifth of the drawing — her jacket read as hitbox red and her shadows
+ * as hurtbox blue. Geometry separates them cleanly: a box outline runs straight and
+ * axis-aligned for tens of pixels, and costume linework never does.
  */
 const MIN_RUN = 20;
 
+/** Local gradient below which a pixel is flat enough to be bare page. */
+const FLAT_LIMIT = 6;
+
 /**
- * The three box palettes, as hue windows.
+ * The box palettes, as hue windows, read off a hue histogram of a panel.
  *
- * Read off a hue histogram of a panel, where the diagram and the costume land in
- * clearly separate bands: collision green at 110–130° with nothing of IDOL's in a
- * hundred degrees of it, hurtbox blue at 200–245° against her violet shading from
- * 255° up, and hitbox red at 0–12° against her magenta piled up at 330–350°.
+ * The diagram and the costume land in clearly separate bands: collision green at
+ * 110–130° with nothing of IDOL's within a hundred degrees, hurtbox blue at 200–245°
+ * against her violet shading from 255° up. The blue window deliberately stops short of
+ * violet so her purple shorts survive untouched.
  */
 const FAMILIES = [
-  { name: 'blue', from: 196, to: 248, minimumSaturation: 0.16 },
-  { name: 'green', from: 96, to: 152, minimumSaturation: 0.13 },
-  { name: 'red', from: 352, to: 372, minimumSaturation: 0.3 },
+  { name: 'blue', from: 196, to: 248 },
+  { name: 'green', from: 96, to: 152 },
 ];
+
+/** Outlines are healed for every family, including the one whose fill is left alone. */
+const OUTLINE_FAMILIES = [
+  ...FAMILIES,
+  { name: 'red', from: 352, to: 372 },
+];
+
+/**
+ * Chroma a pixel needs before its hue is believed, in 0–255 units.
+ *
+ * Absolute chroma, not saturation: a wash over bright page is only about 20 units of
+ * chroma on a value of 250, which is a saturation of 0.08 — well under any threshold a
+ * saturated outline would want, and setting one floor for both found no fills at all.
+ * Below roughly 6 units the hue angle is just sensor noise, so that is the floor for a
+ * fill; an outline has to be far more definite than that.
+ */
+const FILL_CHROMA = 7;
+const OUTLINE_CHROMA = 30;
 
 function luminance(r, g, b) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
@@ -80,266 +88,41 @@ function hueOf(r, g, b) {
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
   const chroma = max - min;
-  if (chroma === 0) return { hue: 0, saturation: 0, value: max };
+  if (chroma === 0) return { hue: 0, chroma: 0, value: max };
   let hue;
   if (max === r) hue = 60 * (((g - b) / chroma) % 6);
   else if (max === g) hue = 60 * ((b - r) / chroma + 2);
   else hue = 60 * ((r - g) / chroma + 4);
   if (hue < 0) hue += 360;
-  return { hue, saturation: chroma / max, value: max };
+  return { hue, chroma, value: max };
 }
 
-function inFamily(family, r, g, b) {
-  const { hue, saturation, value } = hueOf(r, g, b);
-  if (saturation < family.minimumSaturation || value < 40) return false;
+function inFamily(family, r, g, b, minimumChroma) {
+  const { hue, chroma, value } = hueOf(r, g, b);
+  if (chroma < minimumChroma || value < 40) return false;
   // `to` may run past 360 so a window can straddle red.
   const wrapped = hue < family.from ? hue + 360 : hue;
   return wrapped >= family.from && wrapped <= family.to;
 }
 
-/**
- * Keep only the pixels of a mask that sit in a long straight run of it.
- *
- * Both axes, so a box's horizontal and vertical edges both survive while an isolated
- * saturated speck in the artwork does not.
- */
-function straightRunsOnly(mask, width, height) {
-  const kept = new Uint8Array(mask.length);
-  const sweep = (length, stride, count) => {
-    for (let line = 0; line < count; line += 1) {
-      let run = 0;
-      for (let step = 0; step <= length; step += 1) {
-        const index = step < length ? line * stride.line + step * stride.step : -1;
-        const on = index >= 0 && mask[index] === 1;
-        if (on) {
-          run += 1;
-          continue;
-        }
-        if (run >= MIN_RUN) {
-          for (let back = 1; back <= run; back += 1) {
-            kept[line * stride.line + (step - back) * stride.step] = 1;
-          }
-        }
-        run = 0;
-      }
-    }
-  };
-  sweep(width, { line: width, step: 1 }, height);
-  sweep(height, { line: 1, step: width }, width);
-  return kept;
+/** How strongly a pixel leans towards one family's hue, as a signed amount. */
+function chromaOf(family, r, g, b) {
+  if (family.name === 'blue') return b - (r + g) / 2;
+  if (family.name === 'green') return g - (r + b) / 2;
+  return r - (g + b) / 2;
 }
-
-function grow(mask, width, height, radius) {
-  let current = mask;
-  for (let pass = 0; pass < radius; pass += 1) {
-    const next = new Uint8Array(current);
-    for (let y = 0; y < height; y += 1) {
-      for (let x = 0; x < width; x += 1) {
-        if (current[y * width + x] === 0) continue;
-        if (x > 0) next[y * width + x - 1] = 1;
-        if (x + 1 < width) next[y * width + x + 1] = 1;
-        if (y > 0) next[(y - 1) * width + x] = 1;
-        if (y + 1 < height) next[(y + 1) * width + x] = 1;
-      }
-    }
-    current = next;
-  }
-  return current;
-}
-
-/**
- * Recover the box rectangles from where their edges project onto each axis.
- *
- * Two earlier attempts failed on the same fact: these outlines are not continuous.
- * They are dashed, their corners are rounded, and each one vanishes wherever it
- * crosses dark hair, because a blue line over near-black is not blue. Pairing edge
- * runs directly found nothing. Growing the outlines and flooding inward leaked out
- * of every box through those gaps and cleaned one region out of twenty.
- *
- * Projection is tolerant of all of it. A box side contributes to one column of the
- * projection along its whole length, so gaps only lower a spike rather than break it.
- * Candidate sides are the spikes; a candidate rectangle is accepted when all four of
- * its sides can still be found in the mask along enough of their extent, which is
- * what keeps the combinatorial pairing from inventing boxes.
- */
-function findRectangles(edges, width, height, chroma) {
-  const columns = new Int32Array(width);
-  const rows = new Int32Array(height);
-  for (let y = 0; y < height; y += 1) {
-    for (let x = 0; x < width; x += 1) {
-      if (edges[y * width + x] === 0) continue;
-      columns[x] += 1;
-      rows[y] += 1;
-    }
-  }
-
-  const xs = peaks(columns, MIN_RUN);
-  const ys = peaks(rows, MIN_RUN);
-  const rectangles = [];
-  for (let left = 0; left < xs.length; left += 1) {
-    for (let right = left + 1; right < xs.length; right += 1) {
-      if (xs[right] - xs[left] < MIN_RUN) continue;
-      for (let top = 0; top < ys.length; top += 1) {
-        for (let bottom = top + 1; bottom < ys.length; bottom += 1) {
-          if (ys[bottom] - ys[top] < MIN_RUN) continue;
-          const box = {
-            left: xs[left], right: xs[right], top: ys[top], bottom: ys[bottom],
-          };
-          if (!sidesPresent(edges, width, height, box)) continue;
-          if (!tintStepsInward(chroma, width, height, box)) continue;
-          rectangles.push(box);
-        }
-      }
-    }
-  }
-  return rectangles;
-}
-
-/**
- * Reject candidates whose sides do not have the tint on one side only.
- *
- * Projection is generous by design, and the price is that every pairing of a left
- * with a right and a top with a bottom validates — one long vertical edge plus three
- * horizontal peaks produced eleven "boxes" from two, layer counts of six where the
- * truth was one, and anchors measured on regions that did not exist.
- *
- * A real edge is the boundary of a wash: sample a band just inside it and a band just
- * outside, and the inside is tinted more. An edge invented halfway down a real box
- * has the same tint on both sides and fails. Corners are skipped because two sides
- * meet there and both contribute.
- */
-function tintStepsInward(chroma, width, height, box) {
-  const band = 3;
-  const mean = (from, to, at) => {
-    let total = 0;
-    let count = 0;
-    for (let step = from; step <= to; step += 1) {
-      const [x, y] = at(step);
-      if (x < 0 || y < 0 || x >= width || y >= height) continue;
-      total += chroma[y * width + x];
-      count += 1;
-    }
-    return count === 0 ? null : total / count;
-  };
-  const insetX = Math.min(10, Math.floor((box.right - box.left) / 4));
-  const insetY = Math.min(10, Math.floor((box.bottom - box.top) / 4));
-  const steps = [
-    [(x) => [x, box.top + band], (x) => [x, box.top - band], box.left + insetX, box.right - insetX],
-    [(x) => [x, box.bottom - band], (x) => [x, box.bottom + band], box.left + insetX, box.right - insetX],
-    [(y) => [box.left + band, y], (y) => [box.left - band, y], box.top + insetY, box.bottom - insetY],
-    [(y) => [box.right - band, y], (y) => [box.right + band, y], box.top + insetY, box.bottom - insetY],
-  ];
-  for (const [inward, outward, from, to] of steps) {
-    const inside = mean(from, to, inward);
-    const outside = mean(from, to, outward);
-    if (inside === null || outside === null) return false;
-    if (inside - outside < 3) return false;
-  }
-  return true;
-}
-
-/** How strongly each pixel leans towards one family's hue, as a signed amount. */
-function chromaField(data, width, height, family) {
-  const field = new Float32Array(width * height);
-  for (let index = 0; index < field.length; index += 1) {
-    const offset = index * 4;
-    const r = data[offset];
-    const g = data[offset + 1];
-    const b = data[offset + 2];
-    if (family.name === 'blue') field[index] = b - (r + g) / 2;
-    else if (family.name === 'green') field[index] = g - (r + b) / 2;
-    else field[index] = r - (g + b) / 2;
-  }
-  return field;
-}
-
-/** Positions where a projection rises above a threshold, one per local cluster. */
-function peaks(profile, threshold) {
-  const found = [];
-  let best = -1;
-  for (let index = 0; index <= profile.length; index += 1) {
-    const value = index < profile.length ? profile[index] : 0;
-    if (value >= threshold) {
-      if (best === -1 || value > profile[best]) best = index;
-      continue;
-    }
-    if (best !== -1) found.push(best);
-    best = -1;
-  }
-  return found;
-}
-
-/** How much of a candidate rectangle's perimeter is actually drawn. */
-function sidesPresent(edges, width, height, box) {
-  const near = (x, y) => {
-    for (let dy = -2; dy <= 2; dy += 1) {
-      for (let dx = -2; dx <= 2; dx += 1) {
-        const nx = x + dx;
-        const ny = y + dy;
-        if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
-        if (edges[ny * width + nx] === 1) return true;
-      }
-    }
-    return false;
-  };
-  const coverage = (from, to, at) => {
-    let hits = 0;
-    let total = 0;
-    for (let step = from; step <= to; step += 1) {
-      total += 1;
-      if (near(...at(step))) hits += 1;
-    }
-    return total === 0 ? 0 : hits / total;
-  };
-  // Rounded corners mean the last few pixels of every side are missing by design,
-  // so the ends are excluded before measuring.
-  const insetX = Math.min(8, Math.floor((box.right - box.left) / 4));
-  const insetY = Math.min(8, Math.floor((box.bottom - box.top) / 4));
-  const sides = [
-    coverage(box.left + insetX, box.right - insetX, (x) => [x, box.top]),
-    coverage(box.left + insetX, box.right - insetX, (x) => [x, box.bottom]),
-    coverage(box.top + insetY, box.bottom - insetY, (y) => [box.left, y]),
-    coverage(box.top + insetY, box.bottom - insetY, (y) => [box.right, y]),
-  ];
-  return sides.every((value) => value >= 0.45);
-}
-
-/** How many rectangles cover each pixel. */
-function layerCounts(rectangles, width, height) {
-  const layers = new Uint8Array(width * height);
-  for (const box of rectangles) {
-    for (let y = Math.max(0, box.top); y <= Math.min(height - 1, box.bottom); y += 1) {
-      for (let x = Math.max(0, box.left); x <= Math.min(width - 1, box.right); x += 1) {
-        layers[y * width + x] += 1;
-      }
-    }
-  }
-  return layers;
-}
-
-/**
- * How much of the drawing survives under a box fill.
- *
- * `1 − alpha`, and it only sets how far the recovered region's *contrast* is
- * stretched back. The tint itself comes out exactly, whatever this is, because the
- * correction is anchored on bare paper seen through the same box — see
- * `restoreRegion`. Measured on IDOL's collision boxes, whose fill works out to a
- * green of about [60,180,60] at alpha 0.12; the hurtbox and hitbox washes match it
- * closely enough that one number serves all three.
- */
-const SURVIVES = 0.88;
 
 /**
  * Which pixels are the page rather than the character.
  *
  * Flooding in from the border through anything still bright. The distinction that
- * matters is not brightness — these costumes are full of white, and IDOL's skirt
- * under a hurtbox is the same value as the page under one — it is enclosure. Page
- * stays connected to the border straight through a box edge; her skirt is fenced in
- * by her own ink, which is far too dark to cross.
+ * matters is not brightness — these costumes are full of white, and IDOL's skirt under
+ * a hurtbox is the same value as the page under one — it is enclosure. Page stays
+ * connected to the border straight through a box outline; her skirt is fenced in by her
+ * own ink, which is far too dark to cross.
  *
- * Without this the anchors were measured partly off her costume, and the correction
- * came out reading her white skirt as the colour of paper.
+ * This is what the wash is calibrated on, so getting it wrong is how an earlier pass
+ * came to treat her white skirt as the colour of paper.
  */
 function pageMask(data, width, height, floor) {
   const page = new Uint8Array(width * height);
@@ -374,263 +157,158 @@ function pageMask(data, width, height, floor) {
   return page;
 }
 
-/** Flat, bright pixels: bare paper, seen through however many box layers. */
-function flatBrightSamples(data, width, height, accept, paperFloor) {
-  const samples = [];
+/** Flat pixels only, so a sample is a wash over the page and not an edge crossing it. */
+function isFlat(data, width, height, x, y) {
+  const offset = (y * width + x) * 4;
+  const here = luminance(data[offset], data[offset + 1], data[offset + 2]);
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+    const nx = x + dx;
+    const ny = y + dy;
+    if (nx < 0 || ny < 0 || nx >= width || ny >= height) return false;
+    const near = (ny * width + nx) * 4;
+    const there = luminance(data[near], data[near + 1], data[near + 2]);
+    if (Math.abs(there - here) > FLAT_LIMIT) return false;
+  }
+  return true;
+}
+
+function median(values) {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.floor(sorted.length / 2)];
+}
+
+/**
+ * Measure one family's wash off the page it also covers.
+ *
+ * A wash both tints and darkens, and the two are locked together — it is one
+ * translucent layer — so the page shows the exchange rate directly: how much luminance
+ * a box costs per unit of colour it adds. On IDOL's collision boxes that comes out
+ * around 0.6, which is why removing only the colour leaves a faintly grey rectangle
+ * behind and removing both leaves nothing.
+ *
+ * @returns `{ base, perChroma }`, or null when the page is never seen through a box.
+ */
+function measureWash(data, width, height, page, family) {
+  const clean = [];
+  const tinted = [];
   for (let y = 1; y < height - 1; y += 1) {
     for (let x = 1; x < width - 1; x += 1) {
       const index = y * width + x;
-      if (!accept(index)) continue;
+      if (page[index] === 0) continue;
+      if (!isFlat(data, width, height, x, y)) continue;
       const offset = index * 4;
-      const here = luminance(data[offset], data[offset + 1], data[offset + 2]);
-      if (here < paperFloor) continue;
-      let roughest = 0;
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const near = ((y + dy) * width + x + dx) * 4;
-        roughest = Math.max(
-          roughest,
-          Math.abs(luminance(data[near], data[near + 1], data[near + 2]) - here),
-        );
-      }
-      if (roughest > FLAT_LIMIT) continue;
-      samples.push([data[offset], data[offset + 1], data[offset + 2]]);
+      const r = data[offset];
+      const g = data[offset + 1];
+      const b = data[offset + 2];
+      const sample = {
+        chroma: chromaOf(family, r, g, b),
+        luminance: luminance(r, g, b),
+      };
+      if (inFamily(family, r, g, b)) tinted.push(sample);
+      else clean.push(sample);
     }
   }
-  return samples;
-}
+  if (clean.length < 40 || tinted.length < 40) return null;
 
-function median(samples) {
-  if (samples.length === 0) return null;
-  return [0, 1, 2].map((channel) => {
-    const sorted = samples.map((sample) => sample[channel]).sort((a, b) => a - b);
-    return sorted[Math.floor(sorted.length / 2)];
-  });
-}
-
-/** Connected components of a mask, as arrays of pixel indices. */
-function components(mask, width, height) {
-  const seen = new Uint8Array(mask.length);
-  const found = [];
-  for (let start = 0; start < mask.length; start += 1) {
-    if (mask[start] === 0 || seen[start] === 1) continue;
-    const region = [];
-    const stack = [start];
-    seen[start] = 1;
-    while (stack.length > 0) {
-      const index = stack.pop();
-      region.push(index);
-      const x = index % width;
-      const y = (index - x) / width;
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const nx = x + dx;
-        const ny = y + dy;
-        if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
-        const next = ny * width + nx;
-        if (mask[next] === 0 || seen[next] === 1) continue;
-        seen[next] = 1;
-        stack.push(next);
-      }
-    }
-    found.push(region);
-  }
-  return found;
+  const base = median(clean.map((sample) => sample.chroma));
+  const pageLuminance = median(clean.map((sample) => sample.luminance));
+  const chromaAdded = median(tinted.map((sample) => sample.chroma)) - base;
+  const luminanceLost = pageLuminance - median(
+    tinted.map((sample) => sample.luminance),
+  );
+  if (chromaAdded < 3) return null;
+  return { base, perChroma: Math.max(0, luminanceLost / chromaAdded) };
 }
 
 /**
- * Undo one region's tint.
+ * Take one family's wash back out, pixel by pixel.
  *
- * `obs = m·art + c` inside a box, so given bare paper `P` and what that paper looks
- * like through this region's boxes, `c = obsPaper − m·P` and the whole map collapses
- * to `art = P + (obs − obsPaper) / m`. Every unknown fill colour and every question
- * of how many layers are stacked here disappears into `obsPaper`, which is measured.
- * Only `m` is assumed, and it merely scales contrast.
+ * Reducing the family's chroma to what bare page shows, then returning the luminance
+ * that much colour cost. Adding the same amount to all three channels restores value
+ * without touching hue, so nothing that was not washed moves.
  */
-function restorePixel(data, index, paper, observedPaper, depth) {
-  const offset = index * 4;
-  const survives = SURVIVES ** depth;
-  for (let channel = 0; channel < 3; channel += 1) {
-    const restored = paper[channel]
-      + (data[offset + channel] - observedPaper[channel]) / survives;
-    data[offset + channel] = Math.max(0, Math.min(255, Math.round(restored)));
+function unwash(data, width, height, family, wash) {
+  let touched = 0;
+  for (let index = 0; index < width * height; index += 1) {
+    const offset = index * 4;
+    if (data[offset + 3] === 0) continue;
+    const r = data[offset];
+    const g = data[offset + 1];
+    const b = data[offset + 2];
+    if (!inFamily(family, r, g, b)) continue;
+    const excess = chromaOf(family, r, g, b) - wash.base;
+    if (excess <= 1) continue;
+
+    const channel = family.name === 'blue' ? 2 : 1;
+    const lift = excess * (wash.perChroma + 0.5);
+    const next = [r, g, b];
+    next[channel] -= excess;
+    for (let index_ = 0; index_ < 3; index_ += 1) {
+      data[offset + index_] = Math.max(0, Math.min(255, Math.round(next[index_] + lift)));
+    }
+    touched += 1;
   }
+  return touched;
 }
 
-/**
- * What the pass sees, without changing anything: the recovered rectangles, the page
- * mask, and the per-depth anchors.
- *
- * Exported because every failure so far looked identical from the outside — a panel
- * that came back still tinted — and the cause was different each time: no boxes
- * resolved, then boxes resolved but anchored on her skirt, then anchored on paper
- * that turned out not to be under a box at all. Reading the intermediate numbers is
- * the only way to tell those apart.
- */
-export function inspectDiagramOverlay(data, width, height, options = {}) {
-  return removeDiagramOverlay(new Uint8Array(data), width, height, {
-    ...options,
-    inspect: true,
-  });
+/** Keep only the pixels of a mask that sit in a long straight run of it, either axis. */
+function straightRunsOnly(mask, width, height) {
+  const kept = new Uint8Array(mask.length);
+  const sweep = (length, lineStride, stepStride, count) => {
+    for (let line = 0; line < count; line += 1) {
+      let run = 0;
+      for (let step = 0; step <= length; step += 1) {
+        const on = step < length
+          && mask[line * lineStride + step * stepStride] === 1;
+        if (on) {
+          run += 1;
+          continue;
+        }
+        if (run >= MIN_RUN) {
+          for (let back = 1; back <= run; back += 1) {
+            kept[line * lineStride + (step - back) * stepStride] = 1;
+          }
+        }
+        run = 0;
+      }
+    }
+  };
+  sweep(width, width, 1, height);
+  sweep(height, 1, width, width);
+  return kept;
 }
 
-/**
- * Strip the diagram from one RGBA panel, in place.
- *
- * Returns what it did, so the slicer can report it and a bad calibration shows up
- * as a number rather than as a mysteriously grey character.
- */
-export function removeDiagramOverlay(data, width, height, options = {}) {
-  const paperFloor = options.paperFloor ?? 195;
-  const report = [];
-
-  const allEdges = new Uint8Array(width * height);
-  const found = [];
-
-  for (const family of FAMILIES) {
-    const tinted = new Uint8Array(width * height);
-    for (let index = 0; index < width * height; index += 1) {
-      const offset = index * 4;
-      if (inFamily(family, data[offset], data[offset + 1], data[offset + 2])) {
-        tinted[index] = 1;
+function grow(mask, width, height, radius) {
+  let current = mask;
+  for (let pass = 0; pass < radius; pass += 1) {
+    const next = new Uint8Array(current);
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        if (current[y * width + x] === 0) continue;
+        if (x > 0) next[y * width + x - 1] = 1;
+        if (x + 1 < width) next[y * width + x + 1] = 1;
+        if (y > 0) next[(y - 1) * width + x] = 1;
+        if (y + 1 < height) next[(y + 1) * width + x] = 1;
       }
     }
-    const edges = straightRunsOnly(tinted, width, height);
-    let edgeCount = 0;
-    for (let index = 0; index < edges.length; index += 1) {
-      if (edges[index] === 0) continue;
-      edgeCount += 1;
-      allEdges[index] = 1;
-    }
-    if (edgeCount < MIN_RUN) continue;
-    const rectangles = findRectangles(
-      edges,
-      width,
-      height,
-      chromaField(data, width, height, family),
-    );
-    if (rectangles.length === 0) {
-      report.push(`${family.name}: ${String(edgeCount)}px of edge, no boxes resolved`);
-      continue;
-    }
-    found.push({ family, rectangles });
+    current = next;
   }
-
-  if (found.length === 0 && allEdges.every((flag) => flag === 0)) {
-    return ['no diagram found'];
-  }
-
-  // The page, and how many of each family's boxes cover every pixel.
-  const page = pageMask(data, width, height, options.pageFloor ?? 178);
-  const byFamily = found.map(({ family, rectangles }) => ({
-    family,
-    rectangles,
-    layers: layerCounts(rectangles, width, height),
-  }));
-  const anyLayer = new Uint8Array(width * height);
-  for (const { layers } of byFamily) {
-    for (let index = 0; index < anyLayer.length; index += 1) {
-      if (layers[index] > 0) anyLayer[index] = 1;
-    }
-  }
-  const paper = median(flatBrightSamples(
-    data,
-    width,
-    height,
-    (index) => page[index] === 1 && anyLayer[index] === 0 && allEdges[index] === 0,
-    paperFloor,
-  ));
-
-  for (const { family, rectangles, layers } of byFamily) {
-    if (paper === null) {
-      report.push(`${family.name}: ${String(rectangles.length)} boxes, no bare paper to anchor against`);
-      continue;
-    }
-    // Paper under this family only. A sample that also sits under another family's
-    // box carries both tints, and averaging the two into one anchor is what made the
-    // green correction come out blue.
-    const others = byFamily.filter((entry) => entry.family !== family);
-    const cleanOf = (index) => others.every((entry) => entry.layers[index] === 0);
-    // One anchor per layer depth: paper under one box is a different colour from
-    // paper under two, and correcting both with the same offset leaves the overlaps
-    // visibly darker than everything around them.
-    const anchors = new Map();
-    for (let depth = 1; depth <= 6; depth += 1) {
-      const sample = median(flatBrightSamples(
-        data,
-        width,
-        height,
-        (index) => page[index] === 1
-          && layers[index] === depth
-          && allEdges[index] === 0
-          && cleanOf(index),
-        paperFloor,
-      ));
-      if (sample !== null) anchors.set(depth, sample);
-    }
-    if (options.inspect === true) {
-      const depths = [0, 1, 2, 3].map((depth) => layers.reduce(
-        (total, value, index) => total + (
-          value === depth && page[index] === 1 && cleanOf(index) ? 1 : 0
-        ),
-        0,
-      ));
-      report.push(
-        `${family.name}: boxes ${JSON.stringify(rectangles)}\n`
-        + `    page px by depth (0,1,2,3): ${depths.join(', ')}\n`
-        + `    anchors: ${JSON.stringify([...anchors])}`,
-      );
-      continue;
-    }
-    if (anchors.size === 0) {
-      report.push(`${family.name}: ${String(rectangles.length)} boxes, no paper visible through them`);
-      continue;
-    }
-    // Depths with no paper of their own extrapolate from the shallowest that has
-    // some, compounding the same map for the extra layers.
-    const shallowest = Math.min(...anchors.keys());
-    const base = anchors.get(shallowest);
-    for (let depth = 1; depth <= 6; depth += 1) {
-      if (anchors.has(depth)) continue;
-      let value = base;
-      for (let extra = shallowest; extra < depth; extra += 1) {
-        value = value.map(
-          (channel, index) => channel * SURVIVES + (base[index] - paper[index] * SURVIVES),
-        );
-      }
-      anchors.set(depth, value);
-    }
-
-    for (let index = 0; index < width * height; index += 1) {
-      const depth = layers[index];
-      if (depth === 0) continue;
-      restorePixel(data, index, paper, anchors.get(Math.min(depth, 6)), depth);
-    }
-    report.push(
-      `${family.name}: ${String(rectangles.length)} boxes cleared, `
-      + `paper reads [${anchors.get(1).join(',')}] through one`,
-    );
-  }
-
-  // The outlines replaced the drawing rather than tinting it, so there is nothing
-  // to recover — they get masked and painted over from either side. Grown by one so
-  // an antialiased shoulder goes with its line; a leftover halo reads as a coloured
-  // line just as clearly as the line did.
-  const healed = healScars(data, width, height, grow(allEdges, width, height, 1));
-  report.push(`outlines: ${String(healed)}px repainted`);
-  return report;
+  return current;
 }
 
 /**
  * Paint over the outlines from whichever side of them the drawing continues.
  *
- * A box edge is one to three pixels wide, so the nearest unmasked pixel on either
- * side is almost always the same garment, and closing the gap between them is
- * invisible. Done in both axes and averaged, so a horizontal edge is healed down a
- * column and a vertical one across a row without either having to know which it is.
+ * A box outline is one to three pixels wide, so the nearest unmasked pixel either side
+ * is almost always the same garment and closing the gap between them is invisible. Both
+ * axes, averaged, so a horizontal outline heals down a column and a vertical one across
+ * a row without either having to know which it is.
  */
-function healScars(data, width, height, scars) {
+function healOutlines(data, width, height, scars) {
   const source = new Uint8Array(data);
   let healed = 0;
-  const reach = 4;
+  const reach = 5;
 
   const look = (x, y, dx, dy) => {
     for (let step = 1; step <= reach; step += 1) {
@@ -667,4 +345,52 @@ function healScars(data, width, height, scars) {
     }
   }
   return healed;
+}
+
+/**
+ * Strip the diagram from one RGBA panel, in place.
+ *
+ * Returns what it did, so the slicer can print it: every failure of this pass looks
+ * identical from the outside — a panel that comes back still tinted — and the cause has
+ * been different every time.
+ */
+export function removeDiagramOverlay(data, width, height, options = {}) {
+  const report = [];
+  const page = pageMask(data, width, height, options.pageFloor ?? 178);
+
+  // Outlines first. They replaced the drawing rather than tinting it, so there is
+  // nothing to recover — and taking them out before measuring keeps a saturated line
+  // from dragging the wash estimate with it.
+  const outlines = new Uint8Array(width * height);
+  for (const family of OUTLINE_FAMILIES) {
+    const tinted = new Uint8Array(width * height);
+    for (let index = 0; index < width * height; index += 1) {
+      const offset = index * 4;
+      if (inFamily(family, data[offset], data[offset + 1], data[offset + 2])) {
+        tinted[index] = 1;
+      }
+    }
+    const lines = straightRunsOnly(tinted, width, height);
+    for (let index = 0; index < lines.length; index += 1) {
+      if (lines[index] === 1) outlines[index] = 1;
+    }
+  }
+  // Grown by one so an antialiased shoulder goes with its line; a leftover halo reads
+  // as a coloured line just as clearly as the line did.
+  const healed = healOutlines(data, width, height, grow(outlines, width, height, 1));
+  report.push(`outlines: ${String(healed)}px repainted`);
+
+  for (const family of FAMILIES) {
+    const wash = measureWash(data, width, height, page, family);
+    if (wash === null) {
+      report.push(`${family.name}: no page seen through a box, left alone`);
+      continue;
+    }
+    const touched = unwash(data, width, height, family, wash);
+    report.push(
+      `${family.name}: ${String(touched)}px unwashed `
+      + `(${wash.perChroma.toFixed(2)} value per unit chroma)`,
+    );
+  }
+  return report;
 }

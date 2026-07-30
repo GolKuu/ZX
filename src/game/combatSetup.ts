@@ -5,8 +5,6 @@ import {
   type CharacterId,
 } from '@/src/data/characterRoster';
 import { KADE_HURTBOXES, KADE_MOVES } from '@/src/data/combat-moves';
-import { IDOL_AI_LOADOUT } from '@/src/data/idol-ai';
-import { IDOL_MOVES } from '@/src/data/idol-combat-moves';
 import { ECHO_AI_LOADOUT } from '@/src/data/echo-ai';
 import { ECHO_MOVES } from '@/src/data/echo-combat-moves';
 import { ECHO_SUPER_MOVES } from '@/src/data/echo-super-moves';
@@ -36,7 +34,6 @@ export const ALL_COMBAT_MOVES = [
   ...KADE_MOVES,
   ...MIM_MOVES,
   ...MIM_SUPER_MOVES,
-  ...IDOL_MOVES,
   ...ECHO_MOVES,
   ...ECHO_SUPER_MOVES,
   ...CHRONO_MOVES,
@@ -69,7 +66,7 @@ export function createCombatAi(characterId: CharacterId = 'mim'): CombatAiAgent 
         ? CHRONO_AI_LOADOUT
         : characterId === 'glitch'
           ? GLITCH_AI_LOADOUT
-          : characterId === 'idol' ? IDOL_AI_LOADOUT : KADE_AI_LOADOUT,
+          : KADE_AI_LOADOUT,
     seed: 29,
   });
 }

@@ -46,16 +46,6 @@ const ECHO: CharacterPalette = {
   body: zone('#f4f8fb', '#6fa9c2', 1.1, 0.72),
 };
 
-const IDOL: CharacterPalette = {
-  hair: zone('#f04f91', '#9d3e8d', 1, 0.76),
-  skin: zone('#efc3aa', '#a76686', 0.62, 0.7),
-  coat: zone('#f04f91', '#a73d86'),
-  trousers: zone('#fff8f1', '#c48ab1', 0.72, 0.76),
-  boot: zone('#fffaf3', '#b77ca8', 1, 0.72),
-  eye: zone('#fff8d7', '#d6a237', 0, 0),
-  body: zone('#f04f91', '#a73d86'),
-};
-
 const GLITCH: CharacterPalette = {
   hair: zone('#080a0f', '#511052', 1.15, 0.82),
   skin: zone('#10131a', '#7d176b', 0.9, 0.78),
@@ -79,7 +69,6 @@ const CHRONO: CharacterPalette = {
 const PALETTES: Record<CharacterId, CharacterPalette> = {
   mim: MIM,
   echo: ECHO,
-  idol: IDOL,
   glitch: GLITCH,
   chrono: CHRONO,
 };

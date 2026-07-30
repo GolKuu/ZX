@@ -10,7 +10,6 @@ import {
   CHRONO_COMMANDS,
   ECHO_COMMANDS,
   GLITCH_COMMANDS,
-  IDOL_COMMANDS,
   KeyboardInputSource,
   MIM_COMMANDS,
   PLAYER_TWO_BINDINGS,
@@ -90,6 +89,5 @@ function commandsFor(characterId: CharacterId) {
   if (characterId === 'chrono') return CHRONO_COMMANDS;
   if (characterId === 'echo') return ECHO_COMMANDS;
   if (characterId === 'glitch') return GLITCH_COMMANDS;
-  if (characterId === 'idol') return IDOL_COMMANDS;
   return MIM_COMMANDS;
 }

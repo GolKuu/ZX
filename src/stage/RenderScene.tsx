@@ -14,7 +14,6 @@ import { EchoFighter } from './EchoFighter';
 import { FrameProfiler } from './FrameProfiler';
 import { GlitchFighter } from './GlitchFighter';
 import { HitBlood } from './HitBlood';
-import { IdolFighter } from './IdolFighter';
 import { LazyPostEffects } from './LazyPostEffects';
 import { MimFighter } from './MimFighter';
 import { RenderDebugBridge } from './RenderDebugBridge';
@@ -88,7 +87,6 @@ function SelectedFighter({
  * `node scripts/slice-characters.mjs <name>-profile` — and adding a row here.
  */
 const SPRITE_RIGS: Partial<Record<CharacterId, {
-  readonly contactEffects?: 'idol';
   readonly rig: string;
   /** Sliced clean attack panels, shown at the strike impact frame. */
   readonly attacks?: string;
@@ -96,10 +94,6 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
   chrono: { rig: 'chrono-profile', attacks: 'chrono-attacks' },
   echo: { rig: 'echo-profile', attacks: 'echo-attacks' },
   glitch: { rig: 'glitch-profile', attacks: 'glitch-attacks' },
-  // IDOL keeps the jointed rig on contact because her diagram panels have debug
-  // volumes painted over missing body pixels. The shared stepped timeline still
-  // gives her four anticipation poses, a clean held contact, and four returns.
-  idol: { contactEffects: 'idol', rig: 'idol-profile' },
 };
 
 function primitiveFighter(
@@ -123,9 +117,6 @@ function primitiveFighter(
   }
   if (characterId === 'echo') {
     return <EchoFighter auraColor={auraColor} fighterId={fighterId} />;
-  }
-  if (characterId === 'idol') {
-    return <IdolFighter auraColor={auraColor} fighterId={fighterId} />;
   }
   if (characterId === 'glitch') {
     return <GlitchFighter fighterId={fighterId} />;

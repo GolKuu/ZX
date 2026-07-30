@@ -1,5 +1,4 @@
 import { KADE_MOVES } from '@/src/data/combat-moves';
-import { IDOL_MOVES } from '@/src/data/idol-combat-moves';
 import { ECHO_MOVES } from '@/src/data/echo-combat-moves';
 import { ECHO_SUPER_MOVES } from '@/src/data/echo-super-moves';
 import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
@@ -22,7 +21,6 @@ const MOVES_BY_ID = new Map(
     ...MIM_MOVES,
     ...MIM_SUPER_MOVES,
     ...TAUNT_MOVES,
-    ...IDOL_MOVES,
     ...ECHO_MOVES,
     ...ECHO_SUPER_MOVES,
     ...CHRONO_MOVES,
