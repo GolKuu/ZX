@@ -5,7 +5,7 @@
     "top": 190,
     "width": 380,
     "height": 430,
-    "figureHeight": 406
+    "figureHeight": 414
   },
   "textureScale": 2,
   "facesRight": true,
@@ -39,11 +39,11 @@
       ]
     },
     "torso": {
-      "width": 148,
-      "height": 160,
+      "width": 144,
+      "height": 156,
       "pivot": [
-        0.4932,
-        0.925
+        0.4931,
+        0.9359
       ],
       "joint": [
         210,
@@ -52,10 +52,10 @@
     },
     "leftArm": {
       "width": 106,
-      "height": 110,
+      "height": 113,
       "pivot": [
         0.4434,
-        0.1727
+        0.1681
       ],
       "joint": [
         151,
@@ -63,11 +63,11 @@
       ]
     },
     "rightArm": {
-      "width": 90,
-      "height": 108,
+      "width": 91,
+      "height": 112,
       "pivot": [
-        0.2556,
-        0.2037
+        0.2527,
+        0.2232
       ],
       "joint": [
         274,
@@ -75,10 +75,10 @@
       ]
     },
     "leftLeg": {
-      "width": 139,
+      "width": 164,
       "height": 155,
       "pivot": [
-        0.7698,
+        0.8049,
         0.0774
       ],
       "joint": [
@@ -87,10 +87,10 @@
       ]
     },
     "rightLeg": {
-      "width": 144,
+      "width": 145,
       "height": 161,
       "pivot": [
-        0.2014,
+        0.2,
         0.0745
       ],
       "joint": [
