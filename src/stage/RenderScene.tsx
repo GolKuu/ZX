@@ -4,7 +4,6 @@ import type {
   CharacterId,
   CharacterSelection,
 } from '@/src/data/characterRoster';
-import { GLITCH_ANIMATION_SPEED } from '@/src/data/glitch-combat-moves';
 import { modelUrlFor } from '@/src/data/characterModels';
 import { Arena } from './Arena';
 import { LazyModelFighter } from './LazyModelFighter';
@@ -89,7 +88,6 @@ function SelectedFighter({
  * `node scripts/slice-characters.mjs <name>-profile` — and adding a row here.
  */
 const SPRITE_RIGS: Partial<Record<CharacterId, {
-  readonly animationSpeed?: number;
   readonly contactEffects?: 'idol';
   readonly rig: string;
   /** Sliced clean attack panels, shown at the strike impact frame. */
@@ -97,11 +95,7 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
 }>> = {
   chrono: { rig: 'chrono-profile', attacks: 'chrono-attacks' },
   echo: { rig: 'echo-profile', attacks: 'echo-attacks' },
-  glitch: {
-    animationSpeed: GLITCH_ANIMATION_SPEED,
-    rig: 'glitch-profile',
-    attacks: 'glitch-attacks',
-  },
+  glitch: { rig: 'glitch-profile', attacks: 'glitch-attacks' },
   // IDOL keeps the jointed rig on contact because her diagram panels have debug
   // volumes painted over missing body pixels. The shared stepped timeline still
   // gives her four anticipation poses, a clean held contact, and four returns.
@@ -117,7 +111,6 @@ function primitiveFighter(
   if (sprite !== undefined) {
     return (
       <Sprite2DFighter
-        animationSpeed={sprite.animationSpeed}
         attackPoseName={sprite.attacks}
         contactEffects={sprite.contactEffects}
         fighterId={fighterId}

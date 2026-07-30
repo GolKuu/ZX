@@ -71,14 +71,11 @@ const LEGS_BELOW = 0.95;
 const HEAD_ABOVE = 1.82;
 
 export function Sprite2DFighter({
-  animationSpeed = 1,
   attackPoseName,
   contactEffects,
   fighterId,
   rigName,
 }: {
-  /** Multiplier for render-only idle and locomotion animation. */
-  readonly animationSpeed?: number;
   /** Sliced attack panels, when the sheet draws them in costume colour. */
   readonly attackPoseName?: string;
   readonly contactEffects?: 'idol';
@@ -233,7 +230,7 @@ export function Sprite2DFighter({
 
     const pose = spritePoseFor(
       presentation,
-      clock.elapsedTime * animationSpeed,
+      clock.elapsedTime,
       progress,
       hurtZoneOf(fighterId, fighter.position.y / FIXED_SCALE),
       contactEffects === 'idol' ? 'contact' : 'windup',

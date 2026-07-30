@@ -64,8 +64,8 @@ test('every GLITCH move has active combat data', () => {
   }
 });
 
-test('GLITCH combat phases use the slower animation cadence', () => {
-  assert.equal(GLITCH_ANIMATION_SPEED, 0.8);
+test('GLITCH combat phases use MIM animation cadence', () => {
+  assert.equal(GLITCH_ANIMATION_SPEED, 1);
   assert.deepEqual(
     GLITCH_MOVES.map(({ id, startup, active, recovery }) => ({
       id,
@@ -74,27 +74,27 @@ test('GLITCH combat phases use the slower animation cadence', () => {
       recovery,
     })),
     [
-      { id: GLITCH_MOVE_IDS.lp, startup: 5, active: 3, recovery: 13 },
-      { id: GLITCH_MOVE_IDS.hp, startup: 19, active: 7, recovery: 38 },
-      { id: GLITCH_MOVE_IDS.lk, startup: 9, active: 4, recovery: 22 },
-      { id: GLITCH_MOVE_IDS.hk, startup: 18, active: 7, recovery: 35 },
+      { id: GLITCH_MOVE_IDS.lp, startup: 4, active: 2, recovery: 10 },
+      { id: GLITCH_MOVE_IDS.hp, startup: 15, active: 5, recovery: 30 },
+      { id: GLITCH_MOVE_IDS.lk, startup: 7, active: 3, recovery: 17 },
+      { id: GLITCH_MOVE_IDS.hk, startup: 14, active: 5, recovery: 28 },
       {
         id: GLITCH_MOVE_IDS.packetLoss,
-        startup: 23,
-        active: 10,
-        recovery: 33,
+        startup: 18,
+        active: 8,
+        recovery: 26,
       },
       {
         id: GLITCH_MOVE_IDS.corruptedZone,
-        startup: 29,
-        active: 13,
-        recovery: 39,
+        startup: 23,
+        active: 10,
+        recovery: 31,
       },
       {
         id: GLITCH_MOVE_IDS.desyncJump,
-        startup: 14,
-        active: 5,
-        recovery: 30,
+        startup: 11,
+        active: 4,
+        recovery: 24,
       },
     ],
   );

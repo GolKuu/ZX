@@ -242,11 +242,11 @@ export const PART_RECTS = {
         [54, 230], [62, 222], [65, 200],
       ],
     },
-    // Shorts hem down; the skirt above covers the hip socket at any stride.
-    thigh: { box: [42, 288, 46, 68], joint: [66, 292] },
-    // Sock plus the boot's laced shaft: one rigid piece, as the boot is.
-    shin: { box: [50, 350, 48, 108], joint: [66, 354] },
-    boot: { box: [26, 448, 72, 32], joint: [64, 452] },
+    // One uninterrupted hip-to-sole drawing. IDOL's slim profile leg exposed
+    // every paper-doll knee seam, so bending separate thigh/shin/boot pieces
+    // could never preserve the source silhouette. It now turns as one limb,
+    // exactly like MIM's authored profile legs.
+    leg: { box: [26, 288, 72, 192], joint: [66, 292] },
   },
 
   // ECHO. `sash` is the coat tail, `ponytail` the shoulder ring — the two

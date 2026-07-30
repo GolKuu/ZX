@@ -24,6 +24,15 @@ test('MIM is slightly shorter than the average sprite fighter', async () => {
   );
 });
 
+test('IDOL uses one uninterrupted hip-to-sole leg', async () => {
+  const idol = await loadManifest('idol-profile');
+
+  assert.ok(idol.parts.leg, 'IDOL needs the whole-leg sprite');
+  assert.equal(idol.parts.thigh, undefined);
+  assert.equal(idol.parts.shin, undefined);
+  assert.equal(idol.parts.boot, undefined);
+});
+
 test('GLITCH combat stance and upright attack match the sprite roster scale', async () => {
   const glitch = await loadManifest('glitch-profile');
   const attacks = JSON.parse(

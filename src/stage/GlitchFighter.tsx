@@ -7,7 +7,6 @@ import {
   combatRenderFrame,
   readCombatFighter,
 } from '@/src/game/combatRuntime';
-import { GLITCH_ANIMATION_SPEED } from '@/src/data/glitch-combat-moves';
 import { createCelGradient } from '@/src/render/celGradient';
 import {
   createOutlineMaterial,
@@ -71,7 +70,7 @@ export function GlitchFighter({
     const outerGroup = outer.current;
     if (currentRig === null || fighter === null || outerGroup === null) return;
 
-    const time = clock.elapsedTime * GLITCH_ANIMATION_SPEED;
+    const time = clock.elapsedTime;
     resetFighterRig(currentRig, 'compact', time);
     const alpha = combatRenderFrame.interpolationAlpha;
     outerGroup.position.x = (

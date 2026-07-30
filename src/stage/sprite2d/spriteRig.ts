@@ -28,6 +28,7 @@ export const SPRITE_PARTS = [
   'sash',
   'upperArm',
   'forearm',
+  'leg',
   'thigh',
   'shin',
   'boot',

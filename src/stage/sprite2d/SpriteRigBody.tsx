@@ -2,6 +2,7 @@
 
 import { Group } from 'three';
 import { SpritePart } from './SpritePart';
+import { SpriteRigLeg } from './SpriteRigLeg';
 import type { SpritePose } from './spritePose';
 import type {
   LoadedSpriteRig,
@@ -42,24 +43,12 @@ export function SpriteRigBody({
   const scale = rig.pixelScale;
   return (
     <>
-      <group
-        position={at(rig, 'thigh', null, LAYER.farLeg)}
-        ref={(node) => { setJoint('farThigh', node); }}
-      >
-        <SpritePart part={rig.thigh} pixelScale={scale} tint={FAR_TINT} />
-        <group
-          position={at(rig, 'shin', 'thigh')}
-          ref={(node) => { setJoint('farShin', node); }}
-        >
-          <SpritePart part={rig.shin} pixelScale={scale} tint={FAR_TINT} />
-          <group
-            position={at(rig, 'boot', 'shin')}
-            ref={(node) => { setJoint('farBoot', node); }}
-          >
-            <SpritePart part={rig.boot} pixelScale={scale} tint={FAR_TINT} />
-          </group>
-        </group>
-      </group>
+      <SpriteRigLeg
+        far
+        rig={rig}
+        rootPosition={at(rig, rig.leg === undefined ? 'thigh' : 'leg', null, LAYER.farLeg)}
+        setJoint={setJoint}
+      />
 
       <group position={at(rig, 'hips', null, LAYER.hips)}>
         <SpritePart part={rig.hips} pixelScale={scale} />
@@ -106,24 +95,11 @@ export function SpriteRigBody({
         />
       </group>
 
-      <group
-        position={at(rig, 'thigh', null, LAYER.nearLeg)}
-        ref={(node) => { setJoint('thigh', node); }}
-      >
-        <SpritePart part={rig.thigh} pixelScale={scale} />
-        <group
-          position={at(rig, 'shin', 'thigh')}
-          ref={(node) => { setJoint('shin', node); }}
-        >
-          <SpritePart part={rig.shin} pixelScale={scale} />
-          <group
-            position={at(rig, 'boot', 'shin')}
-            ref={(node) => { setJoint('boot', node); }}
-          >
-            <SpritePart part={rig.boot} pixelScale={scale} />
-          </group>
-        </group>
-      </group>
+      <SpriteRigLeg
+        rig={rig}
+        rootPosition={at(rig, rig.leg === undefined ? 'thigh' : 'leg', null, LAYER.nearLeg)}
+        setJoint={setJoint}
+      />
     </>
   );
 }
