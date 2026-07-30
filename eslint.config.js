@@ -10,6 +10,7 @@ export default tseslint.config(
       '.next/**',
       '.next-corrupt-*/**',
       'dist/**',
+      'tmp/**',
       '.tools/**',
       'node_modules/**',
       'next-env.d.ts',

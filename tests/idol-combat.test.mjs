@@ -11,6 +11,10 @@ import {
   IDOL_MOVE_IDS,
   IDOL_NORMAL_MOVES,
 } from '../.sim-test-build/src/data/idol-combat-moves.js';
+import {
+  CombatEngine,
+  fixed,
+} from '../.sim-test-build/src/sim/index.js';
 
 const buttons = ['lp', 'hp', 'lk', 'hk'];
 
@@ -82,3 +86,41 @@ test('Million Followers and Cancel apply a sequence of damaging comments', () =>
       > million.hitboxes.reduce((sum, hitbox) => sum + hitbox.hit.damage, 0),
   );
 });
+
+test('every concert clap and comment wave connects as a separate hit', () => {
+  for (const moveId of [IDOL_MOVE_IDS.million, IDOL_MOVE_IDS.cancel]) {
+    const move = IDOL_MOVES.find(({ id }) => id === moveId);
+    const engine = new CombatEngine({
+      moves: [move],
+      fighters: [
+        fighter('p1', 1, -1.5, 1),
+        fighter('p2', 2, 1.5, -1),
+      ],
+      world: { leftWall: fixed(-4.8), rightWall: fixed(4.8) },
+    });
+    const events = [];
+    events.push(...engine.tick({ p1: { move: moveId } }).events);
+    for (let frame = 0; frame < 360; frame += 1) {
+      events.push(...engine.tick().events);
+    }
+    const hits = events.filter(
+      (event) => event.type === 'hit' && event.moveId === moveId,
+    );
+    assert.equal(hits.length, move.hitboxes.length);
+    assert.equal(new Set(hits.map(({ hitId }) => hitId)).size, hits.length);
+  }
+});
+
+function fighter(id, team, x, facing) {
+  return {
+    id,
+    team,
+    maxHealth: 1_000,
+    spawn: { x: fixed(x), y: 0 },
+    facing,
+    hurtboxes: [{
+      offset: { x: 0, y: fixed(0.95) },
+      halfSize: { x: fixed(0.42), y: fixed(0.95) },
+    }],
+  };
+}
