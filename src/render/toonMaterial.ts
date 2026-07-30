@@ -247,11 +247,16 @@ export function createToonMaterial(options: ToonMaterialOptions): ToonMaterial {
         `}
         `,
       )
+      // MUST come before `opaque_fragment`, which is where three writes
+      // `gl_FragColor` from `outgoingLight`. This block used to be appended
+      // after `dithering_fragment` — the final chunk — so it modified
+      // `outgoingLight` several steps after the pixel had already been written,
+      // tone-mapped and fogged. Both of the material's signature features, the
+      // coloured shade band and the axis-gated rim, were dead code and had
+      // never once reached the screen.
       .replace(
-        '#include <dithering_fragment>',
+        '#include <opaque_fragment>',
         /* glsl */ `
-        #include <dithering_fragment>
-
         vec3 toonNormal = normalize( vNormal );
         vec3 toonView   = normalize( vViewPosition );
 
@@ -283,6 +288,8 @@ export function createToonMaterial(options: ToonMaterialOptions): ToonMaterial {
         float rim  = smoothstep( ${RIM_INNER.toFixed(2)}, ${RIM_OUTER.toFixed(2)}, fres );
         float gate = pow( clamp( abs( dot( toonNormal, normalize( uRimAxis ) ) ), 0.0, 1.0 ), 1.6 );
         outgoingLight += uRimColor * rim * gate * uRimStrength;
+
+        #include <opaque_fragment>
         `,
       );
   };
@@ -292,7 +299,7 @@ export function createToonMaterial(options: ToonMaterialOptions): ToonMaterial {
   // differently for each, and three cannot see that, so a constant key let a
   // zoned character reuse the unzoned stage program.
   const variant = `${useZones ? 'z' : '-'}${useDetail ? 'd' : '-'}`;
-  material.customProgramCacheKey = () => `ccu-toon-v2-${variant}`;
+  material.customProgramCacheKey = () => `ccu-toon-v3-${variant}`;
 
   return material;
 }
