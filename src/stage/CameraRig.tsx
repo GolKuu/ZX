@@ -23,17 +23,22 @@ import { useRenderStore } from '@/src/store/renderStore';
  * every frame and only the camera transform is written.
  */
 
-/** Eye height. Low: looking down on fighters shortens them and reads as a toy. */
-const EYE_HEIGHT = 2.42;
-/** Aim point — chest, not feet, so the head never rides the top of the frame. */
-const LOOK_HEIGHT = 1.44;
+/**
+ * Eye height — and the aim height, deliberately identical.
+ *
+ * The stage is built from flat planes standing at z ≈ 0. Any vertical tilt
+ * projects those planes as trapezoids and instantly gives away that the 2D
+ * backdrop is a sheet of geometry; a level camera keeps every layer rectangular,
+ * which is what makes a plane-built stage read as drawn art. Chest height, so
+ * neither the floor line nor the headroom dominates.
+ */
+const EYE_HEIGHT = 1.5;
 
-const NEAR_DISTANCE = 7.1;
-const FAR_DISTANCE = 11.6;
+/** Framing: a 2.62 m fighter should fill a little over half the frame. */
+const NEAR_DISTANCE = 6.2;
+const FAR_DISTANCE = 10.4;
 /** Metres of dolly per metre of separation. */
 const DISTANCE_PER_GAP = 0.66;
-/** Extra lift when they are far apart, so the floor gap does not dominate. */
-const FAR_LIFT = 0.5;
 
 /**
  * How far the camera may pan off centre.
@@ -107,16 +112,21 @@ export function CameraRig() {
 
     const pan = panRef.current;
     const distance = distanceRef.current;
-    const openness = (distance - NEAR_DISTANCE) / (FAR_DISTANCE - NEAR_DISTANCE);
 
+    // Sway and shake move the eye, never the aim height: the moment the camera
+    // tilts, the flat stage layers keystone.
     activeCamera.position.x = pan
       + Math.sin(time * 0.24) * 0.06
       + Math.sin(time * 67) * 0.055 * shake;
     activeCamera.position.y = EYE_HEIGHT
-      + openness * FAR_LIFT
       + Math.sin(time * 51) * 0.035 * shake;
     activeCamera.position.z = distance + Math.sin(time * 59) * 0.06 * shake;
-    activeCamera.lookAt(pan, LOOK_HEIGHT + openness * 0.16, 0);
+    activeCamera.lookAt(
+      activeCamera.position.x,
+      activeCamera.position.y,
+      0,
+    );
+    void LOOK_HEIGHT;
   });
 
   return null;

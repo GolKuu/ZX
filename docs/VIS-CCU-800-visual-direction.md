@@ -44,7 +44,7 @@ What Strive actually spends is **authoring time**, in four places, all of which 
 | Property | Value |
 |---|---|
 | Height | 1.90 m |
-| Head units | **7.3** — every dimension in `zoroResources.ts` is a multiple of `HEAD = 0.13` |
+| Head units | **7.3** — shared dimensions in `fighterResources.ts` use `HEAD = 0.125` |
 | Eyes | Oversized and forward on the face: iris 2.3× realistic, catchlight always present |
 | Hands | Full mass, ~0.47 head-radius. Hands sell fighting poses more than faces do |
 | Silhouette order | head → shoulders → hips → weapon extension |
@@ -73,18 +73,17 @@ Per fighter, per frame:
 
 ### 2.1 Material zones — implemented
 
-`zoroMaterials.ts` ships eight toon zones and five unlit face materials. Each toon zone carries its own shade hue:
+Each active fighter owns a material module under `src/stage/`. Toon zones carry
+their own shade hue; faces and effect accents stay unlit where readability
+requires a stable colour.
 
 | Zone | Base | Shade hue |
 |---|---|---|
 | skin | `#d79c71` | `#9c5a70` plum |
-| robe | `#1f5d43` | `#17497a` blue |
-| sash | `#8f2850` | `#5a1d63` violet |
-| trousers | `#18231d` | `#1b3352` blue |
-| hair | `#54d98b` | `#1d6b57` |
-| blade | `#d9f5ee` | `#4a7f9e` cold |
-| gold | `#c7a85b` | `#6b4a17` |
-| handle | `#241d2c` | `#2a1f4a` |
+| cloth | character base | cooler or warmer character shade |
+| trousers | dark base | saturated blue or violet |
+| hair | character accent | shifted accent hue |
+| effect | signature colour | unlit or additive |
 
 Skin runs reduced shade strength (0.62) and reduced rim (0.7) so the face never blows out.
 
@@ -221,7 +220,7 @@ gate = pow(saturate(abs(dot(N, R))), 1.6)
 rim  = rimBase * gate * CTRL.a * strength * rimColor
 ```
 
-`updateRimAxis()` runs per frame in `ZoroFighter.tsx`, transforming `R` into view space.
+`updateRimAxis()` runs per frame in the fighter renderers, transforming `R` into view space.
 
 ### 5.2 Policy
 
@@ -263,7 +262,7 @@ Hair is the second-strongest style signal after eyes.
 | Motion | Spring bones on the spikes only. **Visual only — never feeds the simulation** |
 | Shade hue | Cooler and more saturated than the base, never grey |
 
-Shipping: mass + 5 spikes, correct layer order, in `ZoroParts.tsx`.
+Shipping fighters keep hair as one readable mass with a small number of accent shapes.
 
 ---
 
@@ -298,7 +297,7 @@ For characters whose weapon is conceptual rather than physical, the trail *is* t
 
 ## 10. Eye Shader System
 
-The strongest single style signal. Implemented in `ZoroParts.tsx` and `zoroMaterials.ts`.
+The strongest single style signal. Implemented inside each active fighter body and material module.
 
 ### 10.1 Construction — six layers
 
