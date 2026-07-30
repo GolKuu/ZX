@@ -23,7 +23,7 @@ interface FrameAnalysis {
   readonly time: number;
   readonly imageUrl: string;
   readonly overall: number;
-  readonly categories: Readonly<Record<string, number>>;
+  readonly categories: Readonly<Record<Category, number>>;
   readonly findings: readonly string[];
   readonly strengths: readonly string[];
 }
@@ -356,6 +356,7 @@ function evaluateFrame(
     edgeDensity,
     dominantShare,
     motionDelta,
+    zFightScore,
   } = analyzePixels(frame.pixels, width, height, previous);
 
   const spread = (lumaMax - lumaMin) / 255;
@@ -372,6 +373,7 @@ function evaluateFrame(
   const readabilityScore = clamp(
     Math.round((contrastScore * 0.58) + (lightingScore(shadowToLuma(spread)) * 0.42)),
   );
+  const zFightScore = clamp(Math.round((dominancePenalty * 0.82) + (aliasingScore * 0.18)));
 
   const character = clamp(
     Math.round(
@@ -417,7 +419,7 @@ function evaluateFrame(
       + (phase === 'super' ? 22 : 8),
     ),
   );
-      const ui = clamp(
+  const ui = clamp(
     Math.round(
       (100 - clamp(Math.round(dominantShare * 150)))
       + (phase === 'victory' ? 16 : 0),
@@ -438,17 +440,6 @@ function evaluateFrame(
   const spectacle = clamp(
     Math.round((vfx + animation + lighting + edgeScore) / 4),
   );
-  const baseOverall = clamp(
-    Math.round((character + animation + arena + lighting + shader + vfx + ui + presentation + spectacle) / 9),
-  );
-  const target = PHASE_TARGETS[phase];
-  const targetMissPenalty = Object.entries(target)
-    .reduce((sum, [category, required]) => {
-      const current = categories[category as Category];
-      return sum + Math.max(0, required - current);
-    }, 0);
-  const overall = clamp(baseOverall - Math.round(targetMissPenalty * 0.35));
-
   const categories: Record<Category, number> = {
     character,
     animation,
@@ -460,6 +451,19 @@ function evaluateFrame(
     presentation,
     spectacle,
   };
+
+  const baseOverall = clamp(
+    Math.round(
+      (character + animation + arena + lighting + shader + vfx + ui + presentation + spectacle) / 9,
+    ),
+  );
+  const target = PHASE_TARGETS[phase];
+  const targetMissPenalty = Object.entries(target)
+    .reduce((sum, [category, required]) => {
+      const current = categories[category as Category];
+      return sum + Math.max(0, required - current);
+    }, 0);
+  const overall = clamp(baseOverall - Math.round(targetMissPenalty * 0.35));
 
   const findings = buildFindings(
     { character, animation, arena, lighting, shader, vfx, ui, presentation, spectacle },
@@ -473,6 +477,7 @@ function evaluateFrame(
       bandingScore,
       aliasingScore,
       readabilityScore,
+      zFightScore,
       phase,
     },
   );
@@ -502,6 +507,7 @@ function analyzePixels(
   let edgeCount = 0;
   let motionTotal = 0;
   let motionSamples = 0;
+  let zFightSamples = 0;
 
   const stride = 4;
   const pixels = width * height;
@@ -586,11 +592,19 @@ function analyzePixels(
       const lumaDown = 0.299 * data[down] + 0.587 * data[down + 1] + 0.114 * data[down + 2];
       const local = Math.abs(lumCenter - lumaLeft) + Math.abs(lumCenter - lumaRight) + Math.abs(lumCenter - lumaUp)
         + Math.abs(lumCenter - lumaDown);
+      const gx = (lumaRight - lumCenter) * (lumCenter - lumaLeft);
+      const gy = (lumaDown - lumCenter) * (lumCenter - lumaUp);
+      if (gx < -220 && gy < -220) {
+        zFightSamples += 1;
+      }
       if (local > 78) edgeCount += 1;
     }
   }
   const edgeDensity = edgeCount / Math.max(1, width * height);
   const motionDelta = motionSamples === 0 ? 0 : motionTotal / (motionSamples * 3);
+  const zFightScore = clamp(
+    Math.round((zFightSamples / Math.max(1, (width - 2) * (height - 2))) * 220),
+  );
 
   return {
     lumaMin,
@@ -603,6 +617,7 @@ function analyzePixels(
     dominantShare,
     edgeDensity,
     motionDelta,
+    zFightScore,
   };
 }
 
@@ -614,6 +629,19 @@ function saturation(red: number, green: number, blue: number) {
 
 function clamp(value: number, max = 100) {
   return Math.max(0, Math.min(max, value));
+}
+
+function clamp01(value: number, min = 0, max = 1): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+function shadowToLuma(spread: number): number {
+  return clamp01(spread * 1.18, 0.07, 1);
+}
+
+function lightingScore(shadowBalance: number): number {
+  const centered = 1 - Math.abs(shadowBalance - 0.62);
+  return clamp(Math.round(52 + centered * 58));
 }
 
 function phaseWeight(phase: CapturePhase) {
@@ -631,6 +659,10 @@ function buildFindings(
     motionScore: number;
     entropyScore: number;
     dominancePenalty: number;
+    bandingScore: number;
+    aliasingScore: number;
+    readabilityScore: number;
+    zFightScore: number;
     phase: CapturePhase;
   },
 ) {
@@ -648,6 +680,26 @@ function buildFindings(
   if (categories.shader < 55 || categories.vfx < 52) {
     findings.push(
       'Shader pass looks procedural and synthetic; break the flat ramps with hue-shifted contour bands and non-linear response (like Strive/Naruto Storm energy layering), not a pure multiply.',
+    );
+  }
+  if (metrics.aliasingScore > 38) {
+    findings.push(
+      'Aliasing/temporal shimmer is visible on thin edges; add jitter-resistant post-composite sampling and soften razor-thin geometry silhouettes.',
+    );
+  }
+  if (metrics.bandingScore > 36) {
+    findings.push(
+      'Banding visible in skies/ground transitions; inject low-amplitude dithering and avoid hard posterized ramps at distant depths.',
+    );
+  }
+  if (metrics.zFightScore > 52) {
+    findings.push(
+      'Likely z-fighting pattern detected; separate coplanar planes, add per-layer depth bias, and push decals to a safer offset.',
+    );
+  }
+  if (metrics.readabilityScore < 52) {
+    findings.push(
+      'Readability for characters/impact and HUD layers is weak; increase local contrast around read windows and silhouette edges.',
     );
   }
   if (categories.animation < 54 && (metrics.phase === 'combo' || metrics.phase === 'super')) {
