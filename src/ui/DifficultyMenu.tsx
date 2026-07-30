@@ -43,7 +43,7 @@ export function DifficultyMenu() {
   const setMenuFocus = useHudStore((state) => state.setMenuFocus);
   const openModeMenu = useHudStore((state) => state.openModeMenu);
   const selectAiDifficulty = useHudStore((state) => state.selectAiDifficulty);
-  const selected = AI_DIFFICULTIES[menuFocus] ?? AI_DIFFICULTIES[0];
+  const selected = AI_DIFFICULTIES[menuFocus] ?? AI_DIFFICULTIES[0]!;
   const selectedIndex = menuFocus + 1;
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 

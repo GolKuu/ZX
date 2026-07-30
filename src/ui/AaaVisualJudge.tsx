@@ -288,7 +288,7 @@ export function AaaVisualJudge() {
                         key={category}
                         title={`${category}: ${score}`}
                       >
-                        {category[0].toUpperCase()}
+                        {category.charAt(0).toUpperCase()}
                         <u>{score}</u>
                       </i>
                     ))}
@@ -602,11 +602,11 @@ function analyzePixels(
       const right = center + 4;
       const up = center - width * 4;
       const down = center + width * 4;
-      const lumCenter = 0.299 * data[center] + 0.587 * data[center + 1] + 0.114 * data[center + 2];
-      const lumaLeft = 0.299 * data[left] + 0.587 * data[left + 1] + 0.114 * data[left + 2];
-      const lumaRight = 0.299 * data[right] + 0.587 * data[right + 1] + 0.114 * data[right + 2];
-      const lumaUp = 0.299 * data[up] + 0.587 * data[up + 1] + 0.114 * data[up + 2];
-      const lumaDown = 0.299 * data[down] + 0.587 * data[down + 1] + 0.114 * data[down + 2];
+      const lumCenter = 0.299 * (data[center] ?? 0) + 0.587 * (data[center + 1] ?? 0) + 0.114 * (data[center + 2] ?? 0);
+      const lumaLeft = 0.299 * (data[left] ?? 0) + 0.587 * (data[left + 1] ?? 0) + 0.114 * (data[left + 2] ?? 0);
+      const lumaRight = 0.299 * (data[right] ?? 0) + 0.587 * (data[right + 1] ?? 0) + 0.114 * (data[right + 2] ?? 0);
+      const lumaUp = 0.299 * (data[up] ?? 0) + 0.587 * (data[up + 1] ?? 0) + 0.114 * (data[up + 2] ?? 0);
+      const lumaDown = 0.299 * (data[down] ?? 0) + 0.587 * (data[down + 1] ?? 0) + 0.114 * (data[down + 2] ?? 0);
       const local = Math.abs(lumCenter - lumaLeft) + Math.abs(lumCenter - lumaRight) + Math.abs(lumCenter - lumaUp)
         + Math.abs(lumCenter - lumaDown);
       const gx = (lumaRight - lumCenter) * (lumCenter - lumaLeft);

@@ -246,7 +246,6 @@ export function Sprite2DFighter({
           fighter,
           progress,
           true,
-          drawnFacing,
         );
       } else if (rigName === 'echo-profile') {
         applyEchoSpriteMotion(
@@ -256,6 +255,7 @@ export function Sprite2DFighter({
           fighter,
           progress,
           true,
+          drawnFacing,
         );
       }
       return;

@@ -459,7 +459,7 @@ export function ImpactPulse() {
         GROUND_Z + pulse.depth * (0.35 + drift),
       );
       pulse.mesh.rotation.z += delta * pulse.spinRate;
-      pulse.mesh.material.opacity = alpha;
+      pulse.material.opacity = alpha;
       pulse.mesh.visible = alpha > 0.004;
     }
   });
@@ -581,7 +581,7 @@ function emitBurst(
   ring.mesh.position.set(x, ring.baseY + ring.rise, GROUND_Z + ring.depth);
   ring.mesh.rotation.z = Math.random() * Math.PI * 2;
   ring.mesh.visible = true;
-  ring.mesh.material.opacity = 0;
+  ring.material.opacity = 0;
 }
 
 function createPool(

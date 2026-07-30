@@ -2,6 +2,7 @@
 
 import { useFrame, useThree } from '@react-three/fiber';
 import { useRef } from 'react';
+import type { PerspectiveCamera } from 'three';
 import {
   readCombatFighter,
   readLatestHit,
@@ -75,7 +76,7 @@ function approach(current: number, target: number, rate: number, delta: number) 
 
 export function CameraRig() {
   const camera = useThree((state) => state.camera);
-  const cameraRef = useRef(camera);
+  const cameraRef = useRef(camera as PerspectiveCamera);
   const shakeRef = useRef(0);
   const fovTargetRef = useRef(BASE_FOV);
   const impactVersionRef = useRef(useRenderStore.getState().impactVersion);
