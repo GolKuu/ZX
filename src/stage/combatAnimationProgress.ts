@@ -48,6 +48,37 @@ export function combatAnimationProgress(
   return ACTIVE_END + (1 - ACTIVE_END) * smooth(recoveryProgress);
 }
 
+/**
+ * IDOL's paper-doll attacks deliberately use a small hand-authored-looking
+ * frame set: four anticipation drawings, one held impact drawing, then four
+ * recovery drawings before neutral. Simulation timing stays unchanged; long
+ * moves simply hold each drawing for more than one 60 Hz tick.
+ */
+export function idolSpriteAnimationProgress(
+  moveId: string,
+  frame: number,
+): number {
+  const move = MOVES_BY_ID.get(moveId);
+  if (move === undefined) return combatAnimationProgress(moveId, frame);
+
+  if (frame < move.startup) {
+    return WINDUP_END * steppedFrame(frame, move.startup) / 5;
+  }
+  if (frame < move.startup + move.active) {
+    return ACTIVE_END;
+  }
+
+  const recoveryFrame = frame - move.startup - move.active;
+  return ACTIVE_END
+    + (1 - ACTIVE_END) * steppedFrame(recoveryFrame, move.recovery) / 5;
+}
+
+/** Returns one of 1, 2, 3, 4 while deliberately excluding both endpoints. */
+function steppedFrame(frame: number, duration: number): number {
+  const safeDuration = Math.max(1, duration);
+  return Math.min(4, Math.floor((Math.max(0, frame) * 4) / safeDuration) + 1);
+}
+
 function clamp01(value: number): number {
   return Math.max(0, Math.min(1, value));
 }

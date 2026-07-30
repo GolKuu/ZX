@@ -11,7 +11,10 @@ import {
   readWorld,
 } from './engine-read.js';
 import type { CombatEvent, FighterDebugFrame } from './events.js';
-import { faceAirborneFightersTowardOpponents } from './facing.js';
+import {
+  faceAirborneFightersTowardOpponents,
+  faceAttackingFightersTowardOpponents,
+} from './facing.js';
 import { effectiveMoveFrames, type MoveFrameData } from './frame-data.js';
 import { integrateFighter } from './physics.js';
 import { resolveHit } from './resolve.js';
@@ -66,6 +69,7 @@ export class CombatEngine {
     const events: CombatEvent[] = [];
     const frozen = new Set<string>();
 
+    faceAttackingFightersTowardOpponents(this.fighters, inputs);
     for (const fighter of this.fighters) {
       fighter.previousPosition.x = fighter.position.x;
       fighter.previousPosition.y = fighter.position.y;

@@ -8,7 +8,10 @@ import {
   readCombatFighter,
 } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
-import { combatAnimationProgress } from '../combatAnimationProgress';
+import {
+  combatAnimationProgress,
+  idolSpriteAnimationProgress,
+} from '../combatAnimationProgress';
 import { AttackPoseSprite } from './AttackPoseSprite';
 import { SpritePart } from './SpritePart';
 import { spritePoseFor, type SpritePose } from './spritePose';
@@ -196,7 +199,12 @@ export function Sprite2DFighter({
 
     const progress = fighter.action === null
       ? 0
-      : combatAnimationProgress(fighter.action.moveId, fighter.action.frame);
+      : rigName === 'idol-profile'
+        ? idolSpriteAnimationProgress(
+          fighter.action.moveId,
+          fighter.action.frame,
+        )
+        : combatAnimationProgress(fighter.action.moveId, fighter.action.frame);
     // Which read is on screen: the drawn attack pose, or the jointed rig.
     const drawn = fighter.action !== null
       && poses !== null

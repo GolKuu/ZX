@@ -113,6 +113,28 @@ test('same-frame attacks trade instead of being canceled by resolution order', (
   assert.equal(readFighter(result.state, 'p2').health, 90);
 });
 
+test('a grounded attack turns toward the opponent and stops walking', () => {
+  const move = makeMove({ startup: 1, active: 1, recovery: 2 });
+  const engine = makeEngine(move, {
+    fighters: [
+      fighterDefinition('p1', 1, 1_200, 1),
+      fighterDefinition('p2', 2, 0, -1),
+    ],
+  });
+
+  const started = engine.tick({
+    p1: { movement: 1, move: 'strike' },
+  });
+  const attacker = readFighter(started.state, 'p1');
+  assert.equal(attacker.facing, -1);
+  assert.equal(attacker.position.x, 1_200);
+  assert.equal(attacker.velocity.x, 0);
+
+  const active = engine.tick({ p1: { movement: 1 } });
+  assert.equal(readFighter(active.state, 'p1').position.x, 1_200);
+  assert.equal(readFighter(active.state, 'p1').velocity.x, 0);
+});
+
 test('chip damage passes through a successful guard', () => {
   const move = makeMove({
     damage: 30,

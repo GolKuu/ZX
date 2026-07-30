@@ -86,10 +86,11 @@ function SelectedFighter({
  */
 const SPRITE_RIGS: Partial<Record<CharacterId, {
   readonly rig: string;
-  /** Sliced attack panels, where the sheet draws them in costume colour. */
-  readonly attacks?: string;
 }>> = {
-  idol: { rig: 'idol-profile', attacks: 'idol-attacks' },
+  // Attack diagrams are intentionally not mounted: their coloured hitbox
+  // rectangles are presentation notes, not character art. The articulated
+  // pieces below animate every LP / HP / LK / HK without those overlays.
+  idol: { rig: 'idol-profile' },
 };
 
 function primitiveFighter(

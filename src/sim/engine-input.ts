@@ -34,8 +34,13 @@ export function applyNeutralInput(
   fighter: MutableFighterState,
   input: FighterInput | undefined,
 ): void {
-  if (fighter.health === 0 || fighter.hitstun > 0 || fighter.action !== null) {
+  if (fighter.health === 0 || fighter.hitstun > 0) {
     fighter.guarding = false;
+    return;
+  }
+  if (fighter.action !== null) {
+    fighter.guarding = false;
+    if (fighter.grounded) fighter.velocity.x = 0;
     return;
   }
   fighter.guarding = input?.guard ?? false;
@@ -76,6 +81,7 @@ export function tryStartMove(
     serial: actionSerial,
     hitLedger: [],
   };
+  if (fighter.grounded) fighter.velocity.x = 0;
   return {
     type: 'moveStarted',
     frame,

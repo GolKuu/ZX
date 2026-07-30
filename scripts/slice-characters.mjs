@@ -8,7 +8,11 @@
 //      are the same value as the paper they are drawn on, so a global "light
 //      pixels are background" rule deletes half the costume. Filling from the
 //      edge instead stops at the character's own ink, so enclosed whites survive.
-//   2. Extract each part rectangle, trim its transparent margin, and record where
+//   2. **Carve the polygon-cut parts out of the drawing and fill the holes.** A
+//      limb drawn across the body cannot be separated by a rectangle; without
+//      this the sleeve ships inside the torso *and* as the arm, and the two copies
+//      rotate apart. See `sheet-mask.mjs`.
+//   3. Extract each part rectangle, trim its transparent margin, and record where
 //      the joint sits inside the trimmed image.
 //
 // Output: `public/sprites/<name>/<part>.png` plus a `rig.json` manifest the
@@ -21,6 +25,13 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
 import { keyBackground } from './sheet-key.mjs';
+import {
+  clearInside,
+  inpaint,
+  keepInside,
+  rasterisePolygon,
+  unionMasks,
+} from './sheet-mask.mjs';
 import { ATTACK_POSES, FRONT_VIEWS, PART_RECTS } from './sheet-parts.mjs';
 
 /** Fraction of the crop that turning transparent means the fill leaked. */
@@ -48,7 +59,25 @@ async function sliceCharacter(name) {
   }
   console.log(`${name}: background keyed (${(clearedFraction * 100).toFixed(0)}% cleared)`);
 
-  const keyed = await sharp(data, { raw: { channels: 4, width, height } })
+  // Rasterise every polygon once: each masked part reads its own, and their union
+  // is what gets subtracted from the rest of the drawing.
+  const masks = new Map();
+  for (const [part, spec] of Object.entries(parts)) {
+    if (spec.mask === undefined) continue;
+    masks.set(part, rasterisePolygon(spec.mask, width, height));
+  }
+  const carved = Buffer.from(data);
+  const carving = Object.entries(parts)
+    .filter(([part, spec]) => spec.carve === true && masks.has(part))
+    .map(([part]) => masks.get(part));
+  if (carving.length > 0) {
+    const holes = clearInside(carved, unionMasks(carving, width, height));
+    inpaint(carved, width, height, holes);
+    const emptied = holes.reduce((total, flag) => total + flag, 0);
+    console.log(`  carved ${String(carving.length)} part(s), refilled ${String(emptied)}px`);
+  }
+
+  const keyedCarved = await sharp(carved, { raw: { channels: 4, width, height } })
     .png()
     .toBuffer();
 
@@ -61,10 +90,25 @@ async function sliceCharacter(name) {
     // Which way the sliced drawing faces. Read by the runtime to decide when to
     // mirror; it differs per sheet.
     facesRight: view.facesRight === true,
+    // Body centre line and floor row, in crop pixels. The runtime hangs the rig
+    // off this, so the figure stands on the stage rather than on the crop's edge.
+    origin: view.origin ?? [Math.round(width / 2), height],
     parts: {},
   };
 
   for (const [part, spec] of Object.entries(parts)) {
+    // A masked part takes its pixels from the untouched drawing; everything else
+    // takes them from the drawing those masks were removed from.
+    let source = keyedCarved;
+    const mask = masks.get(part);
+    if (mask !== undefined) {
+      const cut = Buffer.from(data);
+      keepInside(cut, mask);
+      source = await sharp(cut, { raw: { channels: 4, width, height } })
+        .png()
+        .toBuffer();
+    }
+
     const [rawX, rawY, rawWidth, rawHeight] = spec.box;
     // Clamp rather than throw. A rectangle read a few pixels wide off the grid
     // used to abort the whole run with `extract_area: bad extract area`, which
@@ -80,11 +124,11 @@ async function sliceCharacter(name) {
         + `${String(height)} view; clamped.`,
       );
     }
-    const extracted = await sharp(keyed)
+    const extracted = await sharp(source)
       .extract({ left: x, top: y, width: boxWidth, height: boxHeight })
       .toBuffer();
 
-    // Trim the transparent margin so the quad is tight, then move the pivot into
+    // Trim the transparent margin so the quad is tight, then move the joint into
     // the trimmed image's own coordinates.
     const trimmed = await sharp(extracted).trim({ threshold: 1 }).toBuffer({
       resolveWithObject: true,
@@ -94,8 +138,11 @@ async function sliceCharacter(name) {
 
     await sharp(trimmed.data).png().toFile(join(directory, `${part}.png`));
 
-    const pivotX = spec.pivot[0] * boxWidth - offsetX;
-    const pivotY = spec.pivot[1] * boxHeight - offsetY;
+    // `pivot` is the joint as a fraction of this image, which is what the shader
+    // needs to offset the quad. It is free to fall outside 0…1: a shoulder can sit
+    // above the sleeve it turns, and clamping it would drag the part off its bone.
+    const pivotX = spec.joint[0] - x - offsetX;
+    const pivotY = spec.joint[1] - y - offsetY;
     manifest.parts[part] = {
       width: trimmed.info.width,
       height: trimmed.info.height,
@@ -103,6 +150,10 @@ async function sliceCharacter(name) {
         Number((pivotX / trimmed.info.width).toFixed(4)),
         Number((pivotY / trimmed.info.height).toFixed(4)),
       ],
+      // Also kept in crop pixels: the runtime positions each part's group from the
+      // difference between its joint and its parent's, so the hierarchy's sockets
+      // are the same numbers as the parts' pivots and cannot disagree.
+      joint: spec.joint,
     };
     console.log(
       `  ${part.padEnd(10)} ${String(trimmed.info.width).padStart(3)}x`

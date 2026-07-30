@@ -1,0 +1,136 @@
+{
+  "source": "public/chrono-character-sheet.png",
+  "view": {
+    "left": 922,
+    "top": 78,
+    "width": 146,
+    "height": 326
+  },
+  "facesRight": true,
+  "origin": [
+    80,
+    324
+  ],
+  "parts": {
+    "ponytail": {
+      "width": 45,
+      "height": 40,
+      "pivot": [
+        0.4,
+        0.5
+      ],
+      "joint": [
+        70,
+        28
+      ]
+    },
+    "head": {
+      "width": 45,
+      "height": 68,
+      "pivot": [
+        0.6667,
+        0.9118
+      ],
+      "joint": [
+        82,
+        72
+      ]
+    },
+    "torso": {
+      "width": 60,
+      "height": 112,
+      "pivot": [
+        0.6333,
+        0.9821
+      ],
+      "joint": [
+        80,
+        170
+      ]
+    },
+    "hips": {
+      "width": 89,
+      "height": 140,
+      "pivot": [
+        0.6966,
+        0.0286
+      ],
+      "joint": [
+        78,
+        162
+      ]
+    },
+    "sash": {
+      "width": 60,
+      "height": 130,
+      "pivot": [
+        0.7,
+        0.0462
+      ],
+      "joint": [
+        56,
+        196
+      ]
+    },
+    "upperArm": {
+      "width": 44,
+      "height": 72,
+      "pivot": [
+        0.5,
+        0.0694
+      ],
+      "joint": [
+        98,
+        81
+      ]
+    },
+    "forearm": {
+      "width": 46,
+      "height": 80,
+      "pivot": [
+        0.5217,
+        0.0625
+      ],
+      "joint": [
+        104,
+        143
+      ]
+    },
+    "thigh": {
+      "width": 46,
+      "height": 52,
+      "pivot": [
+        0.5,
+        0.0577
+      ],
+      "joint": [
+        95,
+        255
+      ]
+    },
+    "shin": {
+      "width": 27,
+      "height": 27,
+      "pivot": [
+        0.7778,
+        -0.0741
+      ],
+      "joint": [
+        95,
+        285
+      ]
+    },
+    "boot": {
+      "width": 54,
+      "height": 26,
+      "pivot": [
+        0.5556,
+        0.1154
+      ],
+      "joint": [
+        94,
+        301
+      ]
+    }
+  }
+}

@@ -39,12 +39,17 @@ export interface SpritePart {
   readonly height: number;
   /** Joint position as a fraction of the part's own image. */
   readonly pivot: readonly [number, number];
+  /** The same joint in source-crop pixels. */
+  readonly joint: readonly [number, number];
 }
 
 export interface SpriteRigManifest {
   readonly parts: Partial<Record<SpritePartName, SpritePart>>;
   /** Which way the sliced drawing faces. Differs per sheet. */
   readonly facesRight?: boolean;
+  /** Body centre and floor row in source-crop pixels. */
+  readonly origin?: readonly [number, number];
+  readonly view?: { readonly height?: number };
 }
 
 /** The four attack panels, as drawn. */
@@ -113,7 +118,11 @@ export interface LoadedSpritePart extends SpritePart {
 
 export type LoadedSpriteRig = {
   readonly [Key in SpritePartName]?: LoadedSpritePart;
-} & { readonly facesRight?: boolean };
+} & {
+  readonly facesRight?: boolean;
+  readonly origin: readonly [number, number];
+  readonly pixelScale: number;
+};
 
 /**
  * Height the tallest sliced sheet maps to, in engine units.
@@ -123,7 +132,7 @@ export type LoadedSpriteRig = {
  */
 export const SPRITE_TARGET_HEIGHT = 2.62;
 
-/** Sheet pixels per engine unit, derived from the sliced profile's full height. */
+/** Legacy scale used only by the old whole-pose sprite loader. */
 export const SPRITE_SHEET_HEIGHT = 490;
 export const PIXEL = SPRITE_TARGET_HEIGHT / SPRITE_SHEET_HEIGHT;
 
@@ -153,7 +162,13 @@ export async function loadSpriteRig(name: string): Promise<LoadedSpriteRig> {
     }),
   );
 
-  return { ...rig, facesRight: manifest.facesRight === true } as LoadedSpriteRig;
+  const sourceHeight = manifest.view?.height ?? SPRITE_SHEET_HEIGHT;
+  return {
+    ...rig,
+    facesRight: manifest.facesRight === true,
+    origin: manifest.origin ?? [0, sourceHeight],
+    pixelScale: SPRITE_TARGET_HEIGHT / sourceHeight,
+  } as LoadedSpriteRig;
 }
 
 export function disposeSpriteRig(rig: LoadedSpriteRig): void {

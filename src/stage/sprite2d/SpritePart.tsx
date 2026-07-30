@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { DoubleSide } from 'three';
-import { PIXEL, type LoadedSpritePart } from './spriteRig';
+import type { LoadedSpritePart } from './spriteRig';
 
 /**
  * One sliced piece of artwork, hung so its joint sits at the parent's origin.
@@ -15,15 +15,17 @@ import { PIXEL, type LoadedSpritePart } from './spriteRig';
  */
 export function SpritePart({
   part,
+  pixelScale,
   tint,
 }: {
   readonly part: LoadedSpritePart | undefined;
+  readonly pixelScale: number;
   readonly tint?: string;
 }) {
   const geometry = useMemo(() => {
     if (part === undefined) return null;
-    const width = part.width * PIXEL;
-    const height = part.height * PIXEL;
+    const width = part.width * pixelScale;
+    const height = part.height * pixelScale;
     return {
       width,
       height,
@@ -32,7 +34,7 @@ export function SpritePart({
       offsetX: (0.5 - part.pivot[0]) * width,
       offsetY: (part.pivot[1] - 0.5) * height,
     };
-  }, [part]);
+  }, [part, pixelScale]);
 
   if (part === undefined || geometry === null) return null;
 
