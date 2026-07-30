@@ -40,6 +40,7 @@
     "src/data/mim-moves.ts",
     "src/data/mim-super-moves.ts",
     "src/data/echo-combat-moves.ts",
+    "src/data/echo-special-moves.ts",
     "src/data/echo-super-moves.ts",
     "src/input/chronoCommands.ts",
     "src/input/glitchCommands.ts",

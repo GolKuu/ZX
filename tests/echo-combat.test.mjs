@@ -7,6 +7,10 @@ import { resolveCommand } from '../.sim-test-build/src/input/command.js';
 import { ECHO_COMMANDS } from '../.sim-test-build/src/input/echoCommands.js';
 import { ECHO_MOVES } from '../.sim-test-build/src/data/echo-combat-moves.js';
 import {
+  ECHO_SPECIAL_MOVES,
+  ECHO_SPECIAL_MOVE_IDS,
+} from '../.sim-test-build/src/data/echo-special-moves.js';
+import {
   ECHO_CINEMATIC_FREEZE_FRAMES,
   ECHO_SUPER_MOVES,
   ECHO_SUPER_MOVE_IDS,
@@ -80,6 +84,54 @@ test('ECHO supers use Super-held combos and respect meter levels', () => {
 test('ECHO statistics needs the ultimate unlock, not energy', () => {
   assert.equal(ultimateCommand(100, false), undefined);
   assert.equal(ultimateCommand(0, true), ECHO_SUPER_MOVE_IDS.statistics);
+});
+
+function echoKey(button, superMeter = 0, ultimateReady = false, q = false) {
+  const buffer = new InputBuffer();
+  if (q) buffer.push(5, BUTTON_BIT.echoQ);
+  buffer.push(
+    5,
+    BUTTON_BIT[button] | (q ? BUTTON_BIT.echoQ : 0),
+  );
+  return resolveCommand(buffer, ECHO_COMMANDS, {
+    grounded: true,
+    stanceId: null,
+    gauge: 0,
+    superMeter,
+    ultimateReady,
+  })?.moveId;
+}
+
+test('ECHO owns direct R E F specials and Q chord supers', () => {
+  assert.equal(
+    echoKey('echoR'),
+    ECHO_SPECIAL_MOVE_IDS.patternScan,
+  );
+  assert.equal(
+    echoKey('echoE'),
+    ECHO_SPECIAL_MOVE_IDS.behavioralMirror,
+  );
+  assert.equal(
+    echoKey('echoF'),
+    ECHO_SPECIAL_MOVE_IDS.predictionLock,
+  );
+  assert.equal(
+    echoKey('echoE', 34, false, true),
+    ECHO_SUPER_MOVE_IDS.analysis,
+  );
+  assert.equal(
+    echoKey('echoR', 100, false, true),
+    ECHO_SUPER_MOVE_IDS.repeat,
+  );
+  assert.equal(
+    echoKey('echoF', 0, true, true),
+    ECHO_SUPER_MOVE_IDS.statistics,
+  );
+});
+
+test('ECHO specials are visual-only and preserve combat balance', () => {
+  assert.equal(ECHO_SPECIAL_MOVES.length, 3);
+  assert.ok(ECHO_SPECIAL_MOVES.every((move) => move.hitboxes.length === 0));
 });
 
 test('ECHO supers encode the hologram swarm, copied combo, and finisher', () => {
