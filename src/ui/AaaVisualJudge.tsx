@@ -43,6 +43,87 @@ const COOLDOWN_MS: Record<CapturePhase, number> = {
 
 const SAMPLE_SCALE = 0.35;
 const TARGET_LONG_EDGE = 360;
+const MAX_UI_LOG = 16;
+
+const PHASE_TARGETS: Record<CapturePhase, Record<Category, number>> = {
+  'main-menu': {
+    character: 38,
+    animation: 30,
+    arena: 52,
+    lighting: 55,
+    shader: 48,
+    vfx: 34,
+    ui: 65,
+    presentation: 52,
+    spectacle: 34,
+  },
+  'character-select': {
+    character: 42,
+    animation: 34,
+    arena: 42,
+    lighting: 50,
+    shader: 46,
+    vfx: 32,
+    ui: 72,
+    presentation: 56,
+    spectacle: 32,
+  },
+  'match-start': {
+    character: 56,
+    animation: 50,
+    arena: 64,
+    lighting: 66,
+    shader: 60,
+    vfx: 58,
+    ui: 60,
+    presentation: 66,
+    spectacle: 60,
+  },
+  'neutral-gameplay': {
+    character: 64,
+    animation: 58,
+    arena: 72,
+    lighting: 68,
+    shader: 66,
+    vfx: 62,
+    ui: 58,
+    presentation: 72,
+    spectacle: 60,
+  },
+  'combo': {
+    character: 72,
+    animation: 72,
+    arena: 74,
+    lighting: 70,
+    shader: 72,
+    vfx: 72,
+    ui: 55,
+    presentation: 76,
+    spectacle: 74,
+  },
+  'super': {
+    character: 78,
+    animation: 84,
+    arena: 80,
+    lighting: 82,
+    shader: 82,
+    vfx: 88,
+    ui: 66,
+    presentation: 86,
+    spectacle: 90,
+  },
+  'victory': {
+    character: 76,
+    animation: 72,
+    arena: 78,
+    lighting: 84,
+    shader: 80,
+    vfx: 78,
+    ui: 74,
+    presentation: 82,
+    spectacle: 84,
+  },
+};
 
 export function AaaVisualJudge() {
   const screen = useHudStore((state) => state.screen);
@@ -169,7 +250,7 @@ export function AaaVisualJudge() {
           `[${phase.toUpperCase()}] ${analysisWithMeta.overall}/100 - ${analysisWithMeta.findings[0] ?? 'No show-stopper found'}`,
           ...current,
         ];
-        return next.slice(0, 16);
+        return next.slice(0, MAX_UI_LOG);
       });
       hasCaptured.current = true;
     }
@@ -284,6 +365,13 @@ function evaluateFrame(
   const edgeScore = clamp(Math.round(edgeDensity * 220));
   const motionScore = clamp(Math.round(motionDelta * 120));
   const dominancePenalty = clamp(Math.round((dominantShare - 0.34) * 180), 0);
+  const bandingScore = clamp(Math.round(Math.max(0, (dominantShare - 0.2) * 260));
+  const aliasingScore = clamp(
+    Math.round(Math.max(0, 78 - edgeScore) + Math.max(0, 86 - entropyScore)),
+  );
+  const readabilityScore = clamp(
+    Math.round((contrastScore * 0.58) + (lightingScore(shadowToLuma(spread)) * 0.42)),
+  );
 
   const character = clamp(
     Math.round(
@@ -350,9 +438,16 @@ function evaluateFrame(
   const spectacle = clamp(
     Math.round((vfx + animation + lighting + edgeScore) / 4),
   );
-  const overall = clamp(
+  const baseOverall = clamp(
     Math.round((character + animation + arena + lighting + shader + vfx + ui + presentation + spectacle) / 9),
   );
+  const target = PHASE_TARGETS[phase];
+  const targetMissPenalty = Object.entries(target)
+    .reduce((sum, [category, required]) => {
+      const current = categories[category as Category];
+      return sum + Math.max(0, required - current);
+    }, 0);
+  const overall = clamp(baseOverall - Math.round(targetMissPenalty * 0.35));
 
   const categories: Record<Category, number> = {
     character,
@@ -368,7 +463,18 @@ function evaluateFrame(
 
   const findings = buildFindings(
     { character, animation, arena, lighting, shader, vfx, ui, presentation, spectacle },
-    { contrastScore, saturationScore, edgeScore, motionScore, entropyScore, dominancePenalty, phase },
+    {
+      contrastScore,
+      saturationScore,
+      edgeScore,
+      motionScore,
+      entropyScore,
+      dominancePenalty,
+      bandingScore,
+      aliasingScore,
+      readabilityScore,
+      phase,
+    },
   );
   const strengths = buildStrengths(categories, phase);
 

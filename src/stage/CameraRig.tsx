@@ -1,8 +1,11 @@
 'use client';
 
 import { useFrame, useThree } from '@react-three/fiber';
-import { useEffect, useRef } from 'react';
-import { readCombatFighter } from '@/src/game/combatRuntime';
+import { useRef } from 'react';
+import {
+  readCombatFighter,
+  readLatestHit,
+} from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
 import { useRenderStore } from '@/src/store/renderStore';
 
@@ -33,6 +36,18 @@ import { useRenderStore } from '@/src/store/renderStore';
  * neither the floor line nor the headroom dominates.
  */
 const EYE_HEIGHT = 1.5;
+const BASE_FOV = 40;
+
+const MAX_SHAKE = 1.8;
+const HARMONIC_INTENSITY = 0.062;
+const IMPACT_SHAKE_RETURN = 12;
+const FOV_RETURN = 5;
+
+const HIT_FOV_BIAS = 1.4;
+const HEAVY_HIT_FOV_BIAS = 2.4;
+const SUPER_FOV_BIAS = 2.8;
+
+type FighterId = 'p1' | 'p2';
 
 /** Framing: a 2.62 m fighter should fill a little over half the frame. */
 const NEAR_DISTANCE = 6.2;
@@ -61,26 +76,64 @@ function approach(current: number, target: number, rate: number, delta: number) 
 export function CameraRig() {
   const camera = useThree((state) => state.camera);
   const cameraRef = useRef(camera);
-  const impactRef = useRef(useRenderStore.getState().impactVersion);
   const shakeRef = useRef(0);
+  const fovTargetRef = useRef(BASE_FOV);
+  const impactVersionRef = useRef(useRenderStore.getState().impactVersion);
+  const superVersionRef = useRef(
+    useRenderStore.getState().mimSuperVersion
+    + useRenderStore.getState().echoSuperVersion
+    + useRenderStore.getState().chronoSuperVersion
+    + useRenderStore.getState().glitchSuperVersion,
+  );
+  const seenHitSerial = useRef<Record<FighterId, number>>({ p1: 0, p2: 0 });
 
   // Live rig state, seeded at the neutral framing so the first frame does not
   // snap in from the old fixed position.
   const panRef = useRef(0);
   const distanceRef = useRef(NEAR_DISTANCE);
-
-  useEffect(() => useRenderStore.subscribe((state) => {
-    if (state.impactVersion !== impactRef.current) {
-      impactRef.current = state.impactVersion;
-      shakeRef.current = 1;
-    }
-  }), []);
+  const superVersion = useRenderStore((state) =>
+    state.mimSuperVersion
+    + state.echoSuperVersion
+    + state.chronoSuperVersion
+    + state.glitchSuperVersion,
+  );
+  const impactVersion = useRenderStore((state) => state.impactVersion);
 
   useFrame(({ clock }, delta) => {
+    if (impactVersion !== impactVersionRef.current) {
+      impactVersionRef.current = impactVersion;
+      shakeRef.current = Math.min(MAX_SHAKE, Math.max(shakeRef.current, 1.2));
+      fovTargetRef.current = Math.max(fovTargetRef.current, BASE_FOV + HIT_FOV_BIAS);
+    }
+    if (superVersion !== superVersionRef.current) {
+      superVersionRef.current = superVersion;
+      shakeRef.current = Math.min(MAX_SHAKE, Math.max(shakeRef.current, 1.45));
+      fovTargetRef.current = Math.max(fovTargetRef.current, BASE_FOV + SUPER_FOV_BIAS);
+    }
+    for (const defenderId of ['p1', 'p2'] as const) {
+      const hit = readLatestHit(defenderId);
+      if (hit === null || hit.serial === seenHitSerial.current[defenderId]) {
+        continue;
+      }
+      seenHitSerial.current[defenderId] = hit.serial;
+      const impactWeight = Math.min(MAX_SHAKE, 0.48 + hit.damage / 72);
+      shakeRef.current = Math.min(MAX_SHAKE, Math.max(shakeRef.current, impactWeight));
+      fovTargetRef.current = Math.min(
+        43.8,
+        Math.max(
+          fovTargetRef.current,
+          BASE_FOV + (hit.damage > 65 ? HEAVY_HIT_FOV_BIAS : HIT_FOV_BIAS * 0.62),
+        ),
+      );
+    }
+
     const activeCamera = cameraRef.current;
     const time = clock.elapsedTime;
-    shakeRef.current *= Math.exp(-14 * delta);
     const shake = shakeRef.current;
+    shakeRef.current = approach(shakeRef.current, 0, IMPACT_SHAKE_RETURN, delta);
+    fovTargetRef.current = approach(fovTargetRef.current, BASE_FOV + 0.35, FOV_RETURN, delta);
+    activeCamera.fov = approach(activeCamera.fov, fovTargetRef.current, 7, delta);
+    activeCamera.updateProjectionMatrix();
 
     const one = readCombatFighter('p1');
     const two = readCombatFighter('p2');
@@ -115,12 +168,17 @@ export function CameraRig() {
 
     // Sway and shake move the eye, never the aim height: the moment the camera
     // tilts, the flat stage layers keystone.
+    const shakeAmount = shakeRef.current;
     activeCamera.position.x = pan
       + Math.sin(time * 0.24) * 0.06
-      + Math.sin(time * 67) * 0.055 * shake;
+      + Math.sin(time * 67) * 0.06 * shakeAmount
+      + Math.sin(time * 41) * 0.018 * shakeAmount;
     activeCamera.position.y = EYE_HEIGHT
-      + Math.sin(time * 51) * 0.035 * shake;
-    activeCamera.position.z = distance + Math.sin(time * 59) * 0.06 * shake;
+      + Math.sin(time * 51) * 0.035 * shakeAmount
+      + Math.cos(time * 59) * 0.018 * Math.min(1.05, shakeAmount);
+    activeCamera.position.z = distance
+      + Math.sin(time * 59) * 0.06 * shakeAmount
+      + Math.cos(time * 83) * HARMONIC_INTENSITY * shakeAmount;
     activeCamera.lookAt(
       activeCamera.position.x,
       activeCamera.position.y,

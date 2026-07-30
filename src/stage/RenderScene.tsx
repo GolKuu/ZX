@@ -11,11 +11,14 @@ import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
 import { ChronoFighter } from './ChronoFighter';
 import { EchoFighter } from './EchoFighter';
+import { AttackCue } from './AttackCue';
 import { FrameProfiler } from './FrameProfiler';
 import { GlitchFighter } from './GlitchFighter';
 import { HitBlood } from './HitBlood';
+import { ImpactPulse } from './ImpactPulse';
 import { LazyPostEffects } from './LazyPostEffects';
 import { MimFighter } from './MimFighter';
+import { SpeedLines } from './SpeedLines';
 import { RenderDebugBridge } from './RenderDebugBridge';
 import { Sprite2DFighter } from './sprite2d/Sprite2DFighter';
 import { StageLighting } from './StageLighting';
@@ -43,7 +46,10 @@ export function RenderScene({
         characterId={fighterSelection[1]}
         fighterId="p2"
       />
+      <SpeedLines />
+      <AttackCue />
       <HitBlood />
+      <ImpactPulse />
       <CameraRig />
       <LazyPostEffects />
       <FrameProfiler />
