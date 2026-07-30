@@ -56,6 +56,11 @@ export function applyIdolCombatAnimation(
   rig: IdolRig,
   fighter: FighterSnapshot,
 ): void {
+  if (fighter.health <= 0) {
+    applyIdolKnockdown(rig, fighter.facing);
+    return;
+  }
+
   if (fighter.guarding) {
     rig.leftArm.rotation.z = 1.02;
     rig.rightArm.rotation.z = -1.08;
@@ -84,6 +89,19 @@ export function applyIdolCombatAnimation(
   } else if (action.moveId === IDOL_MOVE_IDS.hk) {
     performanceSpin(rig, facing, strike, progress);
   }
+}
+
+function applyIdolKnockdown(rig: IdolRig, facing: -1 | 1): void {
+  rig.root.position.y = -0.14;
+  rig.torso.rotation.z = facing * 0.42;
+  rig.head.rotation.z = facing * 0.44;
+  rig.leftArm.rotation.z = -0.88;
+  rig.rightArm.rotation.z = 0.92;
+  rig.leftLeg.rotation.z = 0.42;
+  rig.rightLeg.rotation.z = -0.58;
+  rig.microphone.rotation.z = -0.68;
+  rig.microphone.scale.y = 0.68;
+  rig.starEffect.visible = false;
 }
 
 function microphoneJab(rig: IdolRig, facing: -1 | 1, strike: number): void {
