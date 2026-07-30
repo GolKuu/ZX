@@ -128,7 +128,16 @@ export const useHudStore = create<HudState>((set) => ({
   openControls: () => set({ screen: 'controls', menuFocus: 0 }),
   openResult: (result) => set({ screen: 'result', menuFocus: 0, result }),
   openModeMenu: () => set({ screen: 'mode', menuFocus: 0 }),
-  openCharacterSelect: () => set({ screen: 'character', menuFocus: 0 }),
+  openCharacterSelect: () => set((state) => {
+    if (state.mode === 'ai') {
+      const menuFocus = AI_DIFFICULTY_ORDER.indexOf(state.aiDifficulty);
+      return {
+        screen: 'difficulty',
+        menuFocus: menuFocus >= 0 ? menuFocus : 0,
+      };
+    }
+    return { screen: 'character', menuFocus: 0 };
+  }),
   openDifficultySelect: () => set((state) => {
     const menuFocus = AI_DIFFICULTY_ORDER.indexOf(state.aiDifficulty);
     return {
