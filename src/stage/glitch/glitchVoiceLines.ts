@@ -28,7 +28,7 @@ const LINES: Readonly<Record<string, readonly string[]>> = {
     'Patch deployed.',
   ],
   [GLITCH_SUPER_MOVE_IDS.patchNotes]: [
-    'Opponent dot E X E stopped responding.',
+    'Opponent.exe stopped responding.',
   ],
 };
 

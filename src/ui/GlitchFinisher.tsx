@@ -88,7 +88,15 @@ function CriticalErrorStage() {
       </header>
       <div className={`${stage.realitySlices} ${motion.opponent}`} aria-hidden="true">
         {Array.from({ length: 12 }, (_, index) => (
-          <i key={index} style={{ '--slice': index } as CSSProperties} />
+          <i
+            key={index}
+            style={{
+              '--slice-right': `${(index % 3) * 4}%`,
+              '--slice-shift': `${(index % 2) * 2.2 - 1.1}cqw`,
+              '--slice-top': `${index * 7.4}%`,
+              '--slice-width': `${62 + (index % 4) * 8}%`,
+            } as CSSProperties}
+          />
         ))}
         <strong>GLITCH attacks between frames</strong>
       </div>
@@ -107,7 +115,14 @@ function PatchNotesStage() {
     <section className={stage.patchNotes}>
       <div className={stage.warningFlood} aria-hidden="true">
         {UPDATE_MESSAGES.map((message, index) => (
-          <article key={message} style={{ '--window': index } as CSSProperties}>
+          <article
+            key={message}
+            style={{
+              '--window-delay': `${index * 0.22 + 0.32}s`,
+              '--window-left': `${2 + (index % 2) * 68}%`,
+              '--window-top': `${7 + index * 17}%`,
+            } as CSSProperties}
+          >
             <b>⚠ UPDATE REQUIRED</b>
             <span>{message}</span>
             <i />

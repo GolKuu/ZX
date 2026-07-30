@@ -97,7 +97,6 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
   /** Sliced clean attack panels, shown at the strike impact frame. */
   readonly attacks?: string;
 }>> = {
-  chrono: { rig: 'chrono-profile', attacks: 'chrono-attacks' },
   echo: { rig: 'echo-profile', attacks: 'echo-attacks' },
   glitch: { rig: 'glitch-profile', attacks: 'glitch-attacks' },
 };
@@ -107,6 +106,9 @@ function primitiveFighter(
   characterId: CharacterId,
   fighterId: 'p1' | 'p2',
 ) {
+  if (characterId === 'chrono') {
+    return <ChronoFighter auraColor={auraColor} fighterId={fighterId} />;
+  }
   const sprite = SPRITE_RIGS[characterId];
   if (sprite !== undefined) {
     return (
@@ -116,9 +118,6 @@ function primitiveFighter(
         rigName={sprite.rig}
       />
     );
-  }
-  if (characterId === 'chrono') {
-    return <ChronoFighter auraColor={auraColor} fighterId={fighterId} />;
   }
   if (characterId === 'echo') {
     return <EchoFighter auraColor={auraColor} fighterId={fighterId} />;

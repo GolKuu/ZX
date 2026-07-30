@@ -51,13 +51,19 @@ export function GlitchSpriteEffects({
       return;
     }
 
-    const progress = combatAnimationProgress(moveId, action.frame);
-    showAttackTears(tears.current, progress, action.frame, NORMALS.has(moveId));
-    if (moveId === GLITCH_MOVE_IDS.packetLoss) {
+    const activeMoveId = action.moveId;
+    const progress = combatAnimationProgress(activeMoveId, action.frame);
+    showAttackTears(
+      tears.current,
+      progress,
+      action.frame,
+      NORMALS.has(activeMoveId),
+    );
+    if (activeMoveId === GLITCH_MOVE_IDS.packetLoss) {
       showCorruptData(projectile.current, progress, action.frame);
-    } else if (moveId === GLITCH_MOVE_IDS.corruptedZone) {
+    } else if (activeMoveId === GLITCH_MOVE_IDS.corruptedZone) {
       showLagSpike(lagField.current, ghosts.current, progress, action.frame);
-    } else if (moveId === GLITCH_MOVE_IDS.desyncJump) {
+    } else if (activeMoveId === GLITCH_MOVE_IDS.desyncJump) {
       showDesync(ghosts.current, tears.current, progress, action.frame);
     }
   });

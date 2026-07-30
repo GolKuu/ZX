@@ -80,15 +80,14 @@
 }
 
 .realitySlices i {
-  --row: calc(var(--slice) * 7.4%);
   position: absolute;
-  top: var(--row);
-  right: calc((var(--slice) % 3) * 4%);
-  width: calc(62% + (var(--slice) % 4) * 8%);
+  top: var(--slice-top);
+  right: var(--slice-right);
+  width: var(--slice-width);
   height: 4.4%;
   background: linear-gradient(90deg, transparent, #16e6ff 18%, #f8ffff 50%, #ff2bd6 82%, transparent);
   box-shadow: 0 0 1.4cqw #16e6ff99;
-  transform: translateX(calc((var(--slice) % 2) * 2.2cqw - 1.1cqw)) skewX(-14deg);
+  transform: translateX(var(--slice-shift)) skewX(-14deg);
 }
 
 .realitySlices strong {
@@ -163,8 +162,8 @@
 .warningFlood article {
   position: absolute;
   z-index: 2;
-  top: calc(7% + var(--window) * 17%);
-  left: calc(2% + (var(--window) % 2) * 68%);
+  top: var(--window-top);
+  left: var(--window-left);
   display: grid;
   width: min(22rem, 27cqw);
   gap: 0.25rem;
@@ -174,7 +173,7 @@
   color: #d4dbe6;
   font-size: clamp(0.48rem, 0.66cqw, 0.68rem);
   box-shadow: 0 1rem 3rem #000b;
-  animation: flood-window 0.48s calc(var(--window) * 0.22s + 0.32s) steps(3) both;
+  animation: flood-window 0.48s var(--window-delay) steps(3) both;
 }
 
 .warningFlood b { color: #ff6179; letter-spacing: 0.12em; }

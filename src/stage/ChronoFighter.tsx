@@ -93,7 +93,9 @@ export function ChronoFighter({
     const presentation = withOpponentFacing(fighter, opponent);
     const visualFacing = presentation.facing;
     turnTowardOpponent(group, currentRig.head, visualFacing);
-    applyWalkCycle(currentRig, fighter, clock.elapsedTime, visualFacing, 0.9);
+    if (fighter.dashFrames === 0) {
+      applyWalkCycle(currentRig, fighter, clock.elapsedTime, visualFacing, 0.9);
+    }
     applyChronoCombatAnimation(currentRig, presentation);
 
     const self = { x: group.position.x, z: group.position.z };

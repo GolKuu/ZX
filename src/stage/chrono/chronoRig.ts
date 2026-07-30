@@ -43,6 +43,7 @@ export function resetChronoRig(rig: ChronoRig, time: number): void {
   rig.fragments.position.set(0, 1.42 + breath, 0.04);
   rig.effect.position.set(0.8, 1.14, 0.16);
   rig.effect.scale.setScalar(0.1);
+  rig.root.scale.setScalar(1.2);
 
   rig.torso.rotation.set(0, 0, 0);
   rig.head.rotation.set(0, 0, 0);
@@ -168,7 +169,13 @@ function applyChronoFutureStep(
   dashFrames: number,
 ): void {
   const skip = Math.min(1, dashFrames / 8);
-  rig.root.position.y += 0.035;
+  const exit = Math.sin((1 - skip) * Math.PI);
+  rig.root.position.y += exit * 0.08;
+  rig.root.scale.set(
+    1.2 * (1 - exit * 0.55),
+    1.2 * (1 + exit * 0.08),
+    1.2,
+  );
   rig.torso.rotation.y += facing * 0.1;
   rig.head.rotation.y -= facing * 0.08;
   rig.leftArm.rotation.z += 0.12;
