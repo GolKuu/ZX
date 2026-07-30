@@ -126,7 +126,6 @@ export function CameraRig() {
       activeCamera.position.y,
       0,
     );
-    void LOOK_HEIGHT;
   });
 
   return null;
