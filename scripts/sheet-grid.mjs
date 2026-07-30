@@ -6,6 +6,7 @@
 // a scratch path, never into the repo.
 //
 //   node scripts/sheet-grid.mjs idol out/grid-idol.png
+//   node scripts/sheet-grid.mjs idol-profile out/arm.png --keyed --zoom 85,95,80,200
 
 import { readFileSync } from 'node:fs';
 import sharp from 'sharp';
@@ -23,20 +24,38 @@ if (destination === undefined) {
   process.exit(1);
 }
 
+// `--zoom x,y,w,h` grids one window of the crop instead of the whole thing, at a
+// magnification and grid pitch fine enough to read a joint to the pixel. Labels
+// stay in *crop* coordinates, which is the space part rectangles are authored in,
+// so numbers can be copied straight into `PART_RECTS`.
+const zoomFlag = process.argv.indexOf('--zoom');
+const zoom = zoomFlag === -1
+  ? null
+  : process.argv[zoomFlag + 1].split(',').map(Number);
+
 const { width, height } = view.crop;
+const window = zoom === null
+  ? { left: 0, top: 0, width, height }
+  : { left: zoom[0], top: zoom[1], width: zoom[2], height: zoom[3] };
 // Adaptive: a single figure wants magnification and a fine grid; a whole sheet
 // wants 1:1 and coarse lines, or the labels bury the drawing.
-const SCALE = width > 700 ? 1 : 2;
-const STEP = width > 700 ? 50 : 20;
+const SCALE = zoom !== null ? 5 : width > 700 ? 1 : 2;
+const STEP = zoom !== null ? 10 : width > 700 ? 50 : 20;
 
-let svg = `<svg width="${width * SCALE}" height="${height * SCALE}" xmlns="http://www.w3.org/2000/svg">`;
-for (let x = 0; x <= width; x += STEP) {
-  svg += `<line x1="${x * SCALE}" y1="0" x2="${x * SCALE}" y2="${height * SCALE}" stroke="#ff0044" stroke-width="1" opacity="0.55"/>`;
-  svg += `<text x="${x * SCALE + 2}" y="13" fill="#ff0044" font-size="12" font-family="monospace">${x}</text>`;
+const canvasWidth = window.width * SCALE;
+const canvasHeight = window.height * SCALE;
+let svg = `<svg width="${canvasWidth}" height="${canvasHeight}" xmlns="http://www.w3.org/2000/svg">`;
+for (let x = window.left - (window.left % STEP); x <= window.left + window.width; x += STEP) {
+  const px = (x - window.left) * SCALE;
+  if (px < 0) continue;
+  svg += `<line x1="${px}" y1="0" x2="${px}" y2="${canvasHeight}" stroke="#ff0044" stroke-width="1" opacity="0.55"/>`;
+  svg += `<text x="${px + 2}" y="13" fill="#ff0044" font-size="12" font-family="monospace">${x}</text>`;
 }
-for (let y = 0; y <= height; y += STEP) {
-  svg += `<line x1="0" y1="${y * SCALE}" x2="${width * SCALE}" y2="${y * SCALE}" stroke="#0066ff" stroke-width="1" opacity="0.55"/>`;
-  svg += `<text x="2" y="${y * SCALE - 3}" fill="#0066ff" font-size="12" font-family="monospace">${y}</text>`;
+for (let y = window.top - (window.top % STEP); y <= window.top + window.height; y += STEP) {
+  const py = (y - window.top) * SCALE;
+  if (py < 0) continue;
+  svg += `<line x1="0" y1="${py}" x2="${canvasWidth}" y2="${py}" stroke="#0066ff" stroke-width="1" opacity="0.55"/>`;
+  svg += `<text x="2" y="${py - 3}" fill="#0066ff" font-size="12" font-family="monospace">${y}</text>`;
 }
 svg += '</svg>';
 
@@ -68,7 +87,8 @@ if (process.argv.includes('--keyed')) {
 }
 
 const base = await sharp(figure)
-  .resize({ width: width * SCALE, kernel: 'nearest' })
+  .extract(window)
+  .resize({ width: canvasWidth, kernel: 'nearest' })
   .png()
   .toBuffer();
 
