@@ -10,7 +10,7 @@ const RenderExperience = dynamic(
     loading: () => (
       <div aria-live="polite" className={styles.loading} role="status">
         <span />
-        <p>Compiling render pipeline…</p>
+        <p>Готовим арену…</p>
       </div>
     ),
   },

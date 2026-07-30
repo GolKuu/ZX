@@ -17,6 +17,7 @@ type RenderState = {
   zoroAction: ZoroActionId;
   zoroActionVersion: number;
   zoroStance: ZoroStance;
+  hydratePreferences: () => void;
   playZoroAction: (action: ZoroActionId) => void;
   setAangElement: (
     fighterId: CombatFighterId,
@@ -36,6 +37,10 @@ export const useRenderStore = create<RenderState>((set) => ({
   zoroAction: 'lightPunch',
   zoroActionVersion: 0,
   zoroStance: 'three',
+  hydratePreferences: () => {
+    const savedEffects = readSavedEffects();
+    if (savedEffects !== null) set({ effectsEnabled: savedEffects });
+  },
   playZoroAction: (action) =>
     set((state) => ({
       zoroAction: action,
@@ -49,7 +54,12 @@ export const useRenderStore = create<RenderState>((set) => ({
     set((state) => ({
       aangElements: { ...state.aangElements, [fighterId]: element },
     })),
-  toggleEffects: () => set((state) => ({ effectsEnabled: !state.effectsEnabled })),
+  toggleEffects: () =>
+    set((state) => {
+      const effectsEnabled = !state.effectsEnabled;
+      saveEffects(effectsEnabled);
+      return { effectsEnabled };
+    }),
   triggerImpact: () => set((state) => ({ impactVersion: state.impactVersion + 1 })),
   triggerXray: (xrayFighterId) =>
     set((state) => ({
@@ -57,3 +67,26 @@ export const useRenderStore = create<RenderState>((set) => ({
       xrayVersion: state.xrayVersion + 1,
     })),
 }));
+
+const EFFECTS_STORAGE_KEY = 'cc-effects-enabled-v1';
+
+function saveEffects(effectsEnabled: boolean): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(EFFECTS_STORAGE_KEY, String(effectsEnabled));
+  } catch {
+    // The setting still works for this session when storage is unavailable.
+  }
+}
+
+function readSavedEffects(): boolean | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const saved = window.localStorage.getItem(EFFECTS_STORAGE_KEY);
+    if (saved === 'true') return true;
+    if (saved === 'false') return false;
+  } catch {
+    return null;
+  }
+  return null;
+}
