@@ -24,3 +24,7 @@ export function isIdolCinematicMove(
 ): moveId is IdolCinematicMoveId {
   return moveId in IDOL_SUPER_COSTS;
 }
+
+export function idolSuperCostForMove(moveId: string): number | null {
+  return isIdolCinematicMove(moveId) ? IDOL_SUPER_COSTS[moveId] : null;
+}

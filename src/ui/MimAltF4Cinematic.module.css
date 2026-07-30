@@ -1,0 +1,412 @@
+.scene {
+  position: absolute;
+  z-index: 49;
+  inset: 0;
+  overflow: hidden;
+  color: white;
+  background: #010204;
+  animation: scene 5.3s both;
+  pointer-events: none;
+}
+
+.scene::after {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  background: white;
+  content: "";
+  opacity: 0;
+  animation: shutdown-flash 5.3s both;
+}
+
+.look {
+  position: absolute;
+  z-index: 5;
+  top: 5%;
+  left: 50%;
+  width: min(30cqw, 48cqh);
+  aspect-ratio: 0.8;
+  filter: drop-shadow(0 2cqw 3cqw #000);
+  transform: translateX(-50%);
+  animation: look-in 5.3s both;
+}
+
+.face {
+  position: absolute;
+  z-index: 3;
+  top: 15%;
+  left: 31%;
+  width: 38%;
+  aspect-ratio: 0.84;
+  background:
+    radial-gradient(circle at 50% 30%, #f4f0e7, #acaaa7 72%, #6e7176);
+  border-radius: 48% 48% 44% 44%;
+  box-shadow: inset 0 -1cqw 1.5cqw rgb(0 0 0 / 28%);
+}
+
+.face b {
+  position: absolute;
+  top: 37%;
+  left: 21%;
+  width: 15%;
+  aspect-ratio: 1.25;
+  background: #050608;
+  border-radius: 50%;
+}
+
+.face b:nth-child(2) {
+  right: 21%;
+  left: auto;
+}
+
+.face span {
+  position: absolute;
+  right: 22%;
+  bottom: 22%;
+  left: 22%;
+  height: 0.18cqw;
+  background: #111317;
+  transform: rotate(-2deg);
+}
+
+.hood {
+  position: absolute;
+  z-index: 2;
+  top: 7%;
+  left: 18%;
+  width: 64%;
+  height: 54%;
+  border: 4cqw solid #0c0f14;
+  border-bottom-width: 2cqw;
+  border-radius: 50% 50% 38% 38%;
+  box-shadow: inset 0 0 2cqw rgb(255 255 255 / 6%);
+}
+
+.hood::after {
+  position: absolute;
+  top: 77%;
+  left: -32%;
+  width: 164%;
+  height: 72%;
+  background: linear-gradient(90deg, #07090d, #15191f 50%, #07090d);
+  border-radius: 42% 42% 8% 8%;
+  content: "";
+}
+
+.wave {
+  position: absolute;
+  z-index: 4;
+  top: 51%;
+  right: 0;
+  width: 12%;
+  height: 42%;
+  background: #11151b;
+  border-radius: 99px;
+  transform: rotate(-42deg);
+  transform-origin: 50% 90%;
+  animation: wave 5.3s both;
+}
+
+.wave::before {
+  position: absolute;
+  top: -22%;
+  left: -42%;
+  width: 185%;
+  aspect-ratio: 0.84;
+  background: #d7d3cc;
+  border-radius: 48% 48% 42% 42%;
+  content: "";
+}
+
+.scene blockquote {
+  position: absolute;
+  z-index: 6;
+  top: 61%;
+  left: 50%;
+  width: min(78%, 62rem);
+  margin: 0;
+  padding: 1.2cqw 2cqw;
+  color: #f4f6f8;
+  background: rgb(10 13 18 / 94%);
+  border: 1px solid rgb(255 255 255 / 28%);
+  border-radius: 0.5cqw;
+  box-shadow: 0 1cqw 3cqw #000;
+  font-size: clamp(0.9rem, 2.15cqw, 2.1rem);
+  font-weight: 750;
+  text-align: center;
+  transform: translateX(-50%);
+  animation: quote 5.3s both;
+}
+
+.scene blockquote strong {
+  color: #68c7ff;
+  font-weight: 950;
+}
+
+.keys {
+  position: absolute;
+  z-index: 7;
+  top: 78%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 0.8cqw;
+  transform: translateX(-50%);
+  animation: keys 5.3s both;
+}
+
+.keys kbd {
+  min-width: 5.5cqw;
+  padding: 0.8cqw 1.2cqw 1.1cqw;
+  color: #eaf7ff;
+  background: linear-gradient(#293541, #111820);
+  border: 0.12cqw solid #7892a8;
+  border-radius: 0.5cqw;
+  box-shadow: 0 0.5cqw 0 #030506, 0 0 1.4cqw rgb(81 186 255 / 25%);
+  font: 900 clamp(0.75rem, 1.4cqw, 1.3rem) ui-monospace, monospace;
+  text-align: center;
+}
+
+.keys span {
+  color: #8fa2b3;
+  font-size: 2cqw;
+  font-weight: 900;
+}
+
+.desktop {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 72% 28%, rgb(100 203 255 / 36%), transparent 19%),
+    linear-gradient(135deg, #071c36, #0b5783 48%, #07162d);
+  opacity: 0;
+  animation: desktop 5.3s both;
+}
+
+.desktop::before {
+  position: absolute;
+  inset: 0 0 5%;
+  background:
+    linear-gradient(120deg, transparent 47%, rgb(139 220 255 / 24%) 47.5% 49%, transparent 49.5%),
+    linear-gradient(30deg, transparent 58%, rgb(139 220 255 / 18%) 58.5% 60%, transparent 60.5%);
+  content: "";
+}
+
+.window {
+  position: absolute;
+  top: 7%;
+  left: 8%;
+  width: 84%;
+  height: 82%;
+  overflow: hidden;
+  background: #03060b;
+  border: 0.12cqw solid #8ba9c0;
+  border-radius: 0.35cqw;
+  box-shadow: 0 2cqw 6cqw rgb(0 0 0 / 65%);
+  transform-origin: 50% 50%;
+  animation: minimize 5.3s both;
+}
+
+.window header {
+  display: flex;
+  height: 2.5cqw;
+  align-items: center;
+  gap: 0.55cqw;
+  padding: 0 0.75cqw;
+  color: #18202a;
+  background: #e7eef4;
+  font: 700 clamp(0.42rem, 0.65cqw, 0.65rem) system-ui, sans-serif;
+}
+
+.window header i {
+  width: 0.85cqw;
+  aspect-ratio: 1;
+  background: #151b21;
+  border-radius: 0.12cqw;
+}
+
+.window header b {
+  margin-left: auto;
+  font: inherit;
+  letter-spacing: 0.4em;
+}
+
+.fakeGame {
+  position: absolute;
+  inset: 2.5cqw 0 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 100%, #93432b, transparent 47%),
+    linear-gradient(#081322 0 52%, #1d2026 53%);
+}
+
+.fakeGame::before,
+.fakeGame::after {
+  position: absolute;
+  bottom: 0;
+  left: 17%;
+  width: 12%;
+  height: 56%;
+  background: #05070a;
+  border-radius: 45% 45% 8% 8%;
+  content: "";
+}
+
+.fakeGame::after {
+  right: 17%;
+  left: auto;
+  background: #242a32;
+}
+
+.fakeGame i {
+  position: absolute;
+  top: 4%;
+  left: 5%;
+  width: 36%;
+  height: 4%;
+  background: #eeb742;
+}
+
+.fakeGame i:nth-child(2) {
+  right: 5%;
+  left: auto;
+}
+
+.fakeGame strong {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  font-size: 5cqw;
+  font-style: italic;
+  font-weight: 1000;
+  transform: translateX(-50%);
+}
+
+.desktop footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  height: 5%;
+  align-items: center;
+  gap: 1.1cqw;
+  padding: 0 1cqw;
+  background: rgb(5 12 22 / 86%);
+}
+
+.desktop footer span {
+  font-size: 1.4cqw;
+}
+
+.desktop footer i {
+  width: 1.1cqw;
+  aspect-ratio: 1;
+  background: #59b7ee;
+  border-radius: 0.2cqw;
+}
+
+.desktop footer time {
+  margin-left: auto;
+  font: 600 0.8cqw system-ui, sans-serif;
+}
+
+.gameOver {
+  position: absolute;
+  z-index: 15;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  color: #eef8ff;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 4px, rgb(121 207 255 / 4%) 5px),
+    #020407;
+  text-align: center;
+  opacity: 0;
+  animation: game-over 5.3s both;
+}
+
+.gameOver small,
+.gameOver span {
+  color: #7190a6;
+  font-size: clamp(0.5rem, 0.8cqw, 0.78rem);
+  font-weight: 850;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.gameOver strong {
+  color: #f5fbff;
+  font-size: clamp(3.3rem, 11cqw, 10rem);
+  font-style: italic;
+  font-weight: 1000;
+  letter-spacing: -0.08em;
+  line-height: 0.92;
+  text-shadow: 0.35cqw 0.35cqw 0 #23445a, 0 0 3cqw rgb(87 194 255 / 28%);
+}
+
+@keyframes scene {
+  0% { opacity: 0; }
+  3%, 96% { opacity: 1; }
+  100% { visibility: hidden; opacity: 0; }
+}
+
+@keyframes look-in {
+  0% { opacity: 0; transform: translateX(-50%) scale(1.2); }
+  10%, 42% { opacity: 1; transform: translateX(-50%) scale(1); }
+  49%, 100% { opacity: 0; transform: translateX(-50%) scale(0.94); }
+}
+
+@keyframes quote {
+  0%, 9% { opacity: 0; transform: translate(-50%, 2cqw); }
+  17%, 43% { opacity: 1; transform: translate(-50%, 0); }
+  49%, 100% { opacity: 0; }
+}
+
+@keyframes keys {
+  0%, 23% { opacity: 0; transform: translate(-50%, 2cqw); }
+  31%, 43% { opacity: 1; transform: translate(-50%, 0); }
+  36% { transform: translate(-50%, 0.4cqw); }
+  49%, 100% { opacity: 0; }
+}
+
+@keyframes desktop {
+  0%, 43% { opacity: 0; }
+  48%, 76% { opacity: 1; }
+  82%, 100% { opacity: 0; }
+}
+
+@keyframes minimize {
+  0%, 48% { transform: scale(1); }
+  57% { transform: scale(0.72); }
+  72% { transform: translateY(28cqw) scale(0.06); opacity: 1; }
+  76%, 100% { transform: translateY(35cqw) scale(0); opacity: 0; }
+}
+
+@keyframes game-over {
+  0%, 76% { opacity: 0; }
+  82%, 96% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes wave {
+  0%, 82% { transform: rotate(-42deg); }
+  86% { transform: rotate(-8deg); }
+  90% { transform: rotate(-55deg); }
+  94%, 100% { transform: rotate(-12deg); }
+}
+
+@keyframes shutdown-flash {
+  0%, 45%, 100% { opacity: 0; }
+  47% { opacity: 0.85; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene,
+  .scene *,
+  .scene::after {
+    animation-duration: 1.2s !important;
+  }
+}

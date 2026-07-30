@@ -42,6 +42,8 @@ export function FightControlStrip() {
       {selection[1] === 'mim' && <MimMoveGroup fighterId="p2" />}
       {selection[0] === 'glitch' && <GlitchMoveGroup fighterId="p1" />}
       {selection[1] === 'glitch' && <GlitchMoveGroup fighterId="p2" />}
+      {selection[0] === 'echo' && <EchoMoveGroup fighterId="p1" />}
+      {selection[1] === 'echo' && <EchoMoveGroup fighterId="p2" />}
       <button type="button" onClick={openControls}>Управление</button>
     </section>
   );
@@ -51,8 +53,8 @@ function IdolMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
   return (
     <MoveGroup
       fighterId={fighterId}
-      hint="LP / HP / LK / HK"
-      moves="МИКРО-ДЖЕБ · ЗВЕЗДА · СКОЛЬЖЕНИЕ · ТАНЕЦ"
+      hint="O+J / O+K / O+U"
+      moves="ХАЙЛАЙТ · МИЛЛИОН ПОДПИСЧИКОВ · ОТМЕНА"
     />
   );
 }
@@ -61,8 +63,8 @@ function ChronoMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId })
   return (
     <MoveGroup
       fighterId={fighterId}
-      hint="LP / HP / LK / HK"
-      moves="TIME JAB · TEMPORAL STRIKE · TIME SWEEP · ROUNDHOUSE"
+      hint="SPECIAL · 1 / 3 / FINISH"
+      moves="ПЕРЕМОТКА · 143 ИСХОДА · НЕИЗБЕЖНОСТЬ"
     />
   );
 }
@@ -71,8 +73,8 @@ function MimMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
   return (
     <MoveGroup
       fighterId={fighterId}
-      hint="LP / HP / LK / HK"
-      moves="ЩЕЛЧОК · КУРСОР · БАНАН · СТУЛ"
+      hint="SPECIAL · 1 / 3 / FINISH"
+      moves="ПРАНК · ГЛАВНЫЙ ГЕРОЙ · ALT+F4"
     />
   );
 }
@@ -83,6 +85,16 @@ function GlitchMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId })
       fighterId={fighterId}
       hint="QCF / QCB / DP + J/K"
       moves="PACKET LOSS · CORRUPTED ZONE · DESYNC JUMP"
+    />
+  );
+}
+
+function EchoMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
+  return (
+    <MoveGroup
+      fighterId={fighterId}
+      hint="O+J / O+K / O+U"
+      moves="АНАЛИЗ · ПОВТОР · СТАТИСТИКА"
     />
   );
 }

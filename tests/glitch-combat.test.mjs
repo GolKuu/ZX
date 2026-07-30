@@ -10,6 +10,10 @@ import {
   GLITCH_MOVE_IDS,
   GLITCH_MOVES,
 } from '../.sim-test-build/src/data/glitch-combat-moves.js';
+import {
+  GLITCH_SUPER_MOVE_IDS,
+  GLITCH_SUPER_MOVES,
+} from '../.sim-test-build/src/data/glitch-super-moves.js';
 
 const NEUTRAL = 5;
 const DOWN = 2;
@@ -18,12 +22,12 @@ const FORWARD = 6;
 const DOWN_BACK = 1;
 const BACK = 4;
 
-function play(directions, button) {
+function play(directions, button, context) {
   const buffer = new InputBuffer();
   buffer.push(NEUTRAL, 0);
   for (const direction of directions) buffer.push(direction, 0);
   buffer.push(directions.at(-1) ?? NEUTRAL, BUTTON_BIT[button]);
-  return resolveCommand(buffer, GLITCH_COMMANDS)?.moveId;
+  return resolveCommand(buffer, GLITCH_COMMANDS, context)?.moveId;
 }
 
 test('GLITCH maps all four attack buttons to unique normals', () => {
@@ -31,6 +35,33 @@ test('GLITCH maps all four attack buttons to unique normals', () => {
   assert.equal(play([], 'hp'), GLITCH_MOVE_IDS.hp);
   assert.equal(play([], 'lk'), GLITCH_MOVE_IDS.lk);
   assert.equal(play([], 'hk'), GLITCH_MOVE_IDS.hk);
+});
+
+test('GLITCH upgrades the special button across all super levels', () => {
+  const special = (superMeter, finisherReady = false) =>
+    play([], 'special', {
+      grounded: true,
+      stanceId: null,
+      gauge: 0,
+      superMeter,
+      finisherReady,
+    });
+
+  assert.equal(special(33), undefined);
+  assert.equal(special(34), GLITCH_SUPER_MOVE_IDS.error);
+  assert.equal(special(100), GLITCH_SUPER_MOVE_IDS.critical);
+  assert.equal(special(100, true), GLITCH_SUPER_MOVE_IDS.patchNotes);
+});
+
+test('GLITCH Patch Notes finisher deletes the remaining health bar', () => {
+  const byId = new Map(GLITCH_SUPER_MOVES.map((move) => [move.id, move]));
+  const error = byId.get(GLITCH_SUPER_MOVE_IDS.error);
+  const critical = byId.get(GLITCH_SUPER_MOVE_IDS.critical);
+  const patchNotes = byId.get(GLITCH_SUPER_MOVE_IDS.patchNotes);
+
+  assert.ok(critical.hitboxes[0].hit.damage > error.hitboxes[0].hit.damage);
+  assert.equal(patchNotes.hitboxes[0].hit.damage, 1_000);
+  assert.equal(patchNotes.hitboxes[0].hit.block, undefined);
 });
 
 test('Packet Loss resolves on quarter-circle forward plus punch', () => {

@@ -1,13 +1,21 @@
 import { create } from 'zustand';
+import type { ChronoSuperKind } from '@/src/data/chrono-super-moves';
 import type { EchoSuperKind } from '@/src/data/echo-super-moves';
+import type { IdolCinematicMoveId } from '@/src/data/idol-move-ids';
 import type { MimSuperKind } from '@/src/data/mim-super-moves';
 
 type RenderState = {
+  chronoSuperFighterId: 'p1' | 'p2' | null;
+  chronoSuperKind: ChronoSuperKind | null;
+  chronoSuperVersion: number;
   echoSuperFighterId: 'p1' | 'p2' | null;
   echoSuperKind: EchoSuperKind | null;
   echoSuperVersion: number;
   effectsEnabled: boolean;
   impactVersion: number;
+  idolSuperFighterId: 'p1' | 'p2' | null;
+  idolSuperMoveId: IdolCinematicMoveId | null;
+  idolSuperVersion: number;
   mimSuperFighterId: 'p1' | 'p2' | null;
   mimSuperKind: MimSuperKind | null;
   mimSuperVersion: number;
@@ -16,6 +24,14 @@ type RenderState = {
   hydratePreferences: () => void;
   toggleEffects: () => void;
   triggerImpact: () => void;
+  triggerChronoSuper: (
+    fighterId: 'p1' | 'p2',
+    kind: ChronoSuperKind,
+  ) => void;
+  triggerIdolSuper: (
+    fighterId: 'p1' | 'p2',
+    moveId: IdolCinematicMoveId,
+  ) => void;
   triggerEchoSuper: (
     fighterId: 'p1' | 'p2',
     kind: EchoSuperKind,
@@ -28,11 +44,17 @@ type RenderState = {
 };
 
 export const useRenderStore = create<RenderState>((set) => ({
+  chronoSuperFighterId: null,
+  chronoSuperKind: null,
+  chronoSuperVersion: 0,
   echoSuperFighterId: null,
   echoSuperKind: null,
   echoSuperVersion: 0,
   effectsEnabled: true,
   impactVersion: 0,
+  idolSuperFighterId: null,
+  idolSuperMoveId: null,
+  idolSuperVersion: 0,
   mimSuperFighterId: null,
   mimSuperKind: null,
   mimSuperVersion: 0,
@@ -50,6 +72,18 @@ export const useRenderStore = create<RenderState>((set) => ({
     }),
   triggerImpact: () =>
     set((state) => ({ impactVersion: state.impactVersion + 1 })),
+  triggerChronoSuper: (chronoSuperFighterId, chronoSuperKind) =>
+    set((state) => ({
+      chronoSuperFighterId,
+      chronoSuperKind,
+      chronoSuperVersion: state.chronoSuperVersion + 1,
+    })),
+  triggerIdolSuper: (idolSuperFighterId, idolSuperMoveId) =>
+    set((state) => ({
+      idolSuperFighterId,
+      idolSuperMoveId,
+      idolSuperVersion: state.idolSuperVersion + 1,
+    })),
   triggerEchoSuper: (echoSuperFighterId, echoSuperKind) =>
     set((state) => ({
       echoSuperFighterId,

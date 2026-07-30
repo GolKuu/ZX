@@ -9,7 +9,8 @@ export const ECHO_COMMANDS: readonly CommandRow[] = [
     button: 'hk',
     stance: 'any',
     requiresModifier: true,
-    available: ({ superMeter }) => superMeter >= 100,
+    available: ({ finisherReady, superMeter }) =>
+      finisherReady === true && superMeter >= 100,
   },
   {
     moveId: ECHO_SUPER_MOVE_IDS.repeat,

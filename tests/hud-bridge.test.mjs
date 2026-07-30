@@ -72,6 +72,22 @@ test('X-Ray becomes ready at 25 percent health and empties after use', () => {
   assert.equal(published[0].fighters[1].superCharge, 0);
 });
 
+test('HUD subtracts spent super segments from earned charge', () => {
+  const published = [];
+  const bridge = new HudBridge(identities, (snapshot) => published.push(snapshot));
+  bridge.accept(
+    world(0, { alphaHealth: 500, bravoHealth: 250 }),
+    [],
+    {
+      ...match(),
+      superSpent: { alpha: 34, bravo: 68 },
+    },
+  );
+
+  assert.equal(published[0].fighters[0].superCharge, 33);
+  assert.equal(published[0].fighters[1].superCharge, 32);
+});
+
 test('HUD combo aggregates hit events and clears after defender recovery', () => {
   const published = [];
   const bridge = new HudBridge(identities, (snapshot) => published.push(snapshot));

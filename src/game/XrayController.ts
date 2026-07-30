@@ -1,8 +1,16 @@
 import { XRAY_MOVE_ID } from '@/src/data/combat-moves';
 import {
+  chronoSuperCostForMove,
+  chronoSuperKindForMove,
+} from '@/src/data/chrono-super-moves';
+import {
   echoSuperCostForMove,
   echoSuperKindForMove,
 } from '@/src/data/echo-super-moves';
+import {
+  idolSuperCostForMove,
+  isIdolCinematicMove,
+} from '@/src/data/idol-move-ids';
 import {
   mimSuperCostForMove,
   mimSuperKindForMove,
@@ -36,7 +44,9 @@ export class XrayController {
         const cost = event.moveId === XRAY_MOVE_ID
           ? 100
           : mimSuperCostForMove(event.moveId)
-            ?? echoSuperCostForMove(event.moveId);
+            ?? echoSuperCostForMove(event.moveId)
+            ?? idolSuperCostForMove(event.moveId)
+            ?? chronoSuperCostForMove(event.moveId);
         if (cost !== null) {
           this.spentBy.set(
             event.fighterId,
@@ -56,6 +66,25 @@ export class XrayController {
           && (event.fighterId === 'p1' || event.fighterId === 'p2')
         ) {
           useRenderStore.getState().triggerEchoSuper(event.fighterId, echoKind);
+        }
+        if (
+          isIdolCinematicMove(event.moveId)
+          && (event.fighterId === 'p1' || event.fighterId === 'p2')
+        ) {
+          useRenderStore.getState().triggerIdolSuper(
+            event.fighterId,
+            event.moveId,
+          );
+        }
+        const chronoKind = chronoSuperKindForMove(event.moveId);
+        if (
+          chronoKind !== null
+          && (event.fighterId === 'p1' || event.fighterId === 'p2')
+        ) {
+          useRenderStore.getState().triggerChronoSuper(
+            event.fighterId,
+            chronoKind,
+          );
         }
       }
       if (

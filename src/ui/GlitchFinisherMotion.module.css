@@ -1,0 +1,217 @@
+.timeline {
+  animation: timeline 4.6s linear both;
+}
+
+.timeline[data-kind="error"] { animation-duration: 3.2s; }
+.timeline[data-kind="patchNotes"] { animation-duration: 4.2s; }
+
+.timeline::before,
+.timeline::after {
+  position: absolute;
+  z-index: 22;
+  left: -5%;
+  width: 110%;
+  height: 0.7cqh;
+  background: #fff;
+  box-shadow: 0 0 2cqw #41f4ff;
+  content: "";
+  mix-blend-mode: difference;
+  animation: tracking 0.24s steps(2) 12;
+}
+
+.timeline::after {
+  animation-delay: 0.08s;
+  animation-direction: reverse;
+}
+
+.noise {
+  animation: noise 0.12s steps(2) 24;
+}
+
+.errorStage {
+  animation: error-stage 3.2s linear both;
+}
+
+.errorTitle {
+  animation: title 0.72s steps(3) both;
+}
+
+.opponent {
+  animation: opponent 3.1s steps(8) both;
+}
+
+.opponent i {
+  animation: pixel 0.48s steps(3) infinite alternate;
+}
+
+.opponent i:nth-child(3n) { animation-delay: -0.18s; }
+.opponent i:nth-child(4n) { animation-delay: -0.31s; }
+.opponent i:nth-child(5n) { background: #41f4ff; }
+
+.bsodStage {
+  animation: bsod-stage 4.6s steps(1) both;
+}
+
+.command {
+  width: 0;
+  border-right: 0.14rem solid white;
+  animation:
+    typing 1.15s 0.8s steps(15, end) both,
+    caret 0.35s 0.8s steps(1) infinite;
+}
+
+.enterKey {
+  animation: enter 0.25s 2.2s ease 2 alternate;
+}
+
+.codeVictim {
+  transform-origin: bottom;
+  animation: code-delete 1.35s 2.42s steps(5) both;
+}
+
+.codeVictim code:nth-child(2) { animation-delay: 2.56s; }
+.codeVictim code:nth-child(3) { animation-delay: 2.72s; }
+.codeVictim code:nth-child(4) { animation-delay: 2.88s; }
+.codeVictim code:nth-child(5) { animation-delay: 3.04s; }
+.codeVictim code { animation: row-delete 0.55s 2.42s steps(3) both; }
+
+.patchStage {
+  animation: patch-stage 4.2s ease both;
+}
+
+.saveButton {
+  animation: save 0.3s 2.75s ease 2 alternate;
+}
+
+.cursor {
+  animation: cursor 1.35s 1.55s ease-in-out both;
+}
+
+.finalFlash {
+  animation: final-flash 4.6s linear both;
+}
+
+.timeline[data-kind="error"] .finalFlash { animation-duration: 3.2s; }
+.timeline[data-kind="patchNotes"] .finalFlash { animation-duration: 4.2s; }
+
+@keyframes timeline {
+  0% { opacity: 0; transform: translateX(0); }
+  1%, 95% { opacity: 1; }
+  2% { transform: translateX(-0.8cqw); }
+  3% { transform: translateX(0.4cqw); }
+  100% { visibility: hidden; opacity: 0; }
+}
+
+@keyframes tracking {
+  0% { top: 9%; transform: translateX(-5%); }
+  50% { top: 62%; transform: translateX(3%); }
+  100% { top: 91%; transform: translateX(-2%); }
+}
+
+@keyframes noise {
+  0% { transform: translate(0); opacity: 0.04; }
+  25% { transform: translate(-1.5%, 1%); opacity: 0.13; }
+  50% { transform: translate(1%, -1.5%); opacity: 0.07; }
+  75% { transform: translate(0.5%, 2%); opacity: 0.16; }
+}
+
+@keyframes error-stage {
+  0%, 86% { visibility: visible; opacity: 1; }
+  8% { filter: saturate(3) contrast(1.35); transform: scale(1.01); }
+  13% { filter: none; transform: none; }
+  88%, 100% { visibility: hidden; opacity: 0; }
+}
+
+@keyframes title {
+  0% { opacity: 0; transform: translateX(-4cqw) skewX(18deg); }
+  45% { opacity: 1; transform: translateX(1.2cqw) skewX(-7deg); }
+  100% { transform: none; }
+}
+
+@keyframes opponent {
+  0% { opacity: 0; transform: translateX(8cqw) scaleX(0.7); }
+  10% { opacity: 1; transform: none; }
+  38% { clip-path: inset(0 0 0 0); transform: translateX(0); }
+  44% { clip-path: inset(8% 0 18% 0); transform: translateX(-1cqw); }
+  56% { clip-path: inset(2% 0 36% 0); transform: translateX(0.7cqw); }
+  72% { clip-path: inset(19% 0 9% 0); transform: translateX(-0.4cqw) skewX(5deg); }
+  100% { opacity: 0.25; filter: contrast(2) saturate(4); transform: scaleX(0.82); }
+}
+
+@keyframes pixel {
+  from { opacity: 0.25; transform: translate(-0.8cqw, 0) scale(0.6); }
+  to { opacity: 1; transform: translate(1.3cqw, -0.5cqw) scale(1.4); }
+}
+
+@keyframes bsod-stage {
+  0% { visibility: visible; opacity: 1; }
+  99% { visibility: visible; opacity: 1; }
+  100% { visibility: hidden; opacity: 0; }
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 15ch; }
+}
+
+@keyframes caret {
+  50% { border-color: transparent; }
+}
+
+@keyframes enter {
+  to { transform: translateY(0.18rem); background: #75d3ff; }
+}
+
+@keyframes code-delete {
+  0% { opacity: 1; transform: none; filter: none; }
+  75% { opacity: 0.6; transform: scaleY(0.35) skewX(15deg); filter: blur(1px); }
+  100% { opacity: 0; transform: scaleY(0); filter: blur(6px); }
+}
+
+@keyframes row-delete {
+  0% { opacity: 1; transform: translateX(0); }
+  60% { opacity: 0.6; transform: translateX(2cqw); color: #ff86e6; }
+  100% { opacity: 0; transform: translateX(9cqw); }
+}
+
+@keyframes patch-stage {
+  0% { visibility: hidden; opacity: 0; transform: scale(1.08); }
+  1% { visibility: visible; }
+  15%, 95% { opacity: 1; transform: scale(1); }
+  100% { visibility: hidden; opacity: 0; }
+}
+
+@keyframes cursor {
+  0% { opacity: 0; transform: translate(9cqw, 5cqw); }
+  18% { opacity: 1; }
+  78%, 100% { opacity: 1; transform: translate(0, 0); }
+}
+
+@keyframes save {
+  to { color: white; background: #06828b; box-shadow: 0 0 2cqw #41f4ff; transform: scale(0.96); }
+}
+
+@keyframes final-flash {
+  0%, 1.5%, 25%, 62%, 88%, 100% { opacity: 0; }
+  0.7% { opacity: 0.7; }
+  25.5% { opacity: 1; }
+  63% { opacity: 0.45; }
+  90% { opacity: 0.85; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline,
+  .errorStage,
+  .bsodStage,
+  .patchStage,
+  .finalFlash {
+    animation-duration: 3.6s;
+  }
+
+  .opponent i,
+  .noise,
+  .timeline::before,
+  .timeline::after {
+    animation: none;
+  }
+}

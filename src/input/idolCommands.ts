@@ -9,8 +9,9 @@ export const IDOL_COMMANDS: readonly CommandRow[] = [
     button: 'hk',
     requiresModifier: true,
     stance: 'any',
-    available: ({ superMeter }) =>
-      superMeter >= IDOL_SUPER_COSTS[IDOL_MOVE_IDS.cancel],
+    available: ({ finisherReady, superMeter }) =>
+      finisherReady === true
+      && superMeter >= IDOL_SUPER_COSTS[IDOL_MOVE_IDS.cancel],
   },
   {
     moveId: IDOL_MOVE_IDS.million,

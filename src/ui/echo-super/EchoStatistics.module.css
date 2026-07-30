@@ -1,0 +1,201 @@
+.scene {
+  --echo: #72efff;
+  position: absolute;
+  z-index: 47;
+  inset: 0;
+  overflow: hidden;
+  color: #ecfdff;
+  background:
+    radial-gradient(circle at 76% 62%, rgb(114 239 255 / 12%), transparent 30%),
+    linear-gradient(118deg, #01050b, #07141d 52%, #02060c);
+  animation: scene 6.2s both;
+  pointer-events: none;
+}
+
+.scene[data-side="p2"] { --echo: #c78bff; }
+
+.noise {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 4px, rgb(184 249 255 / 5%) 5px),
+    repeating-linear-gradient(90deg, transparent 0 9.8cqw, rgb(114 239 255 / 8%) 10cqw);
+  mix-blend-mode: screen;
+}
+
+.header {
+  position: absolute;
+  z-index: 8;
+  top: 6%;
+  left: 5%;
+  display: grid;
+  border-left: 0.28cqw solid var(--echo);
+  padding-left: 1.1cqw;
+  text-transform: uppercase;
+  animation: header 0.48s 0.1s both;
+}
+
+.header span,
+.header i {
+  color: var(--echo);
+  font-size: clamp(0.58rem, 0.78cqw, 0.88rem);
+  font-style: normal;
+  font-weight: 850;
+  letter-spacing: 0.24em;
+}
+
+.header strong {
+  font-size: clamp(2.4rem, 5.4cqw, 5.5rem);
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  line-height: 0.88;
+  text-shadow: 0 0 2cqw color-mix(in srgb, var(--echo) 48%, transparent);
+}
+
+.dashboard {
+  position: absolute;
+  z-index: 3;
+  top: 31%;
+  right: 5%;
+  left: 5%;
+  height: 38%;
+  border: 1px solid rgb(114 239 255 / 24%);
+  background: rgb(1 12 19 / 72%);
+  box-shadow: inset 0 0 4cqw rgb(31 167 190 / 8%);
+  animation: dashboard 0.55s 0.55s both;
+}
+
+.axis {
+  position: absolute;
+  top: 1cqw;
+  bottom: 1cqw;
+  left: 1cqw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: rgb(172 233 240 / 42%);
+  font: 700 0.58cqw ui-monospace, monospace;
+}
+
+.cards {
+  position: absolute;
+  inset: 1.2cqw 1.2cqw 1.2cqw 3.2cqw;
+  display: grid;
+  gap: 1.1cqw;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.card {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  align-content: end;
+  padding: 1.2cqw;
+  overflow: visible;
+  background: linear-gradient(180deg, rgb(16 43 55 / 44%), rgb(3 15 22 / 88%));
+  border: 1px solid rgb(114 239 255 / 18%);
+}
+
+.card header {
+  position: absolute;
+  z-index: 2;
+  top: 1cqw;
+  right: 1cqw;
+  left: 1cqw;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.card header span { color: #9bcbd2; font-size: 0.82cqw; font-weight: 900; letter-spacing: 0.18em; text-transform: uppercase; }
+.card header strong { color: var(--echo); font-size: 3.2cqw; line-height: 0.85; text-shadow: 0 0 1cqw var(--echo); }
+
+.chart {
+  display: flex;
+  height: 60%;
+  align-items: end;
+  gap: 0.38cqw;
+}
+
+.chart i {
+  width: 100%;
+  height: 6%;
+  background: linear-gradient(180deg, #dfffff, var(--echo) 24%, #176a79);
+  box-shadow: 0 0 0.45cqw rgb(114 239 255 / 38%);
+  transform-origin: bottom;
+  animation: bar 0.7s calc(0.9s + var(--bar-delay, 0s)) both;
+}
+
+.chart i:nth-child(3n + 1) { --bar-delay: 0.08s; }
+.chart i:nth-child(3n + 2) { --bar-delay: 0.16s; }
+.chart i:nth-child(3n) { --bar-delay: 0.24s; }
+.jumps .chart i { height: 37%; }
+.spam .chart i { height: 82%; }
+.errors .chart i { height: 94%; background: linear-gradient(#fff, #ff566d 28%, #8b1225); box-shadow: 0 0 0.5cqw #ff405c88; }
+
+.quote {
+  position: absolute;
+  z-index: 8;
+  right: 5%;
+  bottom: 7%;
+  margin: 0;
+  padding: 0.75cqw 1.1cqw;
+  text-align: right;
+  background: rgb(2 10 16 / 78%);
+  border-right: 0.28cqw solid var(--echo);
+  animation: quote 0.4s 2.4s both;
+}
+
+.quote small { color: var(--echo); font-weight: 900; letter-spacing: 0.24em; text-transform: uppercase; }
+.quote p { margin: 0.2cqw 0 0; font-size: clamp(1.4rem, 2.8cqw, 3.1rem); font-weight: 850; }
+
+.shards {
+  position: absolute;
+  z-index: 8;
+  top: 50%;
+  left: 50%;
+}
+
+.shards i {
+  position: absolute;
+  width: 1.2cqw;
+  height: 0.3cqw;
+  background: #ff5369;
+  box-shadow: 0 0 0.7cqw #ff405c;
+  clip-path: polygon(0 0, 100% 46%, 24% 100%);
+  opacity: 0;
+  animation: shard 1.2s 4.25s ease-out both;
+}
+
+.blast {
+  position: absolute;
+  z-index: 10;
+  top: 52%;
+  left: 76%;
+  width: 2cqw;
+  aspect-ratio: 1;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 10cqw 5cqw #ff405c;
+  animation: blast 6.2s both;
+}
+
+@keyframes scene { 0% { opacity: 0; } 3%, 92% { opacity: 1; } 100% { visibility: hidden; opacity: 0; } }
+@keyframes header { from { opacity: 0; transform: translateX(-3cqw); } to { opacity: 1; transform: none; } }
+@keyframes dashboard { from { opacity: 0; transform: scaleY(0.02); } to { opacity: 1; transform: none; } }
+@keyframes bar { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes quote { from { opacity: 0; transform: translateX(3cqw); } to { opacity: 1; transform: none; } }
+@keyframes shard { 0% { opacity: 0; transform: rotate(var(--shard-angle)) translateX(0); } 12% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--shard-angle)) translateX(var(--shard-distance)) rotate(220deg); } }
+@keyframes blast { 0%, 68%, 100% { opacity: 0; } 71% { opacity: 1; transform: scale(0.2); } 81% { opacity: 0; transform: scale(9); } }
+
+@media (max-width: 720px) {
+  .dashboard { top: 27%; height: 44%; }
+  .card { padding: 0.7cqw; }
+  .card header strong { font-size: 4cqw; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene { animation-duration: 1.6s; }
+  .chart i,
+  .shards i { animation-delay: 0s; animation-duration: 0.6s; }
+}

@@ -10,6 +10,10 @@ import {
   MIM_MOVES,
   MIM_MOVE_IDS,
 } from '../.sim-test-build/src/data/mim-moves.js';
+import {
+  MIM_SUPER_MOVES,
+  MIM_SUPER_MOVE_IDS,
+} from '../.sim-test-build/src/data/mim-super-moves.js';
 
 const expectedByButton = {
   lp: MIM_MOVE_IDS.snap,
@@ -48,3 +52,38 @@ test('MIM attacks preserve their intended reach order', () => {
   assert.ok(reach[MIM_MOVE_IDS.snap] < reach[MIM_MOVE_IDS.banana]);
   assert.ok(reach[MIM_MOVE_IDS.banana] < reach[MIM_MOVE_IDS.chair]);
 });
+
+test('MIM special button upgrades through prank, hero, and ALT+F4', () => {
+  assert.equal(resolveSpecial(33)?.moveId, undefined);
+  assert.equal(resolveSpecial(34)?.moveId, MIM_SUPER_MOVE_IDS.prank);
+  assert.equal(resolveSpecial(100)?.moveId, MIM_SUPER_MOVE_IDS.hero);
+  assert.equal(
+    resolveSpecial(100, true)?.moveId,
+    MIM_SUPER_MOVE_IDS.altF4,
+  );
+});
+
+test('MIM supers have authored cinematic hit data', () => {
+  assert.deepEqual(
+    MIM_SUPER_MOVES.map(({ id }) => id),
+    Object.values(MIM_SUPER_MOVE_IDS),
+  );
+  for (const move of MIM_SUPER_MOVES) {
+    assert.ok(move.startup >= 14);
+    assert.ok(move.recovery >= 100);
+    assert.equal(move.hitboxes[0]?.hit.block, undefined);
+  }
+});
+
+function resolveSpecial(superMeter, finisherReady = false) {
+  const buffer = new InputBuffer();
+  buffer.push(5, 0);
+  buffer.push(5, BUTTON_BIT.special);
+  return resolveCommand(buffer, MIM_COMMANDS, {
+    grounded: true,
+    stanceId: null,
+    gauge: 0,
+    superMeter,
+    finisherReady,
+  });
+}
