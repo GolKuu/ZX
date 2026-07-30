@@ -20,6 +20,7 @@ import {
   withOpponentFacing,
 } from './fighterPresentation';
 import { ChronoBody } from './chrono/ChronoBody';
+import { ChronoTemporalFx } from './chrono/ChronoTemporalFx';
 import {
   chronoToonMaterials,
   createChronoMaterials,
@@ -112,6 +113,7 @@ export function ChronoFighter({
         refs={refs}
         resources={resources}
       />
+      <ChronoTemporalFx fighterId={fighterId} resources={resources} />
     </group>
   );
 }

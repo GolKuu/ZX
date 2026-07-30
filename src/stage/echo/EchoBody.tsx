@@ -2,19 +2,25 @@
 import { FighterPart } from '../FighterPart';
 import type { FighterRigRefs } from '../fighterRigRefs';
 import { EchoArm, EchoHead, EchoLeg } from './EchoParts';
+import { EchoPredictionEffects } from './EchoPredictionEffects';
+import { EchoSilhouetteDetails } from './EchoSilhouetteDetails';
 import { EchoSuperEffects } from './EchoSuperEffects';
 import type { EchoMaterials } from './echoMaterials';
 import type { EchoResources } from './echoResources';
 import type { Material } from 'three';
+import type { RefObject } from 'react';
+import type { Group } from 'three';
 
 export function EchoBody({
   materials,
   outline,
+  predictionRef,
   refs,
   resources,
 }: {
   readonly materials: EchoMaterials;
   readonly outline: Material;
+  readonly predictionRef: RefObject<Group | null>;
   readonly refs: FighterRigRefs;
   readonly resources: EchoResources;
 }) {
@@ -70,6 +76,7 @@ export function EchoBody({
         position={[0, 0.94, 0]}
         toonMaterial={materials.navy}
       />
+      <EchoSilhouetteDetails {...{ materials, outline, resources }} />
 
       <group ref={refs.echoes} position={[0, 1.72, -0.2]}>
         {[-1, 1].map((side) => (
@@ -87,6 +94,7 @@ export function EchoBody({
       <group ref={refs.leftSword} />
       <group ref={refs.rightSword} />
       <group ref={refs.mouthSword} />
+      <EchoPredictionEffects {...{ materials, predictionRef, resources }} />
       <EchoSuperEffects {...{ materials, refs, resources }} />
     </group>
   );

@@ -56,6 +56,7 @@ function repeat(rig: FighterRig, beat: EchoSuperBeat, facing: -1 | 1): void {
   rig.root.position.x -= facing * (beat.read * 0.24 + watching * 0.12);
   ringFlare(rig, watching * 0.5 + beat.strike * 0.6, facing * -0.7);
   layoutMirror(rig.projectile, beat, facing);
+  layoutHologramSwarm(rig.aura, beat, facing);
 }
 
 /**
@@ -77,9 +78,11 @@ function statistics(
   support.rotation.z -= facing * present * 0.9;
   rig.head.rotation.z += facing * beat.read * 0.1;
   rig.torso.rotation.y += facing * (present * -0.18 + beat.strike * 0.34);
+  rig.root.position.x += facing * (beat.read * 0.06 + beat.strike * 0.46);
   rig.root.position.y += beat.strike * 0.06 - beat.collapse * 0.02;
   ringFlare(rig, present * 0.4 + beat.collapse * 0.8, facing * 1.4);
   layoutDashboard(rig.slash, beat, facing);
+  layoutHologramSwarm(rig.aura, beat, facing);
 }
 
 /** The halo rings answer every beat, so the supers read as one character. */

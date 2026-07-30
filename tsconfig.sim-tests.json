@@ -46,6 +46,7 @@
     "src/input/mimCommands.ts",
     "src/input/echoCommands.ts",
     "src/stage/echo/echoSuperTimeline.ts",
+    "src/stage/chrono/chronoAnimationBeats.ts",
     "src/stage/model/humanoidBones.ts",
     "src/stage/fighterPresentation.ts",
     "src/stage/mim/mimSpritePose.ts",

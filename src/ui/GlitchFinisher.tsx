@@ -1,27 +1,37 @@
 'use client';
 
+import { useEffect } from 'react';
 import type { GlitchSuperKind } from '@/src/data/glitch-super-moves';
+import {
+  GLITCH_SUPER_MOVE_IDS,
+} from '@/src/data/glitch-super-moves';
+import {
+  speakGlitchFinalLine,
+  speakGlitchMove,
+} from '@/src/stage/glitch/glitchVoiceLines';
 import styles from './GlitchFinisher.module.css';
 import motion from './GlitchFinisherMotion.module.css';
+import stage from './GlitchSuperStages.module.css';
 
-const CODE_ROWS = [
-  'opponent.mesh[07] ............ purged',
-  'rig.spine_02 ................. null',
-  'material.skin ........... 0x000000',
-  'collision.hurtbox ............ false',
-  'memory.entity .............. deleted',
+const UPDATE_MESSAGES = [
+  'Compatibility check failed',
+  'Opponent package is obsolete',
+  'Downloading impossible geometry',
+  'Applying reality hotfix',
+  'Rollback unavailable',
 ] as const;
 
-const PIXELS = Array.from({ length: 32 }, (_, index) => ({
-  id: index,
-  left: `${(index * 37 + 9) % 92}%`,
-  top: `${(index * 53 + 7) % 88}%`,
-}));
+const FAILURE_ROWS = [
+  'FATAL_EXCEPTION // 0x0000DEAD',
+  'kernel.fighter_state = CORRUPT',
+  'timeline.sync ............. LOST',
+  'reality.bounds ........... FALSE',
+] as const;
 
 const CINEMATIC_LABELS = {
-  error: 'Level 1 Super: Ошибка',
-  critical: 'Level 3 Super: Критическая ошибка',
-  patchNotes: 'Ultimate Finisher: Patch Notes',
+  error: 'Critical Error',
+  critical: 'Patch Notes',
+  patchNotes: 'System Failure',
 } as const;
 
 export function GlitchFinisher({
@@ -33,6 +43,16 @@ export function GlitchFinisher({
   readonly kind: GlitchSuperKind;
   readonly version: number;
 }) {
+  useEffect(() => {
+    speakGlitchMove(GLITCH_SUPER_MOVE_IDS[kind]);
+    if (kind !== 'patchNotes') return undefined;
+    const finalLine = window.setTimeout(
+      () => speakGlitchFinalLine(version),
+      2_650,
+    );
+    return () => window.clearTimeout(finalLine);
+  }, [kind, version]);
+
   return (
     <section
       key={version}
@@ -44,56 +64,38 @@ export function GlitchFinisher({
       role="status"
     >
       <div className={`${styles.noise} ${motion.noise}`} aria-hidden="true" />
-      {kind === 'error' && <ErrorStage />}
-      {kind === 'critical' && <CriticalStage />}
-      {kind === 'patchNotes' && <PatchNotesStage />}
+      {kind === 'error' && <CriticalErrorStage />}
+      {kind === 'critical' && <PatchNotesStage />}
+      {kind === 'patchNotes' && <SystemFailureStage version={version} />}
       <div className={`${styles.finalFlash} ${motion.finalFlash}`} aria-hidden="true" />
     </section>
   );
 }
 
-function ErrorStage() {
+function CriticalErrorStage() {
   return (
-    <section className={`${styles.errorStage} ${motion.errorStage}`}>
-      <header className={motion.errorTitle}>
-        <span>Level 1 Super</span>
-        <h2>Ошибка</h2>
-        <i>Error_01 // render thread unstable</i>
+    <section className={`${stage.critical} ${motion.errorStage}`}>
+      <div className={stage.brokenHud} aria-hidden="true">
+        <span><i /></span>
+        <b>99 // ERROR // 01</b>
+        <span><i /></span>
+      </div>
+      <header className={`${stage.criticalTitle} ${motion.errorTitle}`}>
+        <span>Q + E // SUPER_01</span>
+        <h2>CRITICAL<br />ERROR</h2>
+        <i>Working as intended.</i>
       </header>
-      <div className={`${styles.opponent} ${motion.opponent}`}>
-        <b>OPPONENT.dll</b>
-        <div className={styles.silhouette} aria-hidden="true">
-          {PIXELS.map((pixel) => (
-            <i key={pixel.id} style={{ left: pixel.left, top: pixel.top }} />
-          ))}
-        </div>
-        <small>TEXTURE STREAM // 04 FPS</small>
+      <div className={`${stage.realitySlices} ${motion.opponent}`} aria-hidden="true">
+        {Array.from({ length: 12 }, (_, index) => (
+          <i key={index} style={{ '--slice': index } as React.CSSProperties} />
+        ))}
+        <strong>GLITCH attacks between frames</strong>
       </div>
-      <div className={styles.lagMeter}>
-        <span>FRAME LOSS</span><b>96.7%</b>
-        <i><u /></i>
-      </div>
-    </section>
-  );
-}
-
-function CriticalStage() {
-  return (
-    <section className={`${styles.bsodStage} ${motion.bsodStage}`}>
-      <div className={styles.bsodCopy}>
-        <em>Level 3 Super</em>
-        <b>:(</b>
-        <h2>Критическая ошибка</h2>
-        <p>Система боя столкнулась с проблемой. Противник будет удалён.</p>
-        <small>Stop code: OPPONENT_STILL_EXISTS</small>
-      </div>
-      <div className={styles.terminal}>
-        <span>GLITCH@SYSTEM:~$</span>
-        <strong className={motion.command}>DELETE OPPONENT</strong>
-        <kbd className={motion.enterKey}>Enter</kbd>
-      </div>
-      <div className={`${styles.codeVictim} ${motion.codeVictim}`}>
-        {CODE_ROWS.map((row) => <code key={row}>{row}</code>)}
+      <div className={stage.errorLog}>
+        <b>WORLD_RENDERER.EXE</b>
+        <span>Containment: FAILED</span>
+        <span>Hit confirmation: 100%</span>
+        <code>Not a bug. Feature.</code>
       </div>
     </section>
   );
@@ -101,27 +103,68 @@ function CriticalStage() {
 
 function PatchNotesStage() {
   return (
-    <section className={`${styles.patchStage} ${motion.patchStage}`}>
-      <div className={styles.patchWindow}>
-        <div className={styles.windowBar}>
+    <section className={stage.patchNotes}>
+      <div className={stage.warningFlood} aria-hidden="true">
+        {UPDATE_MESSAGES.map((message, index) => (
+          <article key={message} style={{ '--window': index } as React.CSSProperties}>
+            <b>⚠ UPDATE REQUIRED</b>
+            <span>{message}</span>
+            <i />
+          </article>
+        ))}
+      </div>
+      <div className={stage.updateWindow}>
+        <header>
           <span><i /><i /><i /></span>
-          <b>PATCH_NOTES.md</b>
-          <small>GLITCH OS</small>
-        </div>
-        <div className={styles.patchBody}>
-          <span>Ultimate finisher</span>
-          <h2>Patch Notes</h2>
-          <h3>Version 2.0</h3>
-          <div className={styles.removed}>
-            <i>−</i>
-            <strong>Removed opponent</strong>
-            <small>Resolved a persistent combat entity.</small>
+          <b>GLITCH_OS // PATCH NOTES</b>
+          <small>×</small>
+        </header>
+        <main>
+          <em>Q + R // SUPER_02</em>
+          <h2>VERSION<br />MISMATCH</h2>
+          <p>Opponent build is incompatible with this reality.</p>
+          <div className={stage.updateBar}><i /></div>
+          <strong>INSTALLING CHAOS... 99%</strong>
+        </main>
+      </div>
+      <div className={stage.patchToast}>
+        <b>PATCH DEPLOYED</b>
+        <span>Opponent overwhelmed successfully.</span>
+      </div>
+    </section>
+  );
+}
+
+function SystemFailureStage({ version }: { readonly version: number }) {
+  const finalLines = ['FATAL EXCEPTION', 'KERNEL PANIC', 'SYSTEM FAILURE'] as const;
+  return (
+    <section className={stage.systemFailure}>
+      <div className={stage.blackout}>
+        <span>NO SIGNAL</span>
+      </div>
+      <div className={stage.crashDialog}>
+        <header>FIGHTER PROCESS</header>
+        <main>
+          <i>×</i>
+          <div>
+            <h2>Opponent.exe stopped responding.</h2>
+            <p>The program has crossed an invalid reality boundary.</p>
           </div>
-          <button className={motion.saveButton} tabIndex={-1} type="button">
-            Save
-          </button>
-          <i className={`${styles.cursor} ${motion.cursor}`} aria-hidden="true" />
+        </main>
+        <footer><button type="button">WAIT</button><button type="button">END PROCESS</button></footer>
+      </div>
+      <div className={stage.failureRows}>
+        {FAILURE_ROWS.map((row) => <code key={row}>{row}</code>)}
+      </div>
+      <div className={stage.voidRift} aria-hidden="true">
+        <div className={stage.voidGlitch}>
+          <i /><i /><i /><i /><i />
         </div>
+        <b>GLITCH</b>
+      </div>
+      <div className={stage.failureFinal}>
+        <small>Q + F // ULTIMATE</small>
+        <strong>{finalLines[version % finalLines.length]}</strong>
       </div>
     </section>
   );

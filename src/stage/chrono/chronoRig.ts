@@ -3,6 +3,8 @@ import type { FighterSnapshot } from '@/src/sim';
 import type { Group } from 'three';
 import { CHRONO_MOVE_IDS } from '@/src/data/chrono-combat-moves';
 import { combatAnimationProgress } from '../combatAnimationProgress';
+import { chronoAnimationBeats } from './chronoAnimationBeats';
+import { applyChronoSuperAnimation } from './chronoSuperAnimation';
 
 export interface ChronoRigRefs {
   readonly root: RefObject<Group | null>;
@@ -83,9 +85,15 @@ export function applyChronoCombatAnimation(
   }
 
   const action = fighter.action;
-  if (action === null) return;
+  if (action === null) {
+    if (fighter.dashFrames > 0) applyChronoFutureStep(rig, facing, fighter.dashFrames);
+    return;
+  }
   const progress = combatAnimationProgress(action.moveId, action.frame);
-  const { anticipation, strike, impact } = attackBeats(progress);
+  if (applyChronoSuperAnimation(rig, action.moveId, progress, facing)) return;
+  const { anticipation, attack, impact } = chronoAnimationBeats(progress);
+  const strike = Math.min(1.06, attack + impact * 0.06);
+  const clock = Math.max(impact, attack * 0.16);
 
   if (action.moveId === CHRONO_MOVE_IDS.lp) {
     arm.position.x += facing * (-anticipation * 0.12 + strike * 0.46);
@@ -94,7 +102,7 @@ export function applyChronoCombatAnimation(
     rig.root.position.x += facing * (-anticipation * 0.035 + strike * 0.16);
     rig.torso.rotation.y += facing * (-anticipation * 0.12 + strike * 0.2);
     rig.head.rotation.y -= facing * strike * 0.08;
-    showClockEffect(rig, facing, impact, 0.8, 1.2, 0.34);
+    showClockEffect(rig, facing, clock, 0.8, 1.2, 0.34);
   } else if (action.moveId === CHRONO_MOVE_IDS.hp) {
     arm.position.x += facing * (-anticipation * 0.16 + strike * 0.62);
     arm.position.y += anticipation * 0.08 + strike * 0.13;
@@ -104,7 +112,7 @@ export function applyChronoCombatAnimation(
     rig.torso.rotation.y += facing * (-anticipation * 0.28 + strike * 0.46);
     rig.head.rotation.y -= facing * strike * 0.18;
     rig.coat.rotation.z -= facing * strike * 0.15;
-    showClockEffect(rig, facing, impact, 1.18, 1.2, 0.82);
+    showClockEffect(rig, facing, clock, 1.18, 1.2, 0.82);
   } else if (action.moveId === CHRONO_MOVE_IDS.lk) {
     const crouch = Math.max(anticipation * 0.92, strike);
     rig.root.position.x -= facing * anticipation * 0.1;
@@ -117,7 +125,7 @@ export function applyChronoCombatAnimation(
     supportArm.rotation.z += facing * crouch * 0.42;
     rig.torso.rotation.z += facing * crouch * 0.17;
     rig.coat.rotation.z += facing * strike * 0.2;
-    showClockEffect(rig, facing, impact, 0.94, 0.32, 0.5);
+    showClockEffect(rig, facing, clock, 0.94, 0.32, 0.5);
   } else if (action.moveId === CHRONO_MOVE_IDS.hk) {
     leg.position.x += facing * (-anticipation * 0.13 + strike * 0.66);
     leg.position.y += anticipation * 0.24 + strike * 0.62;
@@ -128,7 +136,7 @@ export function applyChronoCombatAnimation(
     rig.torso.rotation.z -= facing * strike * 0.28;
     rig.root.rotation.y += facing * (anticipation * 0.16 + strike * 0.28);
     rig.coat.rotation.z -= facing * strike * 0.24;
-    showClockEffect(rig, facing, impact, 1.08, 1.34, 0.68);
+    showClockEffect(rig, facing, clock, 1.08, 1.34, 0.68);
   }
 }
 
@@ -154,32 +162,23 @@ function applyChronoStance(
   rig.head.rotation.y = -facing * 0.035;
 }
 
-function attackBeats(progress: number): {
-  readonly anticipation: number;
-  readonly strike: number;
-  readonly impact: number;
-} {
-  if (progress < 0.34) {
-    return {
-      anticipation: smooth(progress / 0.34),
-      strike: 0,
-      impact: 0,
-    };
-  }
-  if (progress < 0.58) {
-    return { anticipation: 0, strike: 1, impact: 1 };
-  }
-  const recovery = smooth((progress - 0.58) / 0.42);
-  return {
-    anticipation: 0,
-    strike: 1 - recovery,
-    impact: Math.max(0, 1 - recovery * 4),
-  };
-}
-
-function smooth(value: number): number {
-  const clamped = Math.max(0, Math.min(1, value));
-  return clamped * clamped * (3 - 2 * clamped);
+function applyChronoFutureStep(
+  rig: ChronoRig,
+  facing: -1 | 1,
+  dashFrames: number,
+): void {
+  const skip = Math.min(1, dashFrames / 8);
+  rig.root.position.y += 0.035;
+  rig.torso.rotation.y += facing * 0.1;
+  rig.head.rotation.y -= facing * 0.08;
+  rig.leftArm.rotation.z += 0.12;
+  rig.rightArm.rotation.z -= 0.12;
+  rig.coat.rotation.z -= facing * 0.08;
+  rig.effect.visible = true;
+  rig.effect.position.set(-facing * 0.25, 1.18, -0.04);
+  rig.effect.rotation.z = -facing * skip * Math.PI * 1.4;
+  rig.effect.scale.setScalar(0.62 + skip * 0.28);
+  rig.fragments.rotation.z -= facing * skip * 0.12;
 }
 
 function applyChronoKnockdown(rig: ChronoRig, facing: -1 | 1): void {

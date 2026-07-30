@@ -27,7 +27,7 @@ export function EchoAnalysis({
 }) {
   return (
     <section
-      aria-label={`${fighterId.toUpperCase()} ECHO: Анализ`}
+      aria-label={`${fighterId.toUpperCase()} ECHO: Perfect Read`}
       aria-live="assertive"
       className={`${shell.scene} ${styles.scene}`}
       data-side={fighterId}
@@ -35,9 +35,9 @@ export function EchoAnalysis({
     >
       <div className={styles.grid} aria-hidden="true" />
       <header className={shell.header}>
-        <span>Level 1 Super</span>
-        <strong>Анализ</strong>
-        <i>24 поведенческих отпечатка синхронизированы</i>
+        <span>Q + E // Counter sequence</span>
+        <strong>Perfect Read</strong>
+        <i>24 behavioral traces synchronized</i>
       </header>
       <div className={styles.target} aria-hidden="true">
         <i />
@@ -58,8 +58,8 @@ export function EchoAnalysis({
         ))}
       </div>
       <blockquote className={styles.quote}>
-        <small>ECHO // вывод</small>
-        <p>«Предсказуемо.»</p>
+        <small>ECHO // COUNTER MODEL</small>
+        <p>“Exactly as expected.”</p>
       </blockquote>
       <div className={styles.impact} aria-hidden="true" />
     </section>

@@ -25,7 +25,7 @@ export function EchoRepeat({
 }: EchoRepeatProps) {
   return (
     <section
-      aria-label={`${fighterId.toUpperCase()} ECHO: Повтор`}
+      aria-label={`${fighterId.toUpperCase()} ECHO: Data Overload`}
       aria-live="assertive"
       className={`${shell.scene} ${styles.scene}`}
       data-side={fighterId}
@@ -33,9 +33,9 @@ export function EchoRepeat({
     >
       <div className={styles.scanlines} aria-hidden="true" />
       <header className={shell.header}>
-        <span>Level 3 Super</span>
-        <strong>Повтор</strong>
-        <i>Идеальная модель // {opponentName}</i>
+        <span>Q + R // Tactical projection</span>
+        <strong>Data Overload</strong>
+        <i>Pattern complete // {opponentName}</i>
       </header>
       <div className={figure.mirror} aria-hidden="true">
         <i className={figure.glass} />
@@ -54,7 +54,7 @@ export function EchoRepeat({
       </div>
       <div className={styles.counter} aria-hidden="true">
         <strong>7</strong>
-        <span>Hit reconstruction</span>
+        <span>Adaptive echoes deployed</span>
       </div>
       <div className={styles.finish} aria-hidden="true" />
     </section>

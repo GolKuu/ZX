@@ -14,9 +14,9 @@ const SHARDS = Array.from({ length: 16 }, (_, index) => ({
 }));
 
 const METRICS = [
-  { className: dashboard.jumps, label: 'Прыжков', value: '37' },
-  { className: dashboard.spam, label: 'Спама', value: '82%' },
-  { className: dashboard.errors, label: 'Ошибок', value: '94%' },
+  { className: dashboard.jumps, label: 'OPTIONS', value: '2048' },
+  { className: dashboard.spam, label: 'DISCARDED', value: '99.9%' },
+  { className: dashboard.errors, label: 'OUTCOME', value: '1' },
 ] as const;
 
 export function EchoStatistics({
@@ -26,7 +26,7 @@ export function EchoStatistics({
 }) {
   return (
     <section
-      aria-label={`${fighterId.toUpperCase()} ECHO: Статистика`}
+      aria-label={`${fighterId.toUpperCase()} ECHO: Final Prediction`}
       aria-live="assertive"
       className={`${shell.scene} ${styles.scene}`}
       data-side={fighterId}
@@ -34,9 +34,9 @@ export function EchoStatistics({
     >
       <div className={styles.noise} aria-hidden="true" />
       <header className={`${shell.header} ${styles.header}`}>
-        <span>Ultimate Finisher</span>
-        <strong>Статистика</strong>
-        <i>Матч завершён // привычки классифицированы</i>
+        <span>Q + F // Full meter</span>
+        <strong>Final Prediction</strong>
+        <i>All futures collapsed // one outcome remains</i>
       </header>
       <div className={dashboard.dashboard}>
         <div className={dashboard.axis} aria-hidden="true">
@@ -55,7 +55,7 @@ export function EchoStatistics({
               <div className={dashboard.chart} aria-hidden="true">
                 {Array.from({ length: 12 }, (_, index) => <i key={index} />)}
               </div>
-              {metric.label === 'Ошибок' && (
+              {metric.label === 'OUTCOME' && (
                 <div className={dashboard.shards} aria-hidden="true">
                   {SHARDS.map((shard, index) => (
                     <i
@@ -73,8 +73,8 @@ export function EchoStatistics({
         </div>
       </div>
       <blockquote className={styles.quote}>
-        <small>ECHO // заключение</small>
-        <p>«Я победил тебя твоими привычками.»</p>
+        <small>ECHO // FINAL FORECAST</small>
+        <p>“There was only one outcome.”</p>
       </blockquote>
       <div className={styles.blast} aria-hidden="true" />
     </section>

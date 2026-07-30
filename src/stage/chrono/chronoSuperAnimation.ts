@@ -1,4 +1,4 @@
-import { MathUtils, type Group } from 'three';
+import { MathUtils } from 'three';
 import {
   CHRONO_SUPER_MOVE_IDS,
 } from '@/src/data/chrono-super-moves';

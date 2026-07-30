@@ -17,6 +17,11 @@ import { FIXED_SCALE } from '@/src/sim';
 import { EchoBody } from './echo/EchoBody';
 import { applyEchoCombatAnimation } from './echo/echoCombatAnimation';
 import {
+  createEchoObservation,
+  observeOpponent,
+} from './echo/echoObservation';
+import { layoutEchoPredictionFx } from './echo/echoPredictionFx';
+import {
   createEchoMaterials,
   disposeEchoMaterials,
   echoToonMaterials,
@@ -41,7 +46,9 @@ export function EchoFighter({
   readonly fighterId: 'p1' | 'p2';
 }) {
   const outer = useRef<Group>(null);
+  const predictionRef = useRef<Group>(null);
   const refs = useRigRefs();
+  const observation = useRef(createEchoObservation());
   const resources = useMemo(() => createEchoResources(), []);
   const gradient = useMemo(() => createCelGradient(), []);
   const outline = useMemo(() => createOutlineMaterial(), []);
@@ -69,24 +76,34 @@ export function EchoFighter({
     outline.dispose();
   }, [gradient, materials, outline, resources]);
 
-  useFrame(({ camera: activeCamera, clock }) => {
+  useFrame(({ camera: activeCamera, clock }, delta) => {
     const rig = readFighterRig(refs);
     const fighter = readCombatFighter(fighterId);
     const outerGroup = outer.current;
     if (rig === null || fighter === null || outerGroup === null) return;
-    resetEchoRig(rig, clock.elapsedTime);
+    const opponent = readCombatFighter(opponentId);
+    const readout = observeOpponent(observation.current, opponent, delta);
+    resetEchoRig(rig, clock.elapsedTime, readout);
     const alpha = combatRenderFrame.interpolationAlpha;
     outerGroup.position.x = (
       fighter.previousPosition.x
       + (fighter.position.x - fighter.previousPosition.x) * alpha
     ) / FIXED_SCALE;
     outerGroup.position.y = fighter.position.y / FIXED_SCALE;
-    const opponent = readCombatFighter(opponentId);
     const presentation = withOpponentFacing(fighter, opponent);
     const visualFacing = presentation.facing;
     turnTowardOpponent(outerGroup, rig.head, visualFacing);
     applyWalkCycle(rig, fighter, clock.elapsedTime, visualFacing, 0.9);
     applyEchoCombatAnimation(rig, presentation);
+    if (predictionRef.current !== null) {
+      layoutEchoPredictionFx(
+        predictionRef.current,
+        readout,
+        presentation,
+        opponent,
+        clock.elapsedTime,
+      );
+    }
 
     const self = { x: outerGroup.position.x, z: outerGroup.position.z };
     const other = opponent === null
@@ -102,6 +119,7 @@ export function EchoFighter({
       <EchoBody
         materials={materials}
         outline={outline}
+        predictionRef={predictionRef}
         refs={refs}
         resources={resources}
       />

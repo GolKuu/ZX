@@ -47,9 +47,10 @@ export function createEchoMaterials(
       toneMapped: false,
       transparent: true,
     }),
+    electric: superMaterial('#4f8cff', 0.72),
     hologram: superMaterial('#4ceaff', 0.32),
     mirror: superMaterial('#c3f4ff', 0.5),
-    alert: superMaterial('#ff5d78', 0.62),
+    alert: superMaterial('#4f8cff', 0.72),
   };
 }
 

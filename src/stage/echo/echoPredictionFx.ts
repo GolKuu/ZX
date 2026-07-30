@@ -1,4 +1,5 @@
 import { ECHO_MOVE_IDS } from '@/src/data/echo-combat-moves';
+import { ECHO_SUPER_MOVE_IDS } from '@/src/data/echo-super-moves';
 import type { FighterSnapshot } from '@/src/sim';
 import type { Group, Object3D } from 'three';
 import type { EchoReadout } from './echoObservation';
@@ -24,10 +25,14 @@ export function layoutEchoPredictionFx(
   const probing = moveId === ECHO_MOVE_IDS.lp;
   const predicting = moveId === ECHO_MOVE_IDS.hp;
   const punishing = moveId === ECHO_MOVE_IDS.lk || moveId === ECHO_MOVE_IDS.hk;
+  const perfectRead = moveId === ECHO_SUPER_MOVE_IDS.analysis;
+  const dataOverload = moveId === ECHO_SUPER_MOVE_IDS.repeat;
+  const finalPrediction = moveId === ECHO_SUPER_MOVE_IDS.statistics;
   const signal = Math.max(
     readout.confidence,
     readout.scanPulse * 0.75,
     probing ? 0.8 : 0,
+    perfectRead || dataOverload || finalPrediction ? 1 : 0,
   );
 
   group.visible = signal > VISIBLE || predicting || punishing;
@@ -48,7 +53,10 @@ export function layoutEchoPredictionFx(
       trajectories,
       facing,
       localDistance,
-      Math.max(readout.lockPulse, predicting ? 1 : 0),
+      Math.max(
+        readout.lockPulse,
+        predicting || perfectRead || finalPrediction ? 1 : 0,
+      ),
       time,
     );
   }
@@ -60,7 +68,10 @@ export function layoutEchoPredictionFx(
       clone,
       facing,
       localDistance,
-      Math.max(readout.confidence, punishing ? 0.72 : 0),
+      Math.max(
+        readout.confidence,
+        punishing || dataOverload || finalPrediction ? 0.86 : 0,
+      ),
       time,
     );
   }

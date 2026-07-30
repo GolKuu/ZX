@@ -3,13 +3,8 @@ import type { Material } from 'three';
 import { FighterPart } from '../FighterPart';
 import type { FighterResources } from '../fighterResources';
 import type { ChronoMaterials } from './chronoMaterials';
+import { ChronoClockEffects } from './ChronoClockEffects';
 import type { ChronoRigRefs } from './chronoRig';
-
-const CLOCK_FRAGMENTS: readonly (readonly [number, number, number, number])[] = [
-  [-0.58, 0.32, -0.1, -0.4],
-  [0.62, 0.18, 0.04, 1.8],
-  [-0.48, -0.55, 0.08, 3.5],
-];
 
 export function ChronoBody({
   materials,
@@ -54,8 +49,7 @@ export function ChronoBody({
         </mesh>
       </group>
 
-      <ClockFragments material={materials.energy} refGroup={refs.fragments} />
-      <ClockStrike material={materials.energy} refGroup={refs.effect} />
+      <ChronoClockEffects material={materials.energy} refs={refs} />
     </group>
   );
 }
@@ -103,44 +97,6 @@ function ChronoLeg({
       <FighterPart geometry={resources.thigh} outlineMaterial={outline} position={[0, -0.06, 0]} scale={[0.78, 0.76, 0.76]} toonMaterial={materials.suit} />
       <FighterPart geometry={resources.shin} outlineMaterial={outline} position={[0, -0.4, 0]} scale={[0.76, 0.74, 0.76]} toonMaterial={materials.coat} />
       <FighterPart geometry={resources.foot} outlineMaterial={outline} position={[0, -0.64, 0.07]} scale={[0.94, 0.84, 0.96]} toonMaterial={materials.silver} />
-    </group>
-  );
-}
-
-function ClockFragments({
-  material,
-  refGroup,
-}: {
-  readonly material: Material;
-  readonly refGroup: ChronoRigRefs['fragments'];
-}) {
-  return (
-    <group ref={refGroup}>
-      {CLOCK_FRAGMENTS.map(([x, y, z, rotation], index) => (
-        <mesh key={index} material={material} position={[x, y, z]} rotation-z={rotation}>
-          <torusGeometry args={[0.13, 0.018, 5, 18, Math.PI * 0.72]} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-function ClockStrike({
-  material,
-  refGroup,
-}: {
-  readonly material: Material;
-  readonly refGroup: ChronoRigRefs['effect'];
-}) {
-  return (
-    <group ref={refGroup} visible={false}>
-      <mesh material={material}><torusGeometry args={[0.42, 0.035, 8, 40]} /></mesh>
-      <mesh material={material} rotation-z={0.45} scale={[1, 0.08, 1]}>
-        <boxGeometry args={[0.72, 0.12, 0.04]} />
-      </mesh>
-      <mesh material={material} rotation-z={-0.82} scale={[1, 0.08, 1]}>
-        <boxGeometry args={[0.56, 0.1, 0.04]} />
-      </mesh>
     </group>
   );
 }
