@@ -12,7 +12,10 @@ import {
   SOURCE,
   VIEW,
 } from './mim-sprite-data.mjs';
-import { keepLargestOpaqueComponent } from './mim-alpha.mjs';
+import {
+  keepLargestOpaqueComponent,
+  recolourDarkRegions,
+} from './mim-alpha.mjs';
 
 const TEXTURE_SCALE = 2;
 const CUTOUT_PADDING = 2;
@@ -85,7 +88,11 @@ async function sliceProfile() {
       .composite([{ input: sourceMask, blend: 'dest-in' }])
       .png()
       .toBuffer();
-    let cut = clippedSource;
+    const cleanedSource = await recolourDarkRegions(
+      clippedSource,
+      spec.darkCleanup,
+    );
+    let cut = cleanedSource;
     if (spec.base === true) {
       const polygon = spec.points.map((point) => point.join(',')).join(' ');
       const strokeWidth = spec.baseStrokeWidth ?? 4;
@@ -103,7 +110,7 @@ async function sliceProfile() {
           channels: 4,
           background: { r: 0, g: 0, b: 0, alpha: 0 },
         },
-      }).composite([{ input: base }, { input: clippedSource }]).png().toBuffer();
+      }).composite([{ input: base }, { input: cleanedSource }]).png().toBuffer();
     }
     const [left, top, width, height] = spec.box;
     const extracted = await sharp(cut).extract({ left, top, width, height }).png().toBuffer();

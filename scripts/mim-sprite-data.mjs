@@ -29,9 +29,10 @@ export const PARTS = {
       { cx: 176, cy: 177, rx: 19, ry: 34 },
       { cx: 290, cy: 178, rx: 38, ry: 62 },
       { cx: 132, cy: 126, rx: 52, ry: 31 },
-      // Remove the doubled waistband/crotch ink. A clean purple underlay remains
-      // and hides the two leg cut-outs as they rotate below the jacket.
-      { cx: 224, cy: 263, rx: 18, ry: 7 },
+    ],
+    darkCleanup: [
+      // Recolour only the doubled crotch ink, preserving the jacket texture.
+      { cx: 224, cy: 263, rx: 18, ry: 7, fill: [103, 57, 182] },
     ],
   },
   leftArm: {
@@ -40,6 +41,9 @@ export const PARTS = {
     points: [[138, 122], [171, 125], [187, 141], [207, 152], [208, 180],
       [195, 202], [183, 222], [157, 231], [131, 221], [113, 202],
       [106, 174], [114, 145]],
+    darkCleanup: [
+      { cx: 151, cy: 137, rx: 18, ry: 10, fill: [103, 57, 182] },
+    ],
   },
   rightArm: {
     box: [251, 113, 90, 114],
@@ -47,6 +51,9 @@ export const PARTS = {
     points: [[267, 122], [292, 116], [319, 125], [334, 140], [340, 165],
       [332, 190], [313, 211], [286, 224], [264, 216], [253, 196],
       [253, 163]],
+    darkCleanup: [
+      { cx: 274, cy: 137, rx: 18, ry: 10, fill: [103, 57, 182] },
+    ],
   },
   leftLeg: {
     box: [46, 241, 164, 160],
@@ -54,6 +61,9 @@ export const PARTS = {
     points: [[156, 246], [191, 243], [208, 263], [201, 294], [187, 325],
       [175, 350], [164, 374], [138, 391], [80, 394], [48, 383],
       [49, 344], [85, 326], [100, 296], [117, 266], [138, 250]],
+    darkCleanup: [
+      { cx: 178, cy: 251, rx: 25, ry: 9, fill: [103, 57, 182] },
+    ],
   },
   rightLeg: {
     box: [199, 240, 160, 165],
@@ -61,6 +71,9 @@ export const PARTS = {
     points: [[213, 246], [255, 243], [286, 253], [311, 272], [322, 300],
       [312, 329], [295, 347], [329, 352], [354, 376], [349, 399],
       [280, 400], [252, 383], [237, 359], [240, 330], [247, 304], [225, 283]],
+    darkCleanup: [
+      { cx: 240, cy: 251, rx: 25, ry: 9, fill: [103, 57, 182] },
+    ],
   },
 };
 
