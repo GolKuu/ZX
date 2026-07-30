@@ -64,6 +64,11 @@ function toon(
 ): ToonMaterial {
   return createToonMaterial({
     color,
+    // Fully illustrated: the two bands are the palette's own lit and shade
+    // colours, so the hoodie stays MIM's purple and the sneakers stay white
+    // whatever the stage lighting is doing. Matches the character sheet, which
+    // is flat vector art with no rendered falloff anywhere on it.
+    flatten: 1,
     gradientMap,
     rimColor,
     rimStrength,

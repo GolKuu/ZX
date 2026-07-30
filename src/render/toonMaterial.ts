@@ -77,14 +77,16 @@ export interface ToonMaterialOptions {
    * How far to push the surface from *rendered* toward *illustrated* (0…1).
    *
    * At 0 the shaded band is the lit result multiplied by the shadow hue, which
-   * is what the material always did — and what crushed every character to a
+   * is what the material used to do — and what crushed every character to a
    * black cut-out, because multiplying an already-dim result by a dark tint has
    * no floor. At 1 the two bands are simply the zone's own lit and shade
    * colours, flat, exactly as the character sheets are drawn: shade is a hue,
    * never a darkness (ART-CCU-400 §A2 / VIS-CCU-800 §A1–A2).
    *
-   * Characters want this high. The stage wants it low — it is lit scenery, not
-   * a drawn figure, and flattening it would throw away the arena's form.
+   * **Defaults to 1**, because law A1 is "illustrated, not rendered" and every
+   * caller but one is a character. The arena opts out: it is lit scenery, and
+   * flattening it would throw away the form the three-point rig is there to
+   * describe.
    */
   readonly flatten?: number;
 }
@@ -140,7 +142,7 @@ export function createToonMaterial(options: ToonMaterialOptions): ToonMaterial {
     uZoneRange: { value: [options.heightRange?.[0] ?? 0, options.heightRange?.[1] ?? 1] },
     uDetailBands: { value: options.detailBands ?? 4 },
     uDetailContrast: { value: options.detailContrast ?? 1.6 },
-    uFlatten: { value: options.flatten ?? 0 },
+    uFlatten: { value: options.flatten ?? 1 },
   };
 
   const material = new MeshToonMaterial({

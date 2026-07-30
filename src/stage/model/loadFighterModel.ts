@@ -218,6 +218,20 @@ export async function loadFighterModel(
   // measured off the skeleton rather than assumed.
   root.rotation.y = measureForwardYaw(joints) ?? 0;
 
+  // Seat the rig on its own origin, now that both scale and facing are final.
+  //
+  // Only height was corrected before. Vendors do not agree that a character
+  // stands at (0, 0, 0) — and the facing yaw swings any horizontal offset around
+  // the group origin — so a fighter could render a metre or more from the
+  // position the simulation had it at. Both fighters drifted to one side of the
+  // arena, which then dragged the tracking camera to its pan limit.
+  root.updateMatrixWorld(true);
+  const seated = new Box3().setFromObject(root);
+  seated.getCenter(seatCentre);
+  root.position.x -= seatCentre.x;
+  root.position.z -= seatCentre.z;
+  root.position.y -= seated.min.y;
+
   const report = reportJoints(joints);
   if (!report.usable) {
     warnings.push(
@@ -275,6 +289,7 @@ function applyBindHeightRange(
   }
 }
 
+const seatCentre = new Vector3();
 const jointPosition = new Vector3();
 const modelUp = new Vector3();
 const modelRight = new Vector3();
