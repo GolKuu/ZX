@@ -15,7 +15,6 @@ import {
 } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
 import {
-  combatAnimationProgress,
   isStrikeFrame,
   spriteAnimationProgress,
 } from '../combatAnimationProgress';
@@ -71,10 +70,13 @@ const LEGS_BELOW = 0.95;
 const HEAD_ABOVE = 1.82;
 
 export function Sprite2DFighter({
+  animationSpeed = 1,
   attackPoseName,
   fighterId,
   rigName,
 }: {
+  /** Multiplier for render-only idle and locomotion animation. */
+  readonly animationSpeed?: number;
   /** Sliced attack panels, when the sheet draws them in costume colour. */
   readonly attackPoseName?: string;
   readonly fighterId: 'p1' | 'p2';
@@ -200,12 +202,10 @@ export function Sprite2DFighter({
 
     const progress = fighter.action === null
       ? 0
-      : attackPoseName !== undefined
-        ? spriteAnimationProgress(
-          fighter.action.moveId,
-          fighter.action.frame,
-        )
-        : combatAnimationProgress(fighter.action.moveId, fighter.action.frame);
+      : spriteAnimationProgress(
+        fighter.action.moveId,
+        fighter.action.frame,
+      );
 
     // Which read is on screen: the drawn attack pose, or the jointed rig.
     const drawn = fighter.action !== null
@@ -227,7 +227,7 @@ export function Sprite2DFighter({
 
     const pose = spritePoseFor(
       presentation,
-      clock.elapsedTime,
+      clock.elapsedTime * animationSpeed,
       progress,
       hurtZoneOf(fighterId, fighter.position.y / FIXED_SCALE),
     );
