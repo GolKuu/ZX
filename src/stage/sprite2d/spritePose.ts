@@ -314,6 +314,7 @@ function attackFor(moveId: string): AttackPose {
  * hands over in `CombatHit`.
  */
 export type HurtZone = 'head' | 'body' | 'legs';
+export type SpriteAttackTransition = 'contact' | 'windup';
 
 /**
  * Struck. Three reactions, because one is a tell that the game is not watching.
@@ -451,6 +452,7 @@ export function spritePoseFor(
   time: number,
   progress: number,
   hurtZone: HurtZone = 'body',
+  attackTransition: SpriteAttackTransition = 'windup',
 ): SpritePose {
   if (!fighter.grounded) {
     return withinLimits(airborne(fighter.velocity.y > 0));
@@ -460,6 +462,11 @@ export function spritePoseFor(
     const attack = attackFor(fighter.action.moveId);
     const [windup, strike, settle] = beats(progress);
     const fightingStance = stance(0);
+    if (attackTransition === 'contact') {
+      const contactPose = attack(1, 1, 0);
+      const amount = strike === 0 ? windup : 1 - settle;
+      return withinLimits(blendPose(fightingStance, contactPose, amount));
+    }
     if (strike === 0) {
       // The timeline already supplies four evenly spaced windup amounts. Build
       // the authored endpoint once and blend to it once; applying `windup`

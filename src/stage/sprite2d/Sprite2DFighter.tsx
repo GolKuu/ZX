@@ -33,6 +33,7 @@ import {
   type HurtZone,
   type SpritePose,
 } from './spritePose';
+import { IdolAttackAccent } from '../idol/IdolAttackAccent';
 import {
   disposeAttackPoses,
   disposeSpriteRig,
@@ -72,6 +73,7 @@ const HEAD_ABOVE = 1.82;
 export function Sprite2DFighter({
   animationSpeed = 1,
   attackPoseName,
+  contactEffects,
   fighterId,
   rigName,
 }: {
@@ -79,6 +81,7 @@ export function Sprite2DFighter({
   readonly animationSpeed?: number;
   /** Sliced attack panels, when the sheet draws them in costume colour. */
   readonly attackPoseName?: string;
+  readonly contactEffects?: 'idol';
   readonly fighterId: 'p1' | 'p2';
   readonly rigName: string;
 }) {
@@ -87,6 +90,7 @@ export function Sprite2DFighter({
   const rigGroup = useRef<Group>(null);
   const poseGroup = useRef<Group>(null);
   const shownPose = useRef<AttackPoseName | null>(null);
+  const shownContact = useRef<AttackPoseName | null>(null);
   const [rig, setRig] = useState<LoadedSpriteRig | null>(null);
   const [poses, setPoses] = useState<LoadedAttackPoses | null>(null);
   const opponentId = fighterId === 'p1' ? 'p2' : 'p1';
@@ -208,13 +212,15 @@ export function Sprite2DFighter({
       );
 
     // Which read is on screen: the drawn attack pose, or the jointed rig.
-    const drawn = fighter.action !== null
-      && poses !== null
+    const strikePose = fighter.action !== null
       && isStrikeFrame(fighter.action.moveId, fighter.action.frame)
       ? buttonOf(fighter.action.moveId)
       : null;
-    const available = drawn !== null && poses?.[drawn] !== undefined ? drawn : null;
+    const available = strikePose !== null && poses?.[strikePose] !== undefined
+      ? strikePose
+      : null;
     shownPose.current = available;
+    shownContact.current = contactEffects === 'idol' ? strikePose : null;
     if (rigGroup.current !== null) rigGroup.current.visible = available === null;
     if (poseGroup.current !== null) poseGroup.current.visible = available !== null;
 
@@ -230,6 +236,7 @@ export function Sprite2DFighter({
       clock.elapsedTime * animationSpeed,
       progress,
       hurtZoneOf(fighterId, fighter.position.y / FIXED_SCALE),
+      contactEffects === 'idol' ? 'contact' : 'windup',
     );
     apply(joints.current, pose);
     inner.position.y = pose.lift;
@@ -253,6 +260,9 @@ export function Sprite2DFighter({
             />
           )}
         </group>
+        {contactEffects === 'idol' ? (
+          <IdolAttackAccent shown={shownContact} />
+        ) : null}
       </group>
     </group>
   );

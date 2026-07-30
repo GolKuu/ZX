@@ -89,6 +89,7 @@ function SelectedFighter({
  */
 const SPRITE_RIGS: Partial<Record<CharacterId, {
   readonly animationSpeed?: number;
+  readonly contactEffects?: 'idol';
   readonly rig: string;
   /** Sliced clean attack panels, shown at the strike impact frame. */
   readonly attacks?: string;
@@ -103,7 +104,7 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
   // IDOL keeps the jointed rig on contact because her diagram panels have debug
   // volumes painted over missing body pixels. The shared stepped timeline still
   // gives her four anticipation poses, a clean held contact, and four returns.
-  idol: { rig: 'idol-profile' },
+  idol: { contactEffects: 'idol', rig: 'idol-profile' },
 };
 
 function primitiveFighter(
@@ -117,6 +118,7 @@ function primitiveFighter(
       <Sprite2DFighter
         animationSpeed={sprite.animationSpeed}
         attackPoseName={sprite.attacks}
+        contactEffects={sprite.contactEffects}
         fighterId={fighterId}
         rigName={sprite.rig}
       />

@@ -88,6 +88,27 @@ test('the four transition drawings are distinct and evenly spaced', () => {
   }
 });
 
+test('IDOL reaches her clean contact pose before the held strike, like MIM', () => {
+  for (const move of IDOL_MOVES) {
+    const lastApproach = spritePoseFor(
+      fighter(move.id),
+      0,
+      progressFor({ amount: 1, phase: 'approach' }),
+      'body',
+      'contact',
+    );
+    const heldContact = spritePoseFor(
+      fighter(move.id),
+      0,
+      progressFor({ amount: 1, phase: 'strike' }),
+      'body',
+      'contact',
+    );
+
+    assert.equal(poseKey(lastApproach), poseKey(heldContact), move.id);
+  }
+});
+
 function timeline(move) {
   return Array.from(
     { length: move.startup + move.active + move.recovery },
