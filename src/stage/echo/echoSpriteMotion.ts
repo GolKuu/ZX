@@ -1,4 +1,5 @@
 import { ECHO_MOVE_IDS } from '@/src/data/echo-combat-moves';
+import { ECHO_SPECIAL_MOVE_IDS } from '@/src/data/echo-special-moves';
 import type { FighterSnapshot } from '@/src/sim';
 import type { Group } from 'three';
 import type { SpriteJoints } from '../sprite2d/SpriteRigBody';
@@ -36,7 +37,25 @@ export function applyEchoSpriteMotion(
   const moveId = action.moveId;
   rotate(joints.head, -anticipation * 0.055);
 
-  if (moveId === ECHO_MOVE_IDS.lp) {
+  if (moveId === ECHO_SPECIAL_MOVE_IDS.patternScan) {
+    const scan = Math.sin(progress * Math.PI);
+    rotate(joints.upperArm, -scan * 0.22);
+    rotate(joints.forearm, -scan * 0.34);
+    rotate(joints.farUpperArm, scan * 0.2);
+    rotate(joints.farForearm, -scan * 0.28);
+    rotate(joints.head, -scan * 0.08);
+  } else if (moveId === ECHO_SPECIAL_MOVE_IDS.behavioralMirror) {
+    const mirror = Math.sin(progress * Math.PI);
+    rotate(joints.upperArm, -mirror * 0.36);
+    rotate(joints.forearm, mirror * 0.18);
+    rotate(joints.torso, -mirror * 0.06);
+  } else if (moveId === ECHO_SPECIAL_MOVE_IDS.predictionLock) {
+    const lock = Math.sin(progress * Math.PI);
+    rotate(joints.upperArm, -lock * 0.18);
+    rotate(joints.forearm, -lock * 0.46);
+    rotate(joints.head, -lock * 0.1);
+    body.position.x += fighter.facing * lock * 0.018;
+  } else if (moveId === ECHO_MOVE_IDS.lp) {
     rotate(joints.farForearm, -anticipation * 0.14);
     rotate(joints.torso, contact * 0.035);
   } else if (moveId === ECHO_MOVE_IDS.hp) {

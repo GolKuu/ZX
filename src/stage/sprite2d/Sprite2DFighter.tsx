@@ -13,6 +13,7 @@ import {
   readCombatFighter,
   readLatestHit,
 } from '@/src/game/combatRuntime';
+import { isEchoSpecialMove } from '@/src/data/echo-special-moves';
 import { FIXED_SCALE } from '@/src/sim';
 import { EchoSpriteEffects } from '../echo/EchoSpriteEffects';
 import { applyEchoSpriteMotion } from '../echo/echoSpriteMotion';
@@ -258,8 +259,11 @@ export function Sprite2DFighter({
       return;
     }
 
+    const poseFighter = isEchoSpecialMove(presentation.action?.moveId)
+      ? { ...presentation, action: null }
+      : presentation;
     const pose = spritePoseFor(
-      presentation,
+      poseFighter,
       clock.elapsedTime,
       progress,
       hurtZoneOf(fighterId, fighter.position.y / FIXED_SCALE),

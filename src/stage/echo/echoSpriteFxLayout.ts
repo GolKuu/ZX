@@ -1,4 +1,5 @@
 import { ECHO_MOVE_IDS } from '@/src/data/echo-combat-moves';
+import { ECHO_SPECIAL_MOVE_IDS } from '@/src/data/echo-special-moves';
 import { ECHO_SUPER_MOVE_IDS } from '@/src/data/echo-super-moves';
 import { FIXED_SCALE, type FighterSnapshot } from '@/src/sim';
 import type { Group, Object3D } from 'three';
@@ -28,6 +29,9 @@ export function layoutEchoSpriteFx(
   const perfect = moveId === ECHO_SUPER_MOVE_IDS.analysis;
   const overload = moveId === ECHO_SUPER_MOVE_IDS.repeat;
   const final = moveId === ECHO_SUPER_MOVE_IDS.statistics;
+  const patternScan = moveId === ECHO_SPECIAL_MOVE_IDS.patternScan;
+  const behavioralMirror = moveId === ECHO_SPECIAL_MOVE_IDS.behavioralMirror;
+  const predictionLock = moveId === ECHO_SPECIAL_MOVE_IDS.predictionLock;
   const distance = opponent === null
     ? 2.2
     : Math.min(
@@ -37,7 +41,7 @@ export function layoutEchoSpriteFx(
   const signal = Math.max(
     readout.confidence,
     readout.scanPulse * 0.8,
-    probing || perfect || overload || final ? 1 : 0,
+    probing || patternScan || perfect || overload || final ? 1 : 0,
   );
 
   reticle(groups.reticle, forward * distance, signal, time, progress, final);
@@ -45,7 +49,10 @@ export function layoutEchoSpriteFx(
     groups.paths,
     forward,
     distance,
-    Math.max(readout.lockPulse, predicting || perfect || final ? 1 : 0),
+    Math.max(
+      readout.lockPulse,
+      predicting || predictionLock || perfect || final ? 1 : 0,
+    ),
     progress,
     final,
   );
@@ -54,7 +61,10 @@ export function layoutEchoSpriteFx(
     groups.clones,
     forward,
     distance,
-    Math.max(readout.confidence, punishing || overload || final ? 0.9 : 0),
+    Math.max(
+      readout.confidence,
+      punishing || behavioralMirror || overload || final ? 0.9 : 0,
+    ),
     progress,
     overload,
     final,
