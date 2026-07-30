@@ -146,13 +146,25 @@ function sealedRegions(barrier, width, height) {
   return covered;
 }
 
-/** Pixels flat enough, and bright enough, to be bare paper under the overlay. */
-function paperSamples(data, width, height, layers, wanted, paperFloor) {
+/**
+ * How much of the drawing survives under a box fill.
+ *
+ * `1 − alpha`, and it only sets how far the recovered region's *contrast* is
+ * stretched back. The tint itself comes out exactly, whatever this is, because the
+ * correction is anchored on bare paper seen through the same box — see
+ * `restoreRegion`. Measured on IDOL's collision boxes, whose fill works out to a
+ * green of about [60,180,60] at alpha 0.12; the hurtbox and hitbox washes match it
+ * closely enough that one number serves all three.
+ */
+const SURVIVES = 0.88;
+
+/** Flat, bright pixels: bare paper, seen through however many box layers. */
+function flatBrightSamples(data, width, height, accept, paperFloor) {
   const samples = [];
   for (let y = 1; y < height - 1; y += 1) {
     for (let x = 1; x < width - 1; x += 1) {
       const index = y * width + x;
-      if (layers[index] !== wanted) continue;
+      if (!accept(index)) continue;
       const offset = index * 4;
       const here = luminance(data[offset], data[offset + 1], data[offset + 2]);
       if (here < paperFloor) continue;
@@ -179,43 +191,53 @@ function median(samples) {
   });
 }
 
-/**
- * Measure `m` and `c` for one family from paper seen through nothing, one box and
- * two boxes.
- *
- * Two overlapping boxes are what makes this solvable. One box over paper gives
- * three equations for four unknowns — the alpha and the fill's three channels — and
- * the alpha stays free. A second layer applies the same map again, so
- * `m = (two − one) / (one − none)` falls straight out, per channel, and the three
- * estimates cross-check each other.
- */
-function calibrate(data, width, height, layers, paperFloor) {
-  const none = median(paperSamples(data, width, height, layers, 0, paperFloor));
-  const one = median(paperSamples(data, width, height, layers, 1, paperFloor));
-  const two = median(paperSamples(data, width, height, layers, 2, paperFloor));
-  if (none === null || one === null) return null;
-
-  let m = null;
-  if (two !== null) {
-    const estimates = [];
-    for (let channel = 0; channel < 3; channel += 1) {
-      const lower = one[channel] - none[channel];
-      if (Math.abs(lower) < 3) continue;
-      const ratio = (two[channel] - one[channel]) / lower;
-      if (ratio > 0.3 && ratio < 0.995) estimates.push(ratio);
+/** Connected components of a mask, as arrays of pixel indices. */
+function components(mask, width, height) {
+  const seen = new Uint8Array(mask.length);
+  const found = [];
+  for (let start = 0; start < mask.length; start += 1) {
+    if (mask[start] === 0 || seen[start] === 1) continue;
+    const region = [];
+    const stack = [start];
+    seen[start] = 1;
+    while (stack.length > 0) {
+      const index = stack.pop();
+      region.push(index);
+      const x = index % width;
+      const y = (index - x) / width;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+        const next = ny * width + nx;
+        if (mask[next] === 0 || seen[next] === 1) continue;
+        seen[next] = 1;
+        stack.push(next);
+      }
     }
-    if (estimates.length > 0) {
-      m = estimates.reduce((total, value) => total + value, 0) / estimates.length;
+    found.push(region);
+  }
+  return found;
+}
+
+/**
+ * Undo one region's tint.
+ *
+ * `obs = m·art + c` inside a box, so given bare paper `P` and what that paper looks
+ * like through this region's boxes, `c = obsPaper − m·P` and the whole map collapses
+ * to `art = P + (obs − obsPaper) / m`. Every unknown fill colour and every question
+ * of how many layers are stacked here disappears into `obsPaper`, which is measured.
+ * Only `m` is assumed, and it merely scales contrast.
+ */
+function restoreRegion(data, region, paper, observedPaper) {
+  for (const index of region) {
+    const offset = index * 4;
+    for (let channel = 0; channel < 3; channel += 1) {
+      const restored = paper[channel]
+        + (data[offset + channel] - observedPaper[channel]) / SURVIVES;
+      data[offset + channel] = Math.max(0, Math.min(255, Math.round(restored)));
     }
   }
-  // No overlap to measure from. These fills are light washes; assume a typical one
-  // rather than refusing to clean the panel at all.
-  if (m === null) m = 0.86;
-
-  const c = [0, 1, 2].map(
-    (channel) => one[channel] - m * none[channel],
-  );
-  return { m, c, none, one, two };
 }
 
 /**
@@ -225,68 +247,75 @@ function calibrate(data, width, height, layers, paperFloor) {
  * as a number rather than as a mysteriously grey character.
  */
 export function removeDiagramOverlay(data, width, height, options = {}) {
-  const paperFloor = options.paperFloor ?? 200;
+  const paperFloor = options.paperFloor ?? 195;
   const report = [];
 
-  for (const family of FAMILIES) {
-    const stroke = new Uint8Array(width * height);
-    let strokeCount = 0;
-    for (let index = 0; index < width * height; index += 1) {
-      const offset = index * 4;
-      const r = data[offset];
-      const g = data[offset + 1];
-      const b = data[offset + 2];
-      if (family.isStroke(r, g, b)) {
-        stroke[index] = 1;
-        strokeCount += 1;
-      }
+  // Every family's outlines seal together: a blue box crossing a green one has to
+  // divide both, or the flood escapes one through the other.
+  let barrier = new Uint8Array(width * height);
+  let strokeCount = 0;
+  for (let index = 0; index < width * height; index += 1) {
+    const offset = index * 4;
+    const r = data[offset];
+    const g = data[offset + 1];
+    const b = data[offset + 2];
+    if (FAMILIES.some((family) => family.isStroke(r, g, b))) {
+      barrier[index] = 1;
+      strokeCount += 1;
     }
-    if (strokeCount < MIN_EDGE) continue;
+  }
+  if (strokeCount === 0) return ['no diagram found'];
+  barrier = grow(barrier, width, height, SEAL);
 
-    const rectangles = findRectangles(stroke, width, height);
-    if (rectangles.length === 0) {
-      report.push(`${family.name}: ${String(strokeCount)}px stroke, no boxes resolved`);
-      continue;
-    }
-    const layers = layerCounts(rectangles, width, height);
-    const fit = calibrate(data, width, height, layers, paperFloor);
-    if (fit === null) {
-      report.push(`${family.name}: ${String(rectangles.length)} boxes, no paper to calibrate against`);
-      continue;
-    }
-
-    // Undo k applications of `obs = m·art + c`.
-    const powers = [1];
-    const sums = [0];
-    for (let k = 1; k <= 8; k += 1) {
-      powers[k] = powers[k - 1] * fit.m;
-      sums[k] = sums[k - 1] + powers[k - 1];
-    }
-    for (let index = 0; index < width * height; index += 1) {
-      const k = layers[index];
-      if (k === 0) continue;
-      const depth = Math.min(k, 8);
-      const offset = index * 4;
-      for (let channel = 0; channel < 3; channel += 1) {
-        const restored = (
-          data[offset + channel] - fit.c[channel] * sums[depth]
-        ) / powers[depth];
-        data[offset + channel] = Math.max(0, Math.min(255, Math.round(restored)));
-      }
-    }
-
-    report.push(
-      `${family.name}: ${String(rectangles.length)} boxes, m=${fit.m.toFixed(3)}, `
-      + `c=[${fit.c.map((value) => value.toFixed(1)).join(',')}]`,
+  const covered = sealedRegions(barrier, width, height);
+  if (covered === null) {
+    report.push('outline trace leaked; fills left alone');
+  } else {
+    const outside = (index) => covered[index] === 0 && barrier[index] === 0;
+    const paper = median(
+      flatBrightSamples(data, width, height, outside, paperFloor),
     );
+    if (paper === null) {
+      report.push('no bare paper to anchor against; fills left alone');
+    } else {
+      let cleaned = 0;
+      let unanchored = 0;
+      for (const region of components(covered, width, height)) {
+        if (region.length < 64) continue;
+        const inside = new Set(region);
+        const observedPaper = median(flatBrightSamples(
+          data,
+          width,
+          height,
+          (index) => inside.has(index),
+          paperFloor,
+        ));
+        // A box drawn entirely over the figure shows no paper, so there is nothing
+        // to measure its tint against. Left as drawn rather than guessed at.
+        if (observedPaper === null) {
+          unanchored += 1;
+          continue;
+        }
+        const shift = Math.max(
+          ...[0, 1, 2].map((c) => Math.abs(paper[c] - observedPaper[c])),
+        );
+        if (shift < 4) continue;
+        restoreRegion(data, region, paper, observedPaper);
+        cleaned += 1;
+      }
+      report.push(
+        `paper [${paper.join(',')}], ${String(cleaned)} tinted regions cleared`
+        + (unanchored > 0 ? `, ${String(unanchored)} with no paper to anchor` : ''),
+      );
+    }
   }
 
-  // The strokes are unrecoverable — they replaced the art rather than tinting it —
-  // so they are masked and filled from their neighbours afterwards. Re-detected
-  // here because un-blending the fills shifts their colours.
+  // The outlines replaced the drawing rather than tinting it, so there is nothing
+  // to recover — they get masked and painted over from either side. Re-detected
+  // after the fills are undone, because that shifts their colours too.
   const scars = strokeMask(data, width, height);
   const healed = healScars(data, width, height, scars);
-  report.push(`strokes: ${String(healed)}px repainted`);
+  report.push(`outlines: ${String(healed)}px repainted`);
   return report;
 }
 
