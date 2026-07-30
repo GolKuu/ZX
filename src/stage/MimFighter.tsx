@@ -8,6 +8,7 @@ import {
   readCombatFighter,
 } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
+import { withOpponentFacing } from './fighterPresentation';
 import { MimAttackSprites } from './mim/MimAttackSprites';
 import {
   MimSpriteBody,
@@ -33,6 +34,7 @@ export function MimFighter({
   const attackGroup = useRef<Group>(null);
   const shownAttack = useRef<MimAttackName | null>(null);
   const sprites = useMimSprites();
+  const opponentId = fighterId === 'p1' ? 'p2' : 'p1';
   const joints = useRef<MimSpriteJoints>({
     torso: null,
     head: null,
@@ -61,7 +63,11 @@ export function MimFighter({
       + (fighter.position.x - fighter.previousPosition.x) * alpha
     ) / FIXED_SCALE;
     outerGroup.position.y = fighter.position.y / FIXED_SCALE;
-    outerGroup.scale.x = fighter.facing;
+    const presentation = withOpponentFacing(
+      fighter,
+      readCombatFighter(opponentId),
+    );
+    outerGroup.scale.x = presentation.facing;
 
     const beat = fighter.action === null
       ? null
@@ -75,7 +81,7 @@ export function MimFighter({
       return;
     }
 
-    const pose = mimSpritePoseFor(fighter, clock.elapsedTime, beat);
+    const pose = mimSpritePoseFor(presentation, clock.elapsedTime, beat);
     applyPose(joints.current, pose);
     bodyGroup.position.set(pose.drift, pose.lift, 0);
   });

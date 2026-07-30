@@ -1,5 +1,5 @@
 import { MathUtils, type Group } from 'three';
-import type { FighterSnapshot } from '@/src/sim';
+import type { FighterSnapshot } from '../sim/index.js';
 
 interface LocomotionRig {
   readonly root: Group;
@@ -25,6 +25,21 @@ export function facingOpponent(
   const distance = opponent.position.x - fighter.position.x;
   if (Math.abs(distance) < 1) return fighter.facing;
   return distance > 0 ? 1 : -1;
+}
+
+/**
+ * A render-only snapshot whose facing follows the fighter's current side.
+ *
+ * Simulation facing can deliberately stay locked during guard or an active
+ * move. The presentation must still mirror after a cross-over, otherwise the
+ * body turns toward the opponent while its attacking limbs keep the old pose.
+ */
+export function withOpponentFacing(
+  fighter: FighterSnapshot,
+  opponent: FighterSnapshot | null,
+): FighterSnapshot {
+  const facing = facingOpponent(fighter, opponent);
+  return facing === fighter.facing ? fighter : { ...fighter, facing };
 }
 
 export function turnTowardOpponent(

@@ -4,21 +4,25 @@
     "lp": {
       "width": 393,
       "height": 385,
+      "originX": 0.5,
       "ground": 1.0104
     },
     "hp": {
       "width": 370,
       "height": 386,
+      "originX": 0.57,
       "ground": 1.0078
     },
     "lk": {
       "width": 421,
       "height": 377,
+      "originX": 0.47,
       "ground": 0.9973
     },
     "hk": {
       "width": 392,
       "height": 407,
+      "originX": 0.39,
       "ground": 0.9975
     }
   }

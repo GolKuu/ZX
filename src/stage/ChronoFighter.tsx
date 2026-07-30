@@ -16,8 +16,8 @@ import { updateRimAxis } from '@/src/render/toonMaterial';
 import { FIXED_SCALE } from '@/src/sim';
 import {
   applyWalkCycle,
-  facingOpponent,
   turnTowardOpponent,
+  withOpponentFacing,
 } from './fighterPresentation';
 import { ChronoBody } from './chrono/ChronoBody';
 import {
@@ -89,14 +89,15 @@ export function ChronoFighter({
     ) / FIXED_SCALE;
     group.position.y = fighter.position.y / FIXED_SCALE;
     const opponent = readCombatFighter(opponentId);
-    const visualFacing = facingOpponent(fighter, opponent);
+    const presentation = withOpponentFacing(fighter, opponent);
+    const visualFacing = presentation.facing;
     turnTowardOpponent(group, currentRig.head, visualFacing);
     applyWalkCycle(currentRig, fighter, clock.elapsedTime, visualFacing, 0.9);
-    applyChronoCombatAnimation(currentRig, fighter);
+    applyChronoCombatAnimation(currentRig, presentation);
 
     const self = { x: group.position.x, z: group.position.z };
     const other = opponent === null
-      ? { x: self.x + fighter.facing, z: self.z }
+      ? { x: self.x + visualFacing, z: self.z }
       : { x: opponent.position.x / FIXED_SCALE, z: self.z };
     for (const material of toonMaterials) {
       updateRimAxis(material, self, other, activeCamera.matrixWorldInverse);

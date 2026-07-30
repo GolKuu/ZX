@@ -64,6 +64,7 @@ export const FRONT_VIEWS = {
     file: 'public/echo-character-sheet.png',
     crop: { left: 862, top: 58, width: 168, height: 360 },
     origin: [76, 349],
+    textureScale: 2,
     partFill: [232, 242, 245],
     partOutline: [15, 34, 57],
     // Near-white armour: match the paper colour rather than a value floor.
@@ -121,6 +122,9 @@ export const ATTACK_POSES = {
     file: 'public/echo-character-sheet.png',
     key: { tolerance: 16 },
     cleanup: 'echo',
+    displayScale: 1.95,
+    facesRight: true,
+    textureScale: 2,
     ground: 680,
     poses: {
       lp: {

@@ -1,5 +1,7 @@
 {
   "source": "public/echo-character-sheet.png",
+  "displayScale": 1.95,
+  "facesRight": true,
   "poses": {
     "lp": {
       "width": 189,

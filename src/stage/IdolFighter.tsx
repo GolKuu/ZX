@@ -16,8 +16,8 @@ import { updateRimAxis } from '@/src/render/toonMaterial';
 import { FIXED_SCALE } from '@/src/sim';
 import {
   applyWalkCycle,
-  facingOpponent,
   turnTowardOpponent,
+  withOpponentFacing,
 } from './fighterPresentation';
 import {
   createFighterResources,
@@ -92,14 +92,15 @@ export function IdolFighter({
     ) / FIXED_SCALE;
     outerGroup.position.y = fighter.position.y / FIXED_SCALE;
     const opponent = readCombatFighter(opponentId);
-    const visualFacing = facingOpponent(fighter, opponent);
+    const presentation = withOpponentFacing(fighter, opponent);
+    const visualFacing = presentation.facing;
     turnTowardOpponent(outerGroup, currentRig.head, visualFacing);
     applyWalkCycle(currentRig, fighter, clock.elapsedTime, visualFacing, 0.84);
-    applyIdolCombatAnimation(currentRig, fighter);
+    applyIdolCombatAnimation(currentRig, presentation);
 
     const self = { x: outerGroup.position.x, z: outerGroup.position.z };
     const other = opponent === null
-      ? { x: self.x + fighter.facing, z: self.z }
+      ? { x: self.x + visualFacing, z: self.z }
       : { x: opponent.position.x / FIXED_SCALE, z: self.z };
     for (const material of toonMaterials) {
       updateRimAxis(material, self, other, activeCamera.matrixWorldInverse);

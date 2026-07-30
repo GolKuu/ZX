@@ -37,6 +37,8 @@
     "src/input/mimCommands.ts",
     "src/input/echoCommands.ts",
     "src/stage/model/humanoidBones.ts",
+    "src/stage/fighterPresentation.ts",
+    "src/stage/mim/mimSpriteTimeline.ts",
     "src/stage/sprite2d/spritePose.ts",
     "src/data/combat-ai.ts"
   ]

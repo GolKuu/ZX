@@ -1,5 +1,7 @@
 {
   "source": "../output/imagegen/glitch-character-reference.png",
+  "displayScale": 1.18,
+  "facesRight": true,
   "poses": {
     "lp": {
       "width": 286,

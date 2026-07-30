@@ -226,7 +226,15 @@ async function sliceCharacter(name) {
     const offsetX = -(trimmed.info.trimOffsetLeft ?? 0);
     const offsetY = -(trimmed.info.trimOffsetTop ?? 0);
 
-    await sharp(trimmed.data).png().toFile(join(directory, `${part}.png`));
+    const textureScale = view.textureScale ?? 1;
+    await sharp(trimmed.data)
+      .resize({
+        width: trimmed.info.width * textureScale,
+        height: trimmed.info.height * textureScale,
+        kernel: sharp.kernel.lanczos3,
+      })
+      .png()
+      .toFile(join(directory, `${part}.png`));
 
     // `pivot` is the joint as a fraction of this image, which is what the shader
     // needs to offset the quad. It is free to fall outside 0…1: a shoulder can sit
@@ -271,7 +279,12 @@ async function sliceAttacks(name) {
 
   const directory = join('public', 'sprites', `${name}-attacks`);
   mkdirSync(directory, { recursive: true });
-  const manifest = { source: spec.file, poses: {} };
+  const manifest = {
+    source: spec.file,
+    displayScale: spec.displayScale ?? 1.18,
+    facesRight: spec.facesRight !== false,
+    poses: {},
+  };
 
   for (const [pose, box] of Object.entries(spec.poses)) {
     const { data } = await sharp(spec.file)
@@ -291,7 +304,15 @@ async function sliceAttacks(name) {
     const trimmed = await sharp(keyed).trim({ threshold: 1 }).toBuffer({
       resolveWithObject: true,
     });
-    await sharp(trimmed.data).png().toFile(join(directory, `${pose}.png`));
+    const textureScale = spec.textureScale ?? 1;
+    await sharp(trimmed.data)
+      .resize({
+        width: trimmed.info.width * textureScale,
+        height: trimmed.info.height * textureScale,
+        kernel: sharp.kernel.lanczos3,
+      })
+      .png()
+      .toFile(join(directory, `${pose}.png`));
 
     const topInCrop = -(trimmed.info.trimOffsetTop ?? 0);
     manifest.poses[pose] = {

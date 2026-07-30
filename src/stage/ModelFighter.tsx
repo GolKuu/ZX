@@ -28,6 +28,7 @@ import {
 } from './model/loadFighterModel';
 import { applyArmSilhouette } from './model/armSilhouette';
 import { applyFighterPose } from './model/modelPose';
+import { withOpponentFacing } from './fighterPresentation';
 
 /**
  * A fighter backed by a rigged GLB instead of primitives.
@@ -158,20 +159,21 @@ export function ModelFighter({
     // hips, which reads almost frontal; the sheets draw a three-quarter profile,
     // so the rest of the turn happens here where it costs one assignment and
     // stays consistent across every pose.
-    group.rotation.y = fighter.facing * STANCE_YAW;
+    const opponent = readCombatFighter(opponentId);
+    const presentation = withOpponentFacing(fighter, opponent);
+    group.rotation.y = presentation.facing * STANCE_YAW;
 
     applyFighterPose(
       loaded.joints,
       loaded.rest,
-      fighter,
+      presentation,
       clock.elapsedTime,
     );
     applyArmSilhouette(loaded.joints);
 
-    const opponent = readCombatFighter(opponentId);
     const self = { x: group.position.x, z: group.position.z };
     const other = opponent === null
-      ? { x: self.x + fighter.facing, z: self.z }
+      ? { x: self.x + presentation.facing, z: self.z }
       : { x: opponent.position.x / FIXED_SCALE, z: self.z };
     for (const material of loaded.toonMaterials) {
       updateRimAxis(material, self, other, activeCamera.matrixWorldInverse);

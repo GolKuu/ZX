@@ -69,6 +69,9 @@ export interface LoadedAttackPose extends AttackPoseSpec {
 
 export type LoadedAttackPoses = {
   readonly [Key in AttackPoseName]?: LoadedAttackPose;
+} & {
+  readonly displayScale: number;
+  readonly facesRight: boolean;
 };
 
 /**
@@ -86,6 +89,8 @@ export async function loadAttackPoses(
     throw new Error(`No attack poses for "${name}" (${String(response.status)})`);
   }
   const manifest = (await response.json()) as {
+    displayScale?: number;
+    facesRight?: boolean;
     poses: Partial<Record<AttackPoseName, AttackPoseSpec>>;
   };
 
@@ -103,7 +108,11 @@ export async function loadAttackPoses(
       poses[pose] = { ...spec, texture };
     }),
   );
-  return poses as LoadedAttackPoses;
+  return {
+    ...poses,
+    displayScale: manifest.displayScale ?? 1.18,
+    facesRight: manifest.facesRight !== false,
+  } as LoadedAttackPoses;
 }
 
 export function disposeAttackPoses(poses: LoadedAttackPoses): void {

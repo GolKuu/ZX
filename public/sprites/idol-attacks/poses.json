@@ -1,5 +1,7 @@
 {
   "source": "public/assets/characters/idol-fighter-reference.webp",
+  "displayScale": 1.18,
+  "facesRight": true,
   "poses": {
     "lp": {
       "width": 260,

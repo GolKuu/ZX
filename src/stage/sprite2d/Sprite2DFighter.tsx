@@ -19,6 +19,7 @@ import {
   isStrikeFrame,
   spriteAnimationProgress,
 } from '../combatAnimationProgress';
+import { withOpponentFacing } from '../fighterPresentation';
 import { AttackPoseSprite } from './AttackPoseSprite';
 import {
   SpriteRigBody,
@@ -62,9 +63,6 @@ import {
  * and the strike is the one frame a player actually reads.
  */
 
-/** Attack panels are drawn at a slightly different scale than the turnaround. */
-const ATTACK_SCALE = 1.18;
-
 /** Impact height, in engine units, below which a blow counts as low or as high. */
 const LEGS_BELOW = 0.95;
 const HEAD_ABOVE = 1.82;
@@ -86,6 +84,7 @@ export function Sprite2DFighter({
   const shownPose = useRef<AttackPoseName | null>(null);
   const [rig, setRig] = useState<LoadedSpriteRig | null>(null);
   const [poses, setPoses] = useState<LoadedAttackPoses | null>(null);
+  const opponentId = fighterId === 'p1' ? 'p2' : 'p1';
 
   // A ref, not a memo: the joint slots are filled by `ref` callbacks during
   // render, and mutating a memoised object is exactly what
@@ -177,13 +176,21 @@ export function Sprite2DFighter({
       + (fighter.position.x - fighter.previousPosition.x) * alpha
     ) / FIXED_SCALE;
     group.position.y = fighter.position.y / FIXED_SCALE;
+    const presentation = withOpponentFacing(
+      fighter,
+      readCombatFighter(opponentId),
+    );
 
     // Mirror the whole rig rather than re-authoring poses for the other
     // direction. Which way the artwork already faces is per sheet — IDOL's
     // profile columns face left, CHRONO's and GLITCH's face right — so a fixed
     // sign would point half the roster away from its opponent.
     const drawnFacing = rig?.facesRight === true ? 1 : -1;
-    group.scale.x = drawnFacing * fighter.facing;
+    group.scale.x = drawnFacing * presentation.facing;
+    if (poseGroup.current !== null && poses !== null) {
+      const attackDrawnFacing = poses.facesRight ? 1 : -1;
+      poseGroup.current.scale.x = attackDrawnFacing === drawnFacing ? 1 : -1;
+    }
 
     const progress = fighter.action === null
       ? 0
@@ -213,7 +220,7 @@ export function Sprite2DFighter({
     }
 
     const pose = spritePoseFor(
-      fighter,
+      presentation,
       clock.elapsedTime,
       progress,
       hurtZoneOf(fighterId, fighter.position.y / FIXED_SCALE),
@@ -234,7 +241,7 @@ export function Sprite2DFighter({
         <group ref={poseGroup} visible={false}>
           {poses === null ? null : (
             <AttackPoseSprite
-              pixelScale={PIXEL * ATTACK_SCALE}
+              pixelScale={PIXEL * poses.displayScale}
               poses={poses}
               shown={shownPose}
             />

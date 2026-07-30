@@ -28,8 +28,8 @@ import {
 import { resetEchoRig } from './echo/echoRig';
 import {
   applyWalkCycle,
-  facingOpponent,
   turnTowardOpponent,
+  withOpponentFacing,
 } from './fighterPresentation';
 import { readFighterRig, type FighterRigRefs } from './fighterRigRefs';
 
@@ -82,14 +82,15 @@ export function EchoFighter({
     ) / FIXED_SCALE;
     outerGroup.position.y = fighter.position.y / FIXED_SCALE;
     const opponent = readCombatFighter(opponentId);
-    const visualFacing = facingOpponent(fighter, opponent);
+    const presentation = withOpponentFacing(fighter, opponent);
+    const visualFacing = presentation.facing;
     turnTowardOpponent(outerGroup, rig.head, visualFacing);
     applyWalkCycle(rig, fighter, clock.elapsedTime, visualFacing, 0.9);
-    applyEchoCombatAnimation(rig, fighter);
+    applyEchoCombatAnimation(rig, presentation);
 
     const self = { x: outerGroup.position.x, z: outerGroup.position.z };
     const other = opponent === null
-      ? { x: self.x + fighter.facing, z: self.z }
+      ? { x: self.x + visualFacing, z: self.z }
       : { x: opponent.position.x / FIXED_SCALE, z: self.z };
     for (const material of toonMaterials) {
       updateRimAxis(material, self, other, activeCamera.matrixWorldInverse);
