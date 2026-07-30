@@ -1,25 +1,34 @@
 # VIS-CCU-800 — Visual Direction Bible
 
-**Target:** compete visually with Guilty Gear Strive, Dragon Ball FighterZ, Naruto Ultimate Ninja Storm, Granblue Fantasy Versus Rising.
-**Must never read as:** a prototype, a hitbox viewer, a stick-figure test, a simple fighter.
+**Target:** a flat, side-on 2D fighter in the register of Fantasy Strike — clean
+vector shapes, heavy ink, saturated flats, a legible stage that never competes.
+**Must never read as:** a prototype, a hitbox viewer, a 3D model with a cel
+filter over it, an unlit mannequin.
 **Renderer:** Three.js, WebGL2 baseline, 60 FPS locked.
 
 ---
 
-## 0. The thesis
+## 0. The thesis — the sheets are the specification
 
-Strive's look is not expensive on the GPU. Its shading is a two-band ramp lookup, a hard-stepped highlight, a Fresnel rim and a backface hull. A browser runs that at 4K.
+The five character sheets in `public/` and `public/assets/characters/` are not
+concept art or mood reference. **They are the spec.** MIM, ECHO, IDOL, GLITCH and
+CHRONO each ship a four-view turnaround and four attack poses (LP, HP, LK, HK).
+Where this document and a sheet disagree, *the sheet wins* and this document is
+wrong and must be corrected.
 
-What Strive actually spends is **authoring time**, in four places, all of which cost nothing at runtime:
+Everything the sheets do is cheap at runtime. There is no lighting model to
+solve, no PBR chain, no shadow budget to argue about:
 
-| Where the quality lives | Runtime cost |
+| What the look is made of | Runtime cost |
 |---|---|
-| Hand-edited vertex normals transferred from primitive proxies | zero |
-| Per-camera-angle rig cheating — bones that lie so the pose reads | near zero |
-| Stepped animation on 2s and 3s with no interpolation across impacts | zero |
-| Channel-painted shading control — forced light and shade zones per asset | one texture fetch |
+| Two flat colours per surface — a lit hue and a shade hue | zero |
+| One heavy black contour at a constant pixel weight | one back-faced hull pass |
+| Flat unlit stage layers standing at z ≈ 0 | zero |
+| Big, over-extended pose silhouettes | zero |
 
-**Consequence for this project:** the shading pipeline is achievable in full. The gap to the reference titles is meshes, animation and drawn effects. Every section below marks which side of that line it sits on.
+**Consequence:** there is no technical reason for the game not to look like the
+sheets. Every gap is an authoring gap — proportion, pose extremity, and drawn
+detail on the costumes.
 
 ---
 
@@ -27,32 +36,91 @@ What Strive actually spends is **authoring time**, in four places, all of which 
 
 ### 1.1 Statement
 
-**Illustrated, not rendered.** A frame paused at random must look like a drawing that happens to move in three dimensions. If it looks like a 3D model, it has failed.
+**Illustrated, not rendered.** A frame paused at random must look like a drawing.
+Not "like a drawing that moves in three dimensions" — like a drawing. If a
+viewer can tell the characters are geometry, it has failed.
 
 ### 1.2 The five laws
 
 | # | Law |
 |---|---|
-| **A1** | **Two bands. Occasionally three. Never a gradient.** The terminator between light and shade is a *drawn line* and goes where the artist puts it, not where the geometry puts it. |
-| **A2** | **Shade is a colour, never a darkness.** The shaded band carries its own hue and saturation — warmer or cooler than the lit side, never a multiply of it. |
+| **A1** | **Two flat bands. Never a gradient, never a falloff.** A surface is its lit colour or its shade colour. Stage lighting may not decide what colour a costume is; `toonMaterial`'s `flatten` defaults to 1 for exactly this reason, and the arena is the only caller allowed to opt out. |
+| **A2** | **Shade is a colour, never a darkness.** The shade band is a hue shift — never a multiply of the lit value, and never toward black. A multiply has no floor, which is how the whole roster once rendered as black cut-outs. |
 | **A3** | **Silhouette carries the character.** Readable as a solid black shape at 40 m. Verified in CI. |
-| **A4** | **Line weight is authored, not derived.** Outline thickness is painted per-vertex: thin on faces and hands, heavy on the outer silhouette. |
-| **A5** | **The face has its own rules.** Facial shading obeys a painted threshold map and largely ignores light direction. A shadow across the nose is a permanent drawing decision. |
+| **A4** | **One ink weight for the whole roster.** The contour is heavy, even, pure near-black, and does **not** thin with distance. It is art direction, not a per-character knob — see `INK_WIDTH` in `outlineMaterial.ts`. |
+| **A5** | **Nothing occupies the space between the lens and the fighters.** No set dressing, no debris, no post effect that dims the frame edges where a cornered fighter stands. The stage exists behind the fight or it does not exist. |
 
-### 1.3 Proportion — currently implemented
+### 1.2.1 Corollary — post-processing is subordinate
+
+A grade that alters a costume's colour has broken A1, and a contact-shadow pass
+strong enough to darken a fighter has broken A2. Both have happened: `N8AO` at
+`intensity 2.6` painted two nearby fighters solid black, and `+0.14` saturation
+clipped the middle channel of every violet in the frame to zero. Budgets:
+
+| Effect | Ceiling | Why |
+|---|---|---|
+| AO intensity | **1.0**, radius ≤ 0.6 m | Above this it stops describing contact and starts shading |
+| Saturation | **±0.05** | The palettes are already authored at final saturation |
+| Contrast | **±0.08** | Stacks with AO and vignette |
+| Vignette darkness | **0.4** | Fighters reach the frame edge whenever the camera pans |
+
+### 1.3 Proportion — read off the sheets
+
+The sheets are **not** realistically proportioned, and matching them means
+matching that. MIM is the clearest case: a large round head, a chunky hoodie that
+reads as one solid mass, and short legs.
 
 | Property | Value |
 |---|---|
-| Height | 1.90 m |
-| Head units | **7.3** — shared dimensions in `fighterResources.ts` use `HEAD = 0.125` |
-| Eyes | Oversized and forward on the face: iris 2.3× realistic, catchlight always present |
-| Hands | Full mass, ~0.47 head-radius. Hands sell fighting poses more than faces do |
-| Silhouette order | head → shoulders → hips → weapon extension |
+| Head units | **4.5–5**, not 7.3. A tall realistic figure cannot read as these sheets |
+| Head | Oversized, near-spherical, and the first thing the silhouette resolves to |
+| Torso | One dominant solid mass. Costume detail sits *inside* it, never breaking its outline |
+| Legs | Short relative to the torso, and always visibly bent in stance |
+| Hands | Full mass. Hands sell fighting poses more than faces do |
 | Costume rule | one dominant shape, one accent shape, one detail zone. No more |
 
-### 1.4 Contrast budget
+### 1.4 Per-character identity
 
-The band of screen the fighters occupy is the highest-contrast region in the frame, always. Everything past the platform is desaturated and value-compressed. A background that competes for attention is a defect, not a style.
+Authoritative colours live in `src/data/characterPalettes.ts`. The identity in
+one line each, so a wrong-looking build can be diagnosed without the sheet open:
+
+| Character | Reads as |
+|---|---|
+| **MIM** | Purple hoodie, flat yellow smiley face, long yellow scarf, clean white sneakers |
+| **ECHO** | White and pale-blue plating, dark navy underlayer, floating rings at the shoulders, cyan eye |
+| **IDOL** | Hot pink jacket and twin-tails, white pleated skirt, gold trim, white boots |
+| **GLITCH** | Near-black bodysuit, cyan circuit lines, magenta corruption blocks shedding off one side |
+| **CHRONO** | Dark navy coat, pale steel trim and boots, blue eye |
+
+### 1.5 The four attack silhouettes
+
+Every sheet draws the same four, and they are all **over-extended** — the striking
+limb reaches well outside the body outline. A timid version of these poses is the
+single most common way the game stops looking like its own art.
+
+| Move | Silhouette |
+|---|---|
+| **LP** | Lead arm straight and horizontal, rear elbow pinned at the ribs, front knee deep, rear leg long behind, torso pitched forward over the front foot |
+| **HP** | Whole body turned over; the arm sweeps a wide arc clear of the body; stance opens into a deep lunge |
+| **LK** | Body dropped nearly to the floor, support hand planted flat on the ground, sweeping leg run out along it almost straight |
+| **HK** | Foot finishes at head height, torso counter-leaning away from it, knee chambered before the shin whips out — never kicked from a straight leg |
+
+### 1.6 Contrast budget
+
+The band of screen the fighters occupy is the highest-contrast region in the
+frame, always. Everything past the platform is desaturated and value-compressed.
+
+**This is currently violated and is the top open defect.** The arena floor is the
+brightest, most saturated object in the frame while the characters sit below it in
+value. A background that competes for attention is a defect, not a style.
+
+### 1.7 Camera
+
+Side-on and **level** — eye height equals aim height. The stage is built from flat
+planes at z ≈ 0, so any vertical tilt keystones them and gives away that the 2D
+backdrop is geometry. The rig tracks the fighters' midpoint and dollies on their
+separation; it must be able to pan far enough to centre a *cornered* pair, since
+fighters reach ±4.8 m on a 5.1 m stage.
 
 ---
 
