@@ -6,13 +6,12 @@ import { MIM_DUAL_IDS, MIM_NORMAL_IDS, MIM_WALL_IDS } from './ids.js';
 /**
  * The four buttons: J, K, I, L.
  *
- * Frame counts follow the brief's tiers — the jab is a 5-frame check, the spin
- * is a 16-frame commitment that loses to a block by a wide margin. Nothing here
- * is copy-pasted between rows: a heavier move is heavier in every column.
+ * The legacy ids stay stable for saved bindings, but the moves are the new
+ * stage-illusion kit: Spotlight Snap, Cane Hook, Ribbon Sweep and Curtain Drop.
  */
 const rows: readonly MimMoveRow[] = [
   {
-    // J — Mask Jab. Fastest starter in the kit, almost no reward on its own.
+    // J — Spotlight Snap. A fast card-flash check at eye level.
     id: MIM_NORMAL_IDS.maskJab,
     attackLevel: 'high',
     startup: 4,
@@ -43,7 +42,7 @@ const rows: readonly MimMoveRow[] = [
     }],
   },
   {
-    // K — Back Elbow. Turns the torso through the blow; beats a side-step.
+    // K — Cane Hook. Curves around a static guard and drags MIM forward.
     id: MIM_NORMAL_IDS.backElbow,
     attackLevel: 'mid',
     startup: 9,
@@ -72,7 +71,7 @@ const rows: readonly MimMoveRow[] = [
     }],
   },
   {
-    // I — Capoeira Kick. Ducks the head box entirely for its whole active window.
+    // I — Ribbon Sweep. Slides under highs while the red ribbon cuts low.
     id: MIM_NORMAL_IDS.capoeiraKick,
     attackLevel: 'low',
     startup: 12,
@@ -102,7 +101,7 @@ const rows: readonly MimMoveRow[] = [
     }],
   },
   {
-    // L — Spinning Kick. The wall of the ground game, and the punish bait.
+    // L — Curtain Drop. A slow descending heel inside a collapsing spotlight.
     id: MIM_NORMAL_IDS.spinningKick,
     attackLevel: 'high',
     startup: 18,

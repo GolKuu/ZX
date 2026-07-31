@@ -20,18 +20,18 @@ export const CHARACTER_ROSTER = [
   {
     id: 'mim',
     displayName: 'MIM',
-    archetype: 'Тролль · ловушки',
+    archetype: 'Иллюзионист · ловушки',
     description:
-      'Минималистичный боец в худи: щёлкает пальцами, роняет курсор, пинает банан и раскручивает кресло.',
+      'Сценический обманщик в костяной маске: ослепляет Spotlight Snap, цепляет Cane Hook, режет Ribbon Sweep и обрушивает Curtain Drop.',
     mark: 'M',
     isNew: false,
   },
   {
     id: 'glitch',
     displayName: 'GLITCH',
-    archetype: 'Баг игры · искажение данных',
+    archetype: 'Сломанный протокол · контроль данных',
     description:
-      'Сломанный боец из повреждённого билда: колет пикселями, телепортируется и выбрасывает кубы ошибок.',
+      'Боевой протокол в схемной броне: пробивает Checksum Needle, откатывает Rollback Ram, срезает Packet Scythe и рушит Kernel Drop.',
     mark: 'G',
     isNew: false,
   },
