@@ -2,6 +2,8 @@ import {
   AdditiveBlending,
   DoubleSide,
   MeshBasicMaterial,
+  MeshPhysicalMaterial,
+  MeshStandardMaterial,
   type DataTexture,
   type Material,
 } from 'three';
@@ -21,7 +23,7 @@ export function createGlitchMaterials(gradientMap: DataTexture) {
       shadowStrength: 0.86,
     }),
     corrupt: createToonMaterial({
-      color: '#160916',
+      color: '#100b24',
       gradientMap,
       shadowTint: '#720f68',
       rimColor: '#ff2bd6',
@@ -32,7 +34,40 @@ export function createGlitchMaterials(gradientMap: DataTexture) {
     cyan: glow('#16e6ff', 0.9),
     phantomMagenta: glow('#ff2bd6', 0.3),
     phantomCyan: glow('#16e6ff', 0.28),
+    darkMetal: new MeshPhysicalMaterial({
+      color: '#071522',
+      clearcoat: 0.82,
+      clearcoatRoughness: 0.18,
+      metalness: 0.86,
+      roughness: 0.24,
+    }),
+    violetMetal: new MeshPhysicalMaterial({
+      color: '#1b1237',
+      clearcoat: 0.72,
+      metalness: 0.78,
+      roughness: 0.27,
+    }),
+    ceramic: new MeshPhysicalMaterial({
+      color: '#dcecff',
+      clearcoat: 0.94,
+      clearcoatRoughness: 0.12,
+      metalness: 0.34,
+      roughness: 0.16,
+    }),
+    cyanCore: emissive('#31dfff'),
+    violetCore: emissive('#9d62ff'),
   };
+}
+
+function emissive(color: string): MeshStandardMaterial {
+  return new MeshStandardMaterial({
+    color,
+    emissive: color,
+    emissiveIntensity: 3.2,
+    metalness: 0.45,
+    roughness: 0.18,
+    toneMapped: false,
+  });
 }
 
 export type GlitchMaterials = ReturnType<typeof createGlitchMaterials>;

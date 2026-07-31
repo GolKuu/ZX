@@ -3,6 +3,8 @@ import {
   BufferGeometry,
   CapsuleGeometry,
   IcosahedronGeometry,
+  OctahedronGeometry,
+  SphereGeometry,
   TorusGeometry,
 } from 'three';
 
@@ -22,6 +24,11 @@ export function createGlitchResources() {
     packet: new IcosahedronGeometry(0.18, 0),
     slash: new TorusGeometry(0.62, 0.035, 5, 28, Math.PI * 1.3),
     zone: new TorusGeometry(0.85, 0.05, 5, 34),
+    armourPlate: new BoxGeometry(0.22, 0.42, 0.055),
+    chestCore: new OctahedronGeometry(0.22, 1),
+    shoulderShell: new SphereGeometry(0.18, 12, 8, 0, Math.PI),
+    collar: new TorusGeometry(0.29, 0.025, 8, 24, Math.PI),
+    shard: new OctahedronGeometry(0.075, 0),
   };
 }
 

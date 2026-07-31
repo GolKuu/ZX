@@ -1,43 +1,95 @@
-import type { RefObject } from 'react';
-import { AdditiveBlending, DoubleSide, Group } from 'three';
-
-const SEGMENTS = [
-  [-0.2, 1.78, 0.22, -0.12],
-  [-0.43, 1.75, 0.24, -0.2],
-  [-0.67, 1.69, 0.26, -0.29],
-  [-0.92, 1.58, 0.28, -0.38],
-  [-1.18, 1.43, 0.3, -0.5],
-] as const;
+import { useEffect, useMemo, type RefObject } from 'react';
+import {
+  AdditiveBlending,
+  BufferAttribute,
+  BufferGeometry,
+  DoubleSide,
+  Group,
+} from 'three';
 
 /**
- * Persistent asymmetric energy cloth. It stays behind the torso and uses
- * narrow segments so attacks, anatomy and contact points remain readable.
+ * A smooth procedural energy textile: broad dark body, cyan edge and white
+ * phase filament. The layers stay behind the anatomy and avoid retro pixels.
  */
 export function GlitchEnergyScarf({
   root,
 }: {
   readonly root: RefObject<Group | null>;
 }) {
+  const body = useMemo(() => ribbonGeometry(0.13, 0), []);
+  const edge = useMemo(() => ribbonGeometry(0.026, 0.058), []);
+  const core = useMemo(() => ribbonGeometry(0.012, -0.045), []);
+
+  useEffect(() => () => {
+    body.dispose();
+    edge.dispose();
+    core.dispose();
+  }, [body, core, edge]);
+
   return (
-    <group ref={root} position={[0, 0, -0.08]}>
-      {SEGMENTS.map(([x, y, width, rotation], index) => (
-        <mesh
-          key={x}
-          position={[x, y, index * -0.003]}
-          rotation-z={rotation}
-        >
-          <planeGeometry args={[width, 0.12 - index * 0.012]} />
-          <meshBasicMaterial
-            blending={AdditiveBlending}
-            color={index === 0 ? '#ffffff' : index % 2 === 0 ? '#25e8ff' : '#8d58ff'}
-            depthWrite={false}
-            opacity={0.78 - index * 0.08}
-            side={DoubleSide}
-            toneMapped={false}
-            transparent
-          />
-        </mesh>
-      ))}
+    <group ref={root} position={[0.02, 0, -0.16]} rotation-z={0.05}>
+      <mesh geometry={body} renderOrder={1}>
+        <meshStandardMaterial
+          color="#101b39"
+          emissive="#182b63"
+          emissiveIntensity={1.4}
+          metalness={0.28}
+          opacity={0.88}
+          roughness={0.34}
+          side={DoubleSide}
+          transparent
+        />
+      </mesh>
+      <mesh geometry={edge} position-z={0.012} renderOrder={2}>
+        <meshBasicMaterial
+          blending={AdditiveBlending}
+          color="#32ddff"
+          depthWrite={false}
+          opacity={0.78}
+          side={DoubleSide}
+          toneMapped={false}
+          transparent
+        />
+      </mesh>
+      <mesh geometry={core} position-z={0.018} renderOrder={3}>
+        <meshBasicMaterial
+          blending={AdditiveBlending}
+          color="#f1fbff"
+          depthWrite={false}
+          opacity={0.72}
+          side={DoubleSide}
+          toneMapped={false}
+          transparent
+        />
+      </mesh>
     </group>
   );
+}
+
+function ribbonGeometry(width: number, verticalOffset: number): BufferGeometry {
+  const points = [
+    [0.06, 1.82],
+    [-0.22, 1.81],
+    [-0.5, 1.75],
+    [-0.78, 1.66],
+    [-1.04, 1.54],
+    [-1.27, 1.37],
+    [-1.46, 1.15],
+  ] as const;
+  const vertices: number[] = [];
+  const indices: number[] = [];
+  points.forEach(([x, y], index) => {
+    const taper = 1 - index / (points.length * 1.08);
+    const half = width * taper;
+    vertices.push(x, y + verticalOffset + half, 0);
+    vertices.push(x, y + verticalOffset - half, 0);
+    if (index === points.length - 1) return;
+    const start = index * 2;
+    indices.push(start, start + 1, start + 2, start + 1, start + 3, start + 2);
+  });
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('position', new BufferAttribute(new Float32Array(vertices), 3));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  return geometry;
 }

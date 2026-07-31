@@ -40,6 +40,7 @@ export function GlitchFighter({
 }) {
   const outer = useRef<Group>(null);
   const fragments = useRef<Group>(null);
+  const scarf = useRef<Group>(null);
   const refs = useRigRefs();
   const rig = useRef<FighterRig | null>(null);
   const resources = useMemo(() => createGlitchResources(), []);
@@ -92,6 +93,12 @@ export function GlitchFighter({
       floating.rotation.y = time * 0.72;
       floating.rotation.z = Math.sin(time * 1.7) * 0.08;
     }
+    const energyScarf = scarf.current;
+    if (energyScarf !== null) {
+      energyScarf.rotation.z = Math.sin(time * 2.2) * 0.035;
+      energyScarf.rotation.y = Math.sin(time * 1.35) * 0.07;
+      energyScarf.position.y = Math.sin(time * 2.8) * 0.018;
+    }
 
     const self = { x: outerGroup.position.x, z: outerGroup.position.z };
     const other = opponent === null
@@ -110,6 +117,7 @@ export function GlitchFighter({
         outline={outline}
         refs={refs}
         resources={resources}
+        scarf={scarf}
       />
     </group>
   );

@@ -4,6 +4,8 @@ import type { Group, Material } from 'three';
 import { FighterPart } from '../FighterPart';
 import type { FighterRigRefs } from '../fighterRigRefs';
 import { GlitchEffects } from './GlitchEffects';
+import { GlitchArmorDetails } from './GlitchArmorDetails';
+import { GlitchEnergyScarf } from './GlitchEnergyScarf';
 import type { GlitchMaterials } from './glitchMaterials';
 import type { GlitchResources } from './glitchResources';
 
@@ -13,12 +15,14 @@ interface GlitchBodyProps {
   readonly outline: Material;
   readonly refs: FighterRigRefs;
   readonly resources: GlitchResources;
+  readonly scarf: RefObject<Group | null>;
 }
 
 export function GlitchBody(props: GlitchBodyProps) {
-  const { fragments, materials, outline, refs, resources } = props;
+  const { fragments, materials, outline, refs, resources, scarf } = props;
   return (
     <group ref={refs.root}>
+      <GlitchEnergyScarf root={scarf} />
       <group ref={refs.torso} position={[0, 1.3, 0]}>
         <HalfPart x={-0.145} geometry={resources.torsoHalf} material={materials.stable} outline={outline} />
         <HalfPart x={0.145} geometry={resources.torsoHalf} material={materials.corrupt} outline={outline} />
@@ -40,6 +44,7 @@ export function GlitchBody(props: GlitchBodyProps) {
 
       <HalfPart x={-0.115} y={0.96} geometry={resources.hipHalf} material={materials.stable} outline={outline} />
       <HalfPart x={0.115} y={0.96} geometry={resources.hipHalf} material={materials.corrupt} outline={outline} />
+      <GlitchArmorDetails materials={materials} resources={resources} />
 
       <group ref={fragments}>
         {([
@@ -79,8 +84,22 @@ function GlitchArm({
   const material = left ? materials.stable : materials.corrupt;
   return (
     <group ref={left ? refs.leftArm : refs.rightArm} position={[left ? -0.43 : 0.43, 1.64, 0]}>
+      <mesh
+        castShadow
+        geometry={resources.shoulderShell}
+        material={left ? materials.ceramic : materials.violetMetal}
+        rotation={[0, left ? -0.35 : 0.35, Math.PI / 2]}
+        scale={[1, 0.72, 0.82]}
+      />
       <FighterPart geometry={resources.upperArm} outlineMaterial={outline} position={[0, -0.17, 0]} toonMaterial={material} />
       <FighterPart geometry={resources.forearm} outlineMaterial={outline} position={[0, -0.48, 0]} toonMaterial={material} />
+      <mesh
+        castShadow
+        geometry={resources.armourPlate}
+        material={left ? materials.darkMetal : materials.violetMetal}
+        position={[0, -0.47, 0.08]}
+        scale={[0.72, 0.58, 0.9]}
+      />
       <mesh geometry={resources.hand} material={left ? materials.cyan : materials.magenta} position={[0, -0.7, 0]} />
     </group>
   );
@@ -99,6 +118,13 @@ function GlitchLeg({
     <group ref={left ? refs.leftLeg : refs.rightLeg} position={[left ? -0.2 : 0.2, 0.72, 0]}>
       <FighterPart geometry={resources.thigh} outlineMaterial={outline} position={[0, -0.06, 0]} toonMaterial={material} />
       <FighterPart geometry={resources.shin} outlineMaterial={outline} position={[0, -0.48, 0]} toonMaterial={material} />
+      <mesh
+        castShadow
+        geometry={resources.armourPlate}
+        material={left ? materials.darkMetal : materials.violetMetal}
+        position={[0, -0.48, 0.09]}
+        scale={[0.86, 0.7, 0.9]}
+      />
       <FighterPart geometry={resources.foot} outlineMaterial={outline} position={[0, -0.75, 0.1]} toonMaterial={material} />
     </group>
   );
