@@ -1,27 +1,27 @@
 {
-  "displayScale": 1.1,
+  "displayScale": 1.5,
   "facesRight": true,
-  "textureScale": 2,
+  "textureScale": 3,
   "poses": {
     "lp": {
-      "width": 128,
-      "height": 240,
-      "ground": 0.92
+      "width": 180,
+      "height": 320,
+      "ground": 0.94
     },
     "lk": {
-      "width": 128,
-      "height": 240,
-      "ground": 0.92
+      "width": 180,
+      "height": 320,
+      "ground": 0.94
     },
     "hp": {
-      "width": 128,
-      "height": 240,
-      "ground": 0.92
+      "width": 180,
+      "height": 320,
+      "ground": 0.94
     },
     "hk": {
-      "width": 128,
-      "height": 240,
-      "ground": 0.92
+      "width": 180,
+      "height": 320,
+      "ground": 0.94
     }
   }
 }

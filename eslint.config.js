@@ -8,7 +8,7 @@ export default tseslint.config(
   {
     ignores: [
       '.next/**',
-      '.next-corrupt-*/**',
+      '.next-*/**',
       'dist/**',
       'tmp/**',
       '.tools/**',
