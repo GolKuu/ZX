@@ -9,6 +9,11 @@ import { MIM_SUPER_MOVES } from '@/src/data/mim-super-moves';
 import { TAUNT_MOVES } from '@/src/data/taunt-move';
 import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
 import { GLITCH_SUPER_MOVES } from '@/src/data/glitch-super-moves';
+import {
+  LUCKY_MOVES,
+  LUCKY_SPECIAL_MOVES,
+  LUCKY_SUPER_MOVES,
+} from '@/src/data/lucky';
 import { totalMoveFrames } from '@/src/sim';
 import { spriteAttackBeat } from './sprite2d/spriteAttackTimeline';
 
@@ -29,6 +34,9 @@ const MOVES_BY_ID = new Map(
     ...CHRONO_SUPER_MOVES,
     ...GLITCH_MOVES,
     ...GLITCH_SUPER_MOVES,
+    ...LUCKY_MOVES,
+    ...LUCKY_SPECIAL_MOVES,
+    ...LUCKY_SUPER_MOVES,
   ].map((move) => [move.id, move]),
 );
 

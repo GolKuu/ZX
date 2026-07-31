@@ -3,6 +3,7 @@ import type { ChronoSuperKind } from '@/src/data/chrono-super-moves';
 import type { EchoSuperKind } from '@/src/data/echo-super-moves';
 import type { GlitchSuperKind } from '@/src/data/glitch-super-moves';
 import type { MimSuperKind } from '@/src/data/mim-super-moves';
+import type { LuckySuperKind } from '@/src/data/lucky/supers';
 
 type RenderState = {
   chronoSuperFighterId: 'p1' | 'p2' | null;
@@ -19,6 +20,9 @@ type RenderState = {
   mimSuperFighterId: 'p1' | 'p2' | null;
   mimSuperKind: MimSuperKind | null;
   mimSuperVersion: number;
+  luckySuperFighterId: 'p1' | 'p2' | null;
+  luckySuperKind: LuckySuperKind | null;
+  luckySuperVersion: number;
   xrayFighterId: 'p1' | 'p2' | null;
   xrayVersion: number;
   hydratePreferences: () => void;
@@ -40,6 +44,10 @@ type RenderState = {
     fighterId: 'p1' | 'p2',
     kind: MimSuperKind,
   ) => void;
+  triggerLuckySuper: (
+    fighterId: 'p1' | 'p2',
+    kind: LuckySuperKind,
+  ) => void;
   triggerXray: (fighterId: 'p1' | 'p2') => void;
 };
 
@@ -58,6 +66,9 @@ export const useRenderStore = create<RenderState>((set) => ({
   mimSuperFighterId: null,
   mimSuperKind: null,
   mimSuperVersion: 0,
+  luckySuperFighterId: null,
+  luckySuperKind: null,
+  luckySuperVersion: 0,
   xrayFighterId: null,
   xrayVersion: 0,
   hydratePreferences: () => {
@@ -95,6 +106,12 @@ export const useRenderStore = create<RenderState>((set) => ({
       mimSuperFighterId,
       mimSuperKind,
       mimSuperVersion: state.mimSuperVersion + 1,
+    })),
+  triggerLuckySuper: (luckySuperFighterId, luckySuperKind) =>
+    set((state) => ({
+      luckySuperFighterId,
+      luckySuperKind,
+      luckySuperVersion: state.luckySuperVersion + 1,
     })),
   triggerXray: (xrayFighterId) =>
     set((state) => ({

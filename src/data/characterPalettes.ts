@@ -66,11 +66,33 @@ const CHRONO: CharacterPalette = {
   body: zone('#111725', '#1c3156'),
 };
 
+const LUCKY: CharacterPalette = {
+  hair: zone('#181712', '#070806', 0.82, 0.9),
+  skin: zone('#c58b72', '#7b4d46', 0.62, 0.76),
+  coat: zone('#194f39', '#081b13', 1.08, 0.84),
+  trousers: zone('#151b17', '#080b09', 0.76, 0.9),
+  boot: zone('#0b0e0c', '#030403', 0.72, 0.92),
+  eye: zone('#e5bc4e', '#8f1b31', 0, 0),
+  body: zone('#194f39', '#081b13', 1.08, 0.84),
+};
+
+const VORGH: CharacterPalette = {
+  hair: zone('#171111', '#050303', 0.95, 0.92),
+  skin: zone('#c8a07e', '#6d3e34', 0.62, 0.78),
+  coat: zone('#2a1012', '#080405', 1.15, 0.9),
+  trousers: zone('#181313', '#050505', 0.84, 0.92),
+  boot: zone('#160e0d', '#030202', 0.9, 0.94),
+  eye: zone('#ff6a1a', '#8c0f0f', 0, 0),
+  body: zone('#4b1516', '#090405', 1.18, 0.9),
+};
+
 const PALETTES: Record<CharacterId, CharacterPalette> = {
   mim: MIM,
   echo: ECHO,
   glitch: GLITCH,
   chrono: CHRONO,
+  lucky: LUCKY,
+  vorgh: VORGH,
 };
 
 export function paletteFor(characterId: CharacterId): CharacterPalette {

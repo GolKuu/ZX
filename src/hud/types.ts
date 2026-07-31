@@ -19,6 +19,8 @@ export interface HudFighterSnapshot extends HudFighterIdentity {
   readonly ultimateReady: boolean;
   /** Lucky's deterministic secondary resource, 0–100. */
   readonly luck?: number;
+  /** Vorgh's visible Pain-to-Power resource, 0–100. */
+  readonly rage?: number;
   readonly roundWins: number;
 }
 
@@ -44,4 +46,5 @@ export interface HudMatchState {
   readonly superCharge?: Readonly<Record<string, number | undefined>>;
   readonly ultimateReady?: Readonly<Record<string, boolean | undefined>>;
   readonly luck?: Readonly<Record<string, number | undefined>>;
+  readonly rage?: Readonly<Record<string, number | undefined>>;
 }

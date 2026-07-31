@@ -129,6 +129,13 @@
     linear-gradient(255deg, transparent 32%, #0b2848 32.5% 47%, transparent 47.5%);
 }
 
+.panel[data-character="lucky"] .portrait i {
+  background:
+    radial-gradient(circle at 50% 38%, #1a5a40 0 20%, transparent 21%),
+    conic-gradient(from 40deg, #0b120e, #9d1d36, #d7ad43, #0b120e);
+  box-shadow: 0 0 2rem rgb(216 175 67 / 42%);
+}
+
 .identity {
   position: relative;
   z-index: 2;

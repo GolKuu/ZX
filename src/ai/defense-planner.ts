@@ -82,6 +82,7 @@ export class DefensePlanner {
       distanceBetween(observedSelf, opponent),
       moves,
       random,
+      observedSelf.resource,
     );
     return option === null
       ? null

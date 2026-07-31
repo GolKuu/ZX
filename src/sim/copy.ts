@@ -89,6 +89,11 @@ export function copyMove(move: MoveFrameData): MoveFrameData {
     armour: move.armour === undefined
       ? undefined
       : { ...move.armour, frames: { ...move.armour.frames } },
+    grapple: move.grapple === undefined ? undefined : { ...move.grapple },
+    displacements: move.displacements?.map((displacement) => ({
+      ...displacement,
+      offset: { ...displacement.offset },
+    })),
   };
 }
 

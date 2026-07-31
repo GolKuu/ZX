@@ -1,0 +1,53 @@
+.rage {
+  align-items: center;
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: auto minmax(5rem, 1fr) 1.8rem;
+  margin-top: 0.28rem;
+}
+
+.rage b,
+.rage em {
+  color: #d6c3ae;
+  font: 700 0.56rem/1 Inter, sans-serif;
+  letter-spacing: 0.12em;
+}
+
+.rage em {
+  font-style: normal;
+  text-align: right;
+}
+
+.rage > span {
+  background: #130607;
+  border: 1px solid #5e2720;
+  height: 0.34rem;
+  overflow: hidden;
+  transform: skewX(-12deg);
+}
+
+.rage i {
+  background: linear-gradient(90deg, #521013, #d52b1e 68%, #ff8a1d);
+  box-shadow: 0 0 0.55rem #e7431d;
+  display: block;
+  height: 100%;
+  transition: width 100ms linear;
+}
+
+.rage[data-tier='high'] > span,
+.rage[data-tier='berserk'] > span {
+  border-color: #ff6a1a;
+}
+
+.rage[data-tier='berserk'] i {
+  animation: pulse 0.35s steps(2) infinite;
+  background: linear-gradient(90deg, #7d0e12, #ff3c16, #ffd16a);
+}
+
+.rage[data-side='right'] {
+  direction: rtl;
+}
+
+@keyframes pulse {
+  50% { filter: brightness(1.5); }
+}

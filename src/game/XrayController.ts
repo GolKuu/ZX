@@ -9,6 +9,10 @@ import {
 } from '@/src/data/echo-super-moves';
 import { glitchSuperKindForMove } from '@/src/data/glitch-super-moves';
 import { mimSuperKindForMove } from '@/src/data/mim-super-moves';
+import {
+  LUCKY_CINEMATIC_FRAMES,
+  luckySuperKindForMove,
+} from '@/src/data/lucky/supers';
 import type { CombatEvent } from '@/src/sim';
 import { useRenderStore } from '@/src/store/renderStore';
 import { CinematicFreeze } from './CinematicFreeze';
@@ -57,6 +61,14 @@ export class XrayController {
         event.type === 'hit'
         && (event.attackerId === 'p1' || event.attackerId === 'p2')
       ) {
+        const luckyKind = luckySuperKindForMove(event.moveId);
+        if (luckyKind !== null) {
+          this.freeze.start(LUCKY_CINEMATIC_FRAMES[luckyKind]);
+          useRenderStore.getState().triggerLuckySuper(
+            event.attackerId,
+            luckyKind,
+          );
+        }
         const chronoKind = chronoSuperKindForMove(event.moveId);
         if (chronoKind !== null) {
           this.freeze.start(CHRONO_CINEMATIC_FRAMES[chronoKind]);

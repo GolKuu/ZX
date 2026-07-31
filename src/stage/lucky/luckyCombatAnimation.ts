@@ -1,5 +1,4 @@
 import { LUCKY_MOVE_IDS } from '@/src/data/lucky/moves';
-import { LUCKY_SPECIAL_IDS } from '@/src/data/lucky/specials';
 import type { FighterSnapshot } from '@/src/sim';
 import { combatAnimationProgress } from '../combatAnimationProgress';
 import { pulse, setPosition, setRotation, type FighterRig } from '../fighterRig';

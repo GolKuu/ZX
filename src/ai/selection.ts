@@ -7,11 +7,13 @@ export function chooseMove(
   distance: number,
   moves: ReadonlyMap<string, MoveFrameData>,
   random: DeterministicRandom,
+  resource = 0,
 ): AiMoveOption | null {
   const viable = options.filter(
     (option) =>
       distance >= option.minimumDistance
       && distance <= option.maximumDistance
+      && resource >= (option.minimumResource ?? 0)
       && moves.has(option.moveId),
   );
   const totalWeight = viable.reduce((total, option) => total + option.weight, 0);

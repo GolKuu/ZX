@@ -119,6 +119,7 @@ export class HudBridge {
       ultimateReady: match.ultimateReady?.[fighter.id]
         ?? ultimateReadyFromHealth(health, maxHealth),
       luck: clampSuperMeter(match.luck?.[fighter.id] ?? 0),
+      rage: clampSuperMeter(match.rage?.[fighter.id] ?? 0),
       roundWins: Math.min(3, nonNegativeInteger(match.roundWins[fighter.id] ?? 0, 'roundWins')),
     };
   }

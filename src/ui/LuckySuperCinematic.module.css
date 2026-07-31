@@ -1,0 +1,109 @@
+.cinematic {
+  position: absolute;
+  z-index: 70;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 50%, rgb(27 98 65 / 28%), transparent 42%),
+    linear-gradient(115deg, rgb(2 7 5 / 96%), rgb(33 8 15 / 92%));
+  animation: exit 2.8s both;
+}
+
+.freeze {
+  position: absolute;
+  inset: 8% -10%;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 6%, rgb(226 187 79 / 10%) 6.2% 6.4%),
+    linear-gradient(100deg, transparent 20%, rgb(230 191 83 / 18%) 50%, transparent 80%);
+  transform: skewX(-12deg);
+}
+
+.outcomes {
+  position: absolute;
+  top: 21%;
+  left: 9%;
+  display: grid;
+  width: 82%;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.2rem;
+}
+
+.outcomes i {
+  padding: 1rem;
+  color: #7f8b82;
+  border: 1px solid #9f7c38;
+  font-size: clamp(0.7rem, 1.5vw, 1.2rem);
+  font-style: normal;
+  letter-spacing: 0.2em;
+  text-align: center;
+  animation: reject 1.2s 0.25s both;
+}
+
+.outcomes i:last-child {
+  color: #fff0a8;
+  border-color: #f0c65b;
+  box-shadow: 0 0 2rem rgb(230 185 67 / 36%);
+  animation: choose 1.4s 0.5s both;
+}
+
+.line {
+  position: absolute;
+  top: 43%;
+  left: -10%;
+  width: 120%;
+  height: 0.35rem;
+  background: linear-gradient(90deg, transparent, #a51f3a, #f2cf67, transparent);
+  box-shadow: 0 0 1.5rem #d4a740;
+  animation: slash 0.5s 0.72s both;
+}
+
+.title {
+  position: absolute;
+  right: 8%;
+  bottom: 18%;
+  display: grid;
+  justify-items: end;
+  text-align: right;
+}
+
+.title small,
+.title span {
+  color: #dfbb5a;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.title strong {
+  color: #f7f2df;
+  font-size: clamp(2.3rem, 7vw, 7rem);
+  font-style: italic;
+  line-height: 0.94;
+  text-shadow: 0.06em 0.06em #77182b;
+}
+
+@keyframes reject {
+  to { opacity: 0.16; transform: translateY(1rem); }
+}
+
+@keyframes choose {
+  from { opacity: 0; transform: scale(0.7); }
+  55% { opacity: 1; transform: scale(1.08); }
+  to { transform: scale(1); }
+}
+
+@keyframes slash {
+  from { opacity: 0; transform: translateX(-60%) scaleX(0); }
+  to { opacity: 1; transform: translateX(0) scaleX(1); }
+}
+
+@keyframes exit {
+  0%, 78% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic,
+  .outcomes i,
+  .line { animation-duration: 1ms; }
+}

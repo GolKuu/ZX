@@ -36,6 +36,8 @@ export const VORGH_SPECIAL_IDS = {
 
 export const VORGH_SUPER_IDS = {
   savageDominion: 'vorgh.super.savage-dominion',
+  savageDominionMedium: 'vorgh.super.savage-dominion.medium',
+  savageDominionHigh: 'vorgh.super.savage-dominion.high',
   unchained: 'vorgh.super.unchained',
   lastBeast: 'vorgh.ultimate.last-beast',
   lastBeastSequence: 'vorgh.ultimate.last-beast.sequence',

@@ -16,6 +16,7 @@ import {
   KeyboardInputSource,
   MIM_COMMANDS,
   PLAYER_TWO_BINDINGS,
+  VORGH_COMMANDS,
 } from '@/src/input';
 import { useControlStore } from '@/src/store/controlStore';
 import { useHudStore } from '@/src/store/hudStore';
@@ -145,6 +146,7 @@ export function CombatGameLoop({
 }
 
 function commandsFor(characterId: CharacterId) {
+  if (characterId === 'vorgh') return VORGH_COMMANDS;
   if (characterId === 'lucky') return LUCKY_COMMANDS;
   if (characterId === 'chrono') return CHRONO_COMMANDS;
   if (characterId === 'echo') return ECHO_COMMANDS;

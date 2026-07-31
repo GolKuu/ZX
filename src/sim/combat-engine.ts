@@ -100,6 +100,7 @@ export class CombatEngine {
         this.nextActionSerial += 1;
         events.push(started);
       }
+      applyAuthoredDisplacement(fighter, this.moves);
       integrateFighter(fighter, this.config, this.completedFrames, events);
     }
 
@@ -251,6 +252,28 @@ export class CombatEngine {
         });
       }
     }
+  }
+}
+
+function applyAuthoredDisplacement(
+  fighter: MutableFighterState,
+  moves: ReadonlyMap<string, MoveFrameData>,
+): void {
+  const action = fighter.action;
+  if (action === null) return;
+  const displacement = moves.get(action.moveId)?.displacements?.find(
+    (entry) => entry.frame === action.frame,
+  );
+  if (displacement === undefined) return;
+  fighter.position.x += displacement.offset.x * fighter.facing;
+  fighter.position.y = Math.max(
+    fighter.position.y + displacement.offset.y,
+    0,
+  );
+  if (displacement.offset.y !== 0) fighter.grounded = false;
+  if (displacement.clearVelocity === true) {
+    fighter.velocity.x = 0;
+    fighter.velocity.y = 0;
   }
 }
 

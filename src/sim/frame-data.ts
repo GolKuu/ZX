@@ -85,6 +85,38 @@ export interface MoveArmourData {
   readonly damagePercent: number;
 }
 
+export type GrappleKind =
+  | 'normal'
+  | 'command'
+  | 'antiAir'
+  | 'air'
+  | 'wall'
+  | 'slam'
+  | 'armoured'
+  | 'carry'
+  | 'reposition'
+  | 'escape';
+
+/** Authored throw rules. Throws are unblockable and defeat strike armour. */
+export interface MoveGrappleData {
+  readonly kind: GrappleKind;
+  readonly pairedFrames: number;
+  readonly targetSize: 'any' | 'grounded' | 'airborne';
+}
+
+/**
+ * A deterministic displacement authored on one exact action frame.
+ *
+ * Existing moves omit this field and keep their original physics. Teleports
+ * use it instead of renderer-only tricks, so collision, side switches and
+ * punish windows agree with what the player sees.
+ */
+export interface MoveDisplacementData {
+  readonly frame: number;
+  readonly offset: FixedVector;
+  readonly clearVelocity?: boolean;
+}
+
 export interface MoveObstacleData {
   /** Local-space obstacle volume, mirrored by fighter facing. */
   readonly box: FixedBox;
@@ -130,6 +162,9 @@ export interface MoveFrameData {
   readonly resourceGainOnBlock?: number;
   /** Limited, authored armour. It never removes damage or recovery entirely. */
   readonly armour?: MoveArmourData;
+  /** Marks the active hitbox as a real grab instead of an unblockable strike. */
+  readonly grapple?: MoveGrappleData;
+  readonly displacements?: readonly MoveDisplacementData[];
 }
 
 export type MovePhase = 'startup' | 'active' | 'recovery';

@@ -29,6 +29,14 @@ import {
   LUCKY_SPECIAL_MOVES,
   LUCKY_SUPER_MOVES,
 } from '@/src/data/lucky';
+import {
+  VORGH_AI_LOADOUTS,
+  VORGH_HURTBOXES,
+  VORGH_MAX_HEALTH,
+  VORGH_MOVEMENT,
+  VORGH_MOVES,
+  VORGH_RESOURCE,
+} from '@/src/data/vorgh';
 import { TAUNT_MOVES } from '@/src/data/taunt-move';
 import { HudBridge } from '@/src/hud';
 import {
@@ -58,6 +66,7 @@ export const ALL_COMBAT_MOVES = [
   ...LUCKY_MOVES,
   ...LUCKY_SPECIAL_MOVES,
   ...LUCKY_SUPER_MOVES,
+  ...VORGH_MOVES,
   ...TAUNT_MOVES,
 ];
 
@@ -83,7 +92,9 @@ export function createCombatAi(
     opponentId: 'p1',
     difficulty,
     moves: ALL_COMBAT_MOVES,
-    loadout: characterId === 'lucky'
+    loadout: characterId === 'vorgh'
+      ? VORGH_AI_LOADOUTS[difficulty]
+      : characterId === 'lucky'
       ? LUCKY_AI_LOADOUT
       : characterId === 'echo'
       ? ECHO_AI_LOADOUT
@@ -134,10 +145,21 @@ function fighterDefinition(
   return {
     id,
     team,
-    maxHealth: characterId === 'lucky' ? LUCKY_MAX_HEALTH : 1_000,
+    maxHealth: characterId === 'vorgh'
+      ? VORGH_MAX_HEALTH
+      : characterId === 'lucky'
+        ? LUCKY_MAX_HEALTH
+        : 1_000,
     spawn: { x: fixed(x), y: 0 },
     facing,
-    hurtboxes: characterId === 'lucky' ? LUCKY_HURTBOXES : KADE_HURTBOXES,
+    hurtboxes: characterId === 'vorgh'
+      ? VORGH_HURTBOXES
+      : characterId === 'lucky'
+        ? LUCKY_HURTBOXES
+        : KADE_HURTBOXES,
     ...(characterId === 'lucky' ? { movement: LUCKY_MOVEMENT } : {}),
+    ...(characterId === 'vorgh'
+      ? { movement: VORGH_MOVEMENT, resource: VORGH_RESOURCE }
+      : {}),
   };
 }

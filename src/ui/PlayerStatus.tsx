@@ -7,6 +7,7 @@ import { BurstMeter } from './BurstMeter';
 import { FighterPortrait } from './FighterPortrait';
 import { meterSegments } from './meterSegments';
 import { LuckMeter } from './LuckMeter';
+import { RageMeter } from './RageMeter';
 import styles from './PlayerStatus.module.css';
 
 export function PlayerStatus({ fighter }: {
@@ -56,6 +57,9 @@ export function PlayerStatus({ fighter }: {
         />
         {characterId === 'lucky' && (
           <LuckMeter side={fighter.side} value={fighter.luck ?? 0} />
+        )}
+        {characterId === 'vorgh' && (
+          <RageMeter side={fighter.side} value={fighter.rage ?? 0} />
         )}
       </div>
     </section>

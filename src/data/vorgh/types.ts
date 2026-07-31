@@ -1,7 +1,7 @@
 import type { MoveFrameData } from '../../sim/frame-data.js';
 
 export type VorghAttackLevel = 'high' | 'mid' | 'low' | 'throw' | 'unblockable';
-export type VorghRageTier = 'low' | 'medium' | 'high' | 'berserk';
+export type VorghRageTier = 'low' | 'medium' | 'charged' | 'high' | 'berserk';
 
 export interface VorghPresentation {
   readonly animation: string;

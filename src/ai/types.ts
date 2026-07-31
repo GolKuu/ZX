@@ -1,6 +1,6 @@
 import type { FighterInput } from '../sim/state.js';
 
-export type AiDifficulty = 'easy' | 'normal' | 'hard' | 'impossible';
+export type AiDifficulty = 'easy' | 'normal' | 'hard' | 'impossible' | 'story';
 
 export type AiIntent =
   | 'idle'
@@ -17,6 +17,7 @@ export interface AiMoveOption {
   readonly maximumDistance: number;
   readonly weight: number;
   readonly cue: string;
+  readonly minimumResource?: number;
 }
 
 export interface AiComboRoute {

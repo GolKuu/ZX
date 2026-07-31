@@ -11,6 +11,7 @@ import { MimSuperCinematic } from './MimSuperCinematic';
 import { EchoSuperCinematic } from './EchoSuperCinematic';
 import { ChronoSuperCinematic } from './ChronoSuperCinematic';
 import { GlitchSuperCinematic } from './GlitchSuperCinematic';
+import { LuckySuperCinematic } from './LuckySuperCinematic';
 import styles from './PlayOverlay.module.css';
 
 export function PlayOverlay() {
@@ -24,6 +25,7 @@ export function PlayOverlay() {
       <EchoSuperCinematic />
       <ChronoSuperCinematic />
       <GlitchSuperCinematic />
+      <LuckySuperCinematic />
       <CombatHud />
       <FightControlStrip />
       {screen === 'fight' && <MobileControls forcedVisible={mobileMode} />}
@@ -39,6 +41,7 @@ function DevelopmentTools() {
   const previewEcho = useRenderStore((state) => state.triggerEchoSuper);
   const previewChrono = useRenderStore((state) => state.triggerChronoSuper);
   const previewGlitch = useRenderStore((state) => state.triggerGlitchSuper);
+  const previewLucky = useRenderStore((state) => state.triggerLuckySuper);
   return (
     <aside className={styles.devTools} aria-label="Development tools">
       <span className={styles.fps}><FpsMeter /></span>
@@ -54,6 +57,7 @@ function DevelopmentTools() {
       <button type="button" onClick={() => previewGlitch('p1', 'error')}>GLITCH L1</button>
       <button type="button" onClick={() => previewGlitch('p1', 'critical')}>GLITCH L3</button>
       <button type="button" onClick={() => previewGlitch('p1', 'patchNotes')}>GLITCH FIN</button>
+      <button type="button" onClick={() => previewLucky('p1', 'impossibleOutcome')}>LUCKY FIN</button>
       <button
         aria-pressed={effectsEnabled}
         type="button"

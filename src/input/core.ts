@@ -57,6 +57,8 @@ export {
   GLITCH_COMMANDS,
 } from './glitchCommands.js';
 
+export { VORGH_COMMANDS } from './vorghCommands.js';
+
 export {
   LUCKY_COMMANDS,
 } from './luckyCommands.js';

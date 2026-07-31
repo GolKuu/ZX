@@ -54,6 +54,15 @@ export interface ArmourAbsorbedEvent extends CombatEventBase {
   readonly damage: number;
 }
 
+export interface GrappleEvent extends CombatEventBase {
+  readonly type: 'grapple';
+  readonly attackerId: string;
+  readonly defenderId: string;
+  readonly moveId: string;
+  readonly kind: import('./frame-data.js').GrappleKind;
+  readonly pairedFrames: number;
+}
+
 export interface BounceEvent extends CombatEventBase {
   readonly type: 'wallBounce' | 'groundBounce';
   readonly fighterId: string;
@@ -107,6 +116,7 @@ export type CombatEvent =
   | BlockEvent
   | GuardBreakEvent
   | ArmourAbsorbedEvent
+  | GrappleEvent
   | BounceEvent
   | WallSpawnedEvent
   | WallContactEvent

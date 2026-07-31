@@ -15,7 +15,11 @@ export class MeterController {
     return {
       grounded: fighter.grounded,
       stanceId: null,
-      gauge: this.isLucky(fighter.id) ? this.luck.charge(fighter.id) : 0,
+      gauge: this.isVorgh(fighter.id)
+        ? fighter.resource
+        : this.isLucky(fighter.id)
+          ? this.luck.charge(fighter.id)
+          : 0,
       superMeter: this.ledger.charge(fighter.id),
       ultimateReady: this.isUltimateReady(fighter),
     };
@@ -58,6 +62,16 @@ export class MeterController {
     return state;
   }
 
+  public rageState(
+    fighters: readonly FighterSnapshot[],
+  ): Readonly<Record<string, number>> {
+    const state: Record<string, number> = {};
+    for (const fighter of fighters) {
+      state[fighter.id] = this.isVorgh(fighter.id) ? fighter.resource : 0;
+    }
+    return state;
+  }
+
   public reset(): void {
     this.ledger.reset();
     this.luck.reset();
@@ -72,7 +86,14 @@ export class MeterController {
   }
 
   private isLucky(fighterId: string): boolean {
-    const index = fighterId === 'p1' ? 0 : fighterId === 'p2' ? 1 : -1;
-    return index >= 0 && this.selection[index] === 'lucky';
+    if (fighterId === 'p1') return this.selection[0] === 'lucky';
+    if (fighterId === 'p2') return this.selection[1] === 'lucky';
+    return false;
+  }
+
+  private isVorgh(fighterId: string): boolean {
+    if (fighterId === 'p1') return this.selection[0] === 'vorgh';
+    if (fighterId === 'p2') return this.selection[1] === 'vorgh';
+    return false;
   }
 }

@@ -46,7 +46,13 @@ export class NeutralPlanner {
     ) {
       return inputPlan({}, 'idle');
     }
-    const option = chooseMove(loadout.neutral, distance, moves, random);
+    const option = chooseMove(
+      loadout.neutral,
+      distance,
+      moves,
+      random,
+      self.resource,
+    );
     return option === null
       ? inputPlan({}, 'idle')
       : {

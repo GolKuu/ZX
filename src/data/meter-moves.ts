@@ -15,6 +15,10 @@ import {
   luckySuperCostForMove,
   LUCKY_SUPER_IDS,
 } from './lucky/supers.js';
+import {
+  vorghSuperCostForMove,
+  VORGH_SUPER_IDS,
+} from './vorgh/index.js';
 
 /** One ultimate per character. */
 export const ULTIMATE_MOVE_IDS: ReadonlySet<string> = new Set<string>([
@@ -24,6 +28,8 @@ export const ULTIMATE_MOVE_IDS: ReadonlySet<string> = new Set<string>([
   CHRONO_SUPER_MOVE_IDS.inevitability,
   GLITCH_SUPER_MOVE_IDS.patchNotes,
   LUCKY_SUPER_IDS.impossibleOutcome,
+  VORGH_SUPER_IDS.lastBeast,
+  VORGH_SUPER_IDS.lastBeastSequence,
 ]);
 
 export function isUltimateMove(moveId: string): boolean {
@@ -39,7 +45,8 @@ export function superCostForMove(moveId: string): number | null {
     ?? echoSuperCostForMove(moveId)
     ?? chronoSuperCostForMove(moveId)
     ?? glitchSuperCostForMove(moveId)
-    ?? luckySuperCostForMove(moveId);
+    ?? luckySuperCostForMove(moveId)
+    ?? vorghSuperCostForMove(moveId);
 }
 
 /** Supers and ultimates both build no energy for the attacker. */

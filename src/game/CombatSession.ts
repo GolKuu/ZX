@@ -3,6 +3,7 @@ import type {
   KeyboardInputSource,
 } from '@/src/input';
 import { FighterVoiceController } from '@/src/audio/FighterVoiceController';
+import { LuckySoundController } from '@/src/audio/LuckySoundController';
 import {
   getCharacterDefinition,
   type CharacterSelection,
@@ -62,6 +63,7 @@ export class CombatSession {
   private roundRestartInFrames = 0;
   private championAtRoundEnd: ChampionSide = null;
   private readonly fighterVoice: FighterVoiceController;
+  private readonly luckySound: LuckySoundController;
   private readonly xray = new XrayController();
   private readonly meters: MeterController;
   private readonly attackInput = new AttackInputPolicy(ALL_COMBAT_MOVES);
@@ -78,6 +80,7 @@ export class CombatSession {
       useHudStore.getState().aiDifficulty,
     );
     this.fighterVoice = new FighterVoiceController(this.fighterSelection);
+    this.luckySound = new LuckySoundController(this.fighterSelection);
     this.publishInitialState();
   }
 
@@ -157,6 +160,7 @@ export class CombatSession {
     this.lastEvents = result.events;
     this.attackInput.accept(result.state, result.events);
     this.meters.accept(result.events);
+    this.luckySound.accept(result.events);
     this.xray.accept(result.events);
     publishCombatFrame(result.state, 0);
     publishCombatHits(result.state, result.events);
@@ -192,6 +196,7 @@ export class CombatSession {
       superCharge: this.meters.superChargeState(world.fighters),
       ultimateReady: this.meters.ultimateReadyState(world.fighters),
       luck: this.meters.luckState(world.fighters),
+      rage: this.meters.rageState(world.fighters),
     });
   }
 

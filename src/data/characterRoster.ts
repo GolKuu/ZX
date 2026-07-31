@@ -3,7 +3,8 @@
   | 'echo'
   | 'glitch'
   | 'chrono'
-  | 'lucky';
+  | 'lucky'
+  | 'vorgh';
 
 export type CharacterSelection = readonly [CharacterId, CharacterId];
 
@@ -56,6 +57,14 @@ export const CHARACTER_ROSTER = [
     description:
       'Стремительный импровизатор: накапливает видимую Удачу точными атаками и тратит её на усиленные маршруты без скрытых случайных побед.',
     mark: '♠',
+  },
+  {
+    id: 'vorgh',
+    displayName: 'VORGH',
+    archetype: 'Берсерк · давление',
+    description:
+      'Разумный хищник в разбитой броне: превращает боль в Rage, меняет стойку и рискует восстановлением ради давления.',
+    mark: 'V',
   },
 ] as const satisfies readonly CharacterDefinition[];
 

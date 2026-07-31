@@ -41,6 +41,10 @@ export class ComboPlanner {
       return null;
     }
     const move = this.moves.get(moveId);
+    if ((move?.minimumResource ?? 0) > self.resource) {
+      this.clear();
+      return null;
+    }
     if (
       self.action === null
       && move !== undefined

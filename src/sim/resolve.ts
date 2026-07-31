@@ -156,6 +156,22 @@ export function resolveHit(
     groundMinimumHitstun: hit.groundBounce?.minimumHitstun ?? 0,
   };
 
+  const grapple = candidate.attackerMove?.grapple;
+  if (grapple !== undefined) {
+    defender.hitstun = Math.max(defender.hitstun, grapple.pairedFrames);
+    defender.velocity.x = 0;
+    defender.velocity.y = 0;
+    events.push({
+      type: 'grapple',
+      frame,
+      attackerId: attacker.id,
+      defenderId: defender.id,
+      moveId: candidate.moveId,
+      kind: grapple.kind,
+      pairedFrames: grapple.pairedFrames,
+    });
+  }
+
   events.push({
     type: 'hit',
     frame,
@@ -241,7 +257,8 @@ function activeArmour(candidate: HitCandidate) {
   const action = candidate.defender.action;
   const armour = candidate.defenderMove?.armour;
   if (
-    action === null
+    candidate.attackerMove?.grapple !== undefined
+    || action === null
     || armour === undefined
     || action.armourHitsUsed >= armour.hits
     || action.frame < armour.frames.from

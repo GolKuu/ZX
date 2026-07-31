@@ -46,15 +46,29 @@ export const LUCKY_COMMANDS: readonly CommandRow[] = [
   command(LUCKY_SPECIAL_IDS.probabilityShift, 'qcb', 'hp'),
   command(LUCKY_SPECIAL_IDS.loadedStrike, 'qcf', 'hp'),
   command(LUCKY_SPECIAL_IDS.luckyStep, 'qcf', 'lp'),
-  { moveId: LUCKY_MOVE_IDS.crouchLight, motion: 'none', button: 'lp', stance: 'crouching' },
-  { moveId: LUCKY_MOVE_IDS.crouchMedium, motion: 'none', button: 'lk', stance: 'crouching' },
-  { moveId: LUCKY_MOVE_IDS.crouchHeavy, motion: 'none', button: 'hp', stance: 'crouching' },
-  { moveId: LUCKY_MOVE_IDS.sweep, motion: 'none', button: 'hk', stance: 'crouching' },
-  { moveId: LUCKY_MOVE_IDS.quickDraw, motion: 'none', button: 'lp', stance: 'standing' },
-  { moveId: LUCKY_MOVE_IDS.loadedShoulder, motion: 'none', button: 'lk', stance: 'standing' },
-  { moveId: LUCKY_MOVE_IDS.slidingBet, motion: 'none', button: 'hp', stance: 'standing' },
-  { moveId: LUCKY_MOVE_IDS.fortuneHeel, motion: 'none', button: 'hk', stance: 'standing' },
+  normal(LUCKY_MOVE_IDS.crouchLight, 'lp', 'crouching'),
+  normal(LUCKY_MOVE_IDS.crouchMedium, 'lk', 'crouching'),
+  normal(LUCKY_MOVE_IDS.crouchHeavy, 'hp', 'crouching'),
+  normal(LUCKY_MOVE_IDS.sweep, 'hk', 'crouching'),
+  normal(LUCKY_MOVE_IDS.quickDraw, 'lp', 'standing'),
+  normal(LUCKY_MOVE_IDS.loadedShoulder, 'lk', 'standing'),
+  normal(LUCKY_MOVE_IDS.slidingBet, 'hp', 'standing'),
+  normal(LUCKY_MOVE_IDS.fortuneHeel, 'hk', 'standing'),
 ];
+
+function normal(
+  moveId: string,
+  button: CommandRow['button'],
+  stance: 'standing' | 'crouching',
+): CommandRow {
+  return {
+    moveId,
+    motion: 'none',
+    button,
+    stance,
+    forbiddenPressed: ['super'],
+  };
+}
 
 function command(
   moveId: string,

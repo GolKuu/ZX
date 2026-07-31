@@ -47,6 +47,12 @@ function validateMove(move: MoveFrameData): void {
     assertNonNegativeInteger(move.armour.hits, `${move.id}.armour.hits`);
     assertNonNegativeInteger(move.armour.damagePercent, `${move.id}.armour.damagePercent`);
   }
+  if (move.grapple !== undefined) {
+    assertNonNegativeInteger(
+      move.grapple.pairedFrames,
+      `${move.id}.grapple.pairedFrames`,
+    );
+  }
   const activeTo = move.startup + move.active;
   move.hitboxes.forEach((hitbox) =>
     validateHitbox(hitbox, move.id, move.startup, activeTo),

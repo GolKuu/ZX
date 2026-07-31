@@ -82,6 +82,13 @@
   background: linear-gradient(145deg, #f4f9ff, #0b2848 72%);
 }
 
+.characterList button[data-character="lucky"] > i {
+  color: #e2b94d;
+  background:
+    radial-gradient(circle at 52% 42%, #174d38 0 28%, transparent 30%),
+    linear-gradient(145deg, #111813, #5d1425);
+}
+
 .characterList button > span {
   display: grid;
   min-width: 0;
