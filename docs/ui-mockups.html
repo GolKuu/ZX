@@ -30,7 +30,7 @@
   .wrap{max-width:1120px;margin:0 auto;padding:clamp(2rem,5vw,5rem) clamp(1rem,4vw,2.5rem) 6rem;
         display:flex;flex-direction:column;gap:var(--gap)}
 
-  h1,h2,h3{text-wrap:balance;margin:0;line-height:1.1}
+  h1,h2,h3{margin:0;line-height:1.1}
   .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
            color:var(--page-mut)}
   h1{font-size:clamp(2.1rem,5.5vw,3.4rem);font-weight:800;letter-spacing:-.02em}
@@ -56,6 +56,12 @@
   .swatches{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
   .sw{border:1px solid var(--page-line);border-radius:2px;overflow:hidden;background:var(--page-card)}
   .sw i{display:block;height:52px}
+  .sw-ink{background:#05070A}
+  .sw-blue{background:#9FD8FF}
+  .sw-gold{background:#F2A93B}
+  .sw-red{background:#E0483A}
+  .sw-stone{background:#79879B}
+  .sw-line{background:#18202B}
   .sw div{padding:.5rem .6rem;font-family:var(--mono);font-size:.68rem;line-height:1.5}
   .sw b{display:block;color:var(--page-fg);letter-spacing:.08em;text-transform:uppercase;font-size:.65rem}
   .sw span{color:var(--page-mut)}
@@ -91,6 +97,15 @@
   /* ---------- shared screen atoms ---------- */
   .mono-l{font-family:var(--mono);letter-spacing:.2em;text-transform:uppercase}
   .disp{font-family:var(--disp);text-transform:uppercase;font-weight:400}
+  .type-display{font-size:2.6rem;line-height:.9}
+  .type-ui{font-size:1.35rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+  .type-data{font-family:var(--mono);font-size:.95rem;letter-spacing:.16em;text-transform:uppercase}
+  .ringbg-menu{left:78%;opacity:.6}
+  .ringbg-result{opacity:.5}
+  .vsname.p1{color:var(--blue)}
+  .vsname.p2{color:var(--gold)}
+  .stagefloor-paused{opacity:.4}
+  .fighter-paused{opacity:.35}
 
   .brandmark{width:12cqw;aspect-ratio:1;border-radius:50%;border:.35cqw solid var(--blue);
              position:relative;display:grid;place-items:center}
@@ -409,24 +424,24 @@
     <p>Six colours, no more. Blue is player one and the Circle itself; gold is player two and anything spent; red only ever means damage or loss.</p>
   </div>
   <div class="swatches">
-    <div class="sw"><i style="background:#05070A"></i><div><b>Arena Ink</b><span>#05070A · ground</span></div></div>
-    <div class="sw"><i style="background:#9FD8FF"></i><div><b>Circle Blue</b><span>#9FD8FF · P1, focus</span></div></div>
-    <div class="sw"><i style="background:#F2A93B"></i><div><b>Ember Gold</b><span>#F2A93B · P2, spent</span></div></div>
-    <div class="sw"><i style="background:#E0483A"></i><div><b>Cinder</b><span>#E0483A · damage</span></div></div>
-    <div class="sw"><i style="background:#79879B"></i><div><b>Stone</b><span>#79879B · labels</span></div></div>
-    <div class="sw"><i style="background:#18202B"></i><div><b>Hairline</b><span>#18202B · structure</span></div></div>
+    <div class="sw"><i class="sw-ink"></i><div><b>Arena Ink</b><span>#05070A · ground</span></div></div>
+    <div class="sw"><i class="sw-blue"></i><div><b>Circle Blue</b><span>#9FD8FF · P1, focus</span></div></div>
+    <div class="sw"><i class="sw-gold"></i><div><b>Ember Gold</b><span>#F2A93B · P2, spent</span></div></div>
+    <div class="sw"><i class="sw-red"></i><div><b>Cinder</b><span>#E0483A · damage</span></div></div>
+    <div class="sw"><i class="sw-stone"></i><div><b>Stone</b><span>#79879B · labels</span></div></div>
+    <div class="sw"><i class="sw-line"></i><div><b>Hairline</b><span>#18202B · structure</span></div></div>
   </div>
   <div class="typerow">
     <div class="ty">
-      <div class="disp" style="font-size:2.6rem;line-height:.9">59 · K.O.</div>
+      <div class="disp type-display">59 · K.O.</div>
       <div class="spec">DISPLAY — Impact / Haettenschweiler<br>Timer, callouts, VS, winner, stat numerals.<br>Never used below 24px.</div>
     </div>
     <div class="ty">
-      <div style="font-weight:800;font-size:1.35rem;letter-spacing:.16em;text-transform:uppercase">Local 2P</div>
+      <div class="type-ui">Local 2P</div>
       <div class="spec">UI — system sans 800<br>Menu items, player names, buttons.<br>Uppercase, tracking .14–.22em.</div>
     </div>
     <div class="ty">
-      <div style="font-family:var(--mono);font-size:.95rem;letter-spacing:.16em;text-transform:uppercase">Reaction 12f</div>
+      <div class="type-data">Reaction 12f</div>
       <div class="spec">DATA — system mono<br>Hints, device names, frame values, build tag.<br>Tracking .14–.32em, always uppercase.</div>
     </div>
   </div>
@@ -485,7 +500,7 @@
 <section>
   <div class="sechead"><div class="eyebrow">Screen 02</div><h2>Main menu</h2></div>
   <div class="screen">
-    <div class="ringbg" style="left:78%;opacity:.6"></div>
+    <div class="ringbg ringbg-menu"></div>
     <div class="menu">
       <div class="mi on"><span class="dot"></span><span class="lbl">Local 2P</span><span class="sub">Two pads · one screen</span></div>
       <div class="mi"><span class="dot"></span><span class="lbl">Vs AI</span><span class="sub">Three difficulties</span></div>
@@ -575,9 +590,9 @@
   <div class="screen">
     <div class="ringbg"></div>
     <div class="vs">
-      <span class="vsname p1" style="color:var(--blue)">Kade</span>
+      <span class="vsname p1">Kade</span>
       <span class="vsmark">VS</span>
-      <span class="vsname p2" style="color:var(--gold)">Kade</span>
+      <span class="vsname p2">Kade</span>
     </div>
     <div class="loadtxt">Warming shaders</div>
     <div class="loadbar"><i></i></div>
@@ -681,8 +696,8 @@
 <section>
   <div class="sechead"><div class="eyebrow">Screen 07</div><h2>Pause</h2></div>
   <div class="screen">
-    <div class="stagefloor" style="opacity:.4"></div>
-    <div class="fighter a" style="opacity:.35"></div><div class="fighter b" style="opacity:.35"></div>
+    <div class="stagefloor stagefloor-paused"></div>
+    <div class="fighter a fighter-paused"></div><div class="fighter b fighter-paused"></div>
     <div class="scrim"></div>
     <div class="panel">
       <h5>Paused</h5>
@@ -706,7 +721,7 @@
 <section>
   <div class="sechead"><div class="eyebrow">Screen 08</div><h2>Result</h2></div>
   <div class="screen">
-    <div class="ringbg" style="opacity:.5"></div>
+    <div class="ringbg ringbg-result"></div>
     <div class="resulthead">
       <span class="winsub">Player One wins</span>
       <span class="winner">Kade Ruven</span>
