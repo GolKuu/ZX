@@ -78,6 +78,10 @@ export function copyMove(move: MoveFrameData): MoveFrameData {
       : { ...move.wallCommand },
     wallPiercing: move.wallPiercing,
     wallDamage: move.wallDamage,
+    counter: move.counter === undefined
+      ? undefined
+      : { ...move.counter, frames: { ...move.counter.frames } },
+    onHitFollowUp: move.onHitFollowUp,
   };
 }
 

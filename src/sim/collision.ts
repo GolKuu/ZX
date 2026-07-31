@@ -10,6 +10,9 @@ export interface HitCandidate {
   readonly actionSerial: number;
   readonly hitbox: AuthoredHitbox;
   readonly impact: FixedVector;
+  /** Carried so resolution can read counter and hit-confirm rules. */
+  readonly attackerMove: MoveFrameData;
+  readonly defenderMove: MoveFrameData | undefined;
 }
 
 export function toWorldBox(fighter: MutableFighterState, box: FixedBox): WorldBox {
@@ -83,6 +86,7 @@ export function findHit(
   move: MoveFrameData,
   hitbox: AuthoredHitbox,
   defenderHurtboxes: readonly FixedBox[],
+  defenderMove?: MoveFrameData,
 ): HitCandidate | null {
   for (const localHitbox of hitbox.boxes) {
     const worldHitbox = toWorldBox(attacker, localHitbox);
@@ -96,6 +100,8 @@ export function findHit(
           actionSerial: attacker.action?.serial ?? -1,
           hitbox,
           impact,
+          attackerMove: move,
+          defenderMove,
         };
       }
     }

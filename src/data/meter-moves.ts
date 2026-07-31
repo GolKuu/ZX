@@ -15,7 +15,7 @@ import { mimSuperCostForMove, MIM_SUPER_MOVE_IDS } from './mim-super-moves.js';
 /** One ultimate per character. */
 export const ULTIMATE_MOVE_IDS: ReadonlySet<string> = new Set<string>([
   XRAY_MOVE_ID,
-  MIM_SUPER_MOVE_IDS.altF4,
+  MIM_SUPER_MOVE_IDS.perfectBox,
   ECHO_SUPER_MOVE_IDS.statistics,
   CHRONO_SUPER_MOVE_IDS.inevitability,
   GLITCH_SUPER_MOVE_IDS.patchNotes,

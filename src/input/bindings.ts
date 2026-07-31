@@ -62,11 +62,14 @@ export interface KeyBindings {
 }
 
 /**
- * Default layout. `up` is the jump key: the direction model needs an upward key
- * for the 7/8/9 diagonals, and up never means anything except jump.
+ * Default layout: W A S D to move, J K I L for the four attack buttons.
+ *
+ * `up` is the jump key. On a plane it is also the climb key — the 7/8/9
+ * diagonals separate "run up the wall" from "kick off it", which is why the
+ * direction model needs a real upward key rather than a space bar.
  */
 export const DEFAULT_BINDINGS: KeyBindings = {
-  up: 'Space',
+  up: 'KeyW',
   down: 'KeyS',
   left: 'KeyA',
   right: 'KeyD',

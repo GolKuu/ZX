@@ -2,11 +2,12 @@ import type {
   AuthoredHitbox,
   AuthoredHurtbox,
   GroundBounceData,
+  MoveCounterData,
   MoveFrameData,
   WallBounceData,
 } from '../../sim/frame-data.js';
 import { fixed, type FixedBox } from '../../sim/math.js';
-import type { WallSpawnData } from '../../sim/walls/types.js';
+import type { WallCommandData, WallSpawnData } from '../../sim/walls/types.js';
 
 /** `[x, y, halfWidth, halfHeight]` in engine units, local to the fighter. */
 export type BoxTuple = readonly [number, number, number, number];
@@ -51,8 +52,11 @@ export interface MimMoveRow {
   readonly hurtboxes?: readonly MimHurt[];
   readonly cancels?: readonly MimCancel[];
   readonly walls?: readonly WallSpawnData[];
+  readonly wallCommand?: WallCommandData;
   readonly wallPiercing?: boolean;
   readonly wallDamage?: number;
+  readonly counter?: MoveCounterData;
+  readonly onHitFollowUp?: string;
 }
 
 export function box(tuple: BoxTuple): FixedBox {
@@ -93,8 +97,11 @@ export function buildMove(row: MimMoveRow): MoveFrameData {
           into: [...cancel.into],
         })),
     walls: row.walls,
+    wallCommand: row.wallCommand,
     wallPiercing: row.wallPiercing,
     wallDamage: row.wallDamage,
+    counter: row.counter,
+    onHitFollowUp: row.onHitFollowUp,
   };
 }
 

@@ -70,8 +70,8 @@ export interface WallEntity {
   readonly runnable: boolean;
   readonly platform: boolean;
   pushSpeed: number;
-  readonly pushDamage: number;
-  readonly pushHitstun: number;
+  pushDamage: number;
+  pushHitstun: number;
   state: WallState;
   shatterFrames: number;
   /** `hitId:defenderId` keys already consumed, so one swing breaks one layer. */

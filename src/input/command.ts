@@ -9,7 +9,7 @@
 import type { Button, Direction } from './bindings.js';
 import { XRAY_MOVE_ID } from '../data/combat-moves.js';
 import { TAUNT_COMMAND } from './sharedCommands.js';
-import { hasButton, isCrouching } from './bindings.js';
+import { hasButton, horizontalOf, isCrouching, isJumping } from './bindings.js';
 import { INPUT_LEEWAY_FRAMES, type InputBuffer } from './buffer.js';
 import { matchesMotion, type MotionId } from './motion.js';
 
@@ -33,6 +33,13 @@ export interface CommandRow {
   readonly alsoPressed?: readonly Button[];
   /** Buttons that must be up, used to prevent a failed chord falling through. */
   readonly forbiddenPressed?: readonly Button[];
+  /**
+   * Facing-relative direction that must be held at the committing press.
+   *
+   * MIM's wall commands are `D + J + K`-shaped rather than motion inputs, so
+   * the table needs to gate on a held direction without inventing a motion.
+   */
+  readonly holdDirection?: 'forward' | 'back' | 'up' | 'down' | 'neutral';
   /** Optional gate — stance systems, gauge costs, air-only moves. */
   readonly available?: (context: CommandContext) => boolean;
 }
@@ -49,6 +56,11 @@ export interface CommandContext {
    * energy — this flag is their whole price.
    */
   readonly ultimateReady?: boolean;
+  /**
+   * Moves the current save has unlocked. `undefined` means "no story gate",
+   * which is what versus and training pass.
+   */
+  readonly unlockedMoves?: ReadonlySet<string>;
 }
 
 export const DEFAULT_CONTEXT: CommandContext = {
@@ -126,6 +138,9 @@ export function resolveCommand(
     if (!allButtonsUp(buffer, row.forbiddenPressed, pressedAgo)) {
       continue;
     }
+    if (!matchesHeldDirection(buffer, row.holdDirection, pressedAgo)) {
+      continue;
+    }
     if (row.available !== undefined && !row.available(context)) {
       continue;
     }
@@ -167,6 +182,36 @@ function allButtonsDown(
     if (!hasButton(held, button)) return false;
   }
   return true;
+}
+
+/**
+ * A chord direction is forgiving by a few frames: players roll onto the
+ * direction and the buttons together, and the press frame is rarely the exact
+ * frame the key registered.
+ */
+const DIRECTION_LEEWAY_FRAMES = 4;
+
+function matchesHeldDirection(
+  buffer: InputBuffer,
+  hold: CommandRow['holdDirection'],
+  pressedAgo: number,
+): boolean {
+  if (hold === undefined) return true;
+  for (let ago = pressedAgo; ago <= pressedAgo + DIRECTION_LEEWAY_FRAMES; ago += 1) {
+    if (directionMatches(buffer.at(ago).direction, hold)) return true;
+  }
+  return false;
+}
+
+function directionMatches(
+  direction: Direction,
+  hold: Exclude<CommandRow['holdDirection'], undefined>,
+): boolean {
+  if (hold === 'neutral') return direction === 5;
+  if (hold === 'up') return isJumping(direction);
+  if (hold === 'down') return isCrouching(direction);
+  const horizontal = horizontalOf(direction);
+  return hold === 'forward' ? horizontal === 1 : horizontal === -1;
 }
 
 function matchesStance(

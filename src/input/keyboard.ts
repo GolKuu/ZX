@@ -9,6 +9,7 @@ import type { FighterInput } from '../sim/state.js';
 import {
   DEFAULT_BINDINGS,
   horizontalOf,
+  isCrouching as isCrouchDirection,
   isJumping,
   readButtonMask,
   resolveDirection,
@@ -117,11 +118,22 @@ export class KeyboardInputSource {
     const command = resolveCommand(this.buffer, this.commands, context);
     const dash = guard ? 0 : this.readDashPress(direction);
 
+    const horizontal = horizontalOf(direction);
     return {
-      movement: guard ? 0 : horizontalOf(direction),
+      movement: guard ? 0 : horizontal,
       guard,
       jump: !guard && isJumping(direction),
       dash,
+      // Mounted controls. The engine ignores these unless a plane is held, so
+      // they cost nothing on the ground: up alone climbs, up plus a horizontal
+      // kicks off, a bare horizontal steps off.
+      wallClimb: isJumping(direction) && horizontal === 0
+        ? 1
+        : isCrouchDirection(direction)
+          ? -1
+          : 0,
+      wallJump: isJumping(direction) && horizontal !== 0,
+      wallExit: isJumping(direction) ? 0 : horizontal,
       ...(command === null ? {} : { move: command.moveId }),
     };
   }

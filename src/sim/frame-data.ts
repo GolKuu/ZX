@@ -1,5 +1,5 @@
 import type { FixedBox, FixedVector, Ratio } from './math.js';
-import type { WallSpawnData } from './walls/types.js';
+import type { WallCommandData, WallSpawnData } from './walls/types.js';
 
 export interface FrameRange {
   readonly from: number;

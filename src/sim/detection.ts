@@ -37,6 +37,7 @@ export function collectHitCandidates(
           move,
           hitbox,
           activeHurtboxes(defender, defenderMove),
+          defenderMove,
         );
         if (candidate !== null) {
           const contact = JSON.stringify([

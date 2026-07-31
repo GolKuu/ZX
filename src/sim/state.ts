@@ -30,6 +30,8 @@ export interface FighterInput {
   readonly wallClimb?: -1 | 0 | 1;
   /** While mounted: leave forward (1) or backward (−1) without jumping. */
   readonly wallExit?: -1 | 0 | 1;
+  /** While mounted: kick off the plane. Up plus a horizontal, never up alone. */
+  readonly wallJump?: boolean;
 }
 
 /**

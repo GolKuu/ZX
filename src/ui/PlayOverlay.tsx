@@ -42,9 +42,9 @@ function DevelopmentTools() {
   return (
     <aside className={styles.devTools} aria-label="Development tools">
       <span className={styles.fps}><FpsMeter /></span>
-      <button type="button" onClick={() => preview('p1', 'prank')}>MIM · CLIP</button>
-      <button type="button" onClick={() => preview('p1', 'hero')}>MIM · NET</button>
-      <button type="button" onClick={() => preview('p1', 'altF4')}>MIM · SKILL</button>
+      <button type="button" onClick={() => preview('p1', 'mirrorArena')}>MIM · ARENA</button>
+      <button type="button" onClick={() => preview('p1', 'falseOpening')}>MIM · BAIT</button>
+      <button type="button" onClick={() => preview('p1', 'perfectBox')}>MIM · BOX</button>
       <button type="button" onClick={() => previewEcho('p1', 'analysis')}>ECHO L1</button>
       <button type="button" onClick={() => previewEcho('p1', 'repeat')}>ECHO L3</button>
       <button type="button" onClick={() => previewEcho('p1', 'statistics')}>ECHO FIN</button>

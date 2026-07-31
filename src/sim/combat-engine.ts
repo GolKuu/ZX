@@ -119,7 +119,14 @@ export class CombatEngine {
 
     const hitThisFrame = new Set<string>();
     for (const candidate of candidates) {
-      resolveHit(candidate, this.completedFrames, this.config.maximumVelocity, events);
+      const outcome = resolveHit(
+        candidate,
+        this.completedFrames,
+        this.config.maximumVelocity,
+        events,
+        { nextSerial: this.nextActionSerial },
+      );
+      if (outcome.startedAction) this.nextActionSerial += 1;
       hitThisFrame.add(candidate.defender.id);
     }
 
@@ -191,7 +198,7 @@ export class CombatEngine {
         {
           mount: input?.wallMount === true || mounting.has(fighter.id),
           climb: input?.wallClimb ?? 0,
-          jump: input?.jump === true,
+          jump: input?.wallJump === true,
           exit: input?.wallExit ?? 0,
         },
         this.completedFrames,
