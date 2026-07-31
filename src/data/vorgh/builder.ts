@@ -83,7 +83,7 @@ export function buildVorgh(row: VorghRow): VorghMoveSpec {
 function hurtboxesFor(row: VorghRow) {
   const crouched = row.id.includes('crouch') || row.id.includes('sweep');
   const airborne = row.id.includes('air-') || row.id.includes('leap');
-  const base = crouched
+  const base: Box = crouched
     ? [-0.08, 0.72, 0.38, 0.68]
     : airborne
       ? [-0.12, 1.18, 0.4, 0.72]
@@ -103,7 +103,7 @@ function hurtboxesFor(row: VorghRow) {
     },
     {
       frames: { from: row.startup + row.active, toExclusive: total },
-      boxes: [box(base as [number, number, number, number])],
+      boxes: [box(base)],
     },
   ];
 }

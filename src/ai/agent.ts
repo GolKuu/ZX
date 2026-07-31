@@ -105,6 +105,7 @@ export class CombatAiAgent {
       profile,
       this.moves,
       this.random,
+      this.options.loadout,
     );
     if (defense !== null) {
       return createDecision(defense.input, defense.intent, null, signals.events);

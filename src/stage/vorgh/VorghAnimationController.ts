@@ -13,6 +13,8 @@ export interface VorghAnimationState {
   wasGuarding: boolean;
   releaseFrames: number;
   lastSimulationFrame: number;
+  previousHealth: number;
+  previousFacing: -1 | 1;
 }
 
 export function createVorghAnimationState(): VorghAnimationState {
@@ -23,6 +25,8 @@ export function createVorghAnimationState(): VorghAnimationState {
     wasGuarding: false,
     releaseFrames: 0,
     lastSimulationFrame: -1,
+    previousHealth: 1050,
+    previousFacing: 1,
   };
 }
 
@@ -34,7 +38,20 @@ export function advanceVorghAnimation(
   if (simulationFrame === state.lastSimulationFrame) {
     return { clipId: state.clipId, frame: state.frame };
   }
+  const steps = state.lastSimulationFrame < 0
+    ? 1
+    : Math.max(1, simulationFrame - state.lastSimulationFrame);
   state.lastSimulationFrame = simulationFrame;
+  for (let step = 0; step < steps; step += 1) {
+    advanceOne(state, fighter);
+  }
+  return { clipId: state.clipId, frame: state.frame };
+}
+
+function advanceOne(
+  state: VorghAnimationState,
+  fighter: FighterSnapshot,
+): void {
   const tier = visualTier(fighter.resource);
   if (state.wasGuarding && !fighter.guarding) state.releaseFrames = 8;
   const requested = chooseClip(state, fighter, tier);
@@ -45,13 +62,14 @@ export function advanceVorghAnimation(
     state.frame += 1;
   }
   state.wasGuarding = fighter.guarding;
+  state.previousHealth = fighter.health;
+  state.previousFacing = fighter.facing;
   if (state.releaseFrames > 0 && !fighter.guarding) state.releaseFrames -= 1;
   const frames = clipFrames(state.clipId);
   const looping = state.clipId.includes('idle-') || state.clipId.includes('-hold');
   state.frame = looping
     ? state.frame % frames
     : Math.min(state.frame, frames - 1);
-  return { clipId: state.clipId, frame: state.frame };
 }
 
 function chooseClip(
@@ -62,11 +80,17 @@ function chooseClip(
   if (fighter.health === 0) return 'defeat';
   if (fighter.hitstun > 0) {
     if (fighter.resourceLockFrames > 0) return 'guard-break';
+    if (state.wasGuarding && fighter.guardHealth <= 25) return 'guard-crush';
+    if (state.wasGuarding) return 'block-stun-recovery';
     return fighter.hitstun > 22 ? 'pain-to-power' : 'hurt-light';
   }
   if (fighter.guarding) {
+    if (fighter.facing !== state.previousFacing) return 'cross-up-turn';
+    if (fighter.health < state.previousHealth) return 'chip-reaction';
     if (!fighter.grounded) return 'air-block';
     if (fighter.guardMode === 'pain') return 'pain-guard';
+    if (fighter.guardFrames <= 3 && fighter.hitstop > 0) return 'perfect-block';
+    if (fighter.guardHealth <= 25) return 'guard-crush';
     const family = fighter.crouching ? 'crouch-block' : 'stand-block';
     if (fighter.hitstop > 0) return `${family}-${fighter.hitstop > 6 ? 'heavy' : 'light'}`;
     return fighter.guardFrames <= 3 ? `${family}-start` : `${family}-hold`;

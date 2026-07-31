@@ -8,6 +8,7 @@ import {
   VORGH_SPECIAL_IDS,
   VORGH_SUPER_IDS,
   VORGH_TECHNIQUE_IDS,
+  VORGH_AI_LOADOUTS,
   VORGH_MOVES,
 } from '../.sim-test-build/src/data/vorgh/index.js';
 import { VORGH_COMMANDS } from '../.sim-test-build/src/input/vorghCommands.js';
@@ -54,7 +55,7 @@ test('Dual Techniques are blockable authored strikes', () => {
 test('every Vorgh move has attack level and authored hurtbox timeline', () => {
   for (const move of VORGH_MOVES) {
     assert.ok(move.attackLevel);
-    assert.ok((move.hurtboxes?.length ?? 0) > 0);
+    assert.ok((move.hurtboxes?.length ?? 0) >= 3);
   }
 });
 
@@ -78,6 +79,12 @@ test('Rage tiers author pressure, damage and recovery tradeoffs', () => {
   assert.equal(VORGH_RESOURCE.damagePercentAtHighRage, 110);
   assert.equal(VORGH_RESOURCE.recoveryPercentAtHighRage, 115);
   assert.ok((VORGH_RESOURCE.tierCancelInto?.length ?? 0) >= 3);
+});
+
+test('Hard and Story AI opt into resource-aware Pain Guard', () => {
+  assert.equal(VORGH_AI_LOADOUTS.hard.painGuardThreshold, 58);
+  assert.equal(VORGH_AI_LOADOUTS.story.painGuardThreshold, 58);
+  assert.equal(VORGH_AI_LOADOUTS.easy.painGuardThreshold, undefined);
 });
 
 test('J K I L normals keep exact requested timing and unique geometry', () => {
@@ -142,8 +149,21 @@ test('runtime controller selects authored defense and reaction clips', () => {
   fighter.guardMode = 'pain';
   assert.equal(advanceVorghAnimation(state, fighter).clipId, 'pain-guard');
   fighter.guarding = false;
+  advanceVorghAnimation(state, fighter);
   fighter.hitstun = 28;
   assert.equal(advanceVorghAnimation(state, fighter).clipId, 'pain-to-power');
+});
+
+test('animation controller advances once per fixed simulation frame', () => {
+  const state = createVorghAnimationState();
+  const fighter = snapshot();
+  const first = advanceVorghAnimation(state, fighter, 10);
+  const repeatedRender = advanceVorghAnimation(state, fighter, 10);
+  const nextTick = advanceVorghAnimation(state, fighter, 11);
+  assert.deepEqual(repeatedRender, first);
+  assert.equal(nextTick.frame, (first.frame + 1) % 18);
+  const skippedTicks = advanceVorghAnimation(state, fighter, 14);
+  assert.equal(skippedTicks.frame, (nextTick.frame + 3) % 18);
 });
 
 test('enhanced moves and Last Beast are resource-gated', () => {

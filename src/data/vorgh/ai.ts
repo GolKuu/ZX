@@ -36,6 +36,7 @@ const hard: AiLoadout = {
     ...base.combos,
     { moves: [N.predatorRake, N.skullRam, S.rageSlashEx, S.berserkDashEx] },
   ],
+  painGuardThreshold: 58,
 };
 
 export const VORGH_AI_LOADOUTS: Readonly<Record<AiDifficulty, AiLoadout>> = {

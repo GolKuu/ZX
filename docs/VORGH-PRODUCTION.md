@@ -13,7 +13,7 @@
 | Specials | 11 wall/story actions | 6 base + 6 enhanced |
 | Supers / Ultimate | 2 / 1 | 2 / 1 with three Dominion scales |
 | AI | Generic fallback | Easy, Normal, Hard, Impossible and Story loadouts |
-| Dedicated tests | 12 stale at audit time | 17 Vorgh tests; full suite 171/171 |
+| Dedicated tests | 12 stale at audit time | 29 Vorgh tests; full suite 193/193 |
 
 ## Rage states
 
@@ -82,7 +82,7 @@ blockstun, Rage gain / cost.
 | Savage Dominion | 18/18/38 | Super | 151 | 34/— | 0/34 |
 | Dominion: Blooded | 16/18/38 | Super 50+ | 186 | 34/— | 0/42 |
 | Dominion: Apex | 14/18/38 | Super 75+ | 224 | 34/— | 0/54 |
-| Unchained | 12/6/18 | Super buff | — | — | 0/35 |
+| Unchained | 12/6/18 | Super buff | — | — | 0/20 + 15 drain |
 | Last Beast confirm | 16/5/28 | Ultimate | 38 | 54/— | 0/80 |
 | Last Beast sequence | 4/58/72 | confirmed cinematic | 306 | 34/— | 0/0 |
 
@@ -102,8 +102,8 @@ applicable, cancel windows, VFX IDs, sound IDs and camera events in
 | Last Beast gate | PASS — low HP, 80 Rage, 66 meter, confirmed hit |
 | Matchups: Mim / Echo / Glitch | PASS — all four role normals connect honestly |
 | Matchups: Lucky / Titan / Chrono | PASS — all four role normals connect honestly |
-| Vorgh dedicated | 17/17 |
-| Full deterministic suite | 171/171 |
+| Vorgh dedicated | 29/29 |
+| Full deterministic suite | 193/193 |
 | Mim regression | PASS after stale test IDs were aligned to current Mim data |
 | Lint / typecheck / assets | PASS |
 | Production build | PASS |
@@ -111,3 +111,11 @@ applicable, cancel windows, VFX IDs, sound IDs and camera events in
 Browser screenshots could not be captured in this Codex session because no
 browser backend was available. The procedural rig was therefore judged from its
 source structure and deterministic animation tests, not screenshot evidence.
+
+## Independent critic
+
+Final verdict: **PASS — 85/100**. The earlier 55 and 64 point rejections were
+resolved by connecting animation metadata to fixed-tick runtime playback,
+enforcing real high/low guard and grapple rules, bounding dynamic Rage cancels,
+making high-Rage recovery punishable, phasing hurtboxes, and expanding defense,
+AI and presentation behavior.

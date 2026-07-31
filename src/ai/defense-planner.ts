@@ -29,6 +29,7 @@ export class DefensePlanner {
     profile: AiDifficultyProfile,
     moves: ReadonlyMap<string, MoveFrameData>,
     random: DeterministicRandom,
+    loadout: AiLoadout,
   ): ImmediatePlan | null {
     const serial = opponent.action?.serial ?? null;
     const threatening = isThreatening(
@@ -46,7 +47,21 @@ export class DefensePlanner {
       this.defenseChoice = chooseDefense(profile, random);
     }
     if (this.defenseChoice === 'guard') {
-      return { kind: 'input', input: { guard: true }, intent: 'guard' };
+      const level = opponent.action === null
+        ? undefined
+        : moves.get(opponent.action.moveId)?.attackLevel;
+      const painGuard = loadout.painGuardThreshold !== undefined
+        && self.resource >= loadout.painGuardThreshold
+        && self.guardHealth > 30;
+      return {
+        kind: 'input',
+        input: {
+          guard: true,
+          crouching: level === 'low',
+          guardMode: painGuard ? 'pain' : 'normal',
+        },
+        intent: 'guard',
+      };
     }
     if (this.defenseChoice === 'retreat') {
       return {

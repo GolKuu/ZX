@@ -28,6 +28,8 @@ export interface AiLoadout {
   readonly neutral: readonly AiMoveOption[];
   readonly whiffPunishes: readonly AiMoveOption[];
   readonly combos: readonly AiComboRoute[];
+  /** Optional character defense rule; omitted fighters retain normal guard. */
+  readonly painGuardThreshold?: number;
 }
 
 export interface AiDifficultyProfile {

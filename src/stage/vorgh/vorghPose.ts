@@ -35,10 +35,68 @@ export function vorghPose(
     return reactionPose(playback?.clipId, fighter.hitstun);
   }
   if (playback?.clipId.startsWith('rage-')) return transitionPose(playback);
+  if (playback !== undefined && isDefenseClip(playback.clipId)) {
+    return defensePose(fighter, time, playback);
+  }
   if (fighter.guarding) return guardPose(fighter, time, playback);
   if (!fighter.grounded) return airPose(fighter);
   if (fighter.action !== null) return actionPose(fighter.action.moveId, fighter.action.frame);
   return idlePose(fighter.resource, time, transition, playback);
+}
+
+function isDefenseClip(id: string): boolean {
+  return id.includes('block')
+    || id === 'pain-guard'
+    || id === 'guard-crush'
+    || id === 'guard-break'
+    || id === 'chip-reaction'
+    || id === 'cross-up-turn'
+    || id.includes('throw-escape');
+}
+
+function defensePose(
+  fighter: FighterSnapshot,
+  time: number,
+  playback: VorghPlayback,
+): VorghPose {
+  const id = playback.clipId;
+  const progress = Math.min(1, playback.frame / 7);
+  if (id === 'guard-break' || id === 'guard-crush') {
+    return pose({
+      lean: 0.55 + progress * 0.28, head: 0.42,
+      frontArm: -0.18, backArm: 0.2,
+      frontForearm: 0.5, backForearm: -0.42,
+      rootX: -0.16 * progress, scaleY: 0.94,
+    });
+  }
+  if (id === 'cross-up-turn') {
+    return pose({
+      lean: -0.25, head: -0.18,
+      frontArm: -0.5 - progress, backArm: 0.42 + progress,
+      frontLeg: -0.35, backLeg: 0.44, rootX: -0.04,
+    });
+  }
+  if (id.includes('throw-escape')) {
+    return pose({
+      lean: -0.5, frontArm: -1.7 + progress * 1.15,
+      backArm: 1.55 - progress, frontForearm: -0.9,
+      backForearm: 0.82, rootX: progress * 0.1,
+    });
+  }
+  const base = guardPose(fighter, time, playback);
+  if (id.endsWith('-start')) {
+    return { ...base, frontArm: -0.8 - progress * 0.72, backArm: 0.62 + progress * 0.56 };
+  }
+  if (id.endsWith('-release')) {
+    return { ...base, frontArm: -1.52 + progress * 0.78, backArm: 1.18 - progress * 0.56 };
+  }
+  if (id === 'perfect-block') {
+    return { ...base, lean: -0.36, rootX: -0.06, scaleX: 1.04 };
+  }
+  if (id === 'chip-reaction') {
+    return { ...base, lean: 0.08, head: 0.16, rootX: -0.08 };
+  }
+  return base;
 }
 
 function reactionPose(clipId: string | undefined, hitstun: number): VorghPose {
@@ -160,6 +218,54 @@ function airPose(fighter: FighterSnapshot): VorghPose {
 
 function actionPose(id: string, frame: number): VorghPose {
   const phase = Math.min(1, frame / 12);
+  if (id.includes('last-beast')) {
+    const beat = Math.sin(Math.min(1, frame / 58) * Math.PI * 4);
+    return pose({
+      lean: -0.72 + beat * 0.24, head: -0.2,
+      frontArm: -2.3 + beat * 1.4, backArm: 2.08 - beat * 1.2,
+      frontLeg: -0.62, backLeg: 0.72, rootX: phase * 0.24,
+      scaleX: 1.12, scaleY: 0.94,
+    });
+  }
+  if (id.includes('dominion')) {
+    const cross = Math.sin(Math.min(1, frame / 28) * Math.PI * 3);
+    return pose({
+      lean: -0.58, frontArm: -1.4 + cross * 1.2,
+      backArm: 1.3 - cross * 1.15,
+      frontForearm: -0.8, backForearm: 0.78,
+      frontLeg: -0.4, backLeg: 0.52, rootX: phase * 0.18,
+    });
+  }
+  if (id.includes('armour-breaker') || id.includes('dual-break')) {
+    return pose({
+      lean: -0.62 + phase * 0.38, frontArm: -2.45 + phase * 1.4,
+      backArm: 2.28 - phase * 1.18,
+      frontForearm: -0.24, backForearm: 0.2,
+      frontLeg: -0.48, backLeg: 0.58, scaleX: 1.08,
+    });
+  }
+  if (id.includes('dual-fang')) {
+    const cross = Math.sin(phase * Math.PI * 2);
+    return pose({
+      lean: -0.46, frontArm: -1.9 + cross * 1.3,
+      backArm: 1.72 - cross * 1.2,
+      frontForearm: -0.72, backForearm: 0.7, rootX: phase * 0.14,
+    });
+  }
+  if (id.includes('dual-rend')) {
+    return pose({
+      rootY: -0.2, lean: -0.82, frontArm: -1.1,
+      backArm: 0.96, frontLeg: -1.05 + phase * 1.5,
+      backLeg: 0.7, rootX: phase * 0.18, scaleY: 0.84,
+    });
+  }
+  if (id.includes('pain-counter')) {
+    return pose({
+      lean: 0.2 - phase * 0.72, head: -0.2,
+      frontArm: -0.36 - phase, backArm: 0.4 + phase * 0.9,
+      frontForearm: -0.84, backForearm: 0.78,
+    });
+  }
   if (id.includes('predator-rake') || id.includes('rage-slash')) {
     return pose({ lean: -0.48, frontArm: -2.2 + phase * 2.45, frontForearm: -0.35, backArm: 0.88, rootX: phase * 0.12 });
   }

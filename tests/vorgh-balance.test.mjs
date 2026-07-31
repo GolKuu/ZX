@@ -4,8 +4,10 @@ import test from 'node:test';
 import {
   VORGH_MOVE_SPECS,
   VORGH_MOVES,
+  VORGH_RESOURCE,
   VORGH_SPECIAL_IDS,
 } from '../.sim-test-build/src/data/vorgh/index.js';
+import { effectiveMoveFrames } from '../.sim-test-build/src/sim/frame-data.js';
 
 test('zero-cost cancel graph has no pressure loop', () => {
   const free = new Map(
@@ -16,6 +18,24 @@ test('zero-cost cancel graph has no pressure loop', () => {
   for (const id of free.keys()) {
     assert.equal(hasCycle(id, id, free, new Set()), false, `cycle from ${id}`);
   }
+});
+
+test('dynamic Rage cancels are source-bounded and cannot self-cancel', () => {
+  const sources = new Set(VORGH_RESOURCE.tierCancelFrom);
+  const targets = new Set(VORGH_RESOURCE.tierCancelInto);
+  for (const source of sources) assert.equal(targets.has(source), false);
+  assert.ok(sources.size >= 4);
+  assert.ok(targets.size >= 3);
+});
+
+test('high Rage adds exact recovery instead of erasing the tradeoff', () => {
+  const move = VORGH_MOVES.find(({ id }) => id === VORGH_SPECIAL_IDS.rageSlash);
+  assert.ok(move);
+  assert.equal(effectiveMoveFrames(move, 100), move.startup + move.active + move.recovery);
+  assert.equal(
+    effectiveMoveFrames(move, 115),
+    move.startup + move.active + Math.ceil(move.recovery * 1.15),
+  );
 });
 
 test('heavy and armoured options remain punishable', () => {

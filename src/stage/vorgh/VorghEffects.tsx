@@ -15,6 +15,8 @@ export function VorghEffects({ fighterId }: {
   const root = useRef<Group>(null);
   const aura = useRef<Mesh>(null);
   const slash = useRef<Mesh>(null);
+  const wave = useRef<Mesh>(null);
+  const superBurst = useRef<Mesh>(null);
   const opponentId = fighterId === 'p1' ? 'p2' : 'p1';
 
   useFrame(({ clock }) => {
@@ -49,6 +51,21 @@ export function VorghEffects({ fighterId }: {
         slash.current.rotation.z = -0.8 + Math.min(1, action.frame / 10) * 1.6;
       }
     }
+    const moveId = fighter.action?.moveId ?? '';
+    if (wave.current !== null) {
+      wave.current.visible = moveId.includes('blood-roar');
+      const progress = Math.min(1, (fighter.action?.frame ?? 0) / 20);
+      wave.current.scale.set(0.4 + progress * 2.4, 0.7 + progress, 1);
+    }
+    if (superBurst.current !== null) {
+      const superMove = moveId.includes('dominion')
+        || moveId.includes('last-beast')
+        || moveId.includes('unchained');
+      superBurst.current.visible = superMove;
+      const beat = 0.8 + Math.sin(clock.elapsedTime * 14) * 0.12;
+      superBurst.current.scale.setScalar(beat + rage * 0.45);
+      superBurst.current.rotation.z += 0.025;
+    }
   });
 
   return (
@@ -71,6 +88,28 @@ export function VorghEffects({ fighterId }: {
           color="#ff9a36"
           depthWrite={false}
           opacity={0.9}
+          transparent
+          toneMapped={false}
+        />
+      </mesh>
+      <mesh ref={wave} position={[0.82, 1.22, 0.18]} visible={false}>
+        <ringGeometry args={[0.38, 0.48, 16]} />
+        <meshBasicMaterial
+          blending={AdditiveBlending}
+          color="#ff6a24"
+          depthWrite={false}
+          opacity={0.72}
+          transparent
+          toneMapped={false}
+        />
+      </mesh>
+      <mesh ref={superBurst} position={[0, 1.2, -0.02]} visible={false}>
+        <ringGeometry args={[0.92, 1.12, 18]} />
+        <meshBasicMaterial
+          blending={AdditiveBlending}
+          color="#ffb14a"
+          depthWrite={false}
+          opacity={0.48}
           transparent
           toneMapped={false}
         />
