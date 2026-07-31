@@ -486,35 +486,56 @@
 }
 
 .mobileControls {
-  --touch-size: clamp(3rem, 6.2cqw, 5.5rem);
+  --touch-size: clamp(2.7rem, 5.4cqw, 4.8rem);
   position: absolute;
   z-index: 13;
-  right: 3cqw;
-  bottom: 3cqw;
-  left: 3cqw;
-  display: none;
-  align-items: end;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: max(1rem, env(safe-area-inset-left));
+  display: flex;
+  align-items: flex-end;
   justify-content: space-between;
+  opacity: 0;
   pointer-events: auto;
+  transform: translateY(1rem);
+  transition: opacity 160ms ease, transform 160ms ease;
+  visibility: hidden;
 }
 
-.mobileControlsForced {
-  display: flex;
+.mobileControls[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
 }
 
 .movementPad,
 .attackPad {
   display: grid;
-  gap: 1cqw;
+  gap: clamp(0.3rem, 0.7cqw, 0.65rem);
 }
 
 .movementPad {
-  grid-template-columns: repeat(3, var(--touch-size));
+  grid-template: repeat(2, var(--touch-size)) / repeat(3, var(--touch-size));
+}
+
+.movementPad > :first-child {
+  grid-column: 2;
+}
+
+.combatPad {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(0.4rem, 0.8cqw, 0.75rem);
 }
 
 .attackPad {
-  grid-template-columns: repeat(2, var(--touch-size));
-  transform: rotate(-10deg);
+  grid-template-columns: repeat(3, var(--touch-size));
+}
+
+.characterPad {
+  display: grid;
+  grid-template-columns: repeat(2, calc(var(--touch-size) * 0.72));
+  gap: clamp(0.25rem, 0.5cqw, 0.45rem);
 }
 
 .mobileButton {
@@ -533,11 +554,30 @@
   touch-action: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  font-size: clamp(0.72rem, 1.3cqw, 1rem);
+  font-weight: 950;
+  letter-spacing: 0.04em;
 }
 
-.attackPad .mobileButton {
+.characterPad .mobileButton {
+  width: calc(var(--touch-size) * 0.72);
+  color: #b9d7ec;
+  font-size: clamp(0.62rem, 1cqw, 0.8rem);
+}
+
+.attackPad .mobileButton:not([data-tone]) {
   border-color: rgb(242 184 75 / 42%);
-  transform: rotate(10deg);
+}
+
+.mobileButton[data-tone="utility"] {
+  color: #a9dfff;
+  border-color: rgb(113 220 255 / 45%);
+}
+
+.mobileButton[data-tone="power"] {
+  color: #ffd672;
+  background: rgb(39 24 8 / 78%);
+  border-color: rgb(255 198 74 / 58%);
 }
 
 .mobileButton[data-pressed="true"] {
@@ -547,25 +587,55 @@
   transform: scale(0.92);
 }
 
-.attackPad .mobileButton[data-pressed="true"] {
+.attackPad .mobileButton[data-pressed="true"],
+.characterPad .mobileButton[data-pressed="true"] {
   background: var(--hud-gold);
-  transform: rotate(10deg) scale(0.92);
+  transform: scale(0.92);
 }
 
-.mobileButton span {
-  align-self: end;
-  font-size: 1.55cqw;
-  font-weight: 950;
+.mobileModeToggle {
+  position: absolute;
+  z-index: 24;
+  top: max(0.7rem, env(safe-area-inset-top));
+  left: max(0.7rem, env(safe-area-inset-left));
+  display: grid;
+  min-width: 4.9rem;
+  min-height: 2.25rem;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0 0.6rem;
+  color: #8193a8;
+  cursor: pointer;
+  background: rgb(5 10 17 / 82%);
+  border: 1px solid rgb(137 171 200 / 30%);
+  border-radius: 999px;
+  box-shadow: 0 0.4rem 1rem rgb(0 0 0 / 28%);
+  pointer-events: auto;
+  backdrop-filter: blur(8px);
 }
 
-.mobileButton small {
-  align-self: start;
-  margin-top: -0.2cqw;
-  font-size: 0.55cqw;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  opacity: 0.62;
-  text-transform: uppercase;
+.mobileModeToggle strong {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+}
+
+.mobileModeToggle i {
+  width: 0.48rem;
+  aspect-ratio: 1;
+  background: #667487;
+  border-radius: 50%;
+  box-shadow: 0 0 0.4rem transparent;
+}
+
+.mobileModeToggle[aria-pressed="true"] {
+  color: #eaf9ff;
+  border-color: rgb(113 220 255 / 70%);
+}
+
+.mobileModeToggle[aria-pressed="true"] i {
+  background: var(--hud-blue);
+  box-shadow: 0 0 0.55rem var(--hud-blue);
 }
 
 .menuScrim {
@@ -1014,17 +1084,11 @@
   }
 
   .mobileControls {
-    --touch-size: clamp(3rem, 12cqw, 5.5rem);
-    display: flex;
-    bottom: 5cqw;
+    --touch-size: clamp(2.7rem, 10.5cqw, 4.5rem);
   }
 
-  .movementPad {
-    grid-template-columns: repeat(3, var(--touch-size));
-  }
-
-  .attackPad {
-    grid-template-columns: repeat(2, var(--touch-size));
+  .combatPad {
+    gap: 1cqw;
   }
 
   .mobileButton {
@@ -1032,12 +1096,8 @@
     border-width: 0.35cqw;
   }
 
-  .mobileButton span {
-    font-size: clamp(1rem, 3.2cqw, 1.6rem);
-  }
-
-  .mobileButton small {
-    font-size: clamp(0.42rem, 1cqw, 0.6rem);
+  .characterPad {
+    display: none;
   }
 
   .menuPanel {
