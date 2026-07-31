@@ -3,10 +3,16 @@
   "textureScale": 3,
   "facesRight": true,
   "poses": {
+    "idle": {
+      "width": 65,
+      "height": 88,
+      "originX": 0.5077,
+      "ground": 0.9886
+    },
     "jab": {
-      "width": 72,
+      "width": 71,
       "height": 89,
-      "originX": 0.4306,
+      "originX": 0.4366,
       "ground": 0.9888
     },
     "elbow": {
@@ -17,9 +23,9 @@
     },
     "capoeira": {
       "width": 88,
-      "height": 92,
+      "height": 91,
       "originX": 0.4318,
-      "ground": 0.9565
+      "ground": 0.956
     },
     "spin": {
       "width": 78,
@@ -28,9 +34,9 @@
       "ground": 0.9785
     },
     "mirrorStrike": {
-      "width": 74,
+      "width": 73,
       "height": 88,
-      "originX": 0.4324,
+      "originX": 0.4384,
       "ground": 0.9886
     },
     "vaultKnee": {
@@ -52,34 +58,34 @@
       "ground": 1.9216
     },
     "reverseButterfly": {
-      "width": 100,
+      "width": 99,
       "height": 69,
-      "originX": 0.44,
+      "originX": 0.4444,
       "ground": 1.3188
     },
     "wallSummon": {
-      "width": 67,
+      "width": 66,
       "height": 85,
-      "originX": 0.5075,
+      "originX": 0.5152,
       "ground": 0.9882
     },
     "wallLaunch": {
-      "width": 71,
+      "width": 70,
       "height": 90,
-      "originX": 0.4648,
+      "originX": 0.4714,
       "ground": 0.9889
     },
     "wallRun": {
       "width": 93,
-      "height": 55,
+      "height": 54,
       "originX": 0.6022,
-      "ground": 1.8909
+      "ground": 1.9074
     },
     "wallDive": {
       "width": 72,
-      "height": 91,
+      "height": 90,
       "originX": 0.5694,
-      "ground": 1.4286
+      "ground": 1.4333
     },
     "airVault": {
       "width": 82,
@@ -94,22 +100,22 @@
       "ground": 0.978
     },
     "throwStart": {
-      "width": 69,
+      "width": 68,
       "height": 88,
-      "originX": 0.4638,
+      "originX": 0.4706,
       "ground": 0.9886
     },
     "antiAir": {
       "width": 60,
-      "height": 99,
+      "height": 98,
       "originX": 0.5333,
-      "ground": 0.9798
+      "ground": 0.9796
     },
     "sweep": {
       "width": 94,
-      "height": 80,
+      "height": 79,
       "originX": 0.4574,
-      "ground": 0.9375
+      "ground": 0.9367
     },
     "guardBreak": {
       "width": 51,
@@ -125,27 +131,27 @@
     },
     "knockdown": {
       "width": 91,
-      "height": 41,
+      "height": 40,
       "originX": 0.4835,
-      "ground": 0.5854
+      "ground": 0.575
     },
     "dizzy": {
-      "width": 59,
+      "width": 58,
       "height": 86,
-      "originX": 0.6949,
+      "originX": 0.7069,
       "ground": 0.9884
     },
     "victory": {
       "width": 50,
-      "height": 104,
+      "height": 103,
       "originX": 0.68,
-      "ground": 0.9904
+      "ground": 0.9903
     },
     "taunt": {
       "width": 61,
-      "height": 90,
+      "height": 89,
       "originX": 0.541,
-      "ground": 0.9889
+      "ground": 0.9888
     }
   }
 }

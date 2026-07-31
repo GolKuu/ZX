@@ -50,6 +50,8 @@ export async function buildRig(directory) {
   for (const name of PART_ORDER) {
     const stage = new PixelCanvas(SOURCE.width, SOURCE.height);
     DRAWERS[name](stage);
+    stage.rim(0, -1, 'cyanDeep', 'clothLit');
+    stage.rim(1, 0, 'cyan', 'clothLit');
     stage.outline();
     const { canvas, offsetX, offsetY } = stage.trim(1);
     const joint = JOINTS[PART_PARENTS[name].joint];
@@ -89,6 +91,8 @@ export function composeFigure() {
   for (const name of PART_ORDER) {
     const layer = new PixelCanvas(SOURCE.width, SOURCE.height);
     DRAWERS[name](layer);
+    layer.rim(0, -1, 'cyanDeep', 'clothLit');
+    layer.rim(1, 0, 'cyan', 'clothLit');
     layer.outline();
     stage.blit(layer, 0, 0);
   }

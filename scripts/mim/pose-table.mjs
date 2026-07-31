@@ -6,6 +6,15 @@
  * what stops a leg growing between panels.
  */
 export const POSE_TABLE = {
+  // The stance everything returns to: torso turned, weight forward, lead hand
+  // measuring the gap, rear hand open and ready to build.
+  idle: {
+    lean: 4, head: -2, hipX: 1, hipY: 2,
+    frontArm: 58, frontForearm: 74, backArm: -18, backForearm: 44,
+    frontThigh: 26, frontShin: -20, backThigh: -24, backShin: 22,
+    braidSweep: 0.1, sashSweep: 0.05,
+  },
+
   // Base four.
   jab: {
     lean: -6, head: 4, hipX: 2,

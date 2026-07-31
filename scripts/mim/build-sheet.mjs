@@ -23,7 +23,7 @@ export async function buildCharacterSheet(file, figure) {
     CELL.width * COLUMNS + figure.width + 8,
     Math.max(CELL.height * rows, figure.height) + 8,
   );
-  sheet.rect(0, 0, sheet.width, sheet.height, 'navyDeep');
+  sheet.rect(0, 0, sheet.width, sheet.height, [10, 14, 28, 255]);
 
   const trimmedFigure = figure.trim(2).canvas;
   sheet.blit(trimmedFigure, 4, 4);
