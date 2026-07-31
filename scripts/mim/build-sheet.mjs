@@ -4,13 +4,18 @@ import { POSE_TABLE } from './pose-table.mjs';
 import { planted, solve } from './pose-skeleton.mjs';
 
 const SHEET_POSES = [
-  'jab', 'elbow', 'capoeira', 'spin',
-  'mirrorStrike', 'vaultKnee', 'acrobat', 'butterfly',
-  'wallSummon', 'wallLaunch', 'wallRun', 'wallDive',
+  'idle', 'jab', 'elbow', 'capoeira', 'spin', 'sweep',
+  'mirrorStrike', 'vaultKnee', 'acrobat', 'butterfly', 'reverseButterfly', 'tripleKick',
+  'wallSummon', 'wallLaunch', 'wallApproach', 'wallContact', 'wallRunA', 'wallRunB',
+  'wallPause', 'wallJump', 'wallDive', 'airVault', 'wallExitForward', 'wallExitBack',
+  'walkReach', 'runReach', 'dashForward', 'dashBack', 'jumpRise', 'fall',
+  'blockStand', 'blockCrouch', 'guardImpact', 'parry', 'throwStart', 'antiAir',
+  'hitHigh', 'hitMedium', 'hitHeavy', 'launch', 'knockdown', 'getUp',
+  'dizzy', 'defeat', 'guardBreak', 'intro', 'victory', 'taunt',
 ];
 
 const CELL = { width: 132, height: 128 };
-const COLUMNS = 4;
+const COLUMNS = 6;
 
 /**
  * The character sheet: the neutral silhouette beside the twelve poses that
