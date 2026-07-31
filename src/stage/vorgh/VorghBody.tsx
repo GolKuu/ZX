@@ -101,7 +101,7 @@ function Crack({ position, rotation }: {
   readonly position: [number, number, number];
   readonly rotation: number;
 }) {
-  return <Pixel position={position} rotation-z={rotation} size={[0.035, 0.3, 0.025]} color={RAGE} />;
+  return <Pixel position={position} rotationZ={rotation} size={[0.035, 0.3, 0.025]} color={RAGE} />;
 }
 
 function Pixel({

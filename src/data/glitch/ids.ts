@@ -31,6 +31,7 @@ export const GLITCH_SPECIAL_IDS = {
   shiftForward: 'glitch.shift-forward',
   shiftBackward: 'glitch.shift-backward',
   airShift: 'glitch.air-shift',
+  doubleJump: 'glitch.spatial-double-jump',
   riftUppercut: 'glitch.rift-uppercut',
   phaseBreak: 'glitch.phase-break',
   realitySlice: 'glitch.reality-slice',

@@ -1,51 +1,94 @@
-import { GLITCH_MOVE_IDS } from '../data/glitch-combat-moves.js';
+import {
+  GLITCH_AIR_IDS as A,
+  GLITCH_NORMAL_IDS as N,
+  GLITCH_SPECIAL_IDS as S,
+  GLITCH_SUPER_IDS as X,
+  GLITCH_UTILITY_IDS as U,
+} from '../data/glitch/ids.js';
 import {
   GLITCH_LEVEL_ONE_COST,
   GLITCH_LEVEL_THREE_COST,
-  GLITCH_SUPER_MOVE_IDS,
-} from '../data/glitch-super-moves.js';
+} from '../data/glitch/supers.js';
 import type { CommandRow } from './command.js';
 import { TAUNT_COMMAND } from './sharedCommands.js';
 
-/**
- * GLITCH keeps the global four-button layout:
- * J = LP, I = HP, K = LK, L = HK.
- *
- * P in the reference sheet means either punch button, so light and heavy
- * command rows precede the normals that use those same buttons.
- */
+const grounded = ({ grounded: value }: { readonly grounded: boolean }) => value;
+const airborne = ({ grounded: value }: { readonly grounded: boolean }) => !value;
+const meter25 = ({ superMeter }: { readonly superMeter: number }) => superMeter >= 25;
+
 export const GLITCH_COMMANDS: readonly CommandRow[] = [
   {
-    moveId: GLITCH_SUPER_MOVE_IDS.patchNotes,
-    motion: 'none',
-    button: 'ultimate',
-    stance: 'any',
+    moveId: X.fourthGod, motion: 'none', button: 'ultimate', stance: 'any',
     available: ({ ultimateReady }) => ultimateReady === true,
   },
   {
-    moveId: GLITCH_SUPER_MOVE_IDS.critical,
-    motion: 'none',
-    button: 'super',
-    stance: 'any',
-    available: ({ superMeter }) => superMeter >= GLITCH_LEVEL_THREE_COST,
+    moveId: X.realityCollapse, motion: 'none', button: 'super', stance: 'any',
+    alsoPressed: ['hk'],
+    available: ({ superMeter }) => superMeter >= GLITCH_LEVEL_ONE_COST,
   },
   {
-    moveId: GLITCH_SUPER_MOVE_IDS.error,
-    motion: 'none',
-    button: 'super',
-    stance: 'any',
+    moveId: X.riftSequence, motion: 'none', button: 'super', stance: 'any',
     available: ({ superMeter }) => superMeter >= GLITCH_LEVEL_ONE_COST,
   },
   TAUNT_COMMAND,
-  // DP must come before QCF because the longer motion contains the shorter one.
-  { moveId: GLITCH_MOVE_IDS.desyncJump, motion: 'dp', button: 'lp', stance: 'any' },
-  { moveId: GLITCH_MOVE_IDS.desyncJump, motion: 'dp', button: 'hp', stance: 'any' },
-  { moveId: GLITCH_MOVE_IDS.packetLoss, motion: 'qcf', button: 'lp', stance: 'any' },
-  { moveId: GLITCH_MOVE_IDS.packetLoss, motion: 'qcf', button: 'hp', stance: 'any' },
-  { moveId: GLITCH_MOVE_IDS.corruptedZone, motion: 'qcb', button: 'lp', stance: 'any' },
-  { moveId: GLITCH_MOVE_IDS.corruptedZone, motion: 'qcb', button: 'hp', stance: 'any' },
-  { moveId: GLITCH_MOVE_IDS.lp, motion: 'none', button: 'lp', stance: 'any' },
-  { moveId: GLITCH_MOVE_IDS.hp, motion: 'none', button: 'hp', stance: 'any' },
-  { moveId: GLITCH_MOVE_IDS.lk, motion: 'none', button: 'lk', stance: 'any' },
-  { moveId: GLITCH_MOVE_IDS.hk, motion: 'none', button: 'hk', stance: 'any' },
+
+  // Enhanced specials: same motion, Super held, 25 meter.
+  { moveId: S.exRiftUppercut, motion: 'dp', button: 'lp', stance: 'any',
+    requiresModifier: true, available: meter25 },
+  { moveId: S.exPhaseBreak, motion: 'qcb', button: 'hp', stance: 'any',
+    requiresModifier: true, available: meter25 },
+  { moveId: S.exRealitySlice, motion: 'qcf', button: 'hp', stance: 'any',
+    requiresModifier: true, available: meter25 },
+  { moveId: S.exTeleportStrike, motion: 'qcf', button: 'lk', stance: 'any',
+    requiresModifier: true, available: meter25 },
+
+  // Air movement and attacks resolve before grounded rows.
+  { moveId: S.doubleJump, motion: 'none', button: 'dash', stance: 'any',
+    holdDirection: 'up', available: airborne },
+  { moveId: S.airShift, motion: 'none', button: 'dash', stance: 'any',
+    holdDirection: 'forward', available: airborne },
+  { moveId: A.throw, motion: 'none', button: 'lp', alsoPressed: ['lk'],
+    stance: 'any', available: airborne },
+  { moveId: A.launcher, motion: 'none', button: 'hp', alsoPressed: ['lk'],
+    stance: 'any', available: airborne },
+  { moveId: A.light, motion: 'none', button: 'lp', stance: 'any', available: airborne },
+  { moveId: A.medium, motion: 'none', button: 'lk', stance: 'any', available: airborne },
+  { moveId: A.heavy, motion: 'none', button: 'hp', stance: 'any', available: airborne },
+  { moveId: A.finisher, motion: 'none', button: 'hk', stance: 'any', available: airborne },
+
+  // Ground movement, duals and utility.
+  { moveId: S.shiftForward, motion: 'none', button: 'dash', stance: 'any',
+    holdDirection: 'forward', available: grounded },
+  { moveId: S.shiftBackward, motion: 'none', button: 'dash', stance: 'any',
+    holdDirection: 'back', available: grounded },
+  { moveId: S.spatialDash, motion: 'none', button: 'dash', stance: 'any',
+    available: grounded },
+  { moveId: U.throw, motion: 'none', button: 'lp', alsoPressed: ['lk'],
+    stance: 'standing', available: grounded },
+  { moveId: U.dualPhase, motion: 'none', button: 'lp', alsoPressed: ['hp'],
+    stance: 'standing', available: grounded },
+  { moveId: U.dualVector, motion: 'none', button: 'lk', alsoPressed: ['hk'],
+    stance: 'standing', available: grounded },
+  { moveId: U.launcher, motion: 'none', button: 'lp', alsoPressed: ['hp'],
+    holdDirection: 'down', stance: 'crouching', available: grounded },
+  { moveId: U.antiAir, motion: 'dp', button: 'lp', stance: 'any', available: grounded },
+  { moveId: U.sweep, motion: 'qcb', button: 'lk', stance: 'any', available: grounded },
+  { moveId: S.teleportStrike, motion: 'qcf', button: 'lk', stance: 'any' },
+  { moveId: S.riftUppercut, motion: 'dp', button: 'hp', stance: 'any' },
+  { moveId: S.phaseBreak, motion: 'qcb', button: 'hp', stance: 'any' },
+  { moveId: S.realitySlice, motion: 'qcf', button: 'hp', stance: 'any' },
+
+  // Crouching buttons.
+  { moveId: N.crouchLight, motion: 'none', button: 'lp', stance: 'crouching' },
+  { moveId: N.crouchMedium, motion: 'none', button: 'lk', stance: 'crouching' },
+  { moveId: N.crouchHeavy, motion: 'none', button: 'hp', stance: 'crouching' },
+  { moveId: U.sweep, motion: 'none', button: 'hk', stance: 'crouching' },
+
+  // J / K / I / L: silhouettes and frame data are deliberately distinct.
+  { moveId: N.phaseJab, motion: 'none', button: 'lp', stance: 'standing' },
+  { moveId: N.riftElbow, motion: 'none', button: 'lk', stance: 'standing' },
+  { moveId: N.lowVectorSweep, motion: 'none', button: 'hp', stance: 'standing' },
+  { moveId: N.breakpointAxe, motion: 'none', button: 'hk', stance: 'standing' },
 ];
+
+export { GLITCH_LEVEL_ONE_COST, GLITCH_LEVEL_THREE_COST };

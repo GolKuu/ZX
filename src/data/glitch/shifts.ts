@@ -45,6 +45,13 @@ const rows: readonly GlitchMoveRow[] = [
     presentation: present('air-shift', 'diagonal-air-tear', 'teleport_warn', 'teleport_arrive'),
     tags: ['air', 'teleport', 'air-dash', 'air-use-limit-1', 'punish-recovery-15'],
   },
+  {
+    id: S.doubleJump, startup: 3, active: 5, recovery: 10,
+    hurtboxes: [{ from: 0, to: 18, boxes: GLITCH_AIR_PROFILE }],
+    displacements: [displacement(3, 0, 0.58)],
+    presentation: present('spatial-double-jump', 'underfoot-rift-ring', 'double_jump', 'shift_arrive'),
+    tags: ['air', 'double-jump', 'air-use-limit-1', 'no-invulnerability'],
+  },
 ];
 
 export const GLITCH_SHIFT_MOVES: readonly MoveFrameData[] = buildGlitchMoves(rows);

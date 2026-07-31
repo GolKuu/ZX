@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/refs -- R3F attaches these refs during render. */
 import type { FighterRigRefs } from '../fighterRigRefs';
+import { LuckyAccessories } from './LuckyAccessories';
 
 export function LuckyBody({ refs }: { readonly refs: FighterRigRefs }) {
   return (
@@ -39,6 +40,7 @@ export function LuckyBody({ refs }: { readonly refs: FighterRigRefs }) {
       <Limb refs={refs} side="right" />
       <Leg refs={refs} side="left" />
       <Leg refs={refs} side="right" />
+      <LuckyAccessories />
 
       <group ref={refs.leftSword} />
       <group ref={refs.rightSword} />
