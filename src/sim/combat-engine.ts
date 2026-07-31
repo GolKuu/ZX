@@ -88,6 +88,7 @@ export class CombatEngine {
         continue;
       }
       applyNeutralInput(fighter, inputs[fighter.id]);
+      advanceDefensiveResources(fighter);
       const started = tryStartMove(
         fighter,
         inputs[fighter.id],
@@ -250,6 +251,24 @@ export class CombatEngine {
         });
       }
     }
+  }
+}
+
+function advanceDefensiveResources(fighter: MutableFighterState): void {
+  if (fighter.resourceLockFrames > 0) fighter.resourceLockFrames -= 1;
+  if (fighter.guarding) {
+    fighter.guardFrames += 1;
+  } else {
+    fighter.guardFrames = 0;
+    fighter.guardHealth = Math.min(100, fighter.guardHealth + 1);
+  }
+  const drain = fighter.resourceRules?.drainAtMaximumPerFrame ?? 0;
+  if (
+    drain > 0
+    && fighter.resourceMaximum > 0
+    && fighter.resource >= fighter.resourceMaximum
+  ) {
+    fighter.resource = Math.max(0, fighter.resource - drain);
   }
 }
 

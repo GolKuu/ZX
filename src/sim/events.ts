@@ -35,6 +35,23 @@ export interface BlockEvent extends CombatEventBase {
   readonly moveId: string;
   readonly hitId: string;
   readonly position: FixedVector;
+  readonly perfect: boolean;
+  readonly painGuard: boolean;
+}
+
+export interface GuardBreakEvent extends CombatEventBase {
+  readonly type: 'guardBreak';
+  readonly attackerId: string;
+  readonly defenderId: string;
+  readonly moveId: string;
+}
+
+export interface ArmourAbsorbedEvent extends CombatEventBase {
+  readonly type: 'armourAbsorbed';
+  readonly attackerId: string;
+  readonly defenderId: string;
+  readonly moveId: string;
+  readonly damage: number;
 }
 
 export interface BounceEvent extends CombatEventBase {
@@ -88,6 +105,8 @@ export type CombatEvent =
   | MoveEndedEvent
   | HitEvent
   | BlockEvent
+  | GuardBreakEvent
+  | ArmourAbsorbedEvent
   | BounceEvent
   | WallSpawnedEvent
   | WallContactEvent

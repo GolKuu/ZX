@@ -17,6 +17,10 @@ export interface BlockData {
   readonly knockback: FixedVector;
   /** Damage dealt through guard. Fire attacks use this for chip damage. */
   readonly chipDamage?: number;
+  /** Damage dealt to the guard gauge. Omitted moves use the engine default. */
+  readonly guardDamage?: number;
+  /** A guard-break attack defeats Pain Guard and perfect-block timing. */
+  readonly guardBreak?: boolean;
 }
 
 export interface WallBounceData {
@@ -74,6 +78,13 @@ export interface MoveCounterData {
   readonly attackerHitstop: number;
 }
 
+export interface MoveArmourData {
+  readonly frames: FrameRange;
+  readonly hits: number;
+  /** Percent of incoming damage kept while armour absorbs the stagger. */
+  readonly damagePercent: number;
+}
+
 export interface MoveObstacleData {
   /** Local-space obstacle volume, mirrored by fighter facing. */
   readonly box: FixedBox;
@@ -112,6 +123,13 @@ export interface MoveFrameData {
    * unconditionally: the follow-up simply never starts if nothing connected.
    */
   readonly onHitFollowUp?: string;
+  /** Generic character-resource gates used by Rage and future stance meters. */
+  readonly minimumResource?: number;
+  readonly resourceCost?: number;
+  readonly resourceGainOnHit?: number;
+  readonly resourceGainOnBlock?: number;
+  /** Limited, authored armour. It never removes damage or recovery entirely. */
+  readonly armour?: MoveArmourData;
 }
 
 export type MovePhase = 'startup' | 'active' | 'recovery';

@@ -63,5 +63,13 @@ export function validateFighters(
       );
     }
     validateBoxes(fighter.hurtboxes, `${fighter.id}.hurtboxes`);
+    if (fighter.resource !== undefined) {
+      assertNonNegativeInteger(fighter.resource.maximum, `${fighter.id}.resource.maximum`);
+      assertNonNegativeInteger(fighter.resource.initial ?? 0, `${fighter.id}.resource.initial`);
+      assertNonNegativeInteger(
+        fighter.resource.damageTakenPercent,
+        `${fighter.id}.resource.damageTakenPercent`,
+      );
+    }
   }
 }

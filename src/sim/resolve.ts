@@ -29,12 +29,49 @@ export function resolveHit(
   const attackerIsInFront =
     (attacker.position.x - defender.position.x) * defender.facing >= 0;
   if (defender.guarding && attackerIsInFront && hit.block !== undefined) {
+    const perfect = defender.guardFrames <= 3 && hit.block.guardBreak !== true;
+    const painGuard = (
+      defender.guardMode === 'pain'
+      && hit.block.guardBreak !== true
+      && defender.resource >= (defender.resourceRules?.painGuardCost ?? 0)
+    );
+    const guardDamage = hit.block.guardDamage ?? 10;
+    defender.guardHealth = Math.max(0, defender.guardHealth - guardDamage);
+    if (defender.guardHealth === 0 || hit.block.guardBreak === true) {
+      applyGuardBreak(defender);
+      events.push({
+        type: 'guardBreak',
+        frame,
+        attackerId: attacker.id,
+        defenderId: defender.id,
+        moveId: candidate.moveId,
+      });
+      return { startedAction: false };
+    }
+    const rawChip = hit.block.chipDamage ?? 0;
+    const chipPercent = painGuard
+      ? defender.resourceRules?.painGuardChipPercent ?? 100
+      : 100;
+    const chip = Math.ceil((rawChip * chipPercent) / 100);
     defender.health = Math.max(
       0,
-      defender.health - (hit.block.chipDamage ?? 0),
+      defender.health - chip,
     );
+    if (painGuard) {
+      defender.resource = Math.max(
+        0,
+        defender.resource - (defender.resourceRules?.painGuardCost ?? 0),
+      );
+      addResource(defender, rawChip - chip);
+    } else if (perfect) {
+      addResource(defender, defender.resourceRules?.perfectBlockGain ?? 0);
+    }
+    addResource(attacker, candidate.attackerMove?.resourceGainOnBlock ?? 0);
     defender.action = null;
-    defender.hitstun = Math.max(defender.hitstun, hit.block.blockstun);
+    defender.hitstun = Math.max(
+      defender.hitstun,
+      perfect ? Math.max(1, hit.block.blockstun - 4) : hit.block.blockstun,
+    );
     defender.hitstop = Math.max(defender.hitstop, hit.block.hitstop.defender);
     attacker.hitstop = Math.max(attacker.hitstop, hit.block.hitstop.attacker);
     defender.velocity.x = clampInteger(
@@ -55,11 +92,38 @@ export function resolveHit(
       moveId: candidate.moveId,
       hitId: hitbox.hitId,
       position: candidate.impact,
+      perfect,
+      painGuard,
     });
     return { startedAction: false };
   }
 
-  defender.health = Math.max(0, defender.health - hit.damage);
+  const armour = activeArmour(candidate);
+  const damage = armour === null
+    ? hit.damage
+    : Math.max(1, Math.ceil((hit.damage * armour.damagePercent) / 100));
+  defender.health = Math.max(0, defender.health - damage);
+  addResource(
+    defender,
+    Math.floor(
+      (damage * (defender.resourceRules?.damageTakenPercent ?? 0)) / 100,
+    ),
+  );
+  addResource(attacker, candidate.attackerMove?.resourceGainOnHit ?? 0);
+  if (armour !== null && defender.action !== null) {
+    defender.action.armourHitsUsed += 1;
+    defender.hitstop = Math.max(defender.hitstop, hit.hitstop.defender);
+    attacker.hitstop = Math.max(attacker.hitstop, hit.hitstop.attacker);
+    events.push({
+      type: 'armourAbsorbed',
+      frame,
+      attackerId: attacker.id,
+      defenderId: defender.id,
+      moveId: candidate.moveId,
+      damage,
+    });
+    return { startedAction: false };
+  }
   defender.action = null;
   defender.guarding = false;
   defender.hitstun = Math.max(defender.hitstun, hit.hitstun);
@@ -99,7 +163,7 @@ export function resolveHit(
     defenderId: defender.id,
     moveId: candidate.moveId,
     hitId: hitbox.hitId,
-    damage: hit.damage,
+    damage,
     position: candidate.impact,
   });
 
@@ -147,11 +211,12 @@ function tryCounter(
   }
   attacker.hitstop = Math.max(attacker.hitstop, counter.attackerHitstop);
   attacker.action = null;
-  defender.action = {
+    defender.action = {
     moveId: counter.into,
     frame: 0,
     serial: context.nextSerial,
-    hitLedger: [],
+      hitLedger: [],
+      armourHitsUsed: 0,
   };
   defender.hitstun = 0;
   events.push({
@@ -161,4 +226,38 @@ function tryCounter(
     moveId: counter.into,
   });
   return true;
+}
+
+function addResource(fighter: HitCandidate['defender'], amount: number): void {
+  if (amount <= 0 || fighter.resourceLockFrames > 0) return;
+  fighter.resource = Math.min(
+    fighter.resourceMaximum,
+    fighter.resource + amount,
+  );
+}
+
+function activeArmour(candidate: HitCandidate) {
+  const action = candidate.defender.action;
+  const armour = candidate.defenderMove?.armour;
+  if (
+    action === null
+    || armour === undefined
+    || action.armourHitsUsed >= armour.hits
+    || action.frame < armour.frames.from
+    || action.frame >= armour.frames.toExclusive
+  ) return null;
+  return armour;
+}
+
+function applyGuardBreak(defender: HitCandidate['defender']): void {
+  defender.guarding = false;
+  defender.guardMode = 'normal';
+  defender.guardHealth = 45;
+  defender.hitstun = Math.max(defender.hitstun, 36);
+  const rules = defender.resourceRules;
+  defender.resource = Math.max(0, defender.resource - (rules?.guardBreakLoss ?? 0));
+  defender.resourceLockFrames = Math.max(
+    defender.resourceLockFrames,
+    rules?.guardBreakLockFrames ?? 0,
+  );
 }

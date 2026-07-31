@@ -9,6 +9,21 @@ export interface FighterDefinition {
   readonly facing: -1 | 1;
   readonly hurtboxes: readonly FixedBox[];
   readonly movement?: FighterMovementData;
+  readonly resource?: FighterResourceData;
+}
+
+export interface FighterResourceData {
+  readonly maximum: number;
+  readonly initial?: number;
+  /** Percent of real damage converted to resource. */
+  readonly damageTakenPercent: number;
+  readonly counterHitBonus?: number;
+  readonly perfectBlockGain?: number;
+  readonly painGuardChipPercent?: number;
+  readonly painGuardCost?: number;
+  readonly guardBreakLoss?: number;
+  readonly guardBreakLockFrames?: number;
+  readonly drainAtMaximumPerFrame?: number;
 }
 
 export interface FighterMovementData {
@@ -21,6 +36,7 @@ export interface FighterInput {
   readonly move?: string;
   readonly movement?: -1 | 0 | 1;
   readonly guard?: boolean;
+  readonly guardMode?: GuardMode;
   readonly jump?: boolean;
   /** Ground dash request on the press frame, facing-relative: 1 forward, −1 back. */
   readonly dash?: -1 | 0 | 1;
@@ -61,6 +77,7 @@ export interface ActiveMoveState {
   frame: number;
   serial: number;
   hitLedger: string[];
+  armourHitsUsed: number;
 }
 
 export interface BounceState {
@@ -88,6 +105,9 @@ export interface MutableFighterState {
   facing: -1 | 1;
   grounded: boolean;
   guarding: boolean;
+  guardMode: GuardMode;
+  guardFrames: number;
+  guardHealth: number;
   hitstop: number;
   hitstun: number;
   /**
@@ -96,6 +116,10 @@ export interface MutableFighterState {
    * stays exact.
    */
   recoveryPercent: number;
+  resource: number;
+  resourceMaximum: number;
+  resourceLockFrames: number;
+  readonly resourceRules: FighterResourceData | null;
   /** Dash frames left; 0 when not dashing. */
   dashFrames: number;
   dashDirection: -1 | 0 | 1;
@@ -117,6 +141,11 @@ export interface FighterSnapshot {
   readonly facing: -1 | 1;
   readonly grounded: boolean;
   readonly guarding: boolean;
+  readonly guardMode: GuardMode;
+  readonly guardHealth: number;
+  readonly resource: number;
+  readonly resourceMaximum: number;
+  readonly resourceLockFrames: number;
   /** Dash frames left; 0 when not dashing. Animation reads it as a timeline. */
   readonly dashFrames: number;
   readonly hitstop: number;
@@ -125,6 +154,8 @@ export interface FighterSnapshot {
   /** Animation reads this to pick a wall clip instead of a jump clip. */
   readonly wallRun: Readonly<WallRunState>;
 }
+
+export type GuardMode = 'normal' | 'pain';
 
 export interface WorldSnapshot {
   readonly frame: number;

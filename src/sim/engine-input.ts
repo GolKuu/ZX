@@ -64,6 +64,7 @@ export function applyNeutralInput(
     return;
   }
   fighter.guarding = input?.guard ?? false;
+  fighter.guardMode = fighter.guarding ? (input?.guardMode ?? 'normal') : 'normal';
   if (!fighter.grounded) {
     endDash(fighter);
     return;
@@ -103,6 +104,7 @@ export function tryStartMove(
     || fighter.health === 0
     || fighter.hitstun > 0
     || fighter.guarding
+    || (moves.get(input.move)?.minimumResource ?? 0) > fighter.resource
     || (fighter.action !== null && !canCancelInto(fighter, input.move, moves))
   ) {
     return null;
@@ -112,7 +114,12 @@ export function tryStartMove(
     frame: 0,
     serial: actionSerial,
     hitLedger: [],
+    armourHitsUsed: 0,
   };
+  fighter.resource = Math.max(
+    0,
+    fighter.resource - (moves.get(input.move)?.resourceCost ?? 0),
+  );
   startLunge(fighter);
   endDash(fighter);
   if (fighter.grounded && fighter.lungeFrames === 0) fighter.velocity.x = 0;

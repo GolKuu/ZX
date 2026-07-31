@@ -82,6 +82,13 @@ export function copyMove(move: MoveFrameData): MoveFrameData {
       ? undefined
       : { ...move.counter, frames: { ...move.counter.frames } },
     onHitFollowUp: move.onHitFollowUp,
+    minimumResource: move.minimumResource,
+    resourceCost: move.resourceCost,
+    resourceGainOnHit: move.resourceGainOnHit,
+    resourceGainOnBlock: move.resourceGainOnBlock,
+    armour: move.armour === undefined
+      ? undefined
+      : { ...move.armour, frames: { ...move.armour.frames } },
   };
 }
 
@@ -106,9 +113,18 @@ export function createFighterState(
     facing: definition.facing,
     grounded: definition.spawn.y === groundY,
     guarding: false,
+    guardMode: 'normal',
+    guardFrames: 0,
+    guardHealth: 100,
     hitstop: 0,
     hitstun: 0,
     recoveryPercent: 100,
+    resource: definition.resource?.initial ?? 0,
+    resourceMaximum: definition.resource?.maximum ?? 0,
+    resourceLockFrames: 0,
+    resourceRules: definition.resource === undefined
+      ? null
+      : { ...definition.resource },
     dashFrames: 0,
     dashDirection: 0,
     lungeFrames: 0,

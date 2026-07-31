@@ -122,6 +122,7 @@ export class KeyboardInputSource {
     return {
       movement: guard ? 0 : horizontal,
       guard,
+      guardMode: guard && this.buffer.isHeld('super') ? 'pain' : 'normal',
       jump: !guard && isJumping(direction),
       dash,
       // Mounted controls. The engine ignores these unless a plane is held, so

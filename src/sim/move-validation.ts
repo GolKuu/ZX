@@ -38,6 +38,15 @@ function validateMove(move: MoveFrameData): void {
   if (move.active === 0) {
     throw new Error(`${move.id}.active must be at least one frame`);
   }
+  assertNonNegativeInteger(move.minimumResource ?? 0, `${move.id}.minimumResource`);
+  assertNonNegativeInteger(move.resourceCost ?? 0, `${move.id}.resourceCost`);
+  assertNonNegativeInteger(move.resourceGainOnHit ?? 0, `${move.id}.resourceGainOnHit`);
+  assertNonNegativeInteger(move.resourceGainOnBlock ?? 0, `${move.id}.resourceGainOnBlock`);
+  if (move.armour !== undefined) {
+    validateRange(move.armour.frames.from, move.armour.frames.toExclusive, `${move.id}.armour`);
+    assertNonNegativeInteger(move.armour.hits, `${move.id}.armour.hits`);
+    assertNonNegativeInteger(move.armour.damagePercent, `${move.id}.armour.damagePercent`);
+  }
   const activeTo = move.startup + move.active;
   move.hitboxes.forEach((hitbox) =>
     validateHitbox(hitbox, move.id, move.startup, activeTo),
@@ -103,6 +112,7 @@ function validateBlock(hit: HitData, label: string): void {
   }
   assertNonNegativeInteger(hit.block.blockstun, `${label}.block.blockstun`);
   assertNonNegativeInteger(hit.block.chipDamage ?? 0, `${label}.block.chipDamage`);
+  assertNonNegativeInteger(hit.block.guardDamage ?? 0, `${label}.block.guardDamage`);
   assertNonNegativeInteger(hit.block.hitstop.attacker, `${label}.block.hitstop.attacker`);
   assertNonNegativeInteger(hit.block.hitstop.defender, `${label}.block.hitstop.defender`);
   assertInteger(hit.block.knockback.x, `${label}.block.knockback.x`);
