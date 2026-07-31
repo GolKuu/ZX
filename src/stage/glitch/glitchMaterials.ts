@@ -8,7 +8,6 @@ import {
   MeshBasicMaterial,
   MeshPhysicalMaterial,
   MeshStandardMaterial,
-  type DataTexture,
   type Material,
 } from 'three';
 import {

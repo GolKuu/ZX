@@ -72,10 +72,10 @@ test('J K I L resolve to the four authored Glitch normals', () => {
 
 test('the four normals match the requested phase timings and hit levels', () => {
   const expected = [
-    [N.phaseJab, 5, 3, 8, 'high'],
-    [N.riftElbow, 9, 4, 13, 'mid'],
-    [N.lowVectorSweep, 11, 4, 15, 'low'],
-    [N.breakpointAxe, 17, 5, 18, 'overhead'],
+    [N.phaseJab, 4, 2, 9, 'high'],
+    [N.riftElbow, 10, 5, 14, 'mid'],
+    [N.lowVectorSweep, 13, 5, 16, 'low'],
+    [N.breakpointAxe, 19, 4, 21, 'overhead'],
   ];
   for (const [id, startup, active, recovery, level] of expected) {
     const move = GLITCH_MOVES.find((entry) => entry.id === id);

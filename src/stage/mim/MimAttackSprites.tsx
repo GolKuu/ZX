@@ -32,8 +32,6 @@ export function MimAttackSprites({
     <>
       {MIM_ATTACK_NAMES.map((name) => {
         const attack = attacks[name];
-        const width = attack.width * pixelScale;
-        const height = attack.height * pixelScale;
         return (
           <AttackPlane
             attack={attack}

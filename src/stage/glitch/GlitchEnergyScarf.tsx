@@ -30,8 +30,8 @@ export function GlitchEnergyScarf({
     <group ref={root} position={[0.02, 0, -0.16]} rotation-z={0.05}>
       <mesh geometry={body} renderOrder={1}>
         <meshStandardMaterial
-          color="#101b39"
-          emissive="#182b63"
+          color="#1d2022"
+          emissive="#3b2b21"
           emissiveIntensity={1.4}
           metalness={0.28}
           opacity={0.88}
@@ -43,7 +43,7 @@ export function GlitchEnergyScarf({
       <mesh geometry={edge} position-z={0.012} renderOrder={2}>
         <meshBasicMaterial
           blending={AdditiveBlending}
-          color="#32ddff"
+          color="#ff9d28"
           depthWrite={false}
           opacity={0.78}
           side={DoubleSide}
@@ -54,7 +54,7 @@ export function GlitchEnergyScarf({
       <mesh geometry={core} position-z={0.018} renderOrder={3}>
         <meshBasicMaterial
           blending={AdditiveBlending}
-          color="#f1fbff"
+          color="#d9ffff"
           depthWrite={false}
           opacity={0.72}
           side={DoubleSide}

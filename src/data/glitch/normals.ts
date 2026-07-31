@@ -1,5 +1,5 @@
 import type { MoveFrameData } from '../../sim/frame-data.js';
-import { buildGlitchMoves, hit, present } from './builder.js';
+import { buildGlitchMoves, displacement, hit, present } from './builder.js';
 import { GLITCH_LOW_PROFILE, GLITCH_STAND_PROFILE } from './character.js';
 import {
   GLITCH_NORMAL_IDS as N,
@@ -10,60 +10,61 @@ import type { GlitchMoveRow } from './types.js';
 
 const rows: readonly GlitchMoveRow[] = [
   {
-    id: N.phaseJab, startup: 5, active: 3, recovery: 8,
+    id: N.phaseJab, startup: 4, active: 2, recovery: 9,
     hits: [hit({
-      id: 'phase-fist', from: 5, to: 8, box: [0.7, 1.65, 0.31, 0.18],
-      level: 'high', damage: 28, hitstun: 15, blockstun: 9,
+      id: 'checksum-needle', from: 4, to: 6, box: [0.82, 1.7, 0.38, 0.12],
+      level: 'high', damage: 26, hitstun: 14, blockstun: 9,
     })],
     cancels: [{
-      from: 5, to: 12,
+      from: 4, to: 11,
       into: [N.riftElbow, N.lowVectorSweep, U.launcher, S.teleportStrike],
       limit: 1,
     }],
-    presentation: present('phase-jab', 'cyan-pixel-snap', 'phase_wind', 'jab_hit'),
+    presentation: present('checksum-needle', 'ice-hash-streak', 'phase_wind', 'jab_hit'),
     tags: ['interrupt', 'combo-starter'],
   },
   {
-    id: N.riftElbow, startup: 9, active: 4, recovery: 13,
+    id: N.riftElbow, startup: 10, active: 5, recovery: 14,
     hits: [hit({
-      id: 'rift-elbow', from: 9, to: 13, box: [0.7, 1.42, 0.37, 0.28],
-      level: 'mid', damage: 48, hitstun: 19, blockstun: 12,
-      knockback: [0.18, 0.02], guardDamage: 13,
+      id: 'rollback-ram', from: 10, to: 15, box: [0.78, 1.36, 0.43, 0.3],
+      level: 'mid', damage: 54, hitstun: 21, blockstun: 13,
+      knockback: [0.2, 0.03], guardDamage: 15,
     })],
+    displacements: [displacement(8, 0.16, 0, false)],
     cancels: [{
-      from: 9, to: 16,
+      from: 10, to: 18,
       into: [N.breakpointAxe, U.launcher, U.dualVector, S.phaseBreak],
       limit: 1,
     }],
-    presentation: present('rift-elbow', 'violet-body-offset', 'rift_step', 'elbow_hit', 'nudge'),
+    presentation: present('rollback-ram', 'amber-frame-echo', 'rift_step', 'elbow_hit', 'nudge'),
     tags: ['advancing', 'pushback'],
   },
   {
-    id: N.lowVectorSweep, startup: 11, active: 4, recovery: 15,
+    id: N.lowVectorSweep, startup: 13, active: 5, recovery: 16,
     hits: [hit({
-      id: 'vector-sweep', from: 11, to: 15, box: [0.91, 0.25, 0.5, 0.19],
-      level: 'low', damage: 54, hitstun: 24, blockstun: 13,
-      knockback: [0.16, 0.08], guardDamage: 16,
+      id: 'packet-scythe', from: 13, to: 18, box: [1.02, 0.28, 0.56, 0.2],
+      level: 'low', damage: 64, hitstun: 26, blockstun: 14,
+      knockback: [0.19, 0.1], guardDamage: 18,
     })],
-    hurtboxes: [{ from: 7, to: 18, boxes: GLITCH_LOW_PROFILE }],
-    cancels: [{ from: 11, to: 17, into: [U.launcher, S.spatialDash], limit: 1 }],
-    presentation: present('low-vector-sweep', 'floor-rift', 'vector_low', 'sweep_hit'),
+    hurtboxes: [{ from: 8, to: 21, boxes: GLITCH_LOW_PROFILE }],
+    cancels: [{ from: 13, to: 20, into: [U.launcher, S.spatialDash], limit: 1 }],
+    presentation: present('packet-scythe', 'floor-checksum-arc', 'vector_low', 'sweep_hit'),
     tags: ['low', 'low-profile'],
   },
   {
-    id: N.breakpointAxe, startup: 17, active: 5, recovery: 18,
+    id: N.breakpointAxe, startup: 19, active: 4, recovery: 21,
     hits: [hit({
-      id: 'breakpoint-heel', from: 17, to: 22, box: [0.77, 1.5, 0.42, 0.68],
-      level: 'overhead', damage: 82, hitstun: 31, blockstun: 17,
-      knockback: [0.16, 0.18], guardDamage: 24,
+      id: 'kernel-drop', from: 19, to: 23, box: [0.8, 1.42, 0.44, 0.72],
+      level: 'overhead', damage: 94, hitstun: 34, blockstun: 18,
+      knockback: [0.18, 0.22], guardDamage: 27,
       groundBounce: {
         count: 1, verticalSpeed: 102,
         horizontalScale: { numerator: 1, denominator: 2 }, minimumHitstun: 25,
         counterHitOnly: true,
       },
     })],
-    hurtboxes: [{ from: 12, to: 25, boxes: GLITCH_STAND_PROFILE }],
-    presentation: present('breakpoint-axe', 'vertical-space-crack', 'rise_cut', 'axe_hit', 'shake'),
+    hurtboxes: [{ from: 14, to: 28, boxes: GLITCH_STAND_PROFILE }],
+    presentation: present('kernel-drop', 'amber-kernel-fracture', 'rise_cut', 'axe_hit', 'shake'),
     tags: ['overhead', 'counter-ground-bounce', 'punishable'],
   },
   {

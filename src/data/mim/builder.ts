@@ -45,6 +45,7 @@ export interface MimCancel {
 
 export interface MimMoveRow {
   readonly id: string;
+  readonly attackLevel?: MoveFrameData['attackLevel'];
   readonly startup: number;
   readonly active: number;
   readonly recovery: number;
@@ -83,6 +84,7 @@ export function wall(
 export function buildMove(row: MimMoveRow): MoveFrameData {
   return {
     id: row.id,
+    attackLevel: row.attackLevel,
     startup: row.startup,
     active: row.active,
     recovery: row.recovery,

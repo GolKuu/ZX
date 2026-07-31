@@ -31,13 +31,11 @@ export function MimAttackEffects({
     );
     const pulse = Math.sin(Math.min(1, progress * 1.7) * Math.PI);
     group.position.set(
-      fighter.facing * (0.62 + kind * 0.08),
+      0.62 + kind * 0.08,
       [1.52, 1.36, 0.45, 1.28][kind] ?? 1,
       0.12,
     );
-    group.rotation.z = fighter.facing * (
-      [-0.12, 0.42, -0.78, 1.25][kind] ?? 0
-    );
+    group.rotation.z = [-0.12, 0.42, -0.78, 1.25][kind] ?? 0;
     group.rotation.y = clock.elapsedTime * (kind % 2 === 0 ? 1.4 : -1.1);
     group.scale.setScalar(0.25 + pulse * (0.72 + kind * 0.12));
   });
