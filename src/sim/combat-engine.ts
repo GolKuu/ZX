@@ -19,6 +19,13 @@ import { effectiveMoveFrames, type MoveFrameData } from './frame-data.js';
 import { integrateFighter } from './physics.js';
 import { resolveMoveObstacles } from './move-obstacles.js';
 import { resolveHit } from './resolve.js';
+import {
+  applyMovingWallHits,
+  applyWallAttackContacts,
+  resolveWallCollisions,
+  updateWallRun,
+  WallField,
+} from './walls/index.js';
 import type {
   CombatInputs,
   FighterDefinition,
@@ -46,6 +53,7 @@ export class CombatEngine {
   private readonly config: CombatWorldConfig;
   private readonly moves: ReadonlyMap<string, MoveFrameData>;
   private readonly fighters: MutableFighterState[];
+  private readonly walls = new WallField();
   private completedFrames = 0;
   private nextActionSerial = 1;
 
@@ -94,6 +102,7 @@ export class CombatEngine {
       integrateFighter(fighter, this.config, this.completedFrames, events);
     }
 
+    this.advanceWalls(inputs, events);
     resolveMoveObstacles(this.fighters, this.moves);
     faceAirborneFightersTowardOpponents(this.fighters);
     const candidates = collectHitCandidates(
@@ -126,7 +135,69 @@ export class CombatEngine {
   }
 
   public read(): WorldSnapshot {
-    return readWorld(this.completedFrames, this.fighters);
+    return readWorld(this.completedFrames, this.fighters, this.walls.read());
+  }
+
+  /** Round transitions clear the arena; nothing survives into the next round. */
+  public clearWalls(): void {
+    this.walls.clear();
+    for (const fighter of this.fighters) {
+      fighter.wallRun = { phase: 'none', wallId: null, frame: 0, climb: 0 };
+    }
+  }
+
+  /**
+   * Planes are created, aged and resolved in one place, after movement and
+   * before hit detection, so a plane that appears this frame cannot retroactively
+   * block a blow that already connected.
+   */
+  private advanceWalls(inputs: CombatInputs, events: CombatEvent[]): void {
+    const before = new Set(this.walls.entities.map((wall) => wall.id));
+    this.walls.spawnFromMoves(this.fighters, this.moves);
+    for (const wall of this.walls.entities) {
+      if (before.has(wall.id)) continue;
+      events.push({
+        type: 'wallSpawned',
+        frame: this.completedFrames,
+        wallId: wall.id,
+        ownerId: wall.ownerId,
+        kind: wall.kind,
+        position: { ...wall.center },
+      });
+    }
+    this.walls.tick(this.config.leftWall, this.config.rightWall);
+    applyWallAttackContacts(
+      this.walls,
+      this.fighters,
+      this.moves,
+      this.completedFrames,
+      events,
+    );
+    applyMovingWallHits(
+      this.walls,
+      this.fighters,
+      this.completedFrames,
+      this.config.maximumVelocity,
+      events,
+    );
+    resolveWallCollisions(this.walls, this.fighters);
+    for (const fighter of this.fighters) {
+      if (fighter.hitstop > 0) continue;
+      const input = inputs[fighter.id];
+      updateWallRun(
+        fighter,
+        this.walls,
+        {
+          mount: input?.wallMount === true,
+          climb: input?.wallClimb ?? 0,
+          jump: input?.jump === true,
+          exit: input?.wallExit ?? 0,
+        },
+        this.completedFrames,
+        events,
+      );
+      if (fighter.health === 0) this.walls.removeOwnedBy(fighter.id);
+    }
   }
 
   public readDebugFrames(): readonly FighterDebugFrame[] {

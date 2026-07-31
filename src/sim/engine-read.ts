@@ -6,14 +6,17 @@ import type {
   MutableFighterState,
   WorldSnapshot,
 } from './state.js';
+import type { WallSnapshot } from './walls/types.js';
 
 export function readWorld(
   frame: number,
   fighters: readonly MutableFighterState[],
+  walls: readonly WallSnapshot[] = [],
 ): WorldSnapshot {
   return {
     frame,
     fighters: fighters.map(snapshotFighter),
+    walls,
   };
 }
 
@@ -68,5 +71,6 @@ function snapshotFighter(fighter: MutableFighterState): FighterSnapshot {
             frame: fighter.action.frame,
             serial: fighter.action.serial,
           },
+    wallRun: { ...fighter.wallRun },
   };
 }

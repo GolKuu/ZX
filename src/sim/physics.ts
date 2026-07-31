@@ -20,6 +20,12 @@ export function integrateFighter(
     config.maximumVelocity,
   );
 
+  // A mounted fighter is held by the plane, not by the world: gravity and the
+  // ground resolve would both fight the wall-run machine for the same axis.
+  if (fighter.wallRun.phase !== 'none') {
+    return;
+  }
+
   if (!fighter.grounded || fighter.velocity.y !== 0) {
     fighter.velocity.y -= config.gravityPerFrame;
   }

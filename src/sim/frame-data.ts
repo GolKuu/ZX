@@ -1,4 +1,5 @@
 import type { FixedBox, FixedVector, Ratio } from './math.js';
+import type { WallSpawnData } from './walls/types.js';
 
 export interface FrameRange {
   readonly from: number;
@@ -76,6 +77,16 @@ export interface MoveFrameData {
   readonly cancels?: readonly CancelWindow[];
   /** Optional movement blocker active only during this move's active frames. */
   readonly obstacle?: MoveObstacleData;
+  /** Energy planes this move puts into the world. */
+  readonly walls?: readonly WallSpawnData[];
+  /**
+   * The move ignores energy planes completely — it is neither stopped by one
+   * nor able to break one. Supers, ultimates and throws set this, which is the
+   * counter-play that stops a wall from answering everything.
+   */
+  readonly wallPiercing?: boolean;
+  /** Integrity removed per confirmed contact with a plane. Defaults to 1. */
+  readonly wallDamage?: number;
 }
 
 export type MovePhase = 'startup' | 'active' | 'recovery';

@@ -68,6 +68,13 @@ export function copyMove(move: MoveFrameData): MoveFrameData {
           },
           hitsToBreak: move.obstacle.hitsToBreak,
         },
+    walls: move.walls?.map((wall) => ({
+      ...wall,
+      offset: { ...wall.offset },
+      halfSize: { ...wall.halfSize },
+    })),
+    wallPiercing: move.wallPiercing,
+    wallDamage: move.wallDamage,
   };
 }
 
@@ -110,6 +117,7 @@ export function createFighterState(
       groundHorizontalDenominator: 1,
       groundMinimumHitstun: 0,
     },
+    wallRun: { phase: 'none', wallId: null, frame: 0, climb: 0 },
   };
 }
 

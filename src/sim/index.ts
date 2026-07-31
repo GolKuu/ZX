@@ -6,7 +6,28 @@ export {
   LUNGE_FRAMES,
   dashPhase,
 } from './dash.js';
-export type { CombatEvent, FighterDebugFrame, WorldBox } from './events.js';
+export type {
+  CombatEvent,
+  FighterDebugFrame,
+  WallContactEvent,
+  WallRunEvent,
+  WallShatteredEvent,
+  WallSpawnedEvent,
+  WorldBox,
+} from './events.js';
+export {
+  WallField,
+  WALL_BLOCKING_LIMIT,
+  WALL_RUN_MAX_FRAMES,
+  WALL_SHATTER_FRAMES,
+  WALL_TOTAL_LIMIT,
+  isBlockingKind,
+  type WallEntity,
+  type WallKind,
+  type WallSnapshot,
+  type WallSpawnData,
+  type WallState,
+} from './walls/index.js';
 export {
   movePhaseAt,
   totalMoveFrames,
@@ -39,5 +60,7 @@ export type {
   FighterInput,
   FighterMovementData,
   FighterSnapshot,
+  WallRunPhase,
+  WallRunState,
   WorldSnapshot,
 } from './state.js';
