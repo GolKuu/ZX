@@ -79,6 +79,8 @@ export interface MoveFrameData {
   readonly obstacle?: MoveObstacleData;
   /** Energy planes this move puts into the world. */
   readonly walls?: readonly WallSpawnData[];
+  /** What this move does to planes that already exist. */
+  readonly wallCommand?: WallCommandData;
   /**
    * The move ignores energy planes completely — it is neither stopped by one
    * nor able to break one. Supers, ultimates and throws set this, which is the

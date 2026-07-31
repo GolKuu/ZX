@@ -165,6 +165,7 @@ export class CombatEngine {
         position: { ...wall.center },
       });
     }
+    const mounting = this.walls.applyCommands(this.fighters, this.moves);
     this.walls.tick(this.config.leftWall, this.config.rightWall);
     applyWallAttackContacts(
       this.walls,
@@ -188,7 +189,7 @@ export class CombatEngine {
         fighter,
         this.walls,
         {
-          mount: input?.wallMount === true,
+          mount: input?.wallMount === true || mounting.has(fighter.id),
           climb: input?.wallClimb ?? 0,
           jump: input?.jump === true,
           exit: input?.wallExit ?? 0,

@@ -57,6 +57,59 @@ export class WallField {
     }
   }
 
+  /**
+   * Runs a move's instruction about existing planes and reports which fighters
+   * asked to mount one this frame.
+   *
+   * A launch with nothing standing simply does nothing — that whiff is the
+   * authored cost of pushing a wall MIM never built.
+   */
+  public applyCommands(
+    fighters: readonly MutableFighterState[],
+    moves: ReadonlyMap<string, MoveFrameData>,
+  ): ReadonlySet<string> {
+    const mounting = new Set<string>();
+    for (const fighter of fighters) {
+      const action = fighter.action;
+      if (action === null || fighter.hitstop > 0) continue;
+      const command = moves.get(action.moveId)?.wallCommand;
+      if (command === undefined || action.frame !== command.frame) continue;
+      if (command.action === 'mount') {
+        mounting.add(fighter.id);
+      } else if (command.action === 'launch') {
+        this.launchForward(fighter, command);
+      } else {
+        for (const wall of this.walls) {
+          if (wall.ownerId === fighter.id) this.shatter(wall);
+        }
+      }
+    }
+    return mounting;
+  }
+
+  private launchForward(
+    owner: MutableFighterState,
+    command: { pushSpeed?: number; pushDamage?: number; pushHitstun?: number },
+  ): void {
+    let best: WallEntity | null = null;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    for (const wall of this.walls) {
+      const ahead = (wall.center.x - owner.position.x) * owner.facing;
+      if (wall.ownerId !== owner.id || wall.state !== 'solid' || ahead <= 0) {
+        continue;
+      }
+      if (ahead < bestDistance) {
+        best = wall;
+        bestDistance = ahead;
+      }
+    }
+    if (best === null) return;
+    best.pushSpeed = command.pushSpeed ?? 96;
+    best.pushDamage = command.pushDamage ?? 72;
+    best.pushHitstun = command.pushHitstun ?? 30;
+    best.contactLedger.length = 0;
+  }
+
   public create(owner: MutableFighterState, data: WallSpawnData): WallEntity {
     this.enforceLimits(owner.id, data);
     const wall: WallEntity = {

@@ -40,6 +40,20 @@ export interface WallSpawnData {
   readonly pushHitstun?: number;
 }
 
+/**
+ * A move's instruction to the field about planes that already exist.
+ *
+ * Kept as data rather than a branch in the engine so "push the wall" and "climb
+ * the wall" stay authored rows, per the project's frame-data rule.
+ */
+export interface WallCommandData {
+  readonly frame: number;
+  readonly action: 'launch' | 'mount' | 'shatterOwn';
+  readonly pushSpeed?: number;
+  readonly pushDamage?: number;
+  readonly pushHitstun?: number;
+}
+
 export interface WallEntity {
   readonly id: number;
   readonly ownerId: string;

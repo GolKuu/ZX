@@ -73,6 +73,9 @@ export function copyMove(move: MoveFrameData): MoveFrameData {
       offset: { ...wall.offset },
       halfSize: { ...wall.halfSize },
     })),
+    wallCommand: move.wallCommand === undefined
+      ? undefined
+      : { ...move.wallCommand },
     wallPiercing: move.wallPiercing,
     wallDamage: move.wallDamage,
   };
