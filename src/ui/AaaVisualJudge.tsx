@@ -44,10 +44,11 @@ const COOLDOWN_MS: Record<CapturePhase, number> = {
 const SAMPLE_SCALE = 0.35;
 const TARGET_LONG_EDGE = 360;
 const MAX_UI_LOG = 16;
+export const MINIMUM_CHARACTER_SCORE = 97;
 
 const PHASE_TARGETS: Record<CapturePhase, Record<Category, number>> = {
   'main-menu': {
-    character: 66,
+    character: MINIMUM_CHARACTER_SCORE,
     animation: 52,
     arena: 72,
     lighting: 78,
@@ -58,7 +59,7 @@ const PHASE_TARGETS: Record<CapturePhase, Record<Category, number>> = {
     spectacle: 78,
   },
   'character-select': {
-    character: 62,
+    character: MINIMUM_CHARACTER_SCORE,
     animation: 54,
     arena: 68,
     lighting: 76,
@@ -69,7 +70,7 @@ const PHASE_TARGETS: Record<CapturePhase, Record<Category, number>> = {
     spectacle: 80,
   },
   'match-start': {
-    character: 78,
+    character: MINIMUM_CHARACTER_SCORE,
     animation: 66,
     arena: 84,
     lighting: 86,
@@ -80,7 +81,7 @@ const PHASE_TARGETS: Record<CapturePhase, Record<Category, number>> = {
     spectacle: 82,
   },
   'neutral-gameplay': {
-    character: 84,
+    character: MINIMUM_CHARACTER_SCORE,
     animation: 82,
     arena: 86,
     lighting: 88,
@@ -91,7 +92,7 @@ const PHASE_TARGETS: Record<CapturePhase, Record<Category, number>> = {
     spectacle: 88,
   },
   'combo': {
-    character: 86,
+    character: MINIMUM_CHARACTER_SCORE,
     animation: 88,
     arena: 86,
     lighting: 88,
@@ -102,7 +103,7 @@ const PHASE_TARGETS: Record<CapturePhase, Record<Category, number>> = {
     spectacle: 90,
   },
   'super': {
-    character: 88,
+    character: MINIMUM_CHARACTER_SCORE,
     animation: 92,
     arena: 90,
     lighting: 94,
@@ -113,7 +114,7 @@ const PHASE_TARGETS: Record<CapturePhase, Record<Category, number>> = {
     spectacle: 94,
   },
   'victory': {
-    character: 84,
+    character: MINIMUM_CHARACTER_SCORE,
     animation: 80,
     arena: 86,
     lighting: 90,
@@ -268,7 +269,7 @@ export function AaaVisualJudge() {
       {open && (
         <section className={styles.content}>
           <p className={styles.goal}>
-            Reference target: Guilty Gear Strive / Dragon Ball FighterZ / Naruto Storm / SF6 / Tekken8.
+            Character acceptance gate: 97/100. Reference: Guilty Gear Strive / Dragon Ball FighterZ / SF6 / Tekken 8.
           </p>
           <ul className={styles.phaseList}>
             {(Object.entries(samples) as Array<[CapturePhase, FrameAnalysis]>)
@@ -284,7 +285,9 @@ export function AaaVisualJudge() {
                   <div className={styles.categoryRow}>
                     {Object.entries(sample.categories).map(([category, score]) => (
                       <i
-                        data-low={score < 60}
+                        data-low={score < (
+                          category === 'character' ? MINIMUM_CHARACTER_SCORE : 60
+                        )}
                         key={category}
                         title={`${category}: ${score}`}
                       >

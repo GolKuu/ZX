@@ -114,7 +114,9 @@ source structure and deterministic animation tests, not screenshot evidence.
 
 ## Independent critic
 
-Final verdict: **PASS — 85/100**. The earlier 55 and 64 point rejections were
+Historical verdict: **85/100** under the retired threshold. Under the current
+global 97/100 character gate Vorgh is **REJECTED pending a new audit**. The
+earlier 55 and 64 point rejections were
 resolved by connecting animation metadata to fixed-tick runtime playback,
 enforcing real high/low guard and grapple rules, bounding dynamic Rage cancels,
 making high-Rage recovery punishable, phasing hurtboxes, and expanding defense,
