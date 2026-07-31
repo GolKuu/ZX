@@ -1,9 +1,4 @@
 import { KADE_MOVES } from '@/src/data/combat-moves';
-import { ECHO_MOVES } from '@/src/data/echo-combat-moves';
-import { ECHO_SPECIAL_MOVES } from '@/src/data/echo-special-moves';
-import { ECHO_SUPER_MOVES } from '@/src/data/echo-super-moves';
-import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
-import { CHRONO_SUPER_MOVES } from '@/src/data/chrono-super-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
 import { MIM_SUPER_MOVES } from '@/src/data/mim-super-moves';
 import { TAUNT_MOVES } from '@/src/data/taunt-move';
@@ -27,11 +22,6 @@ const MOVES_BY_ID = new Map(
     ...MIM_MOVES,
     ...MIM_SUPER_MOVES,
     ...TAUNT_MOVES,
-    ...ECHO_MOVES,
-    ...ECHO_SPECIAL_MOVES,
-    ...ECHO_SUPER_MOVES,
-    ...CHRONO_MOVES,
-    ...CHRONO_SUPER_MOVES,
     ...GLITCH_MOVES,
     ...GLITCH_SUPER_MOVES,
     ...LUCKY_MOVES,

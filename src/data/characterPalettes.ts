@@ -98,9 +98,7 @@ const TITAN: CharacterPalette = {
 
 const PALETTES: Record<CharacterId, CharacterPalette> = {
   mim: MIM,
-  echo: ECHO,
   glitch: GLITCH,
-  chrono: CHRONO,
   lucky: LUCKY,
   vorgh: VORGH,
   titan: TITAN,

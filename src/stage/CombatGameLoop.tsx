@@ -7,8 +7,6 @@ import {
   readCombatResetVersion,
 } from '@/src/game/combatRuntime';
 import {
-  CHRONO_COMMANDS,
-  ECHO_COMMANDS,
   GLITCH_COMMANDS,
   LUCKY_COMMANDS,
   DEFAULT_CONTEXT,
@@ -150,8 +148,6 @@ function commandsFor(characterId: CharacterId) {
   if (characterId === 'titan') return TITAN_COMMANDS;
   if (characterId === 'vorgh') return VORGH_COMMANDS;
   if (characterId === 'lucky') return LUCKY_COMMANDS;
-  if (characterId === 'chrono') return CHRONO_COMMANDS;
-  if (characterId === 'echo') return ECHO_COMMANDS;
   if (characterId === 'glitch') return GLITCH_COMMANDS;
   return MIM_COMMANDS;
 }

@@ -1,8 +1,6 @@
 ﻿export type CharacterId =
   | 'mim'
-  | 'echo'
   | 'glitch'
-  | 'chrono'
   | 'lucky'
   | 'vorgh'
   | 'titan';

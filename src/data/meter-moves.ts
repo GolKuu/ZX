@@ -6,9 +6,7 @@
  * - **ultimates** cost no energy at all and unlock on low health instead.
  */
 
-import { chronoSuperCostForMove, CHRONO_SUPER_MOVE_IDS } from './chrono-super-moves.js';
 import { XRAY_MOVE_ID } from './combat-moves.js';
-import { echoSuperCostForMove, ECHO_SUPER_MOVE_IDS } from './echo-super-moves.js';
 import { glitchSuperCostForMove, GLITCH_SUPER_MOVE_IDS } from './glitch-super-moves.js';
 import { GLITCH_SUPER_IDS } from './glitch/ids.js';
 import { mimSuperCostForMove, MIM_SUPER_MOVE_IDS } from './mim-super-moves.js';
@@ -29,8 +27,6 @@ import {
 export const ULTIMATE_MOVE_IDS: ReadonlySet<string> = new Set<string>([
   XRAY_MOVE_ID,
   MIM_SUPER_MOVE_IDS.perfectBox,
-  ECHO_SUPER_MOVE_IDS.statistics,
-  CHRONO_SUPER_MOVE_IDS.inevitability,
   GLITCH_SUPER_MOVE_IDS.patchNotes,
   GLITCH_SUPER_IDS.fourthGodSequence,
   LUCKY_SUPER_IDS.impossibleOutcome,
@@ -50,8 +46,6 @@ export function superCostForMove(moveId: string): number | null {
     return null;
   }
   return mimSuperCostForMove(moveId)
-    ?? echoSuperCostForMove(moveId)
-    ?? chronoSuperCostForMove(moveId)
     ?? glitchSuperCostForMove(moveId)
     ?? luckySuperCostForMove(moveId)
     ?? vorghSuperCostForMove(moveId)

@@ -7,13 +7,6 @@ import {
   type CharacterId,
 } from '@/src/data/characterRoster';
 import { KADE_HURTBOXES, KADE_MOVES } from '@/src/data/combat-moves';
-import { ECHO_AI_LOADOUT } from '@/src/data/echo-ai';
-import { ECHO_MOVES } from '@/src/data/echo-combat-moves';
-import { ECHO_SPECIAL_MOVES } from '@/src/data/echo-special-moves';
-import { ECHO_SUPER_MOVES } from '@/src/data/echo-super-moves';
-import { CHRONO_AI_LOADOUT } from '@/src/data/chrono-ai';
-import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
-import { CHRONO_SUPER_MOVES } from '@/src/data/chrono-super-moves';
 import { glitchAiLoadout } from '@/src/data/glitch-ai';
 import {
   GLITCH_HURTBOXES,
@@ -69,11 +62,6 @@ export const ALL_COMBAT_MOVES = [
   ...MIM_MOVES,
   ...MIM_SPECIAL_MOVES,
   ...MIM_SUPER_MOVES,
-  ...ECHO_MOVES,
-  ...ECHO_SPECIAL_MOVES,
-  ...ECHO_SUPER_MOVES,
-  ...CHRONO_MOVES,
-  ...CHRONO_SUPER_MOVES,
   ...GLITCH_MOVES,
   ...GLITCH_SUPER_MOVES,
   ...LUCKY_MOVES,
