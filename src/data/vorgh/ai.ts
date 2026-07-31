@@ -16,7 +16,7 @@ const base: AiLoadout = {
     option(S.armourBreaker, 0.3, 1.32, 24, 'breaker-punish'),
   ],
   combos: [
-    { moves: [N.predatorRake, N.skullRam, S.rageSlash] },
+    { moves: [N.predatorRake, N.skullRam, S.berserkDash] },
     { moves: [N.crouchLight, N.crouchMedium, S.berserkDash] },
   ],
 };
@@ -34,7 +34,15 @@ const hard: AiLoadout = {
   ],
   combos: [
     ...base.combos,
-    { moves: [N.predatorRake, N.skullRam, S.rageSlashEx, S.berserkDashEx] },
+    {
+      moves: [
+        S.rageSlashEx,
+        S.berserkDashEx,
+        N.predatorRake,
+        N.skullRam,
+        S.berserkDash,
+      ],
+    },
   ],
   painGuardThreshold: 58,
 };

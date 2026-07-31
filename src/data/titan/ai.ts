@@ -30,8 +30,8 @@ export const TITAN_AI_LOADOUT: AiLoadout = {
   ],
   combos: [
     { moves: [ID.pistonHammer, ID.bulkheadBackfist, ID.siegeRam] },
-    { moves: [ID.crouchLight, ID.crouchMedium, ID.groundSlam] },
-    { moves: [ID.bulkheadBackfist, ID.commandGrab, ID.groundSlam] },
+    { moves: [ID.crouchLight, ID.crouchMedium, ID.crouchHeavy] },
+    { moves: [ID.bulkheadBackfist, ID.groundSlam] },
   ],
 };
 

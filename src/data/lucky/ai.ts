@@ -16,8 +16,6 @@ export const LUCKY_AI_LOADOUT: AiLoadout = {
   ],
   combos: [
     { moves: [LUCKY_MOVE_IDS.quickDraw, LUCKY_MOVE_IDS.loadedShoulder, LUCKY_MOVE_IDS.fortuneHeel] },
-    { moves: [LUCKY_MOVE_IDS.slidingBet, LUCKY_SPECIAL_IDS.loadedStrike] },
-    { moves: [LUCKY_MOVE_IDS.quickDraw, LUCKY_SPECIAL_IDS.jackpotRush] },
   ],
 };
 
