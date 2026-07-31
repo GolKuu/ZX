@@ -103,8 +103,6 @@ Perfect Block не гарантирует punish: он только сокращ
 | Lucky | 4/4 PASS |
 | Titan | 4/4 PASS |
 | Vorgh | 4/4 PASS |
-| Echo | 4/4 PASS |
-| Chrono | 4/4 PASS |
 | Glitch, зеркально в обе стороны | 8/8 PASS |
 
 Отдельно проверены реальный Perfect Block, grapple-only Throw Escape,

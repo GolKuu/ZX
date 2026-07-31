@@ -100,8 +100,8 @@ applicable, cancel windows, VFX IDs, sound IDs and camera events in
 | Pain-to-Power value | PASS — bounded, hurt reaction remains |
 | Pain Guard loop | PASS — costs Rage and loses to guard break |
 | Last Beast gate | PASS — low HP, 80 Rage, 66 meter, confirmed hit |
-| Matchups: Mim / Echo / Glitch | PASS — all four role normals connect honestly |
-| Matchups: Lucky / Titan / Chrono | PASS — all four role normals connect honestly |
+| Matchups: Mim / Glitch | PASS — all four role normals connect honestly |
+| Matchups: Lucky / Titan | PASS — all four role normals connect honestly |
 | Vorgh dedicated | 29/29 |
 | Full deterministic suite | 193/193 |
 | Mim regression | PASS after stale test IDs were aligned to current Mim data |

@@ -16,11 +16,9 @@ import { fixed } from '../.sim-test-build/src/sim/math.js';
 
 const matchups = {
   Mim: KADE_HURTBOXES,
-  Echo: KADE_HURTBOXES,
   Glitch: GLITCH_HURTBOXES,
   Lucky: LUCKY_HURTBOXES,
   Titan: TITAN_HURTBOXES,
-  Chrono: KADE_HURTBOXES,
 };
 
 for (const [name, hurtboxes] of Object.entries(matchups)) {

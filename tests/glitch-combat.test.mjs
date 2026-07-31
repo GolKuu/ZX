@@ -6,7 +6,6 @@ import { validateAiLoadout } from '../.sim-test-build/src/ai/validation.js';
 import { InputBuffer } from '../.sim-test-build/src/input/buffer.js';
 import { resolveCommand } from '../.sim-test-build/src/input/command.js';
 import { GLITCH_COMMANDS } from '../.sim-test-build/src/input/glitchCommands.js';
-import { KADE_HURTBOXES } from '../.sim-test-build/src/data/combat-moves.js';
 import { LUCKY_HURTBOXES } from '../.sim-test-build/src/data/lucky/index.js';
 import { MIM_HURTBOXES } from '../.sim-test-build/src/data/mim/character.js';
 import { TITAN_HURTBOXES } from '../.sim-test-build/src/data/titan/index.js';
@@ -167,8 +166,6 @@ for (const [opponent, hurtboxes] of Object.entries({
   Lucky: LUCKY_HURTBOXES,
   Titan: TITAN_HURTBOXES,
   Vorgh: VORGH_HURTBOXES,
-  Echo: KADE_HURTBOXES,
-  Chrono: KADE_HURTBOXES,
 })) {
   test(`Glitch's four normals connect honestly against ${opponent}`, () => {
     for (const id of [

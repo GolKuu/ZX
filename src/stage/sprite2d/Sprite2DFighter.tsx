@@ -191,8 +191,8 @@ export function Sprite2DFighter({
     );
 
     // Mirror the whole rig rather than re-authoring poses for the other
-    // direction. Which way the artwork already faces is per sheet — CHRONO's
-    // and GLITCH's face right in their current assets — so a fixed sign would
+    // direction. Which way the artwork already faces is per sheet, so a fixed
+    // sign would
     // point half the roster away from its opponent.
     const drawnFacing = rig?.facesRight === true ? 1 : -1;
     group.scale.x = spriteFacingScale(
