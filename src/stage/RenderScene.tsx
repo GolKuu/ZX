@@ -9,8 +9,6 @@ import { Arena } from './Arena';
 import { LazyModelFighter } from './LazyModelFighter';
 import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
-import { ChronoFighter } from './ChronoFighter';
-import { EchoFighter } from './EchoFighter';
 import { AttackCue } from './AttackCue';
 import { FrameProfiler } from './FrameProfiler';
 import { GlitchFighter } from './GlitchFighter';
@@ -99,7 +97,6 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
   /** Sliced clean attack panels, shown at the strike impact frame. */
   readonly attacks?: string;
 }>> = {
-  echo: { rig: 'echo-profile', attacks: 'echo-attacks' },
   lucky: { rig: 'lucky-profile', attacks: 'lucky-attacks' },
 };
 
@@ -114,9 +111,6 @@ function primitiveFighter(
   if (characterId === 'titan') {
     return <TitanFighter fighterId={fighterId} />;
   }
-  if (characterId === 'chrono') {
-    return <ChronoFighter auraColor={auraColor} fighterId={fighterId} />;
-  }
   const sprite = SPRITE_RIGS[characterId];
   if (sprite !== undefined) {
     return (
@@ -126,9 +120,6 @@ function primitiveFighter(
         rigName={sprite.rig}
       />
     );
-  }
-  if (characterId === 'echo') {
-    return <EchoFighter auraColor={auraColor} fighterId={fighterId} />;
   }
   if (characterId === 'glitch') {
     return <GlitchFighter fighterId={fighterId} />;

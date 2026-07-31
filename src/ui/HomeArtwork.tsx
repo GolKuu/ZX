@@ -5,7 +5,7 @@ export function HomeArtwork() {
   return (
     <div className={styles.artwork}>
       <Image
-        alt="Мим атакует Echo на арене Null Circle"
+        alt="Мим атакует соперника на арене Null Circle"
         className={styles.image}
         fill
         priority

@@ -120,15 +120,6 @@
   transform: skew(-1deg);
 }
 
-.panel[data-character="echo"] .portrait i {
-  background:
-    radial-gradient(circle at 22% 38%, transparent 0 10%, #54e7ff 10.5% 12%, transparent 12.5%),
-    radial-gradient(circle at 78% 38%, transparent 0 10%, #54e7ff 10.5% 12%, transparent 12.5%),
-    radial-gradient(circle at 50% 17%, #f4f9ff 0 8%, transparent 8.4%),
-    linear-gradient(105deg, transparent 32%, #f4f9ff 32.5% 47%, transparent 47.5%),
-    linear-gradient(255deg, transparent 32%, #0b2848 32.5% 47%, transparent 47.5%);
-}
-
 .panel[data-character="lucky"] .portrait i {
   background:
     radial-gradient(circle at 50% 38%, #1a5a40 0 20%, transparent 21%),

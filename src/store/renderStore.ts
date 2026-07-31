@@ -1,17 +1,9 @@
 import { create } from 'zustand';
-import type { ChronoSuperKind } from '@/src/data/chrono-super-moves';
-import type { EchoSuperKind } from '@/src/data/echo-super-moves';
 import type { GlitchSuperKind } from '@/src/data/glitch-super-moves';
 import type { MimSuperKind } from '@/src/data/mim-super-moves';
 import type { LuckySuperKind } from '@/src/data/lucky/supers';
 
 type RenderState = {
-  chronoSuperFighterId: 'p1' | 'p2' | null;
-  chronoSuperKind: ChronoSuperKind | null;
-  chronoSuperVersion: number;
-  echoSuperFighterId: 'p1' | 'p2' | null;
-  echoSuperKind: EchoSuperKind | null;
-  echoSuperVersion: number;
   effectsEnabled: boolean;
   glitchSuperFighterId: 'p1' | 'p2' | null;
   glitchSuperKind: GlitchSuperKind | null;
@@ -32,14 +24,6 @@ type RenderState = {
     fighterId: 'p1' | 'p2',
     kind: GlitchSuperKind,
   ) => void;
-  triggerChronoSuper: (
-    fighterId: 'p1' | 'p2',
-    kind: ChronoSuperKind,
-  ) => void;
-  triggerEchoSuper: (
-    fighterId: 'p1' | 'p2',
-    kind: EchoSuperKind,
-  ) => void;
   triggerMimSuper: (
     fighterId: 'p1' | 'p2',
     kind: MimSuperKind,
@@ -52,12 +36,6 @@ type RenderState = {
 };
 
 export const useRenderStore = create<RenderState>((set) => ({
-  chronoSuperFighterId: null,
-  chronoSuperKind: null,
-  chronoSuperVersion: 0,
-  echoSuperFighterId: null,
-  echoSuperKind: null,
-  echoSuperVersion: 0,
   effectsEnabled: true,
   glitchSuperFighterId: null,
   glitchSuperKind: null,
@@ -88,18 +66,6 @@ export const useRenderStore = create<RenderState>((set) => ({
       glitchSuperFighterId,
       glitchSuperKind,
       glitchSuperVersion: state.glitchSuperVersion + 1,
-    })),
-  triggerChronoSuper: (chronoSuperFighterId, chronoSuperKind) =>
-    set((state) => ({
-      chronoSuperFighterId,
-      chronoSuperKind,
-      chronoSuperVersion: state.chronoSuperVersion + 1,
-    })),
-  triggerEchoSuper: (echoSuperFighterId, echoSuperKind) =>
-    set((state) => ({
-      echoSuperFighterId,
-      echoSuperKind,
-      echoSuperVersion: state.echoSuperVersion + 1,
     })),
   triggerMimSuper: (mimSuperFighterId, mimSuperKind) =>
     set((state) => ({

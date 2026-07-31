@@ -1,17 +1,17 @@
 :root {
-  --color-canvas: #000;
-  --color-surface: #121314;
-  --color-surface-raised: #18191d;
-  --color-primary: #0070d1;
-  --color-primary-pressed: #005cae;
-  --color-link-dark: #53b1ff;
-  --color-text: #fff;
-  --color-text-muted: rgb(255 255 255 / 68%);
-  --color-text-subtle: rgb(255 255 255 / 48%);
-  --color-hairline: rgb(255 255 255 / 18%);
-  --radius-card: 8px;
-  --radius-dialog: 16px;
-  --radius-pill: 999px;
+  --color-canvas: #050019;
+  --color-surface: #11072c;
+  --color-surface-raised: #180b39;
+  --color-primary: #ff2fb3;
+  --color-primary-pressed: #d91491;
+  --color-link-dark: #39f5ff;
+  --color-text: #fff8eb;
+  --color-text-muted: rgb(219 226 255 / 76%);
+  --color-text-subtle: rgb(177 194 224 / 62%);
+  --color-hairline: rgb(57 245 255 / 34%);
+  --radius-card: 2px;
+  --radius-dialog: 4px;
+  --radius-pill: 2px;
   color: var(--color-text);
   background: var(--color-canvas);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -34,6 +34,15 @@ body {
   background: var(--color-canvas);
 }
 
+body::after {
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgb(0 0 0 / 8%) 3px 4px);
+  content: "";
+  pointer-events: none;
+}
+
 button,
 a {
   font: inherit;
@@ -49,6 +58,6 @@ button {
 }
 
 ::selection {
-  color: #fff;
+  color: #050019;
   background: var(--color-primary);
 }

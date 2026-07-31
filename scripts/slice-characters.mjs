@@ -18,13 +18,11 @@
 // Output: `public/sprites/<name>/<part>.png` plus a `rig.json` manifest the
 // runtime reads for sizes and pivots.
 //
-//   node scripts/slice-characters.mjs echo-profile
 //   node scripts/slice-characters.mjs --all
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
-import { cleanEchoAttack } from './echo-attack-cleaner.mjs';
 import { keyBackground } from './sheet-key.mjs';
 import {
   dropInklessComponents,
@@ -354,9 +352,6 @@ async function sliceAttacks(name) {
     }
     const groundInCrop = spec.ground - box.top;
     let cleaned = data;
-    if (spec.cleanup === 'echo') {
-      cleaned = cleanEchoAttack(data, box.width, box.height, box, groundInCrop);
-    }
     if (spec.minimumComponentPixels !== undefined) {
       cleaned = removeSmallAlphaComponents(
         cleaned,

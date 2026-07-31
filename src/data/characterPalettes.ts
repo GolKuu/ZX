@@ -36,16 +36,6 @@ const MIM: CharacterPalette = {
   body: zone('#6f35cf', '#35156f', 1, 0.82),
 };
 
-const ECHO: CharacterPalette = {
-  hair: zone('#f7fbff', '#8fd7eb', 1.05, 0.72),
-  skin: zone('#eef8ff', '#87bfd3', 0.72, 0.68),
-  coat: zone('#f4f8fb', '#6fa9c2', 1.1, 0.72),
-  trousers: zone('#0d2744', '#155777', 0.82, 0.78),
-  boot: zone('#102b49', '#1d6683', 0.95, 0.74),
-  eye: zone('#54e7ff', '#1b83a4', 0, 0),
-  body: zone('#f4f8fb', '#6fa9c2', 1.1, 0.72),
-};
-
 const GLITCH: CharacterPalette = {
   hair: zone('#080a0f', '#511052', 1.15, 0.82),
   skin: zone('#10131a', '#7d176b', 0.9, 0.78),
@@ -54,16 +44,6 @@ const GLITCH: CharacterPalette = {
   boot: zone('#030409', '#30103d', 1.2, 0.82),
   eye: zone('#16e6ff', '#ff2bd6', 0, 0),
   body: zone('#07090e', '#61105e', 1.15, 0.86),
-};
-
-const CHRONO: CharacterPalette = {
-  hair: zone('#e7edf5', '#8296b5', 1.05, 0.78),
-  skin: zone('#e2b89d', '#9a677f', 0.62, 0.7),
-  coat: zone('#111725', '#1c3156', 1.05, 0.82),
-  trousers: zone('#172b48', '#102033', 0.82, 0.8),
-  boot: zone('#cbd7e6', '#607898', 1.18, 0.75),
-  eye: zone('#42b9ff', '#236d9d', 0, 0),
-  body: zone('#111725', '#1c3156'),
 };
 
 const LUCKY: CharacterPalette = {

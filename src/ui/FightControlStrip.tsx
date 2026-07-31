@@ -37,14 +37,10 @@ export function FightControlStrip() {
       <ControlGroup label="Super" codes={[bindingCode(bindings, 'super')]} />
       <ControlGroup label="Ultimate" codes={[bindingCode(bindings, 'ultimate')]} />
       <ControlGroup label="Taunt" codes={[bindingCode(bindings, 'taunt')]} />
-      {selection[0] === 'chrono' && <ChronoMoveGroup fighterId="p1" />}
-      {selection[1] === 'chrono' && <ChronoMoveGroup fighterId="p2" />}
       {selection[0] === 'mim' && <MimMoveGroup fighterId="p1" />}
       {selection[1] === 'mim' && <MimMoveGroup fighterId="p2" />}
       {selection[0] === 'glitch' && <GlitchMoveGroup fighterId="p1" />}
       {selection[1] === 'glitch' && <GlitchMoveGroup fighterId="p2" />}
-      {selection[0] === 'echo' && <EchoMoveGroup fighterId="p1" />}
-      {selection[1] === 'echo' && <EchoMoveGroup fighterId="p2" />}
       {selection[0] === 'vorgh' && <VorghMoveGroup fighterId="p1" />}
       {selection[1] === 'vorgh' && <VorghMoveGroup fighterId="p2" />}
       <button type="button" onClick={openControls}>Controls</button>
@@ -58,16 +54,6 @@ function VorghMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) 
       fighterId={fighterId}
       hint="QCF/QCB/DP · SHIFT+U PAIN GUARD"
       moves="RAGE SLASH · BERSERK DASH · LAST BEAST"
-    />
-  );
-}
-
-function ChronoMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
-  return (
-    <MoveGroup
-      fighterId={fighterId}
-      hint="U В· 1 / 3 В· O ULT"
-      moves="CLOCK COLLAPSE / PARALLEL EXECUTION / ABSOLUTE TIMELINE"
     />
   );
 }
@@ -88,16 +74,6 @@ function GlitchMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId })
       fighterId={fighterId}
       hint="QCF / QCB / DP + J/K"
       moves="PACKET LOSS В· CORRUPTED ZONE В· DESYNC JUMP"
-    />
-  );
-}
-
-function EchoMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
-  return (
-    <MoveGroup
-      fighterId={fighterId}
-      hint="R SCAN · E MIRROR · F LOCK · Q+E / Q+R / Q+F"
-      moves="PERFECT READ · DATA OVERLOAD · FINAL PREDICTION"
     />
   );
 }

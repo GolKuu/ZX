@@ -19,8 +19,6 @@ export function StageLighting() {
   const superVersion = useRenderStore(
     (state) =>
       state.mimSuperVersion
-      + state.echoSuperVersion
-      + state.chronoSuperVersion
       + state.glitchSuperVersion,
   );
   const impactVersionRef = useRef(impactVersion);

@@ -11,14 +11,6 @@
 
 /** Full sheets, for reading panel boxes off a coarse grid. */
 export const WHOLE_SHEETS = {
-  'echo-sheet': {
-    file: 'public/echo-character-sheet.png',
-    crop: { left: 0, top: 0, width: 1152, height: 768 },
-  },
-  'chrono-sheet': {
-    file: 'public/chrono-character-sheet.png',
-    crop: { left: 0, top: 0, width: 1152, height: 648 },
-  },
   'glitch-sheet': {
     file: 'public/glitch-character-sheet.png',
     crop: { left: 0, top: 0, width: 1536, height: 1024 },
@@ -27,14 +19,6 @@ export const WHOLE_SHEETS = {
 
 export const FRONT_VIEWS = {
   ...WHOLE_SHEETS,
-  echo: {
-    file: 'public/echo-character-sheet.png',
-    crop: { left: 20, top: 40, width: 290, height: 390 },
-  },
-  chrono: {
-    file: 'public/chrono-character-sheet.png',
-    crop: { left: 20, top: 30, width: 290, height: 290 },
-  },
   // The rig is cut from a *profile*, not the front view.
   //
   // A front-facing cut-out whose limbs are rotated reads as a character facing
@@ -47,30 +31,10 @@ export const FRONT_VIEWS = {
   // stand on. The runtime hangs the whole rig off that point, so a drawing whose
   // figure sits off-centre or short of the crop's bottom edge still lands with its
   // soles on the floor and its weight over the pushbox.
-  'echo-profile': {
-    file: 'public/echo-character-sheet.png',
-    crop: { left: 862, top: 58, width: 168, height: 360 },
-    origin: [76, 349],
-    textureScale: 2,
-    partFill: [232, 242, 245],
-    partOutline: [15, 34, 57],
-    // Near-white armour: match the paper colour rather than a value floor.
-    // No cleanup pass: ECHO's armour highlights are brighter than any safe
-    // cleanup threshold, so growing into leftovers tunnels straight into the
-    // costume. A few flecks in the margin are cheaper than a holed character.
-    key: { tolerance: 16 },
-  },
   // `facesRight` is per sheet, not a convention: CHRONO's and GLITCH's face right.
   // The runtime
   // mirrors from this, so getting it wrong points a fighter away from its
   // opponent.
-  'chrono-profile': {
-    file: 'public/chrono-character-sheet.png',
-    crop: { left: 922, top: 78, width: 146, height: 326 },
-    facesRight: true,
-    origin: [80, 324],
-    carveFill: [12, 16, 29],
-  },
   'glitch-profile': {
     file: 'public/glitch-character-sheet.png',
     crop: { left: 1118, top: 82, width: 176, height: 424 },
@@ -105,35 +69,6 @@ export const FRONT_VIEWS = {
  * slicing, so the runtime never needs to key gameplay diagrams away.
  */
 export const ATTACK_POSES = {
-  echo: {
-    file: 'public/echo-character-sheet.png',
-    key: { tolerance: 16, cleanup: 218 },
-    displayScale: 1.95,
-    facesRight: true,
-    minimumComponentPixels: 12,
-    textureScale: 2,
-    ground: 680,
-    poses: {
-      lp: { left: 24, top: 472, width: 205, height: 210 },
-      hp: { left: 280, top: 472, width: 220, height: 210 },
-      lk: { left: 592, top: 477, width: 230, height: 205 },
-      hk: { left: 865, top: 472, width: 240, height: 210 },
-    },
-  },
-  chrono: {
-    file: 'public/chrono-character-sheet.png',
-    key: { tolerance: 20 },
-    displayScale: 1.9,
-    facesRight: true,
-    textureScale: 2,
-    ground: 610,
-    poses: {
-      lp: { left: 26, top: 438, width: 220, height: 180 },
-      hp: { left: 292, top: 438, width: 272, height: 180 },
-      lk: { left: 590, top: 445, width: 245, height: 170 },
-      hk: { left: 882, top: 435, width: 210, height: 180 },
-    },
-  },
   glitch: {
     file: 'public/glitch-character-sheet.png',
     key: { light: 178 },

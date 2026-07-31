@@ -28,10 +28,6 @@ export const CONTROL_ROWS: readonly ControlRow[] = [
   { id: 'taunt', label: 'Насмешка', detail: 'Провокация' },
   { id: 'super', label: 'Супер', detail: 'Тратит шкалу энергии' },
   { id: 'ultimate', label: 'Ультимейт', detail: 'Только на низком HP' },
-  { id: 'echoQ', label: 'ECHO Q — modifier', detail: 'Echo supers' },
-  { id: 'echoE', label: 'ECHO E — mirror', detail: 'Echo analysis' },
-  { id: 'echoR', label: 'ECHO R — scan', detail: 'Echo analysis' },
-  { id: 'echoF', label: 'ECHO F — lock', detail: 'Echo analysis' },
 ];
 
 interface ControlState {

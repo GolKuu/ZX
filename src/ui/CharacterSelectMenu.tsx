@@ -78,7 +78,9 @@ export function CharacterSelectMenu() {
     >
       <header className={styles.brand}>
         <span>CC//ULTIMATE</span>
-        <small>ВЫБОР ПЕРСОНАЖА · {mode === 'ai' ? 'ПРОТИВ ИИ' : 'ЛОКАЛЬНЫЙ БОЙ'}</small>
+        <small>
+          ВЫБОР ПЕРСОНАЖА · {mode === 'ai' ? 'ПРОТИВ ИИ' : 'ЛОКАЛЬНЫЙ БОЙ'}
+        </small>
       </header>
 
       <main className={styles.layout}>
@@ -88,7 +90,6 @@ export function CharacterSelectMenu() {
           confirmed={activeSlot === 1}
           playerTag="P1"
         />
-
         <CharacterRoster
           activeSlot={activeSlot}
           focus={menuFocus}
@@ -97,7 +98,6 @@ export function CharacterSelectMenu() {
           onChoose={chooseCharacter}
           onFocus={setMenuFocus}
         />
-
         <CharacterPanel
           active={activeSlot === 1}
           characterId={preview[1]}

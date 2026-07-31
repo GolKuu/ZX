@@ -73,8 +73,6 @@ export function ArenaAtmosphericField() {
   const superVersion = useRenderStore(
     (state) =>
       state.mimSuperVersion
-      + state.echoSuperVersion
-      + state.chronoSuperVersion
       + state.glitchSuperVersion,
   );
   const impactVersion = useRenderStore((state) => state.impactVersion);

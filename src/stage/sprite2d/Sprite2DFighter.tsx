@@ -13,12 +13,8 @@ import {
   readCombatFighter,
   readLatestHit,
 } from '@/src/game/combatRuntime';
-import { isEchoSpecialMove } from '@/src/data/echo-special-moves';
-import { echoSuperKindForMove } from '@/src/data/echo-super-moves';
 import { LUCKY_MOVE_IDS } from '@/src/data/lucky/moves';
 import { FIXED_SCALE } from '@/src/sim';
-import { EchoSpriteEffects } from '../echo/EchoSpriteEffects';
-import { applyEchoSpriteMotion } from '../echo/echoSpriteMotion';
 import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
 import { LuckySpriteEffects } from '../lucky/LuckySpriteEffects';
 import {
@@ -249,30 +245,12 @@ export function Sprite2DFighter({
           progress,
           true,
         );
-      } else if (rigName === 'echo-profile') {
-        applyEchoSpriteMotion(
-          joints.current,
-          inner,
-          clock.elapsedTime,
-          fighter,
-          progress,
-          true,
-          drawnFacing,
-        );
       }
       return;
     }
 
-    const echoDirectedMove = rigName === 'echo-profile'
-      && (
-        isEchoSpecialMove(presentation.action?.moveId)
-        || echoSuperKindForMove(presentation.action?.moveId ?? '') !== null
-      );
-    const poseFighter = echoDirectedMove
-      ? { ...presentation, action: null }
-      : presentation;
     const pose = spritePoseFor(
-      poseFighter,
+      presentation,
       clock.elapsedTime,
       progress,
       hurtZoneOf(fighterId, fighter.position.y / FIXED_SCALE),
@@ -281,17 +259,7 @@ export function Sprite2DFighter({
     apply(joints.current, pose);
     inner.position.y = pose.lift;
     inner.position.x = pose.drift;
-    if (rigName === 'echo-profile') {
-      applyEchoSpriteMotion(
-        joints.current,
-        inner,
-        clock.elapsedTime,
-        fighter,
-        progress,
-        false,
-        drawnFacing,
-      );
-    } else if (rigName === 'glitch-profile') {
+    if (rigName === 'glitch-profile') {
       applyGlitchSpriteCorruption(
         joints.current,
         inner,
@@ -322,12 +290,6 @@ export function Sprite2DFighter({
         </group>
         {rigName === 'glitch-profile' && rig !== null ? (
           <GlitchSpriteEffects fighterId={fighterId} rig={rig} />
-        ) : null}
-        {rigName === 'echo-profile' && rig !== null ? (
-          <EchoSpriteEffects
-            fighterId={fighterId}
-            rig={rig}
-          />
         ) : null}
         {rigName === 'lucky-profile' && rig !== null ? (
           <LuckySpriteEffects fighterId={fighterId} />

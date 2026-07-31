@@ -50,7 +50,7 @@
   display: grid;
   height: calc(100% - 5.2cqw);
   align-items: stretch;
-  grid-template-columns: minmax(0, 1fr) minmax(24cqw, 0.72fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(30cqw, 0.9fr) minmax(0, 1fr);
 }
 
 .hints {
@@ -80,6 +80,6 @@
 
 @container (max-width: 760px) {
   .layout {
-    grid-template-columns: minmax(0, 1fr) minmax(28cqw, 0.9fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(34cqw, 1fr) minmax(0, 1fr);
   }
 }

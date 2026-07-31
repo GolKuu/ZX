@@ -8,8 +8,6 @@ import { FpsMeter } from './FpsMeter';
 import { XrayCinematic } from './XrayCinematic';
 import { MobileControls } from './MobileControls';
 import { MimSuperCinematic } from './MimSuperCinematic';
-import { EchoSuperCinematic } from './EchoSuperCinematic';
-import { ChronoSuperCinematic } from './ChronoSuperCinematic';
 import { GlitchSuperCinematic } from './GlitchSuperCinematic';
 import { LuckySuperCinematic } from './LuckySuperCinematic';
 import { AaaVisualJudge } from './AaaVisualJudge';
@@ -23,8 +21,6 @@ export function PlayOverlay() {
     <div className={styles.overlay}>
       <XrayCinematic />
       <MimSuperCinematic />
-      <EchoSuperCinematic />
-      <ChronoSuperCinematic />
       <GlitchSuperCinematic />
       <LuckySuperCinematic />
       <CombatHud />
@@ -39,8 +35,6 @@ function DevelopmentTools() {
   const effectsEnabled = useRenderStore((state) => state.effectsEnabled);
   const toggleEffects = useRenderStore((state) => state.toggleEffects);
   const preview = useRenderStore((state) => state.triggerMimSuper);
-  const previewEcho = useRenderStore((state) => state.triggerEchoSuper);
-  const previewChrono = useRenderStore((state) => state.triggerChronoSuper);
   const previewGlitch = useRenderStore((state) => state.triggerGlitchSuper);
   const previewLucky = useRenderStore((state) => state.triggerLuckySuper);
   return (
@@ -50,12 +44,6 @@ function DevelopmentTools() {
       <button type="button" onClick={() => preview('p1', 'mirrorArena')}>MIM · ARENA</button>
       <button type="button" onClick={() => preview('p1', 'falseOpening')}>MIM · BAIT</button>
       <button type="button" onClick={() => preview('p1', 'perfectBox')}>MIM · BOX</button>
-      <button type="button" onClick={() => previewEcho('p1', 'analysis')}>ECHO L1</button>
-      <button type="button" onClick={() => previewEcho('p1', 'repeat')}>ECHO L3</button>
-      <button type="button" onClick={() => previewEcho('p1', 'statistics')}>ECHO FIN</button>
-      <button type="button" onClick={() => previewChrono('p1', 'rewind')}>CHRONO L1</button>
-      <button type="button" onClick={() => previewChrono('p1', 'outcomes')}>CHRONO L3</button>
-      <button type="button" onClick={() => previewChrono('p1', 'inevitability')}>CHRONO FIN</button>
       <button type="button" onClick={() => previewGlitch('p1', 'error')}>GLITCH L1</button>
       <button type="button" onClick={() => previewGlitch('p1', 'critical')}>GLITCH L3</button>
       <button type="button" onClick={() => previewGlitch('p1', 'patchNotes')}>GLITCH FIN</button>

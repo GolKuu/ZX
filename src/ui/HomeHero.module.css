@@ -3,7 +3,7 @@
   width: 100%;
   max-width: 1440px;
   align-self: center;
-  grid-template-columns: minmax(340px, 0.78fr) minmax(480px, 1.22fr);
+  grid-template-columns: minmax(340px, 0.82fr) minmax(480px, 1.18fr);
   align-items: center;
   gap: clamp(36px, 5vw, 80px);
   margin: 0 auto;
@@ -26,6 +26,7 @@
   margin: 0;
   gap: 18px;
   color: var(--color-link-dark);
+  font-family: "Courier New", ui-monospace, monospace;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -33,7 +34,7 @@
 
 .eyebrow b {
   padding-left: 18px;
-  color: var(--color-text-subtle);
+  color: var(--color-primary);
   border-left: 1px solid var(--color-hairline);
   font-weight: 600;
 }
@@ -42,22 +43,32 @@
   max-width: 660px;
   margin: 22px 0 24px;
   color: var(--color-text);
-  font-size: clamp(3.25rem, 5.35vw, 5.35rem);
-  font-weight: 300;
-  letter-spacing: -0.045em;
-  line-height: 0.98;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: clamp(3.35rem, 5.55vw, 5.8rem);
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 0.88;
+  text-shadow: 3px 3px 0 var(--color-primary), 6px 6px 0 rgb(57 245 255 / 38%);
+  text-transform: uppercase;
   text-wrap: balance;
 }
 
 .hero h1 span {
   display: block;
-  color: var(--color-text-muted);
+  margin-top: 0.13em;
+  color: transparent;
+  background: linear-gradient(90deg, var(--color-link-dark), #faf2ff 48%, var(--color-primary));
+  background-clip: text;
+  -webkit-background-clip: text;
 }
 
 .description {
   max-width: 530px;
   margin: 0 0 32px;
+  padding-left: 16px;
   color: var(--color-text-muted);
+  border-left: 3px solid var(--color-primary);
   font-size: clamp(1rem, 1.2vw, 1.13rem);
   line-height: 1.5;
 }
@@ -75,19 +86,24 @@
   justify-content: space-between;
   gap: 26px;
   padding: 0 24px;
-  color: #fff;
-  background: var(--color-primary);
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-pill);
+  color: #050019;
+  background: var(--color-link-dark);
+  border: 2px solid #fff;
+  border-radius: 0;
+  box-shadow: 5px 5px 0 var(--color-primary);
+  font-family: "Courier New", ui-monospace, monospace;
   font-size: 0.94rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  transition: background 160ms ease, transform 160ms ease;
+  text-transform: uppercase;
+  transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
 .primaryCta:hover,
 .primaryCta:focus-visible {
-  background: var(--color-primary-pressed);
+  color: #fff;
+  background: var(--color-primary);
+  box-shadow: 2px 2px 0 var(--color-link-dark);
   outline: none;
   transform: scale(1.02);
 }
@@ -99,7 +115,8 @@
 .inputNote {
   gap: 9px;
   margin: 20px 0 0;
-  color: var(--color-text-subtle);
+  color: var(--color-link-dark);
+  font-family: "Courier New", ui-monospace, monospace;
   font-size: 0.76rem;
   font-weight: 500;
   letter-spacing: 0.025em;

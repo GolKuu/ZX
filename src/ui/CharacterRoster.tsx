@@ -6,6 +6,15 @@ import {
 } from '@/src/data/characterRoster';
 import styles from './CharacterRoster.module.css';
 
+interface CharacterRosterProps {
+  readonly activeSlot: 0 | 1;
+  readonly focus: number;
+  readonly focusedCharacter: CharacterDefinition;
+  readonly opponentTag: string;
+  readonly onChoose: (characterId: CharacterId) => void;
+  readonly onFocus: (index: number) => void;
+}
+
 export function CharacterRoster({
   activeSlot,
   focus,
@@ -13,14 +22,7 @@ export function CharacterRoster({
   opponentTag,
   onChoose,
   onFocus,
-}: {
-  readonly activeSlot: 0 | 1;
-  readonly focus: number;
-  readonly focusedCharacter: CharacterDefinition;
-  readonly opponentTag: string;
-  readonly onChoose: (characterId: CharacterId) => void;
-  readonly onFocus: (index: number) => void;
-}) {
+}: CharacterRosterProps) {
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   useEffect(() => {
@@ -30,10 +32,10 @@ export function CharacterRoster({
   return (
     <section className={styles.roster}>
       <div className={styles.prompt} aria-live="polite">
-        <span>ШАГ {activeSlot + 1} / 2</span>
+        <span>ШАГ {activeSlot + 1} / 2 · {CHARACTER_ROSTER.length} БОЙЦОВ</span>
         <h1>{activeSlot === 0 ? 'P1' : opponentTag} выбирает бойца</h1>
       </div>
-      <nav aria-label="Готовые персонажи" className={styles.characterList}>
+      <nav aria-label="Доступные персонажи" className={styles.characterList}>
         {CHARACTER_ROSTER.map((character, index) => (
           <button
             key={character.id}
@@ -43,13 +45,17 @@ export function CharacterRoster({
             type="button"
             data-character={character.id}
             data-focused={index === focus}
+            data-new={character.isNew === true}
             onClick={() => onChoose(character.id)}
             onFocus={() => onFocus(index)}
             onPointerEnter={() => onFocus(index)}
           >
             <i aria-hidden="true">{character.mark}</i>
             <span>
-              <strong>{character.displayName}</strong>
+              <strong>
+                {character.displayName}
+                {character.isNew === true && <em>NEW</em>}
+              </strong>
               <small>{character.archetype}</small>
             </span>
           </button>

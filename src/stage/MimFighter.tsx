@@ -13,6 +13,7 @@ import {
   withOpponentFacing,
 } from './fighterPresentation';
 import { MimAttackSprites } from './mim/MimAttackSprites';
+import { MimAttackEffects } from './mim/MimAttackEffects';
 import { MimSpecialEffects } from './mim/MimSpecialEffects';
 import { MimVoiceCallouts } from './mim/MimVoiceCallouts';
 import {
@@ -113,6 +114,7 @@ export function MimFighter({
       <MimVoiceCallouts fighterId={fighterId} />
       <MimSpecialEffects fighterId={fighterId} />
       <group ref={outer}>
+        <MimAttackEffects fighterId={fighterId} />
         <group ref={body}>
           <group ref={rigGroup}>
             {sprites.rig === null ? null : (

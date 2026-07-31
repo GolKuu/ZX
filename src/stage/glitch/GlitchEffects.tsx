@@ -15,26 +15,27 @@ export function GlitchEffects({
   return (
     <>
       <group ref={refs.slash}>
-        <mesh geometry={resources.slash} material={materials.magenta} />
+        <mesh geometry={resources.slash} material={materials.amber} />
         <mesh
           geometry={resources.slash}
-          material={materials.phantomCyan}
+          material={materials.phantomIce}
           rotation-z={0.18}
           scale={1.16}
         />
         {[-0.48, -0.15, 0.24, 0.5].map((x, index) => (
           <mesh
             key={x}
-            geometry={resources.pixel}
-            material={index % 2 === 0 ? materials.cyan : materials.magenta}
+            geometry={index % 2 === 0 ? resources.needle : resources.pixel}
+            material={index % 2 === 0 ? materials.ice : materials.amber}
             position={[x, 0.12 * (index % 3), 0]}
+            rotation-z={0.42 + index * 0.18}
             scale={0.7 + index * 0.12}
           />
         ))}
       </group>
 
       <group ref={refs.projectile}>
-        <mesh geometry={resources.packet} material={materials.magenta} />
+        <mesh geometry={resources.packet} material={materials.amber} />
         {([
           [-0.24, 0.16, 0],
           [0.22, 0.13, 0.04],
@@ -44,7 +45,7 @@ export function GlitchEffects({
           <mesh
             key={`${x}-${y}`}
             geometry={resources.pixel}
-            material={index % 2 === 0 ? materials.cyan : materials.magenta}
+            material={index % 2 === 0 ? materials.ice : materials.amber}
             position={[x, y, z]}
             scale={0.85}
           />
@@ -56,7 +57,7 @@ export function GlitchEffects({
           <mesh
             key={scale}
             geometry={resources.zone}
-            material={index % 2 === 0 ? materials.phantomCyan : materials.phantomMagenta}
+            material={index % 2 === 0 ? materials.phantomIce : materials.phantomAmber}
             rotation-x={Math.PI / 2}
             scale={scale}
           />
@@ -68,7 +69,7 @@ export function GlitchEffects({
           <mesh
             key={x}
             geometry={resources.pixel}
-            material={index % 2 === 0 ? materials.phantomCyan : materials.phantomMagenta}
+            material={index % 2 === 0 ? materials.phantomIce : materials.phantomAmber}
             position={[x, 1 + index * 0.26, index % 2 === 0 ? -0.12 : 0.12]}
             scale={1.5 - index * 0.12}
           />

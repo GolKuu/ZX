@@ -24,11 +24,7 @@ export type ModifierButton = (typeof MODIFIER_BUTTONS)[number];
 export const MIM_BUTTONS = ['mimQ', 'mimE', 'mimR', 'mimF'] as const;
 export type MimButton = (typeof MIM_BUTTONS)[number];
 
-/** Echo's direct analysis keys; they share physical Q/E/R/F with MIM. */
-export const ECHO_BUTTONS = ['echoQ', 'echoE', 'echoR', 'echoF'] as const;
-export type EchoButton = (typeof ECHO_BUTTONS)[number];
-
-export type Button = AttackButton | ModifierButton | MimButton | EchoButton;
+export type Button = AttackButton | ModifierButton | MimButton;
 
 /** Bit positions. Stable — the buffer stores these as a packed mask. */
 export const BUTTON_BIT: Readonly<Record<Button, number>> = {
@@ -45,10 +41,6 @@ export const BUTTON_BIT: Readonly<Record<Button, number>> = {
   mimE: 1 << 10,
   mimR: 1 << 11,
   mimF: 1 << 12,
-  echoQ: 1 << 13,
-  echoE: 1 << 14,
-  echoR: 1 << 15,
-  echoF: 1 << 16,
 };
 
 export type ButtonMask = number;
@@ -87,10 +79,6 @@ export const DEFAULT_BINDINGS: KeyBindings = {
     mimE: 'KeyE',
     mimR: 'KeyR',
     mimF: 'KeyF',
-    echoQ: 'KeyQ',
-    echoE: 'KeyE',
-    echoR: 'KeyR',
-    echoF: 'KeyF',
   },
 };
 
@@ -114,10 +102,6 @@ export const PLAYER_TWO_BINDINGS: KeyBindings = {
     mimE: 'Numpad8',
     mimR: 'NumpadDivide',
     mimF: 'NumpadMultiply',
-    echoQ: 'Numpad7',
-    echoE: 'Numpad8',
-    echoR: 'NumpadDivide',
-    echoF: 'NumpadMultiply',
   },
 };
 
@@ -184,7 +168,6 @@ export function readButtonMask(
       ...ATTACK_BUTTONS,
       ...MODIFIER_BUTTONS,
       ...MIM_BUTTONS,
-      ...ECHO_BUTTONS,
     ]
   ) {
     if (held.has(bindings.buttons[button])) {

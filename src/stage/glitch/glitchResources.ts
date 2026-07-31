@@ -21,6 +21,7 @@ export function createGlitchResources() {
     shin: new CapsuleGeometry(0.085, 0.38, 4, 8),
     foot: new BoxGeometry(0.19, 0.11, 0.34),
     pixel: new BoxGeometry(0.1, 0.1, 0.1),
+    needle: new BoxGeometry(0.38, 0.035, 0.035),
     packet: new IcosahedronGeometry(0.18, 0),
     slash: new TorusGeometry(0.62, 0.035, 5, 28, Math.PI * 1.3),
     zone: new TorusGeometry(0.85, 0.05, 5, 34),

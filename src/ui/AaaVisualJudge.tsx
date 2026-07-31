@@ -131,8 +131,6 @@ export function AaaVisualJudge() {
   const snapshot = useHudStore((state) => state.snapshot);
   const superVersion = useRenderStore((state) =>
     state.mimSuperVersion
-    + state.echoSuperVersion
-    + state.chronoSuperVersion
     + state.glitchSuperVersion
     + state.luckySuperVersion,
   );

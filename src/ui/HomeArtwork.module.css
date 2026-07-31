@@ -3,26 +3,43 @@
   min-height: clamp(430px, 62vh, 690px);
   overflow: hidden;
   background: var(--color-surface-raised);
-  border-radius: var(--radius-card);
+  border: 2px solid var(--color-link-dark);
+  border-radius: 0;
+  box-shadow: 12px 12px 0 rgb(255 47 179 / 55%), 0 0 50px rgb(57 245 255 / 16%);
+  clip-path: polygon(0 0, 93% 0, 100% 8%, 100% 100%, 7% 100%, 0 92%);
+}
+
+.artwork::before {
+  position: absolute;
+  z-index: 2;
+  top: 18px;
+  right: 18px;
+  width: 58px;
+  height: 9px;
+  background: repeating-linear-gradient(90deg, var(--color-primary) 0 8px, transparent 8px 12px);
+  content: "";
+  pointer-events: none;
 }
 
 .artwork::after {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgb(0 0 0 / 30%), transparent 34%),
-    linear-gradient(0deg, rgb(0 0 0 / 72%), transparent 30%);
+    linear-gradient(135deg, rgb(57 245 255 / 16%), transparent 34%),
+    linear-gradient(0deg, rgb(5 0 25 / 86%), transparent 36%);
   content: "";
   pointer-events: none;
 }
 
 .image {
+  filter: saturate(1.25) contrast(1.08) hue-rotate(8deg);
   object-fit: cover;
   object-position: center;
-  transition: transform 220ms ease;
+  transition: filter 220ms ease, transform 220ms ease;
 }
 
 .artwork:hover .image {
+  filter: saturate(1.45) contrast(1.12);
   transform: scale(1.015);
 }
 
@@ -36,13 +53,16 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  color: var(--color-text-subtle);
+  color: var(--color-link-dark);
+  font-family: "Courier New", ui-monospace, monospace;
   font-size: 0.7rem;
   letter-spacing: 0.1em;
 }
 
 .caption strong {
-  color: #fff;
+  padding: 7px 10px;
+  color: #050019;
+  background: var(--color-primary);
   font-size: 0.86rem;
   letter-spacing: 0.02em;
 }

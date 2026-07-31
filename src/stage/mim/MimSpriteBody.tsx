@@ -1,8 +1,8 @@
 'use client';
 
 import { Group } from 'three';
-import { SpritePart } from '../sprite2d/SpritePart';
 import type { LoadedMimRig, MimPartName } from './mimSpriteRig';
+import { MimTexturedPart } from './MimTexturedPart';
 
 export type MimSpriteJointName =
   | 'torso'
@@ -35,9 +35,9 @@ export function MimSpriteBody({
           position={relative(rig, 'scarf', 'torso', -0.04)}
           ref={(node) => { setJoint('scarf', node); }}
         >
-          <SpritePart part={rig.scarf} pixelScale={scale} />
+          <MimTexturedPart part={rig.scarf} pixelScale={scale} />
         </group>
-        <SpritePart part={rig.torso} pixelScale={scale} />
+        <MimTexturedPart part={rig.torso} pixelScale={scale} />
         <Limb
           name="leftArm"
           parent="torso"
@@ -56,7 +56,7 @@ export function MimSpriteBody({
           position={relative(rig, 'head', 'torso', 0.055)}
           ref={(node) => { setJoint('head', node); }}
         >
-          <SpritePart part={rig.head} pixelScale={scale} />
+          <MimTexturedPart part={rig.head} pixelScale={scale} />
         </group>
       </group>
     </>
@@ -81,7 +81,7 @@ function Limb({
     : relative(rig, name, parent, z);
   return (
     <group position={position} ref={(node) => { setJoint(name, node); }}>
-      <SpritePart part={rig[name]} pixelScale={rig.pixelScale} />
+      <MimTexturedPart part={rig[name]} pixelScale={rig.pixelScale} />
     </group>
   );
 }

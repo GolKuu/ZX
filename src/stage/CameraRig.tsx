@@ -82,8 +82,6 @@ export function CameraRig() {
   const impactVersionRef = useRef(useRenderStore.getState().impactVersion);
   const superVersionRef = useRef(
     useRenderStore.getState().mimSuperVersion
-    + useRenderStore.getState().echoSuperVersion
-    + useRenderStore.getState().chronoSuperVersion
     + useRenderStore.getState().glitchSuperVersion,
   );
   const seenHitSerial = useRef<Record<FighterId, number>>({ p1: 0, p2: 0 });
@@ -94,8 +92,6 @@ export function CameraRig() {
   const distanceRef = useRef(NEAR_DISTANCE);
   const superVersion = useRenderStore((state) =>
     state.mimSuperVersion
-    + state.echoSuperVersion
-    + state.chronoSuperVersion
     + state.glitchSuperVersion,
   );
   const impactVersion = useRenderStore((state) => state.impactVersion);

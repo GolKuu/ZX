@@ -26,15 +26,15 @@ export function GlitchBody(props: GlitchBodyProps) {
       <group ref={refs.torso} position={[0, 1.3, 0]}>
         <HalfPart x={-0.145} geometry={resources.torsoHalf} material={materials.stable} outline={outline} />
         <HalfPart x={0.145} geometry={resources.torsoHalf} material={materials.corrupt} outline={outline} />
-        <mesh geometry={resources.pixel} material={materials.cyan} position={[-0.1, 0.12, 0.2]} scale={[1.3, 0.18, 0.35]} />
-        <mesh geometry={resources.pixel} material={materials.magenta} position={[0.14, -0.05, 0.2]} scale={[1.2, 0.2, 0.35]} />
+        <mesh geometry={resources.pixel} material={materials.ice} position={[-0.1, 0.12, 0.2]} scale={[1.3, 0.18, 0.35]} />
+        <mesh geometry={resources.pixel} material={materials.amber} position={[0.14, -0.05, 0.2]} scale={[1.2, 0.2, 0.35]} />
       </group>
 
       <group ref={refs.head} position={[0, 2.08, 0]}>
         <HalfPart x={-0.08} geometry={resources.headHalf} material={materials.stable} outline={outline} />
         <HalfPart x={0.08} geometry={resources.headHalf} material={materials.corrupt} outline={outline} />
-        <mesh geometry={resources.visor} material={materials.cyan} position={[-0.08, 0.015, 0.155]} />
-        <mesh geometry={resources.visor} material={materials.magenta} position={[0.08, 0.015, 0.155]} />
+        <mesh geometry={resources.visor} material={materials.ice} position={[-0.08, 0.015, 0.155]} />
+        <mesh geometry={resources.visor} material={materials.amber} position={[0.08, 0.015, 0.155]} />
       </group>
 
       <GlitchArm side="left" {...props} />
@@ -57,7 +57,7 @@ export function GlitchBody(props: GlitchBodyProps) {
           <mesh
             key={`${x}-${y}`}
             geometry={resources.pixel}
-            material={index % 2 === 0 ? materials.magenta : materials.cyan}
+            material={index % 2 === 0 ? materials.amber : materials.ice}
             position={[x, y, z]}
             rotation={[index * 0.4, index * 0.7, index * 0.2]}
             scale={scale}
@@ -87,7 +87,7 @@ function GlitchArm({
       <mesh
         castShadow
         geometry={resources.shoulderShell}
-        material={left ? materials.ceramic : materials.violetMetal}
+        material={left ? materials.ceramic : materials.rustMetal}
         rotation={[0, left ? -0.35 : 0.35, Math.PI / 2]}
         scale={[1, 0.72, 0.82]}
       />
@@ -96,11 +96,11 @@ function GlitchArm({
       <mesh
         castShadow
         geometry={resources.armourPlate}
-        material={left ? materials.darkMetal : materials.violetMetal}
+        material={left ? materials.darkMetal : materials.rustMetal}
         position={[0, -0.47, 0.08]}
         scale={[0.72, 0.58, 0.9]}
       />
-      <mesh geometry={resources.hand} material={left ? materials.cyan : materials.magenta} position={[0, -0.7, 0]} />
+      <mesh geometry={resources.hand} material={left ? materials.ice : materials.amber} position={[0, -0.7, 0]} />
     </group>
   );
 }
@@ -121,7 +121,7 @@ function GlitchLeg({
       <mesh
         castShadow
         geometry={resources.armourPlate}
-        material={left ? materials.darkMetal : materials.violetMetal}
+        material={left ? materials.darkMetal : materials.rustMetal}
         position={[0, -0.48, 0.09]}
         scale={[0.86, 0.7, 0.9]}
       />

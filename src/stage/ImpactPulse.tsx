@@ -28,7 +28,7 @@ const MIN_RISE = 0.08;
 const MAX_RISE = 0.44;
 
 type FighterId = 'p1' | 'p2';
-type FighterFamily = 'mim' | 'echo' | 'chrono' | 'glitch' | 'unknown';
+type FighterFamily = 'mim' | 'glitch' | 'unknown';
 
 const HEAVY_HIT_THRESHOLD = 58;
 const LEGENDARY_HIT_THRESHOLD = 82;
@@ -114,82 +114,6 @@ const FIGHTER_IMPACT_STYLES: Record<FighterFamily, FamilyProfile> = {
       drift: [0.16, 0.33],
       ringCount: [4, 5],
       scale: [1.05, 1.35],
-    },
-  },
-  echo: {
-    light: {
-      color: '#58c7ff',
-      altColor: '#c8f7ff',
-      peak: 1.1,
-      life: 0.45,
-      rise: 0.11,
-      startRadius: [0.2, 0.28],
-      endRadius: [2.1, 3.1],
-      drift: [0.04, 0.15],
-      ringCount: [1, 2],
-      scale: [1.06, 0.96],
-    },
-    heavy: {
-      color: '#47d7ff',
-      altColor: '#9fffff',
-      peak: 1.34,
-      life: 0.74,
-      rise: 0.2,
-      startRadius: [0.19, 0.28],
-      endRadius: [2.3, 3.8],
-      drift: [0.1, 0.24],
-      ringCount: [2, 3],
-      scale: [1.12, 1],
-    },
-    super: {
-      color: '#48d7ff',
-      altColor: '#deffff',
-      peak: 1.32,
-      life: SUPER_RING_LIFE + 0.02,
-      rise: 0.28,
-      startRadius: [0.24, 0.35],
-      endRadius: [2.95, 4.45],
-      drift: [0.18, 0.36],
-      ringCount: [4, 6],
-      scale: [1.16, 1.06],
-    },
-  },
-  chrono: {
-    light: {
-      color: '#ffd45d',
-      altColor: '#fff7c8',
-      peak: 1.12,
-      life: 0.49,
-      rise: 0.11,
-      startRadius: [0.17, 0.24],
-      endRadius: [2.05, 3.24],
-      drift: [0.04, 0.16],
-      ringCount: [1, 2],
-      scale: [0.94, 1.08],
-    },
-    heavy: {
-      color: '#ffd25a',
-      altColor: '#ffeb9d',
-      peak: 1.38,
-      life: 0.77,
-      rise: 0.2,
-      startRadius: [0.2, 0.32],
-      endRadius: [2.4, 3.66],
-      drift: [0.11, 0.25],
-      ringCount: [2, 3],
-      scale: [1.0, 1.2],
-    },
-    super: {
-      color: '#ffdb65',
-      altColor: '#fff4bc',
-      peak: 1.42,
-      life: SUPER_RING_LIFE + 0.04,
-      rise: 0.3,
-      startRadius: [0.25, 0.36],
-      endRadius: [3, 4.6],
-      drift: [0.2, 0.4],
-      ringCount: [4, 6],
-      scale: [1.09, 1.32],
     },
   },
   glitch: {
@@ -292,17 +216,11 @@ export function ImpactPulse() {
 
   const seenHitSerial = useRef<Record<FighterId, number>>({ p1: 0, p2: 0 });
   const mimVersion = useRenderStore((state) => state.mimSuperVersion);
-  const echoVersion = useRenderStore((state) => state.echoSuperVersion);
-  const chronoVersion = useRenderStore((state) => state.chronoSuperVersion);
   const glitchVersion = useRenderStore((state) => state.glitchSuperVersion);
   const mimFighter = useRenderStore((state) => state.mimSuperFighterId);
-  const echoFighter = useRenderStore((state) => state.echoSuperFighterId);
-  const chronoFighter = useRenderStore((state) => state.chronoSuperFighterId);
   const glitchFighter = useRenderStore((state) => state.glitchSuperFighterId);
   const superVersions = useRef({
     mim: mimVersion,
-    echo: echoVersion,
-    chrono: chronoVersion,
     glitch: glitchVersion,
   });
 
@@ -393,26 +311,6 @@ export function ImpactPulse() {
         mimFighter,
         FIGHTER_IMPACT_STYLES.mim.super,
         'mim',
-      );
-    }
-    if (echoVersion !== superVersions.current.echo && echoFighter !== null) {
-      superVersions.current.echo = echoVersion;
-      launchSuperPulse(
-        pool.current,
-        nextRing,
-        echoFighter,
-        FIGHTER_IMPACT_STYLES.echo.super,
-        'echo',
-      );
-    }
-    if (chronoVersion !== superVersions.current.chrono && chronoFighter !== null) {
-      superVersions.current.chrono = chronoVersion;
-      launchSuperPulse(
-        pool.current,
-        nextRing,
-        chronoFighter,
-        FIGHTER_IMPACT_STYLES.chrono.super,
-        'chrono',
       );
     }
     if (glitchVersion !== superVersions.current.glitch && glitchFighter !== null) {
@@ -631,8 +529,6 @@ function easeOutCubic(t: number): number {
 
 function resolveFighterFamily(moveId: string): FighterFamily {
   if (moveId.includes('mim.')) return 'mim';
-  if (moveId.includes('echo.')) return 'echo';
-  if (moveId.includes('chrono.')) return 'chrono';
   if (moveId.includes('glitch.')) return 'glitch';
   return 'unknown';
 }

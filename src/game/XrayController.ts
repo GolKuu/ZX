@@ -1,13 +1,5 @@
 import { XRAY_MOVE_ID } from '@/src/data/combat-moves';
 import {
-  CHRONO_CINEMATIC_FRAMES,
-  chronoSuperKindForMove,
-} from '@/src/data/chrono-super-moves';
-import {
-  ECHO_CINEMATIC_FREEZE_FRAMES,
-  echoSuperKindForMove,
-} from '@/src/data/echo-super-moves';
-import {
   GLITCH_CINEMATIC_FREEZE_FRAMES,
   glitchSuperKindForMove,
 } from '@/src/data/glitch-super-moves';
@@ -33,14 +25,6 @@ export class XrayController {
           && (event.fighterId === 'p1' || event.fighterId === 'p2')
         ) {
           useRenderStore.getState().triggerMimSuper(event.fighterId, kind);
-        }
-        const echoKind = echoSuperKindForMove(event.moveId);
-        if (
-          echoKind !== null
-          && (event.fighterId === 'p1' || event.fighterId === 'p2')
-        ) {
-          this.freeze.start(ECHO_CINEMATIC_FREEZE_FRAMES[echoKind]);
-          useRenderStore.getState().triggerEchoSuper(event.fighterId, echoKind);
         }
         const glitchKind = glitchSuperKindForMove(event.moveId);
         if (
@@ -71,14 +55,6 @@ export class XrayController {
           useRenderStore.getState().triggerLuckySuper(
             event.attackerId,
             luckyKind,
-          );
-        }
-        const chronoKind = chronoSuperKindForMove(event.moveId);
-        if (chronoKind !== null) {
-          this.freeze.start(CHRONO_CINEMATIC_FRAMES[chronoKind]);
-          useRenderStore.getState().triggerChronoSuper(
-            event.attackerId,
-            chronoKind,
           );
         }
       }

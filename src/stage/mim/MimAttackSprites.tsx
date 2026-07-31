@@ -1,13 +1,14 @@
 'use client';
 
 import { useFrame } from '@react-three/fiber';
-import { useRef, type RefObject } from 'react';
-import { DoubleSide, Mesh } from 'three';
+import { useEffect, useMemo, useRef, type RefObject } from 'react';
+import { Mesh } from 'three';
 import {
   MIM_ATTACK_NAMES,
   type LoadedMimAttacks,
   type MimAttackName,
 } from './mimSpriteRig';
+import { createMimCutoutMaterial } from './mimCutoutMaterial';
 
 export function MimAttackSprites({
   attacks,
@@ -34,29 +35,49 @@ export function MimAttackSprites({
         const width = attack.width * pixelScale;
         const height = attack.height * pixelScale;
         return (
-          <mesh
+          <AttackPlane
+            attack={attack}
             key={name}
-            position={[
-              (0.5 - attack.originX) * width,
-              (attack.ground - 0.5) * height,
-              0,
-            ]}
-            ref={(node) => {
+            meshRef={(node) => {
               if (node !== null) meshes.current[name] = node;
             }}
-            visible={false}
-          >
-            <planeGeometry args={[width, height]} />
-            <meshBasicMaterial
-              alphaTest={0.08}
-              map={attack.texture}
-              side={DoubleSide}
-              toneMapped={false}
-              transparent
-            />
-          </mesh>
+            pixelScale={pixelScale}
+          />
         );
       })}
     </>
+  );
+}
+
+function AttackPlane({
+  attack,
+  meshRef,
+  pixelScale,
+}: {
+  readonly attack: LoadedMimAttacks[MimAttackName];
+  readonly meshRef: (node: Mesh | null) => void;
+  readonly pixelScale: number;
+}) {
+  const width = attack.width * pixelScale;
+  const height = attack.height * pixelScale;
+  const material = useMemo(
+    () => createMimCutoutMaterial(attack.texture, 0.62),
+    [attack.texture],
+  );
+  useEffect(() => () => material.dispose(), [material]);
+
+  return (
+    <mesh
+      position={[
+        (0.5 - attack.originX) * width,
+        (attack.ground - 0.5) * height,
+        0,
+      ]}
+      ref={meshRef}
+      visible={false}
+    >
+      <planeGeometry args={[width, height]} />
+      <primitive attach="material" object={material} />
+    </mesh>
   );
 }

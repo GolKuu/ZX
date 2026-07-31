@@ -100,11 +100,7 @@ export function createCombatAi(
         ? TITAN_AI_LOADOUT
       : characterId === 'lucky'
       ? LUCKY_AI_LOADOUT
-      : characterId === 'echo'
-      ? ECHO_AI_LOADOUT
-      : characterId === 'chrono'
-        ? CHRONO_AI_LOADOUT
-        : characterId === 'glitch'
+      : characterId === 'glitch'
           ? glitchAiLoadout(difficulty)
           : KADE_AI_LOADOUT,
     seed: 29,
