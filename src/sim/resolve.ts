@@ -28,8 +28,18 @@ export function resolveHit(
   }
   const attackerIsInFront =
     (attacker.position.x - defender.position.x) * defender.facing >= 0;
-  if (defender.guarding && attackerIsInFront && hit.block !== undefined) {
-    const perfect = defender.guardFrames <= 3 && hit.block.guardBreak !== true;
+  if (
+    defender.guarding
+    && attackerIsInFront
+    && hit.block !== undefined
+    && canGuardLevel(defender.crouching, candidate.attackerMove?.attackLevel)
+    && candidate.attackerMove?.grapple === undefined
+  ) {
+    const perfect = (
+      defender.resourceRules !== null
+      && defender.guardFrames <= 3
+      && hit.block.guardBreak !== true
+    );
     const painGuard = (
       defender.guardMode === 'pain'
       && hit.block.guardBreak !== true
@@ -99,19 +109,47 @@ export function resolveHit(
   }
 
   const armour = activeArmour(candidate);
-  const damage = armour === null
+  const airScaling = readAirScaling(candidate);
+  const isCounterHit = defender.action !== null;
+  const baseDamage = armour === null
     ? hit.damage
     : Math.max(1, Math.ceil((hit.damage * armour.damagePercent) / 100));
+  const rageDamagePercent = attacker.resource
+    >= (attacker.resourceRules?.highRageThreshold ?? 101)
+    ? attacker.resourceRules?.damagePercentAtHighRage ?? 100
+    : 100;
+  const damage = Math.max(
+    1,
+    Math.ceil(
+      baseDamage * airScaling.damagePercent * rageDamagePercent / 10_000,
+    ),
+  );
   defender.health = Math.max(0, defender.health - damage);
+  const lowHealthMultiplier =
+    defender.health * 100 <= defender.maxHealth * 30 ? 125 : 100;
   addResource(
     defender,
     Math.floor(
-      (damage * (defender.resourceRules?.damageTakenPercent ?? 0)) / 100,
+      (
+        damage
+        * (defender.resourceRules?.damageTakenPercent ?? 0)
+        * lowHealthMultiplier
+      ) / 10_000,
     ),
   );
-  addResource(attacker, candidate.attackerMove?.resourceGainOnHit ?? 0);
+  if (isCounterHit) {
+    addResource(attacker, attacker.resourceRules?.counterHitBonus ?? 0);
+  }
+  const authoredGain = candidate.attackerMove?.resourceGainOnHit ?? 0;
+  addResource(
+    attacker,
+    attacker.statusId === 'lucky.house-advantage'
+      ? authoredGain * 2
+      : authoredGain,
+  );
   if (armour !== null && defender.action !== null) {
-    defender.action.armourHitsUsed += 1;
+    if (armour.status) defender.statusArmourHitsUsed += 1;
+    else defender.action.armourHitsUsed += 1;
     defender.hitstop = Math.max(defender.hitstop, hit.hitstop.defender);
     attacker.hitstop = Math.max(attacker.hitstop, hit.hitstop.attacker);
     events.push({
@@ -126,17 +164,24 @@ export function resolveHit(
   }
   defender.action = null;
   defender.guarding = false;
-  defender.hitstun = Math.max(defender.hitstun, hit.hitstun);
+  defender.hitstun = Math.max(
+    defender.hitstun,
+    Math.max(4, hit.hitstun - airScaling.hitstunDecay),
+  );
   defender.hitstop = Math.max(defender.hitstop, hit.hitstop.defender);
   attacker.hitstop = Math.max(attacker.hitstop, hit.hitstop.attacker);
 
+  const pushbackPercent = attacker.resource
+    >= (attacker.resourceRules?.pressureThreshold ?? 101)
+    ? attacker.resourceRules?.pushbackPercentAtPressure ?? 100
+    : 100;
   defender.velocity.x = clampInteger(
-    hit.knockback.x * attacker.facing,
+    Math.ceil(hit.knockback.x * pushbackPercent / 100) * attacker.facing,
     -maximumVelocity,
     maximumVelocity,
   );
   defender.velocity.y = clampInteger(
-    hit.knockback.y,
+    airScaling.forceDrop ? Math.min(-80, hit.knockback.y) : hit.knockback.y,
     -maximumVelocity,
     maximumVelocity,
   );
@@ -144,16 +189,19 @@ export function resolveHit(
     defender.grounded = false;
   }
 
+  const groundBounce = hit.groundBounce?.counterHitOnly === true && !isCounterHit
+    ? undefined
+    : hit.groundBounce;
   defender.bounce = {
-    wallRemaining: hit.wallBounce?.count ?? 0,
+    wallRemaining: airScaling.forceDrop ? 0 : hit.wallBounce?.count ?? 0,
     wallHorizontalSpeed: hit.wallBounce?.horizontalSpeed ?? 0,
     wallVerticalSpeed: hit.wallBounce?.verticalSpeed ?? 0,
     wallMinimumHitstun: hit.wallBounce?.minimumHitstun ?? 0,
-    groundRemaining: hit.groundBounce?.count ?? 0,
-    groundVerticalSpeed: hit.groundBounce?.verticalSpeed ?? 0,
-    groundHorizontalNumerator: hit.groundBounce?.horizontalScale.numerator ?? 1,
-    groundHorizontalDenominator: hit.groundBounce?.horizontalScale.denominator ?? 1,
-    groundMinimumHitstun: hit.groundBounce?.minimumHitstun ?? 0,
+    groundRemaining: airScaling.forceDrop ? 0 : groundBounce?.count ?? 0,
+    groundVerticalSpeed: groundBounce?.verticalSpeed ?? 0,
+    groundHorizontalNumerator: groundBounce?.horizontalScale.numerator ?? 1,
+    groundHorizontalDenominator: groundBounce?.horizontalScale.denominator ?? 1,
+    groundMinimumHitstun: groundBounce?.minimumHitstun ?? 0,
   };
 
   const grapple = candidate.attackerMove?.grapple;
@@ -204,6 +252,43 @@ export function resolveHit(
   return { startedAction: false };
 }
 
+function canGuardLevel(
+  crouching: boolean,
+  level: HitCandidate['attackerMove']['attackLevel'],
+): boolean {
+  if (level === 'throw' || level === 'unblockable') return false;
+  if (level === 'low') return crouching;
+  if (level === 'high') return !crouching;
+  return true;
+}
+
+function readAirScaling(candidate: HitCandidate): {
+  readonly damagePercent: number;
+  readonly forceDrop: boolean;
+  readonly hitstunDecay: number;
+} {
+  const rules = candidate.attackerMove?.airCombo;
+  const defender = candidate.defender;
+  if (rules === undefined || defender.grounded) {
+    return { damagePercent: 100, forceDrop: false, hitstunDecay: 0 };
+  }
+  const repeated = defender.lastAirHitMoveId === candidate.moveId;
+  defender.repeatedAirHitCount = repeated ? defender.repeatedAirHitCount + 1 : 0;
+  defender.lastAirHitMoveId = candidate.moveId;
+  defender.airJuggleHits += 1;
+  const repeatScale = repeated
+    ? Math.max(30, 100 - (
+        (100 - rules.repeatedMoveDamagePercent)
+        * defender.repeatedAirHitCount
+      ))
+    : 100;
+  return {
+    damagePercent: repeatScale,
+    forceDrop: defender.airJuggleHits >= rules.juggleLimit,
+    hitstunDecay: defender.airJuggleHits * rules.hitstunDecayPerHit,
+  };
+}
+
 /**
  * The bait. The defender's own move declares the window; taking the swing
  * inside it converts the exchange instead of landing it.
@@ -223,6 +308,7 @@ function tryCounter(
     || context === undefined
     || action.frame < counter.frames.from
     || action.frame >= counter.frames.toExclusive
+    || (counter.grappleOnly === true && candidate.attackerMove?.grapple === undefined)
   ) {
     return false;
   }
@@ -251,20 +337,35 @@ function addResource(fighter: HitCandidate['defender'], amount: number): void {
     fighter.resourceMaximum,
     fighter.resource + amount,
   );
+  if (fighter.resourceMaximum > 0 && fighter.resource >= fighter.resourceMaximum) {
+    fighter.resourceOverdrive = true;
+    fighter.resourceDrainCounter = 0;
+  }
 }
 
 function activeArmour(candidate: HitCandidate) {
   const action = candidate.defender.action;
   const armour = candidate.defenderMove?.armour;
+  const statusArmour = candidate.defender.statusId !== null
+    && candidate.defender.statusArmourHitsUsed
+      < candidate.defender.statusArmourHitsMaximum
+    ? {
+        damagePercent: candidate.defender.statusArmourDamagePercent,
+        status: true as const,
+      }
+    : null;
   if (
     candidate.attackerMove?.grapple !== undefined
     || action === null
-    || armour === undefined
+  ) return null;
+  if (statusArmour !== null) return statusArmour;
+  if (
+    armour === undefined
     || action.armourHitsUsed >= armour.hits
     || action.frame < armour.frames.from
     || action.frame >= armour.frames.toExclusive
   ) return null;
-  return armour;
+  return { ...armour, status: false as const };
 }
 
 function applyGuardBreak(defender: HitCandidate['defender']): void {

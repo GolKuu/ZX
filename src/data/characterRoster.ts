@@ -4,7 +4,8 @@
   | 'glitch'
   | 'chrono'
   | 'lucky'
-  | 'vorgh';
+  | 'vorgh'
+  | 'titan';
 
 export type CharacterSelection = readonly [CharacterId, CharacterId];
 
@@ -65,6 +66,14 @@ export const CHARACTER_ROSTER = [
     description:
       'Разумный хищник в разбитой броне: превращает боль в Rage, меняет стойку и рискует восстановлением ради давления.',
     mark: 'V',
+  },
+  {
+    id: 'titan',
+    displayName: 'TITAN',
+    archetype: 'Тяжёлый grappler · бронированный танк',
+    description:
+      'Индустриальный колосс: выдерживает удар бронёй, ломает защиту и превращает ближнюю дистанцию в цепь мощных захватов.',
+    mark: 'T',
   },
 ] as const satisfies readonly CharacterDefinition[];
 

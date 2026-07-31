@@ -42,6 +42,11 @@ const rows: readonly VorghRow[] = [
     startup: 14, active: 8, recovery: 29, minimumRage: 50, rageCost: 15,
     hits: [hit([0.82, 1.48, 0.62, 0.7], 103, 35, 19, [0.28, -0.2], 15)],
     cancels: [N.airLight, N.airMedium], tags: ['leap-arc', 'enhanced'],
+    displacements: [{
+      frame: 6,
+      offset: { x: fixed(0.3), y: fixed(0.5) },
+      clearVelocity: true,
+    }],
   },
   {
     id: S.bloodRoarEx, name: 'Blood Roar: War Cry', level: 'mid',

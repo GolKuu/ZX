@@ -29,11 +29,11 @@ function moveStarted(fighterId, moveId) {
 }
 
 test('supers cost energy, ultimates cost none', () => {
-  assert.equal(superCostForMove('mim.super.prank'), 34);
-  assert.equal(superCostForMove(MIM_SUPER_MOVE_IDS.hero), 100);
-  assert.equal(superCostForMove(MIM_SUPER_MOVE_IDS.altF4), null);
-  assert.equal(isUltimateMove(MIM_SUPER_MOVE_IDS.altF4), true);
-  assert.equal(isUltimateMove(MIM_SUPER_MOVE_IDS.hero), false);
+  assert.equal(superCostForMove(MIM_SUPER_MOVE_IDS.mirrorArena), 34);
+  assert.equal(superCostForMove(MIM_SUPER_MOVE_IDS.falseOpening), 34);
+  assert.equal(superCostForMove(MIM_SUPER_MOVE_IDS.perfectBox), null);
+  assert.equal(isUltimateMove(MIM_SUPER_MOVE_IDS.perfectBox), true);
+  assert.equal(isUltimateMove(MIM_SUPER_MOVE_IDS.falseOpening), false);
   assert.equal(superCostForMove('mim.snap'), null);
 });
 
@@ -54,19 +54,19 @@ test('energy fills to the cap and never goes below zero', () => {
   }
   assert.equal(ledger.charge('p1'), 100);
 
-  ledger.accept([moveStarted('p1', MIM_SUPER_MOVE_IDS.hero)]);
-  assert.equal(ledger.charge('p1'), 0);
+  ledger.accept([moveStarted('p1', MIM_SUPER_MOVE_IDS.mirrorArena)]);
+  assert.equal(ledger.charge('p1'), 66);
 
-  ledger.accept([moveStarted('p1', 'mim.super.prank')]);
-  assert.equal(ledger.charge('p1'), 0);
+  ledger.accept([moveStarted('p1', MIM_SUPER_MOVE_IDS.falseOpening)]);
+  assert.equal(ledger.charge('p1'), 32);
 });
 
 test('supers and ultimates build no energy for the attacker', () => {
   const ledger = new MeterLedger();
-  ledger.accept([hit('p1', 'p2', MIM_SUPER_MOVE_IDS.hero, 380)]);
+  ledger.accept([hit('p1', 'p2', MIM_SUPER_MOVE_IDS.falseOpening, 380)]);
   assert.equal(ledger.charge('p1'), 0);
 
-  ledger.accept([hit('p1', 'p2', MIM_SUPER_MOVE_IDS.altF4, 1_000)]);
+  ledger.accept([hit('p1', 'p2', MIM_SUPER_MOVE_IDS.perfectBox, 1_000)]);
   assert.equal(ledger.charge('p1'), 0);
   assert.equal(ledger.charge('p2'), 0);
 });
@@ -79,7 +79,7 @@ test('the ultimate unlocks at the health threshold and only once per round', () 
   assert.equal(ultimateReadyFromHealth(threshold, 1_000), true);
   assert.equal(ledger.isUltimateReady('p1', threshold, 1_000), true);
 
-  ledger.accept([moveStarted('p1', MIM_SUPER_MOVE_IDS.altF4)]);
+  ledger.accept([moveStarted('p1', MIM_SUPER_MOVE_IDS.perfectBox)]);
   assert.equal(ledger.isUltimateReady('p1', threshold, 1_000), false);
   assert.equal(ledger.ultimateUsed('p1'), true);
   assert.equal(ledger.isUltimateReady('p2', threshold, 1_000), true);

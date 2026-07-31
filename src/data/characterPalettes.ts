@@ -86,6 +86,16 @@ const VORGH: CharacterPalette = {
   body: zone('#4b1516', '#090405', 1.18, 0.9),
 };
 
+const TITAN: CharacterPalette = {
+  hair: zone('#242a2e', '#0d1114', 0.7, 0.94),
+  skin: zone('#3f484e', '#171d21', 0.72, 0.88),
+  coat: zone('#343d43', '#12171a', 0.96, 0.9),
+  trousers: zone('#22292d', '#0b0f11', 0.72, 0.92),
+  boot: zone('#171c1f', '#07090a', 0.68, 0.95),
+  eye: zone('#ff7a18', '#8a2d08', 0, 0),
+  body: zone('#343d43', '#12171a', 0.96, 0.9),
+};
+
 const PALETTES: Record<CharacterId, CharacterPalette> = {
   mim: MIM,
   echo: ECHO,
@@ -93,6 +103,7 @@ const PALETTES: Record<CharacterId, CharacterPalette> = {
   chrono: CHRONO,
   lucky: LUCKY,
   vorgh: VORGH,
+  titan: TITAN,
 };
 
 export function paletteFor(characterId: CharacterId): CharacterPalette {

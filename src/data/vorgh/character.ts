@@ -1,5 +1,6 @@
 import type { FighterMovementData, FighterResourceData } from '../../sim/state.js';
 import { fixed, type FixedBox } from '../../sim/math.js';
+import { VORGH_NORMAL_IDS, VORGH_SPECIAL_IDS } from './ids.js';
 
 export const VORGH_MAX_HEALTH = 1_050;
 export const VORGH_MOVEMENT: FighterMovementData = {
@@ -24,6 +25,23 @@ export const VORGH_RESOURCE: FighterResourceData = {
   guardBreakLoss: 25,
   guardBreakLockFrames: 180,
   drainAtMaximumPerFrame: 1,
+  overdriveDrainIntervalFrames: 6,
+  pressureThreshold: 25,
+  pushbackPercentAtPressure: 108,
+  highRageThreshold: 75,
+  damagePercentAtHighRage: 110,
+  recoveryPercentAtHighRage: 115,
+  tierCancelInto: [
+    VORGH_SPECIAL_IDS.rageSlash,
+    VORGH_SPECIAL_IDS.berserkDash,
+    VORGH_SPECIAL_IDS.predatorLeap,
+  ],
+  tierCancelFrom: [
+    VORGH_NORMAL_IDS.predatorRake,
+    VORGH_NORMAL_IDS.skullRam,
+    VORGH_NORMAL_IDS.crouchLight,
+    VORGH_NORMAL_IDS.crouchMedium,
+  ],
 };
 
 export const VORGH_STATS = {

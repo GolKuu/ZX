@@ -16,6 +16,7 @@ import {
   KeyboardInputSource,
   MIM_COMMANDS,
   PLAYER_TWO_BINDINGS,
+  TITAN_COMMANDS,
   VORGH_COMMANDS,
 } from '@/src/input';
 import { useControlStore } from '@/src/store/controlStore';
@@ -146,6 +147,7 @@ export function CombatGameLoop({
 }
 
 function commandsFor(characterId: CharacterId) {
+  if (characterId === 'titan') return TITAN_COMMANDS;
   if (characterId === 'vorgh') return VORGH_COMMANDS;
   if (characterId === 'lucky') return LUCKY_COMMANDS;
   if (characterId === 'chrono') return CHRONO_COMMANDS;

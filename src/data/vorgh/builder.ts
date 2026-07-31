@@ -24,12 +24,16 @@ export type VorghRow = {
   readonly rageGain?: number; readonly rageCost?: number; readonly minimumRage?: number;
   readonly armour?: MoveArmourData; readonly counter?: MoveCounterData;
   readonly followUp?: string; readonly tags?: readonly string[];
+  readonly status?: MoveFrameData['status'];
+  readonly displacements?: MoveFrameData['displacements'];
+  readonly grapple?: MoveFrameData['grapple'];
 };
 
 export function buildVorgh(row: VorghRow): VorghMoveSpec {
   const end = row.startup + row.active;
   const move: MoveFrameData = {
-    id: row.id, startup: row.startup, active: row.active, recovery: row.recovery,
+    id: row.id, attackLevel: row.level,
+    startup: row.startup, active: row.active, recovery: row.recovery,
     hitboxes: row.hits.map((hit, index) => ({
       hitId: hit.id ?? `hit-${index + 1}`,
       frames: { from: hit.from ?? row.startup, toExclusive: hit.to ?? end },
@@ -58,6 +62,10 @@ export function buildVorgh(row: VorghRow): VorghMoveSpec {
     resourceGainOnHit: row.rageGain,
     resourceGainOnBlock: Math.floor((row.rageGain ?? 0) / 2),
     armour: row.armour, counter: row.counter, onHitFollowUp: row.followUp,
+    status: row.status,
+    displacements: row.displacements,
+    grapple: row.grapple,
+    hurtboxes: hurtboxesFor(row),
   };
   const tags = row.tags ?? [];
   return {
@@ -70,6 +78,34 @@ export function buildVorgh(row: VorghRow): VorghMoveSpec {
       camera: tags.includes('super') ? ['freeze.8', 'shake.heavy'] : ['shake.light'],
     },
   };
+}
+
+function hurtboxesFor(row: VorghRow) {
+  const crouched = row.id.includes('crouch') || row.id.includes('sweep');
+  const airborne = row.id.includes('air-') || row.id.includes('leap');
+  const base = crouched
+    ? [-0.08, 0.72, 0.38, 0.68]
+    : airborne
+      ? [-0.12, 1.18, 0.4, 0.72]
+      : [-0.1, 1.08, 0.42, 0.98];
+  const extended = [...base] as [number, number, number, number];
+  extended[0] += row.level === 'low' ? 0.08 : 0.14;
+  extended[2] += 0.08;
+  const total = row.startup + row.active + row.recovery;
+  return [
+    {
+      frames: { from: 0, toExclusive: row.startup },
+      boxes: [box([base[0] - 0.04, base[1], base[2] - 0.04, base[3]])],
+    },
+    {
+      frames: { from: row.startup, toExclusive: row.startup + row.active },
+      boxes: [box(extended)],
+    },
+    {
+      frames: { from: row.startup + row.active, toExclusive: total },
+      boxes: [box(base as [number, number, number, number])],
+    },
+  ];
 }
 
 function box(value: Box) {

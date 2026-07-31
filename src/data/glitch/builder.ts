@@ -5,10 +5,12 @@ import type {
   GlitchMoveDefinition,
   GlitchMoveRow,
 } from './types.js';
+import { GLITCH_AIR_RULES } from './character.js';
 
 export const GLITCH_MOVE_DEFINITIONS = new Map<string, GlitchMoveDefinition>();
 
 export function buildGlitchMove(row: GlitchMoveRow): MoveFrameData {
+  const totalFrames = row.startup + row.active + row.recovery;
   GLITCH_MOVE_DEFINITIONS.set(row.id, {
     id: row.id,
     startup: row.startup,
@@ -21,12 +23,16 @@ export function buildGlitchMove(row: GlitchMoveRow): MoveFrameData {
   });
   return {
     id: row.id,
+    attackLevel: attackLevelFrom(row),
     startup: row.startup,
     active: row.active,
     recovery: row.recovery,
     hitboxes: (row.hits ?? []).map(buildHitbox),
     hurtboxes: row.hurtboxes?.map((hurt) => ({
-      frames: { from: hurt.from, toExclusive: hurt.to },
+      frames: {
+        from: Math.min(hurt.from, totalFrames - 1),
+        toExclusive: Math.min(hurt.to, totalFrames),
+      },
       boxes: hurt.boxes.map(box),
     })),
     cancels: row.cancels?.map((cancel) => ({
@@ -35,9 +41,25 @@ export function buildGlitchMove(row: GlitchMoveRow): MoveFrameData {
     })),
     displacements: row.displacements,
     armour: row.armour,
+    counter: row.counter,
+    grapple: row.grapple,
     resourceCost: row.meterCost,
     onHitFollowUp: row.onHitFollowUp,
+    status: row.status,
+    airCombo: row.tags.includes('air') ? {
+      juggleLimit: GLITCH_AIR_RULES.juggleLimit,
+      hitstunDecayPerHit: GLITCH_AIR_RULES.hitstunDecayPerHit,
+      repeatedMoveDamagePercent: GLITCH_AIR_RULES.repeatedMoveDamagePercent,
+    } : undefined,
+    cooldownFrames: cooldownFrom(row.tags),
   };
+}
+
+function attackLevelFrom(row: GlitchMoveRow): MoveFrameData['attackLevel'] {
+  const level = row.hits?.[0]?.level;
+  if (level === 'overhead') return 'high';
+  if (level === 'throw') return 'throw';
+  return level;
 }
 
 export function buildGlitchMoves(
@@ -117,4 +139,11 @@ function box(tuple: readonly [number, number, number, number]): FixedBox {
     offset: { x: fixed(tuple[0]), y: fixed(tuple[1]) },
     halfSize: { x: fixed(tuple[2]), y: fixed(tuple[3]) },
   };
+}
+
+function cooldownFrom(tags: readonly string[]): number | undefined {
+  const tag = tags.find((entry) => entry.startsWith('cooldown-'));
+  if (tag === undefined) return undefined;
+  const frames = Number.parseInt(tag.slice('cooldown-'.length), 10);
+  return Number.isFinite(frames) ? frames : undefined;
 }

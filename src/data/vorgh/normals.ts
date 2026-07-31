@@ -38,7 +38,7 @@ const rows: readonly VorghRow[] = [
     id: N.crouchLight, name: 'Shin Gouge', level: 'low',
     startup: 5, active: 3, recovery: 11, rageGain: 2,
     hits: [hit([0.62, 0.42, 0.4, 0.2], 27, 15, 10, [0.08, 0])],
-    cancels: [N.crouchMedium, N.predatorRake], tags: ['claw-short'],
+    cancels: [N.crouchMedium], tags: ['claw-short'],
   },
   {
     id: N.crouchMedium, name: 'Rib Tear', level: 'mid',
@@ -62,7 +62,7 @@ const rows: readonly VorghRow[] = [
     id: N.airMedium, name: 'Falling Knee', level: 'mid',
     startup: 8, active: 5, recovery: 13, rageGain: 3,
     hits: [hit([0.52, 0.82, 0.42, 0.44], 48, 22, 14, [0.14, -0.14])],
-    cancels: [N.airHeavy, S.predatorLeap], tags: ['air-knee'],
+    cancels: [N.airHeavy], tags: ['air-knee'],
   },
   {
     id: N.airHeavy, name: 'Meteor Maul', level: 'mid',

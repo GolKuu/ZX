@@ -58,6 +58,7 @@ const rows: readonly GlitchMoveRow[] = [
       groundBounce: {
         count: 1, verticalSpeed: 102,
         horizontalScale: { numerator: 1, denominator: 2 }, minimumHitstun: 25,
+        counterHitOnly: true,
       },
     })],
     hurtboxes: [{ from: 12, to: 25, boxes: GLITCH_STAND_PROFILE }],

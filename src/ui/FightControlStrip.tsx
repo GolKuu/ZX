@@ -45,8 +45,20 @@ export function FightControlStrip() {
       {selection[1] === 'glitch' && <GlitchMoveGroup fighterId="p2" />}
       {selection[0] === 'echo' && <EchoMoveGroup fighterId="p1" />}
       {selection[1] === 'echo' && <EchoMoveGroup fighterId="p2" />}
+      {selection[0] === 'vorgh' && <VorghMoveGroup fighterId="p1" />}
+      {selection[1] === 'vorgh' && <VorghMoveGroup fighterId="p2" />}
       <button type="button" onClick={openControls}>Controls</button>
     </section>
+  );
+}
+
+function VorghMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
+  return (
+    <MoveGroup
+      fighterId={fighterId}
+      hint="QCF/QCB/DP · SHIFT+U PAIN GUARD"
+      moves="RAGE SLASH · BERSERK DASH · LAST BEAST"
+    />
   );
 }
 

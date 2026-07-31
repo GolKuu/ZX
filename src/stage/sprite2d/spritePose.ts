@@ -159,6 +159,33 @@ function stance(breath: number): SpritePose {
   });
 }
 
+function guardPose(
+  crouching: boolean,
+  luckyWindow: boolean,
+  impact: boolean,
+  guardHealth: number,
+): SpritePose {
+  const crush = guardHealth <= 15;
+  return pose({
+    torso: crush ? -0.38 : impact ? -0.24 : -0.16,
+    head: crush ? 0.28 : 0.12,
+    ponytail: impact ? 0.46 : 0.22,
+    sash: impact ? -0.38 : -0.18,
+    upperArm: luckyWindow ? 1.18 : 0.92,
+    forearm: luckyWindow ? -1.24 : -1.02,
+    farUpperArm: luckyWindow ? 0.72 : 0.58,
+    farForearm: -1.28,
+    thigh: crouching ? 0.72 : 0.28,
+    shin: crouching ? -1.08 : -0.42,
+    boot: crouching ? 0.26 : 0.12,
+    farThigh: crouching ? -0.62 : -0.24,
+    farShin: crouching ? -0.92 : -0.38,
+    farBoot: crouching ? -0.22 : -0.08,
+    lift: crouching ? -0.34 : crush ? -0.12 : -0.06,
+    drift: impact ? -0.08 : 0,
+  });
+}
+
 function knockout(): SpritePose {
   return pose({
     torso: 0.62,
@@ -304,6 +331,48 @@ const roundhouse: AttackPose = (windup, strike, settle) => {
   });
 };
 
+/** Glitch K — compact advancing elbow, arm folded and shoulder leading. */
+const glitchElbow: AttackPose = (windup, strike, settle) => {
+  const coil = windup * (1 - strike);
+  const out = reach(strike, settle);
+  return pose({
+    torso: 0.22 * coil - 0.34 * out,
+    head: -0.08 * out,
+    upperArm: -0.38 * coil + 0.92 * out,
+    forearm: -1.18 + 0.12 * out,
+    farUpperArm: -0.18,
+    farForearm: -0.5,
+    thigh: 0.22 + out * 0.24,
+    shin: -0.34,
+    farThigh: -0.24 - out * 0.18,
+    farShin: -0.28,
+    lift: -0.06,
+    drift: out * 0.18,
+  });
+};
+
+/** Glitch L — short spatial rise followed by a vertical axe heel. */
+const glitchAxe: AttackPose = (windup, strike, settle) => {
+  const coil = windup * (1 - strike);
+  const out = reach(strike, settle);
+  return pose({
+    torso: -0.28 * coil + 0.26 * out,
+    head: 0.08 * coil - 0.1 * out,
+    upperArm: 0.28 * coil - 0.18 * out,
+    forearm: -0.52,
+    farUpperArm: -0.3,
+    farForearm: -0.62,
+    thigh: 0.18 + coil * 1.05 - out * 0.3,
+    shin: -0.36 - coil * 0.72 + out * 0.15,
+    boot: 0.18 + out * 0.32,
+    farThigh: -0.16 + out * 0.38,
+    farShin: -0.48 - out * 0.42,
+    farBoot: 0.26,
+    lift: -0.05 + coil * 0.22 - out * 0.08,
+    drift: out * 0.08,
+  });
+};
+
 /**
  * Super — the committed two-handed blow the energy bar is spent on.
  *
@@ -425,6 +494,15 @@ const KIND_POSES: Readonly<Record<MoveKind, AttackPose | null>> = {
  * resolved by tier instead — otherwise every one of them was a jab as well.
  */
 function attackFor(moveId: string): AttackPose {
+  if (moveId === 'glitch.phase-jab') return jab;
+  if (moveId === 'glitch.rift-elbow') return glitchElbow;
+  if (moveId === 'glitch.low-vector-sweep') return sweep;
+  if (moveId === 'glitch.breakpoint-axe') return glitchAxe;
+  if (moveId === 'glitch.air-light') return jab;
+  if (moveId === 'glitch.air-medium') return roundhouse;
+  if (moveId === 'glitch.air-heavy' || moveId === 'glitch.air-finisher') {
+    return glitchAxe;
+  }
   const suffix = moveId.slice(moveId.lastIndexOf('.') + 1);
   return ATTACKS[moveId]
     ?? ATTACKS[suffix]
@@ -634,6 +712,15 @@ export function spritePoseFor(
 
   if (!fighter.grounded) {
     return withinLimits(airborne(fighter.velocity.y > 0));
+  }
+
+  if (fighter.guarding) {
+    return withinLimits(guardPose(
+      fighter.crouching,
+      fighter.guardFrames <= 3,
+      fighter.hitstop > 0,
+      fighter.guardHealth,
+    ));
   }
 
   if (fighter.action !== null) {

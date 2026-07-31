@@ -30,3 +30,16 @@ export const TITAN_SUPER_MOVES = [
     grapple: ['slam', 70], wallSplat: true,
   }),
 ] as const;
+
+const TITAN_METER_COSTS: Readonly<Record<string, number>> = {
+  [ID.enhancedSlam]: 25,
+  [ID.enhancedCharge]: 25,
+  [ID.enhancedGrab]: 25,
+  [ID.continentalSlam]: 100,
+  [ID.continentalFinish]: 0,
+  [ID.siegeEngine]: 100,
+};
+
+export function titanSuperCostForMove(moveId: string): number | null {
+  return TITAN_METER_COSTS[moveId] ?? null;
+}

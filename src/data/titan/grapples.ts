@@ -11,7 +11,7 @@ const grab = (
   options: Partial<Parameters<typeof titanMove>[0]> = {},
 ) => titanMove({
   id, startup, active: 3, recovery, damage, reach, height: 1.16,
-  level: 'grab', grapple: kind, ...options,
+  level: 'grab', grapple: kind, onWhiffFollowUp: ID.throwMiss, ...options,
 });
 
 export const TITAN_GRAPPLE_MOVES = [
@@ -20,10 +20,10 @@ export const TITAN_GRAPPLE_MOVES = [
     onHitFollowUp: ID.groundSlam,
   }),
   grab(ID.antiAirGrab, 9, 27, 96, 0.64, ['antiAir', 28], {
-    height: 1.94, launch: true,
+    height: 1.94, launch: true, targetSize: 'airborne',
   }),
   grab(ID.airThrow, 7, 23, 90, 0.66, ['air', 24], {
-    height: 1.58,
+    height: 1.58, targetSize: 'airborne',
   }),
   grab(ID.wallThrow, 13, 31, 124, 0.74, ['wall', 34], {
     wallSplat: true,
@@ -47,7 +47,7 @@ export const TITAN_GRAPPLE_MOVES = [
   titanMove({
     id: ID.throwEscape, startup: 3, active: 2, recovery: 16,
     damage: 24, reach: 0.55, height: 1.24, level: 'grab',
-    grapple: ['escape', 14],
+    grapple: ['escape', 14], onWhiffFollowUp: ID.throwMiss,
   }),
 ] as const;
 

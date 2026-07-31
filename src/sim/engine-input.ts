@@ -64,6 +64,7 @@ export function applyNeutralInput(
     return;
   }
   fighter.guarding = input?.guard ?? false;
+  fighter.crouching = fighter.grounded && (input?.crouching ?? false);
   fighter.guardMode = fighter.guarding ? (input?.guardMode ?? 'normal') : 'normal';
   if (!fighter.grounded) {
     endDash(fighter);
@@ -104,6 +105,7 @@ export function tryStartMove(
     || fighter.health === 0
     || fighter.hitstun > 0
     || fighter.guarding
+    || (fighter.moveCooldowns[input.move] ?? 0) > 0
     || (moves.get(input.move)?.minimumResource ?? 0) > fighter.resource
     || (fighter.action !== null && !canCancelInto(fighter, input.move, moves))
   ) {
@@ -120,6 +122,18 @@ export function tryStartMove(
     0,
     fighter.resource - (moves.get(input.move)?.resourceCost ?? 0),
   );
+  const cooldown = moves.get(input.move)?.cooldownFrames ?? 0;
+  if (cooldown > 0) fighter.moveCooldowns[input.move] = cooldown;
+  const status = moves.get(input.move)?.status;
+  if (status !== undefined) {
+    fighter.statusId = status.id;
+    fighter.statusFrames = status.durationFrames;
+    fighter.recoveryPercent = status.recoveryPercent;
+    fighter.statusResourceDrainCounter = 0;
+    fighter.statusArmourHitsUsed = 0;
+    fighter.statusArmourHitsMaximum = status.armourHits ?? 0;
+    fighter.statusArmourDamagePercent = status.armourDamagePercent ?? 100;
+  }
   startLunge(fighter);
   endDash(fighter);
   if (fighter.grounded && fighter.lungeFrames === 0) fighter.velocity.x = 0;
@@ -140,6 +154,26 @@ function canCancelInto(
   if (action === null || action.hitLedger.length === 0) {
     return false;
   }
+  const activeStatus = [...moves.values()].find(
+    (move) => move.status?.id === fighter.statusId,
+  )?.status;
+  const sourceMove = moves.get(action.moveId);
+  const inDynamicWindow = sourceMove !== undefined
+    && action.frame >= sourceMove.startup
+    && action.frame < sourceMove.startup + sourceMove.active + 4;
+  if (
+    inDynamicWindow
+    && action.moveId !== targetMove
+    && activeStatus?.cancelFrom?.includes(action.moveId) === true
+    && activeStatus.cancelInto?.includes(targetMove) === true
+  ) return true;
+  if (
+    inDynamicWindow
+    && action.moveId !== targetMove
+    && fighter.resource >= (fighter.resourceRules?.pressureThreshold ?? 101)
+    && fighter.resourceRules?.tierCancelFrom?.includes(action.moveId) === true
+    && fighter.resourceRules?.tierCancelInto?.includes(targetMove) === true
+  ) return true;
   return (
     moves.get(action.moveId)?.cancels?.some(
       (cancel) =>

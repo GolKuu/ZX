@@ -17,11 +17,13 @@ export interface TitanMoveSpec {
   readonly guardBreak?: boolean;
   readonly armour?: readonly [from: number, to: number, hits: number];
   readonly grapple?: readonly [kind: GrappleKind, pairedFrames: number];
+  readonly targetSize?: 'any' | 'grounded' | 'airborne';
   readonly launch?: boolean;
   readonly wallSplat?: boolean;
   readonly hurtboxes?: readonly FixedBox[];
   readonly cancels?: readonly string[];
   readonly onHitFollowUp?: string;
+  readonly onWhiffFollowUp?: string;
   readonly lunge?: number;
   readonly resourceCost?: number;
 }
@@ -78,9 +80,10 @@ export function titanMove(spec: TitanMoveSpec): MoveFrameData {
     grapple: spec.grapple === undefined ? undefined : {
       kind: spec.grapple[0],
       pairedFrames: spec.grapple[1],
-      targetSize: spec.level === 'air' ? 'airborne' : 'any',
+      targetSize: spec.targetSize ?? 'any',
     },
     onHitFollowUp: spec.onHitFollowUp,
+    onWhiffFollowUp: spec.onWhiffFollowUp,
     resourceCost: spec.resourceCost,
     wallPiercing: spec.grapple !== undefined,
     displacements: spec.lunge === undefined ? undefined : [{

@@ -75,6 +75,7 @@ const rows: readonly GlitchMoveRow[] = [
       level: 'throw', damage: 68, hitstun: 34, knockback: [0.16, -0.28],
     })],
     hurtboxes: airHurt,
+    grapple: { kind: 'air', pairedFrames: 25, targetSize: 'airborne' },
     presentation: present('air-throw', 'locked-coordinate', 'grab_phase', 'throw_hit', 'nudge'),
     tags: ['air', 'throw', 'throw-escape-window-7'],
   },

@@ -10,6 +10,7 @@ import { chronoSuperCostForMove, CHRONO_SUPER_MOVE_IDS } from './chrono-super-mo
 import { XRAY_MOVE_ID } from './combat-moves.js';
 import { echoSuperCostForMove, ECHO_SUPER_MOVE_IDS } from './echo-super-moves.js';
 import { glitchSuperCostForMove, GLITCH_SUPER_MOVE_IDS } from './glitch-super-moves.js';
+import { GLITCH_SUPER_IDS } from './glitch/ids.js';
 import { mimSuperCostForMove, MIM_SUPER_MOVE_IDS } from './mim-super-moves.js';
 import {
   luckySuperCostForMove,
@@ -19,6 +20,10 @@ import {
   vorghSuperCostForMove,
   VORGH_SUPER_IDS,
 } from './vorgh/index.js';
+import {
+  titanSuperCostForMove,
+  TITAN_MOVE_IDS,
+} from './titan/index.js';
 
 /** One ultimate per character. */
 export const ULTIMATE_MOVE_IDS: ReadonlySet<string> = new Set<string>([
@@ -27,9 +32,12 @@ export const ULTIMATE_MOVE_IDS: ReadonlySet<string> = new Set<string>([
   ECHO_SUPER_MOVE_IDS.statistics,
   CHRONO_SUPER_MOVE_IDS.inevitability,
   GLITCH_SUPER_MOVE_IDS.patchNotes,
+  GLITCH_SUPER_IDS.fourthGodSequence,
   LUCKY_SUPER_IDS.impossibleOutcome,
   VORGH_SUPER_IDS.lastBeast,
   VORGH_SUPER_IDS.lastBeastSequence,
+  TITAN_MOVE_IDS.worldAnchor,
+  TITAN_MOVE_IDS.worldAnchorFinish,
 ]);
 
 export function isUltimateMove(moveId: string): boolean {
@@ -46,7 +54,8 @@ export function superCostForMove(moveId: string): number | null {
     ?? chronoSuperCostForMove(moveId)
     ?? glitchSuperCostForMove(moveId)
     ?? luckySuperCostForMove(moveId)
-    ?? vorghSuperCostForMove(moveId);
+    ?? vorghSuperCostForMove(moveId)
+    ?? titanSuperCostForMove(moveId);
 }
 
 /** Supers and ultimates both build no energy for the attacker. */

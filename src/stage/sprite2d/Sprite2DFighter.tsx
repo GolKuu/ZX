@@ -15,10 +15,12 @@ import {
 } from '@/src/game/combatRuntime';
 import { isEchoSpecialMove } from '@/src/data/echo-special-moves';
 import { echoSuperKindForMove } from '@/src/data/echo-super-moves';
+import { LUCKY_MOVE_IDS } from '@/src/data/lucky/moves';
 import { FIXED_SCALE } from '@/src/sim';
 import { EchoSpriteEffects } from '../echo/EchoSpriteEffects';
 import { applyEchoSpriteMotion } from '../echo/echoSpriteMotion';
 import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
+import { LuckySpriteEffects } from '../lucky/LuckySpriteEffects';
 import {
   applyGlitchSpriteCorruption,
   glitchSpriteProgress,
@@ -327,6 +329,9 @@ export function Sprite2DFighter({
             rig={rig}
           />
         ) : null}
+        {rigName === 'lucky-profile' && rig !== null ? (
+          <LuckySpriteEffects fighterId={fighterId} />
+        ) : null}
       </group>
     </group>
   );
@@ -353,6 +358,10 @@ function hurtZoneOf(fighterId: string, feetY: number): HurtZone {
  * to the four attack columns.
  */
 function buttonOf(moveId: string): AttackPoseName | null {
+  if (moveId === LUCKY_MOVE_IDS.quickDraw) return 'lp';
+  if (moveId === LUCKY_MOVE_IDS.loadedShoulder) return 'lk';
+  if (moveId === LUCKY_MOVE_IDS.slidingBet) return 'hp';
+  if (moveId === LUCKY_MOVE_IDS.fortuneHeel) return 'hk';
   const suffix = moveId.slice(moveId.lastIndexOf('.') + 1).toLowerCase();
   if (suffix === 'lp' || suffix === 'hp' || suffix === 'lk' || suffix === 'hk') {
     return suffix;

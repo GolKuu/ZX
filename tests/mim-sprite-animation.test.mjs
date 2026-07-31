@@ -6,7 +6,8 @@ import {
 } from '../.sim-test-build/src/stage/mim/mimSpriteTimeline.js';
 
 test('every MIM attack uses four approach frames, impact, and four return frames', () => {
-  for (const move of MIM_MOVES) {
+  const normals = new Set(['mim.jab', 'mim.elbow', 'mim.capoeira', 'mim.spin']);
+  for (const move of MIM_MOVES.filter(({ id }) => normals.has(id))) {
     const beats = Array.from(
       { length: move.startup + move.active + move.recovery },
       (_, frame) => mimAnimationBeat(move.id, frame),

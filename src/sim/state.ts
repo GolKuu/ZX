@@ -24,6 +24,14 @@ export interface FighterResourceData {
   readonly guardBreakLoss?: number;
   readonly guardBreakLockFrames?: number;
   readonly drainAtMaximumPerFrame?: number;
+  readonly overdriveDrainIntervalFrames?: number;
+  readonly pressureThreshold?: number;
+  readonly pushbackPercentAtPressure?: number;
+  readonly highRageThreshold?: number;
+  readonly damagePercentAtHighRage?: number;
+  readonly recoveryPercentAtHighRage?: number;
+  readonly tierCancelInto?: readonly string[];
+  readonly tierCancelFrom?: readonly string[];
 }
 
 export interface FighterMovementData {
@@ -37,6 +45,7 @@ export interface FighterInput {
   readonly movement?: -1 | 0 | 1;
   readonly guard?: boolean;
   readonly guardMode?: GuardMode;
+  readonly crouching?: boolean;
   readonly jump?: boolean;
   /** Ground dash request on the press frame, facing-relative: 1 forward, −1 back. */
   readonly dash?: -1 | 0 | 1;
@@ -105,6 +114,7 @@ export interface MutableFighterState {
   facing: -1 | 1;
   grounded: boolean;
   guarding: boolean;
+  crouching: boolean;
   guardMode: GuardMode;
   guardFrames: number;
   guardHealth: number;
@@ -119,7 +129,15 @@ export interface MutableFighterState {
   resource: number;
   resourceMaximum: number;
   resourceLockFrames: number;
+  resourceOverdrive: boolean;
+  resourceDrainCounter: number;
   readonly resourceRules: FighterResourceData | null;
+  statusId: string | null;
+  statusFrames: number;
+  statusResourceDrainCounter: number;
+  statusArmourHitsUsed: number;
+  statusArmourHitsMaximum: number;
+  statusArmourDamagePercent: number;
   /** Dash frames left; 0 when not dashing. */
   dashFrames: number;
   dashDirection: -1 | 0 | 1;
@@ -127,6 +145,10 @@ export interface MutableFighterState {
   lungeFrames: number;
   action: ActiveMoveState | null;
   bounce: BounceState;
+  airJuggleHits: number;
+  lastAirHitMoveId: string | null;
+  repeatedAirHitCount: number;
+  moveCooldowns: Record<string, number>;
   wallRun: WallRunState;
 }
 
@@ -141,11 +163,16 @@ export interface FighterSnapshot {
   readonly facing: -1 | 1;
   readonly grounded: boolean;
   readonly guarding: boolean;
+  readonly crouching: boolean;
+  readonly guardFrames: number;
   readonly guardMode: GuardMode;
   readonly guardHealth: number;
   readonly resource: number;
   readonly resourceMaximum: number;
   readonly resourceLockFrames: number;
+  readonly resourceOverdrive: boolean;
+  readonly statusId: string | null;
+  readonly statusFrames: number;
   /** Dash frames left; 0 when not dashing. Animation reads it as a timeline. */
   readonly dashFrames: number;
   readonly hitstop: number;

@@ -1,5 +1,6 @@
 import type { FighterSnapshot } from '../../sim/state.js';
 import type { VorghRageTier } from '../../data/vorgh/types.js';
+import type { VorghPlayback } from './VorghAnimationController.js';
 
 export interface VorghPose {
   readonly rootX: number; readonly rootY: number; readonly lean: number;
@@ -27,43 +28,123 @@ export function vorghPose(
   fighter: FighterSnapshot,
   time: number,
   transition: number,
+  playback?: VorghPlayback,
 ): VorghPose {
   if (fighter.health === 0) return pose({ lean: -1.35, rootY: 0.1, scaleY: 0.72 });
   if (fighter.hitstun > 0) {
-    const heavy = fighter.hitstun > 22 ? 1 : 0.55;
-    return pose({ lean: heavy * 0.52, head: heavy * 0.42, frontArm: -0.7, backArm: 0.48, rootX: -0.08 });
+    return reactionPose(playback?.clipId, fighter.hitstun);
   }
+  if (playback?.clipId.startsWith('rage-')) return transitionPose(playback);
+  if (fighter.guarding) return guardPose(fighter, time, playback);
   if (!fighter.grounded) return airPose(fighter);
-  if (fighter.guarding) return guardPose(fighter, time);
   if (fighter.action !== null) return actionPose(fighter.action.moveId, fighter.action.frame);
-  return idlePose(fighter.resource, time, transition);
+  return idlePose(fighter.resource, time, transition, playback);
 }
 
-function idlePose(rage: number, time: number, transition: number): VorghPose {
-  const tier = visualTier(rage);
-  const cycle = Math.sin(time * (tier === 'low' ? 2.1 : tier === 'medium' ? 2.8 : 3.35));
-  const intensity = tier === 'low' ? 0.45 : tier === 'medium' ? 0.72 : 1;
+function reactionPose(clipId: string | undefined, hitstun: number): VorghPose {
+  if (clipId === 'guard-break') {
+    return pose({
+      lean: 0.82, head: 0.5, frontArm: -0.1, backArm: 0.12,
+      frontForearm: 0.4, backForearm: -0.35, rootX: -0.16,
+      scaleY: 0.92,
+    });
+  }
+  if (clipId === 'pain-to-power') {
+    return pose({
+      lean: 0.48, head: -0.3, frontArm: -1.22, backArm: 1.04,
+      frontForearm: -0.9, backForearm: 0.82, rootX: -0.1,
+      scaleX: 1.06,
+    });
+  }
+  const heavy = hitstun > 22 ? 1 : 0.55;
   return pose({
-    rootY: Math.abs(cycle) * 0.018 * intensity,
-    lean: -0.14 - intensity * 0.12 - transition * 0.05,
-    head: 0.08 + cycle * 0.025 * intensity,
-    frontArm: -0.72 - intensity * 0.22 + cycle * 0.035,
-    backArm: 0.58 + intensity * 0.16 - cycle * 0.03,
+    lean: heavy * 0.52, head: heavy * 0.42,
+    frontArm: -0.7, backArm: 0.48, rootX: -0.08,
+  });
+}
+
+function idlePose(
+  rage: number,
+  time: number,
+  transition: number,
+  playback?: VorghPlayback,
+): VorghPose {
+  const intensity = Math.min(1, 0.42 + rage / 135);
+  const cycle = playback === undefined
+    ? Math.sin(time * (2 + intensity * 1.45))
+    : Math.sin((playback.frame / 18) * Math.PI * 2);
+  const tier = playback?.clipId.replace('idle-', '') ?? visualTier(rage);
+  if (tier === 'high') {
+    const breath = Math.sin((playback?.frame ?? time * 9) / 18 * Math.PI * 2);
+    const coil = Math.max(0, Math.sin((playback?.frame ?? 0) / 18 * Math.PI));
+    return pose({
+      rootY: Math.abs(breath) * 0.035,
+      lean: -0.46 - coil * 0.08,
+      head: -0.08 + breath * 0.045,
+      frontArm: -1.12 + breath * 0.05,
+      backArm: 0.92 - breath * 0.04,
+      frontForearm: -0.86, backForearm: 1.02,
+      frontLeg: -0.42 - coil * 0.08, backLeg: 0.48 + coil * 0.08,
+      scaleX: 1.04, scaleY: 0.96,
+    });
+  }
+  if (tier === 'medium') {
+    const shoulder = Math.sin((playback?.frame ?? time * 12) / 9 * Math.PI * 2);
+    return pose({
+      rootY: Math.abs(cycle) * 0.022,
+      lean: -0.3,
+      head: 0.03 + cycle * 0.035,
+      frontArm: -0.94 + shoulder * 0.07,
+      backArm: 0.76 - shoulder * 0.07,
+      frontForearm: -0.78, backForearm: 0.9,
+      frontLeg: -0.3, backLeg: 0.37,
+    });
+  }
+  return pose({
+    rootY: Math.abs(cycle) * 0.012,
+    lean: -0.18 - transition * 0.05,
+    head: 0.08 + cycle * 0.018,
+    frontArm: -0.74 + cycle * 0.018,
+    backArm: 0.6 - cycle * 0.016,
     frontForearm: -0.72, backForearm: 0.82,
     frontLeg: -0.18 - intensity * 0.08, backLeg: 0.25 + intensity * 0.1,
   });
 }
 
-function guardPose(fighter: FighterSnapshot, time: number): VorghPose {
+function guardPose(
+  fighter: FighterSnapshot,
+  time: number,
+  playback?: VorghPlayback,
+): VorghPose {
   const pain = fighter.guardMode === 'pain';
-  const crouch = !fighter.grounded || fighter.position.y > 0;
-  const impact = fighter.hitstop > 0 ? Math.sin(time * 45) * 0.08 : 0;
+  const crouch = fighter.crouching;
+  const clipImpact = playback?.clipId.endsWith('heavy') === true ? 0.14 : 0.08;
+  const impact = fighter.hitstop > 0 ? Math.sin(time * 45) * clipImpact : 0;
   return pose({
-    rootY: crouch ? -0.18 : 0, lean: pain ? -0.34 : -0.12,
+    rootY: fighter.grounded ? (crouch ? -0.18 : 0) : 0.08,
+    lean: fighter.grounded ? (pain ? -0.34 : -0.12) : -0.4,
     head: -0.18, frontArm: -1.52 + impact, backArm: 1.18 - impact,
     frontForearm: -0.2, backForearm: 0.25,
     frontLeg: crouch ? -0.55 : -0.22, backLeg: crouch ? 0.62 : 0.32,
     scaleY: crouch ? 0.9 : 1,
+  });
+}
+
+function transitionPose(playback: VorghPlayback): VorghPose {
+  const duration = playback.clipId.includes('high') ? 14 : 12;
+  const progress = playback.frame / Math.max(1, duration - 1);
+  const surge = Math.sin(progress * Math.PI);
+  const rising = playback.clipId.endsWith('high')
+    || playback.clipId.endsWith('medium') && playback.clipId.startsWith('rage-low');
+  return pose({
+    rootY: surge * 0.06,
+    lean: -0.18 + (rising ? -0.22 : 0.12) * progress,
+    head: -surge * 0.18,
+    frontArm: -0.76 - surge * 0.62,
+    backArm: 0.64 + surge * 0.54,
+    frontLeg: -0.2 - progress * 0.16,
+    backLeg: 0.25 + progress * 0.15,
+    scaleX: 1 + surge * 0.04,
   });
 }
 

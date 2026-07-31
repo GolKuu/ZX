@@ -9,12 +9,23 @@ import {
   GLITCH_LEVEL_ONE_COST,
   GLITCH_LEVEL_THREE_COST,
 } from '../data/glitch/supers.js';
-import type { CommandRow } from './command.js';
+import type { CommandContext, CommandRow } from './command.js';
 import { TAUNT_COMMAND } from './sharedCommands.js';
 
 const grounded = ({ grounded: value }: { readonly grounded: boolean }) => value;
 const airborne = ({ grounded: value }: { readonly grounded: boolean }) => !value;
 const meter25 = ({ superMeter }: { readonly superMeter: number }) => superMeter >= 25;
+const always = () => true;
+const ready = (
+  moveId: string,
+  condition: (context: CommandContext) => boolean,
+) => (context: CommandContext) => (
+  condition(context)
+  && (
+    context.unlockedMoves === undefined
+    || context.unlockedMoves.has(moveId)
+  )
+);
 
 export const GLITCH_COMMANDS: readonly CommandRow[] = [
   {
@@ -34,19 +45,19 @@ export const GLITCH_COMMANDS: readonly CommandRow[] = [
 
   // Enhanced specials: same motion, Super held, 25 meter.
   { moveId: S.exRiftUppercut, motion: 'dp', button: 'lp', stance: 'any',
-    requiresModifier: true, available: meter25 },
+    requiresModifier: true, available: ready(S.exRiftUppercut, meter25) },
   { moveId: S.exPhaseBreak, motion: 'qcb', button: 'hp', stance: 'any',
-    requiresModifier: true, available: meter25 },
+    requiresModifier: true, available: ready(S.exPhaseBreak, meter25) },
   { moveId: S.exRealitySlice, motion: 'qcf', button: 'hp', stance: 'any',
-    requiresModifier: true, available: meter25 },
+    requiresModifier: true, available: ready(S.exRealitySlice, meter25) },
   { moveId: S.exTeleportStrike, motion: 'qcf', button: 'lk', stance: 'any',
-    requiresModifier: true, available: meter25 },
+    requiresModifier: true, available: ready(S.exTeleportStrike, meter25) },
 
   // Air movement and attacks resolve before grounded rows.
   { moveId: S.doubleJump, motion: 'none', button: 'dash', stance: 'any',
     holdDirection: 'up', available: airborne },
   { moveId: S.airShift, motion: 'none', button: 'dash', stance: 'any',
-    holdDirection: 'forward', available: airborne },
+    holdDirection: 'forward', available: ready(S.airShift, airborne) },
   { moveId: A.throw, motion: 'none', button: 'lp', alsoPressed: ['lk'],
     stance: 'any', available: airborne },
   { moveId: A.launcher, motion: 'none', button: 'hp', alsoPressed: ['lk'],
@@ -57,12 +68,14 @@ export const GLITCH_COMMANDS: readonly CommandRow[] = [
   { moveId: A.finisher, motion: 'none', button: 'hk', stance: 'any', available: airborne },
 
   // Ground movement, duals and utility.
+  { moveId: U.throwEscape, motion: 'none', button: 'lp', alsoPressed: ['lk'],
+    holdDirection: 'back', stance: 'standing', available: grounded },
   { moveId: S.shiftForward, motion: 'none', button: 'dash', stance: 'any',
-    holdDirection: 'forward', available: grounded },
+    holdDirection: 'forward', available: ready(S.shiftForward, grounded) },
   { moveId: S.shiftBackward, motion: 'none', button: 'dash', stance: 'any',
-    holdDirection: 'back', available: grounded },
+    holdDirection: 'back', available: ready(S.shiftBackward, grounded) },
   { moveId: S.spatialDash, motion: 'none', button: 'dash', stance: 'any',
-    available: grounded },
+    available: ready(S.spatialDash, grounded) },
   { moveId: U.throw, motion: 'none', button: 'lp', alsoPressed: ['lk'],
     stance: 'standing', available: grounded },
   { moveId: U.dualPhase, motion: 'none', button: 'lp', alsoPressed: ['hp'],
@@ -73,10 +86,12 @@ export const GLITCH_COMMANDS: readonly CommandRow[] = [
     holdDirection: 'down', stance: 'crouching', available: grounded },
   { moveId: U.antiAir, motion: 'dp', button: 'lp', stance: 'any', available: grounded },
   { moveId: U.sweep, motion: 'qcb', button: 'lk', stance: 'any', available: grounded },
-  { moveId: S.teleportStrike, motion: 'qcf', button: 'lk', stance: 'any' },
+  { moveId: S.teleportStrike, motion: 'qcf', button: 'lk', stance: 'any',
+    available: ready(S.teleportStrike, always) },
   { moveId: S.riftUppercut, motion: 'dp', button: 'hp', stance: 'any' },
   { moveId: S.phaseBreak, motion: 'qcb', button: 'hp', stance: 'any' },
-  { moveId: S.realitySlice, motion: 'qcf', button: 'hp', stance: 'any' },
+  { moveId: S.realitySlice, motion: 'qcf', button: 'hp', stance: 'any',
+    available: ready(S.realitySlice, always) },
 
   // Crouching buttons.
   { moveId: N.crouchLight, motion: 'none', button: 'lp', stance: 'crouching' },

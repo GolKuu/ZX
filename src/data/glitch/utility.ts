@@ -57,8 +57,25 @@ const rows: readonly GlitchMoveRow[] = [
       id: 'coordinate-throw', from: 6, to: 9, box: [0.46, 1.25, 0.3, 0.44],
       level: 'throw', damage: 72, hitstun: 40, knockback: [-0.18, 0.2],
     })],
+    grapple: { kind: 'normal', pairedFrames: 26, targetSize: 'grounded' },
     presentation: present('coordinate-throw', 'coordinate-lock', 'grab_phase', 'throw_hit', 'nudge'),
     tags: ['throw', 'side-switch', 'throw-escape-window-6'],
+  },
+  {
+    id: U.throwEscape, startup: 0, active: 8, recovery: 14,
+    counter: {
+      frames: { from: 0, toExclusive: 8 },
+      into: U.throwEscapeRelease,
+      attackerHitstop: 9,
+      grappleOnly: true,
+    },
+    presentation: present('throw-escape', 'local-rift-release', 'guard_phase', 'throw_escape'),
+    tags: ['defense', 'throw-escape', 'readable-whiff'],
+  },
+  {
+    id: U.throwEscapeRelease, startup: 0, active: 1, recovery: 13,
+    presentation: present('throw-escape-release', 'local-rift-release', 'throw_escape', 'phase_release'),
+    tags: ['defense', 'throw-escape', 'recovery'],
   },
   {
     id: U.dualPhase, startup: 8, active: 5, recovery: 14,

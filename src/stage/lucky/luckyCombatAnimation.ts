@@ -17,7 +17,16 @@ export function applyLuckyCombatAnimation(
       fighter.facing,
     );
   }
-  if (fighter.guarding) return block(rig, fighter.facing, fighter.hitstop > 0);
+  if (fighter.guarding) {
+    return block(
+      rig,
+      fighter.facing,
+      fighter.hitstop > 0,
+      fighter.crouching,
+      fighter.guardFrames <= 3,
+      fighter.guardHealth,
+    );
+  }
   if (fighter.hitstun > 0) return hurt(rig, fighter.facing, fighter.hitstun);
   idle18(rig, time);
 }
@@ -37,15 +46,25 @@ function attack(rig: FighterRig, id: string, p: number, facing: -1 | 1): void {
   const hit = pulse(p, id === LUCKY_MOVE_IDS.quickDraw ? 0.38 : 0.52);
   const low = id === LUCKY_MOVE_IDS.slidingBet || id.includes('crouch') || id.includes('sweep');
   const kick = id === LUCKY_MOVE_IDS.fortuneHeel || id.includes('break') || id.includes('rush');
+  const shoulder = id === LUCKY_MOVE_IDS.loadedShoulder || id.includes('loaded-strike');
   if (low) {
     rig.root.position.y -= hit * 0.55;
     rig.root.position.x += facing * hit * 0.56;
     rig.torso.rotation.z -= facing * hit * 0.42;
+    rig.echoes.visible = p > 0.1 && p < 0.82;
+    setPosition(rig.echoes, -facing * 0.48, -0.38, 0);
   } else if (kick) {
     const leg = facing === 1 ? rig.rightLeg : rig.leftLeg;
     leg.rotation.z -= facing * hit * 1.65;
     leg.position.x += facing * hit * 0.72;
     leg.position.y += hit * 0.32;
+    rig.aura.rotation.z = facing * Math.PI * 0.5;
+  } else if (shoulder) {
+    rig.torso.rotation.z -= facing * hit * 0.68;
+    rig.root.position.x += facing * hit * 0.58;
+    rig.root.position.y -= hit * 0.12;
+    rig.leftArm.rotation.z += facing * hit * 0.82;
+    rig.rightArm.rotation.z += facing * hit * 0.82;
   } else {
     const arm = facing === 1 ? rig.rightArm : rig.leftArm;
     arm.rotation.z -= facing * hit * 1.42;
@@ -58,16 +77,34 @@ function attack(rig: FighterRig, id: string, p: number, facing: -1 | 1): void {
   rig.slash.scale.setScalar(0.4 + hit * (enhanced ? 1.25 : 0.75));
   rig.aura.visible = enhanced && p > 0.08 && p < 0.88;
   rig.aura.scale.setScalar(0.45 + hit * 1.15);
-  rig.echoes.visible = id.includes('probability') || id.includes('impossible');
+  rig.echoes.visible = rig.echoes.visible
+    || id.includes('probability')
+    || id.includes('impossible');
+  rig.projectile.visible = id === LUCKY_MOVE_IDS.quickDraw && p > 0.28 && p < 0.68;
+  setPosition(rig.projectile, facing * (0.5 + hit * 0.72), 1.52, 0);
 }
 
-function block(rig: FighterRig, facing: -1 | 1, impact: boolean): void {
-  setRotation(rig.leftArm, 0, 0, facing * 1.22);
-  setRotation(rig.rightArm, 0, 0, facing * 0.76);
-  rig.torso.rotation.z -= facing * (impact ? 0.22 : 0.08);
+function block(
+  rig: FighterRig,
+  facing: -1 | 1,
+  impact: boolean,
+  crouching: boolean,
+  luckyGuard: boolean,
+  guardHealth: number,
+): void {
+  const crush = guardHealth <= 15;
+  setRotation(rig.leftArm, 0, 0, facing * (crush ? 0.72 : 1.22));
+  setRotation(rig.rightArm, 0, 0, facing * (crush ? 0.42 : 0.76));
+  rig.torso.rotation.z -= facing * (crush ? 0.34 : impact ? 0.22 : 0.08);
+  if (crouching) {
+    rig.root.position.y -= 0.42;
+    rig.leftLeg.rotation.z += facing * 0.34;
+    rig.rightLeg.rotation.z -= facing * 0.48;
+  }
   rig.aura.visible = true;
-  setPosition(rig.aura, facing * 0.35, 1.25, 0);
-  rig.aura.scale.setScalar(impact ? 0.72 : 0.48);
+  setPosition(rig.aura, facing * 0.35, crouching ? 0.84 : 1.25, 0);
+  rig.aura.scale.setScalar(luckyGuard ? 0.86 : impact ? 0.72 : 0.48);
+  rig.aura.rotation.z = luckyGuard ? Math.PI / 4 : 0;
 }
 
 function hurt(rig: FighterRig, facing: -1 | 1, frames: number): void {

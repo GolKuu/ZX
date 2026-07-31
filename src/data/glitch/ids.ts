@@ -22,6 +22,8 @@ export const GLITCH_UTILITY_IDS = {
   sweep: 'glitch.sweep',
   antiAir: 'glitch.anti-air',
   throw: 'glitch.throw',
+  throwEscape: 'glitch.throw-escape',
+  throwEscapeRelease: 'glitch.throw-escape.release',
   dualPhase: 'glitch.dual.phase-break',
   dualVector: 'glitch.dual.vector-cross',
 } as const;

@@ -138,7 +138,13 @@ export const MIM_SUPER_MOVES: readonly MoveFrameData[] = [
   MIM_PERFECT_BOX_SEQUENCE.move,
 ];
 
-export type MimSuperKind = 'mirrorArena' | 'falseOpening' | 'perfectBox';
+export type MimSuperKind =
+  | 'mirrorArena'
+  | 'falseOpening'
+  | 'perfectBox'
+  | 'prank'
+  | 'hero'
+  | 'altF4';
 
 const KINDS: Readonly<Record<string, MimSuperKind>> = {
   [MIM_SUPER_IDS.mirrorArena]: 'mirrorArena',

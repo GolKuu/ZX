@@ -25,6 +25,9 @@ export function collectHitCandidates(
         if (!canHit(attacker, defender, friendlyFire)) {
           continue;
         }
+        if (!grappleMatchesTarget(move, defender)) {
+          continue;
+        }
         const ledgerKey = contactKey(hitbox.hitId, defender.id);
         if (action.hitLedger.includes(ledgerKey)) {
           continue;
@@ -56,6 +59,15 @@ export function collectHitCandidates(
     }
   }
   return candidates;
+}
+
+function grappleMatchesTarget(
+  move: MoveFrameData,
+  defender: MutableFighterState,
+): boolean {
+  const target = move.grapple?.targetSize;
+  if (target === undefined || target === 'any') return true;
+  return target === 'grounded' ? defender.grounded : !defender.grounded;
 }
 
 export function contactKey(hitId: string, defenderId: string): string {

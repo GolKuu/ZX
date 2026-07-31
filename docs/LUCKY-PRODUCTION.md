@@ -9,7 +9,7 @@
 | Supers / Ultimate | 2 / 1 | 2 / 1 | равно |
 | Уникальный ресурс | стены и story tools | Luck 0–100, 4 порога, Jackpot | равно/выше |
 | Защитные состояния | отдельные block poses | stand/crouch, impact, release, crush/read | равно |
-| Процедурный визуал | sprite rig | toon geometry, 18-frame idle, sigils/VFX | равно |
+| Процедурный визуал | sprite rig | процедурный 2× pixel rig, 4 strike sprites, toon fallback | равно/выше |
 | AI | полный профиль | neutral, punish, combo, 4 сложности движка | равно |
 
 ## Основные атаки
@@ -42,10 +42,13 @@ Winning Streak стоит 34 энергии, House Advantage — 100. Impossible
 
 ## Luck Meter
 
-Luck растёт детерминированно за подтверждённые удары Lucky: +5 за лёгкий и +8
-за сильный контакт, +1 за блок. Пороговые состояния: 0–24, 25–49, 50–74,
+Luck растёт в авторитетной симуляции за подтверждённые удары Lucky: +5 за
+лёгкий и +8 за сильный контакт, +4 за трёхкадровый Lucky Guard. Пороговые
+состояния: 0–24, 25–49, 50–74,
 75–99 и Jackpot 100. HUD всегда показывает текущее значение, подготовленный
-бонус и базовую стоимость. Усиление списывается при `moveStarted`, поэтому
+бонус, точную доступную технику, стоимость, списание и результат. Усиление
+проверяется через `minimumResource` и списывается движком через `resourceCost`
+при `moveStarted`, поэтому
 отмена/промах не создаёт бесплатных циклов. Скрытых бросков RNG и instant-win
 нет.
 
@@ -64,8 +67,9 @@ Luck растёт детерминированно за подтверждённ
 
 ## Проверки
 
-- Unit: уникальность четырёх normals, точные frame data, Luck gain/spend/clamp,
-  resource gates Supers/Ultimate, отсутствие instant-win normals.
+- Unit: уникальность четырёх normals, точные frame data, настоящие air/ground
+  throws, авторитетные resource gates, multi-hit Supers, Luck gain/spend/clamp,
+  одноразовый Ultimate и отсутствие instant-win normals.
 - Regression: общий `npm test` включает все combat, determinism, AI, input,
   HUD и Mim suites.
 - Matchups: Lucky доступен в character select и использует общий AI engine

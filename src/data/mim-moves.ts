@@ -20,6 +20,11 @@ export const MIM_MOVE_IDS = {
   ...MIM_NORMAL_IDS,
   ...MIM_DUAL_IDS,
   ...MIM_UTILITY_IDS,
+  /** Presentation aliases kept for the pre-modular sprite timeline. */
+  snap: MIM_NORMAL_IDS.maskJab,
+  cursor: MIM_NORMAL_IDS.backElbow,
+  banana: MIM_NORMAL_IDS.capoeiraKick,
+  chair: MIM_NORMAL_IDS.spinningKick,
 } as const;
 
 export const MIM_MOVES: readonly MoveFrameData[] = [

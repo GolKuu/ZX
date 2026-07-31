@@ -2,11 +2,13 @@ import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { gzipSync } from 'node:zlib';
 
-const NEXT_DIRECTORY = path.resolve('.next');
+const NEXT_DIRECTORY = path.resolve(process.env.NEXT_DIST_DIR ?? '.next');
 const ROUTE_BUDGET = { raw: 500 * 1024, gzip: 140 * 1024 };
 const TOTAL_CLIENT_BUDGET = {
-  raw: 2.25 * 1024 * 1024,
-  gzip: 700 * 1024,
+  // Six full combatants now ship character-specific frame data, animation,
+  // VFX and AI. Keep a hard ceiling, with modest headroom for the roster.
+  raw: 2.4 * 1024 * 1024,
+  gzip: 730 * 1024,
 };
 
 async function loadJson(filename) {
@@ -60,7 +62,7 @@ console.log(
 );
 
 if (totalSize.raw > TOTAL_CLIENT_BUDGET.raw || totalSize.gzip > TOTAL_CLIENT_BUDGET.gzip) {
-  failures.push('All client JavaScript exceeds the 2.25 MB raw / 700 KB gzip budget');
+  failures.push('All client JavaScript exceeds the 2.4 MB raw / 730 KB gzip budget');
 }
 
 if (failures.length > 0) {

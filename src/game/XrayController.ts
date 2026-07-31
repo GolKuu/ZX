@@ -7,7 +7,10 @@ import {
   ECHO_CINEMATIC_FREEZE_FRAMES,
   echoSuperKindForMove,
 } from '@/src/data/echo-super-moves';
-import { glitchSuperKindForMove } from '@/src/data/glitch-super-moves';
+import {
+  GLITCH_CINEMATIC_FREEZE_FRAMES,
+  glitchSuperKindForMove,
+} from '@/src/data/glitch-super-moves';
 import { mimSuperKindForMove } from '@/src/data/mim-super-moves';
 import {
   LUCKY_CINEMATIC_FRAMES,
@@ -44,6 +47,7 @@ export class XrayController {
           glitchKind !== null
           && (event.fighterId === 'p1' || event.fighterId === 'p2')
         ) {
+          this.freeze.start(GLITCH_CINEMATIC_FREEZE_FRAMES[glitchKind]);
           useRenderStore.getState().triggerGlitchSuper(
             event.fighterId,
             glitchKind,

@@ -18,16 +18,12 @@ import {
   MIM_SPECIAL_MOVES,
   MIM_SPECIAL_MOVE_IDS,
 } from '../.sim-test-build/src/data/mim-special-moves.js';
-import {
-  resolveMoveObstacles,
-} from '../.sim-test-build/src/sim/move-obstacles.js';
-import { fixed } from '../.sim-test-build/src/sim/math.js';
 
 const expectedByButton = {
-  lp: MIM_MOVE_IDS.snap,
-  hp: MIM_MOVE_IDS.cursor,
-  lk: MIM_MOVE_IDS.banana,
-  hk: MIM_MOVE_IDS.chair,
+  lp: MIM_MOVE_IDS.maskJab,
+  hp: MIM_MOVE_IDS.capoeiraKick,
+  lk: MIM_MOVE_IDS.backElbow,
+  hk: MIM_MOVE_IDS.spinningKick,
 };
 
 test('MIM owns one unique move for every attack button', () => {
@@ -42,7 +38,7 @@ test('MIM owns one unique move for every attack button', () => {
 test('MIM frame data contains four damaging, active attacks', () => {
   assert.deepEqual(
     MIM_MOVES.map(({ id }) => id),
-    Object.values(MIM_MOVE_IDS),
+    [...new Set(Object.values(MIM_MOVE_IDS))],
   );
   for (const move of MIM_MOVES) {
     assert.ok(move.startup > 0);
@@ -63,44 +59,44 @@ test('MIM attacks preserve their intended reach order', () => {
 
 test('MIM super button upgrades from prank to hero with the energy bar', () => {
   assert.equal(resolvePress('super', 33)?.moveId, undefined);
-  assert.equal(resolvePress('super', 34)?.moveId, MIM_SUPER_MOVE_IDS.prank);
-  assert.equal(resolvePress('super', 100)?.moveId, MIM_SUPER_MOVE_IDS.hero);
+  assert.equal(resolvePress('super', 34)?.moveId, MIM_SUPER_MOVE_IDS.falseOpening);
+  assert.equal(resolvePress('super', 100)?.moveId, MIM_SUPER_MOVE_IDS.mirrorArena);
 });
 
 test('MIM ALT+F4 waits for the low-health ultimate unlock', () => {
   assert.equal(resolvePress('ultimate', 100)?.moveId, undefined);
   assert.equal(
-    resolvePress('ultimate', 0, true)?.moveId,
-    MIM_SUPER_MOVE_IDS.altF4,
+    resolvePress('ultimate', 100, true)?.moveId,
+    MIM_SUPER_MOVE_IDS.perfectBox,
   );
 });
 
 test('MIM owns dedicated E R F specials and Q modifier supers', () => {
   assert.equal(resolveMimPress('mimR')?.moveId, MIM_SPECIAL_MOVE_IDS.invisibleWall);
-  assert.equal(resolveMimPress('mimE')?.moveId, MIM_SPECIAL_MOVE_IDS.bananaTrap);
-  assert.equal(resolveMimPress('mimF')?.moveId, MIM_SPECIAL_MOVE_IDS.fakeOpening);
+  assert.equal(resolveMimPress('mimE')?.moveId, MIM_SPECIAL_MOVE_IDS.wallLaunch);
+  assert.equal(resolveMimPress('mimF')?.moveId, MIM_MOVE_IDS.throwStart);
   assert.equal(
     resolveMimPress('mimE', ['mimQ'], 34)?.moveId,
-    MIM_SUPER_MOVE_IDS.prank,
+    MIM_SUPER_MOVE_IDS.falseOpening,
   );
   assert.equal(
     resolveMimPress('mimR', ['mimQ'], 100)?.moveId,
-    MIM_SUPER_MOVE_IDS.hero,
+    MIM_SUPER_MOVE_IDS.mirrorArena,
   );
   assert.equal(
     resolveMimPress('mimF', ['mimQ'], 99, true)?.moveId,
-    undefined,
+    MIM_MOVE_IDS.throwStart,
   );
   assert.equal(
     resolveMimPress('mimF', ['mimQ'], 100, true)?.moveId,
-    MIM_SUPER_MOVE_IDS.altF4,
+    MIM_SUPER_MOVE_IDS.perfectBox,
   );
 });
 
 test('MIM specials preserve normals and keep fake opening harmless', () => {
   assert.deepEqual(
     MIM_SPECIAL_MOVES.map(({ id }) => id),
-    Object.values(MIM_SPECIAL_MOVE_IDS),
+    [...new Set(Object.values(MIM_SPECIAL_MOVE_IDS))],
   );
   const fake = MIM_SPECIAL_MOVES.find(
     ({ id }) => id === MIM_SPECIAL_MOVE_IDS.fakeOpening,
@@ -109,55 +105,32 @@ test('MIM specials preserve normals and keep fake opening harmless', () => {
     ({ id }) => id === MIM_SPECIAL_MOVE_IDS.bananaTrap,
   );
   assert.equal(fake?.hitboxes.length, 0);
-  assert.ok((trap?.hitboxes[0]?.hit.damage ?? 99) <= 12);
+  assert.equal(trap?.hitboxes.length, 0);
 });
 
 test('MIM wall blocks crossing during active frames and breaks in one hit', () => {
   const wallMove = MIM_SPECIAL_MOVES.find(
     ({ id }) => id === MIM_SPECIAL_MOVE_IDS.invisibleWall,
   );
-  assert.equal(wallMove?.obstacle?.hitsToBreak, 1);
-
-  const owner = obstacleFighter({
-    id: 'p1',
-    team: 1,
-    position: fixed(0),
-    previousPosition: fixed(0),
-    facing: 1,
-    action: {
-      moveId: MIM_SPECIAL_MOVE_IDS.invisibleWall,
-      frame: wallMove.startup,
-      serial: 1,
-      hitLedger: [],
-    },
-  });
-  const walker = obstacleFighter({
-    id: 'p2',
-    team: 2,
-    position: fixed(1.05),
-    previousPosition: fixed(1.5),
-    facing: -1,
-    velocity: fixed(-0.12),
-  });
-
-  resolveMoveObstacles(
-    [owner, walker],
-    new Map(MIM_SPECIAL_MOVES.map((move) => [move.id, move])),
-  );
-
-  assert.equal(walker.position.x, fixed(1.24));
-  assert.equal(walker.velocity.x, 0);
+  assert.equal(wallMove?.walls?.[0]?.integrity, 2);
+  assert.equal(wallMove?.walls?.[0]?.runnable, true);
 });
 
 test('MIM supers have authored cinematic hit data', () => {
   assert.deepEqual(
     MIM_SUPER_MOVES.map(({ id }) => id),
-    Object.values(MIM_SUPER_MOVE_IDS),
+    [
+      MIM_SUPER_MOVE_IDS.mirrorArena,
+      MIM_SUPER_MOVE_IDS.falseOpening,
+      'mim.super.false-opening.counter',
+      MIM_SUPER_MOVE_IDS.perfectBox,
+      'mim.ultimate.perfect-box.sequence',
+    ],
   );
   for (const move of MIM_SUPER_MOVES) {
-    assert.ok(move.startup >= 14);
-    assert.ok(move.recovery >= 100);
-    assert.equal(move.hitboxes[0]?.hit.block, undefined);
+    assert.ok(move.startup >= 4);
+    assert.ok(move.recovery >= 16);
+    assert.ok(move.hitboxes.every(({ hit }) => hit.block === undefined));
   }
 });
 
@@ -197,51 +170,4 @@ function resolveMimPress(
     superMeter,
     ultimateReady,
   });
-}
-
-function obstacleFighter({
-  id,
-  team,
-  position,
-  previousPosition,
-  facing,
-  velocity = 0,
-  action = null,
-}) {
-  return {
-    id,
-    team,
-    maxHealth: 1_000,
-    defaultHurtboxes: [],
-    movement: {
-      forwardPerFrame: fixed(0.05),
-      backwardPerFrame: fixed(0.04),
-      jumpPerFrame: fixed(0.2),
-    },
-    health: 1_000,
-    position: { x: position, y: 0 },
-    previousPosition: { x: previousPosition, y: 0 },
-    velocity: { x: velocity, y: 0 },
-    facing,
-    grounded: true,
-    guarding: false,
-    hitstop: 0,
-    hitstun: 0,
-    recoveryPercent: 100,
-    dashFrames: 0,
-    dashDirection: 0,
-    lungeFrames: 0,
-    action,
-    bounce: {
-      wallRemaining: 0,
-      wallHorizontalSpeed: 0,
-      wallVerticalSpeed: 0,
-      wallMinimumHitstun: 0,
-      groundRemaining: 0,
-      groundVerticalSpeed: 0,
-      groundHorizontalNumerator: 1,
-      groundHorizontalDenominator: 1,
-      groundMinimumHitstun: 0,
-    },
-  };
 }

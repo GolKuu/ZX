@@ -29,7 +29,10 @@ export const VORGH_ANIMATION_CLIPS: readonly VorghClip[] = [
   clip('rage-medium-high', 14, false, 'transition'),
   clip('rage-high-medium', 14, false, 'transition'),
   ...defense.map((id) => clip(id, id.includes('hold') ? 18 : 8, id.includes('hold'), 'defense')),
-  ...reactions.map((id) => clip(id, id === 'walk' || id === 'grounded', id === 'walk' ? 18 : 12, 'reaction')),
+  ...VORGH_MOVE_SPECS.map(({ move }) =>
+    clip(move.id, move.startup + move.active + move.recovery, false, 'move')),
+  ...reactions.map((id) =>
+    clip(id, id === 'walk' ? 18 : 12, id === 'walk' || id === 'grounded', 'reaction')),
 ] as const;
 
 function clip(
@@ -40,3 +43,4 @@ function clip(
 ): VorghClip {
   return { id, frames, loop, category };
 }
+import { VORGH_MOVE_SPECS } from '../../data/vorgh/index.js';

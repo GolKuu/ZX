@@ -89,6 +89,16 @@
     linear-gradient(145deg, #111813, #5d1425);
 }
 
+.characterList button[data-character="vorgh"] > i {
+  color: #ff6a1a;
+  text-shadow: 0 0 1rem #8d1717;
+}
+
+.characterList button[data-character="titan"] > i {
+  border-color: #778188;
+  background: linear-gradient(135deg, #4b555b, #171d20 58%, #ff7417 60% 66%, #171d20 68%);
+}
+
 .characterList button > span {
   display: grid;
   min-width: 0;

@@ -1,0 +1,19 @@
+{
+  "source": "procedural-lucky",
+  "view": { "width": 120, "height": 240, "figureHeight": 228 },
+  "facesRight": true,
+  "textureScale": 2,
+  "origin": [48, 228],
+  "parts": {
+    "ponytail": { "width": 20, "height": 62, "pivot": [0.45, 0.12], "joint": [43, 31] },
+    "head": { "width": 40, "height": 52, "pivot": [0.5, 0.88], "joint": [48, 50] },
+    "torso": { "width": 46, "height": 68, "pivot": [0.5, 0.12], "joint": [48, 56] },
+    "hips": { "width": 38, "height": 34, "pivot": [0.5, 0.18], "joint": [48, 116] },
+    "sash": { "width": 20, "height": 82, "pivot": [0.45, 0.08], "joint": [61, 119] },
+    "upperArm": { "width": 22, "height": 54, "pivot": [0.5, 0.1], "joint": [66, 65] },
+    "forearm": { "width": 20, "height": 50, "pivot": [0.5, 0.1], "joint": [70, 110] },
+    "thigh": { "width": 26, "height": 58, "pivot": [0.5, 0.1], "joint": [54, 137] },
+    "shin": { "width": 24, "height": 56, "pivot": [0.5, 0.1], "joint": [56, 182] },
+    "boot": { "width": 38, "height": 22, "pivot": [0.35, 0.2], "joint": [58, 218] }
+  }
+}

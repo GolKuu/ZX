@@ -1,17 +1,11 @@
-import type { RefObject } from 'react';
 import type { Group } from 'three';
 
-export interface VorghRigRefs {
-  readonly root: RefObject<Group | null>;
-  readonly torso: RefObject<Group | null>;
-  readonly head: RefObject<Group | null>;
-  readonly frontArm: RefObject<Group | null>;
-  readonly backArm: RefObject<Group | null>;
-  readonly frontForearm: RefObject<Group | null>;
-  readonly backForearm: RefObject<Group | null>;
-  readonly frontLeg: RefObject<Group | null>;
-  readonly backLeg: RefObject<Group | null>;
-}
+export type VorghJointName =
+  | 'root' | 'torso' | 'head'
+  | 'frontArm' | 'backArm' | 'frontForearm' | 'backForearm'
+  | 'frontLeg' | 'backLeg';
+export type VorghJoints = Record<VorghJointName, Group | null>;
+type SetJoint = (name: VorghJointName, node: Group | null) => void;
 
 const DARK = '#090607';
 const ARMOUR = '#2b1618';
@@ -20,21 +14,21 @@ const BONE = '#d2b68d';
 const SKIN = '#9b6754';
 const RAGE = '#ff5a16';
 
-export function VorghBody({ refs }: { readonly refs: VorghRigRefs }) {
+export function VorghBody({ setJoint }: { readonly setJoint: SetJoint }) {
   return (
-    <group ref={refs.root}>
-      <Leg limbRef={refs.backLeg} x={-0.17} dark />
-      <Leg limbRef={refs.frontLeg} x={0.2} />
-      <group ref={refs.torso} position={[0, 1.34, 0]}>
+    <group ref={(node) => setJoint('root', node)}>
+      <Leg name="backLeg" setJoint={setJoint} x={-0.17} dark />
+      <Leg name="frontLeg" setJoint={setJoint} x={0.2} />
+      <group ref={(node) => setJoint('torso', node)} position={[0, 1.34, 0]}>
         <Pixel size={[0.78, 0.92, 0.18]} color={ARMOUR} />
         <Pixel position={[0.26, 0.26, 0.11]} size={[0.3, 0.22, 0.08]} color={CRIMSON} />
         <Pixel position={[-0.28, 0.36, 0.11]} size={[0.24, 0.12, 0.08]} color={BONE} />
         <Crack position={[0.1, 0.08, 0.15]} rotation={-0.55} />
         <Crack position={[-0.18, -0.15, 0.15]} rotation={0.8} />
       </group>
-      <Arm limbRef={refs.backArm} forearmRef={refs.backForearm} x={-0.43} dark />
-      <Arm limbRef={refs.frontArm} forearmRef={refs.frontForearm} x={0.43} />
-      <group ref={refs.head} position={[0.08, 2.12, 0]}>
+      <Arm name="backArm" forearmName="backForearm" setJoint={setJoint} x={-0.43} dark />
+      <Arm name="frontArm" forearmName="frontForearm" setJoint={setJoint} x={0.43} />
+      <group ref={(node) => setJoint('head', node)} position={[0.08, 2.12, 0]}>
         <Pixel size={[0.44, 0.48, 0.18]} color={SKIN} />
         <Pixel position={[-0.08, 0.22, 0.02]} size={[0.42, 0.15, 0.2]} color={DARK} />
         <Pixel position={[0.17, 0.08, 0.11]} size={[0.07, 0.055, 0.04]} color={RAGE} />
@@ -48,15 +42,17 @@ export function VorghBody({ refs }: { readonly refs: VorghRigRefs }) {
 
 function Leg({
   dark = false,
-  limbRef,
+  name,
+  setJoint,
   x,
 }: {
   readonly dark?: boolean;
-  readonly limbRef: RefObject<Group | null>;
+  readonly name: 'frontLeg' | 'backLeg';
+  readonly setJoint: SetJoint;
   readonly x: number;
 }) {
   return (
-    <group ref={limbRef} position={[x, 0.96, 0]}>
+    <group ref={(node) => setJoint(name, node)} position={[x, 0.96, 0]}>
       <Pixel position={[0, -0.36, 0]} size={[0.32, 0.76, 0.2]} color={dark ? DARK : ARMOUR} />
       <Pixel position={[0.08, -0.82, 0.05]} size={[0.42, 0.22, 0.24]} color={DARK} />
       {!dark && <Crack position={[0.08, -0.35, 0.13]} rotation={0.25} />}
@@ -66,19 +62,21 @@ function Leg({
 
 function Arm({
   dark = false,
-  forearmRef,
-  limbRef,
+  forearmName,
+  name,
+  setJoint,
   x,
 }: {
   readonly dark?: boolean;
-  readonly forearmRef: RefObject<Group | null>;
-  readonly limbRef: RefObject<Group | null>;
+  readonly forearmName: 'frontForearm' | 'backForearm';
+  readonly name: 'frontArm' | 'backArm';
+  readonly setJoint: SetJoint;
   readonly x: number;
 }) {
   return (
-    <group ref={limbRef} position={[x, 1.7, 0]}>
+    <group ref={(node) => setJoint(name, node)} position={[x, 1.7, 0]}>
       <Pixel position={[0, -0.28, 0]} size={[0.32, 0.62, 0.2]} color={dark ? DARK : ARMOUR} />
-      <group ref={forearmRef} position={[0, -0.58, 0]}>
+      <group ref={(node) => setJoint(forearmName, node)} position={[0, -0.58, 0]}>
         <Pixel position={[0, -0.22, 0]} size={[0.34, 0.52, 0.22]} color={dark ? '#311113' : CRIMSON} />
         <Pixel position={[0.08, -0.52, 0.04]} size={[0.34, 0.22, 0.24]} color={DARK} />
         <Claw y={-0.72} length={0.34} />

@@ -18,11 +18,12 @@ import { HitBlood } from './HitBlood';
 import { ImpactPulse } from './ImpactPulse';
 import { LazyPostEffects } from './LazyPostEffects';
 import { MimFighter } from './MimFighter';
-import { LuckyFighter } from './LuckyFighter';
 import { SpeedLines } from './SpeedLines';
 import { RenderDebugBridge } from './RenderDebugBridge';
 import { Sprite2DFighter } from './sprite2d/Sprite2DFighter';
 import { StageLighting } from './StageLighting';
+import { TitanFighter } from './TitanFighter';
+import { VorghFighter } from './VorghFighter';
 
 export function RenderScene({
   fighterSelection,
@@ -100,6 +101,7 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
 }>> = {
   echo: { rig: 'echo-profile', attacks: 'echo-attacks' },
   glitch: { rig: 'glitch-profile', attacks: 'glitch-attacks' },
+  lucky: { rig: 'lucky-profile', attacks: 'lucky-attacks' },
 };
 
 function primitiveFighter(
@@ -107,8 +109,11 @@ function primitiveFighter(
   characterId: CharacterId,
   fighterId: 'p1' | 'p2',
 ) {
-  if (characterId === 'lucky') {
-    return <LuckyFighter fighterId={fighterId} />;
+  if (characterId === 'vorgh') {
+    return <VorghFighter fighterId={fighterId} />;
+  }
+  if (characterId === 'titan') {
+    return <TitanFighter fighterId={fighterId} />;
   }
   if (characterId === 'chrono') {
     return <ChronoFighter auraColor={auraColor} fighterId={fighterId} />;

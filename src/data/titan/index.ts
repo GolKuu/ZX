@@ -9,6 +9,7 @@ export * from './character.js';
 export * from './grapples.js';
 export * from './ids.js';
 export * from './presentation.js';
+export * from './supers.js';
 
 export const TITAN_ALL_MOVES: readonly MoveFrameData[] = [
   ...TITAN_NORMAL_MOVES,

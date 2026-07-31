@@ -8,6 +8,7 @@ import { GLITCH_UTILITY_MOVES } from './utility.js';
 export {
   GLITCH_AIR_RULES,
   GLITCH_DEFENSE_STATES,
+  GLITCH_DEFENSE_RULES,
   GLITCH_HURTBOXES,
   GLITCH_MAX_HEALTH,
   GLITCH_MOVEMENT,
@@ -15,6 +16,7 @@ export {
 } from './character.js';
 export { GLITCH_MOVE_DEFINITIONS } from './builder.js';
 export * from './ids.js';
+export * from './unlocks.js';
 export {
   GLITCH_LEVEL_ONE_COST,
   GLITCH_LEVEL_THREE_COST,

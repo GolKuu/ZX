@@ -17,8 +17,13 @@ export function FighterPortrait({
   return (
     <figure className={styles.portrait} data-side={side}>
       <span aria-hidden="true">{mark}</span>
-      {characterId === 'lucky' ? (
-        <i className={styles.luckyHead} aria-hidden="true">
+      {characterId === 'vorgh' ? (
+        <i className={styles.vorghHead} aria-hidden="true">
+          <b />
+          <u />
+        </i>
+      ) : characterId === 'titan' ? (
+        <i className={styles.titanHead} aria-hidden="true">
           <b />
           <u />
         </i>

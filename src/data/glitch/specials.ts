@@ -55,7 +55,7 @@ const rows: readonly GlitchMoveRow[] = [
     ],
     displacements: [displacement(8, 1.34)],
     presentation: present('teleport-strike', 'cross-up-body-split', 'teleport_warn', 'teleport_hit', 'nudge'),
-    tags: ['special', 'teleport', 'side-switch-at-close-range', 'punish-recovery-19'],
+    tags: ['special', 'teleport', 'side-switch-at-close-range', 'cooldown-52', 'punish-recovery-19'],
   },
   {
     id: S.exRiftUppercut, startup: 6, active: 7, recovery: 21, meterCost: 25,
@@ -99,7 +99,7 @@ const rows: readonly GlitchMoveRow[] = [
     hurtboxes: [{ from: 3, to: 7, boxes: [] }, { from: 7, to: 29, boxes: GLITCH_STAND_PROFILE }],
     displacements: [displacement(6, 1.55)],
     presentation: present('ex-teleport-strike', 'violet-cross-up-burst', 'ex_teleport', 'ex_impact', 'freeze'),
-    tags: ['enhanced', 'meter-25', 'teleport', 'side-switch', 'punish-recovery-16'],
+    tags: ['enhanced', 'meter-25', 'teleport', 'side-switch', 'cooldown-38', 'punish-recovery-16'],
   },
 ];
 

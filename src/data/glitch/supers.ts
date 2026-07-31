@@ -1,7 +1,10 @@
 import type { MoveFrameData } from '../../sim/frame-data.js';
 import { buildGlitchMove, hit, present } from './builder.js';
 import { GLITCH_AIR_PROFILE, GLITCH_STAND_PROFILE } from './character.js';
-import { GLITCH_SUPER_IDS as S } from './ids.js';
+import {
+  GLITCH_SPECIAL_IDS,
+  GLITCH_SUPER_IDS as S,
+} from './ids.js';
 import type { GlitchHit, GlitchMoveRow } from './types.js';
 
 export const GLITCH_LEVEL_ONE_COST = 34;
@@ -41,6 +44,11 @@ const riftSequence: GlitchMoveRow = {
 
 const realityCollapse: GlitchMoveRow = {
   id: S.realityCollapse, startup: 16, active: 36, recovery: 32, meterCost: 34,
+  status: {
+    id: 'glitch.reality-collapse-mode',
+    durationFrames: 360,
+    recoveryPercent: 78,
+  },
   hits: [
     hit({
       id: 'collapse-open', from: 16, to: 21, box: [0.92, 1.3, 0.58, 0.62],
@@ -111,7 +119,7 @@ export type GlitchSuperKind = 'error' | 'critical' | 'patchNotes';
 const KINDS: Readonly<Record<string, GlitchSuperKind>> = {
   [S.riftSequence]: 'error',
   [S.realityCollapse]: 'critical',
-  [S.fourthGod]: 'patchNotes',
+  [S.fourthGodSequence]: 'patchNotes',
 };
 
 export function glitchSuperKindForMove(moveId: string): GlitchSuperKind | null {
@@ -119,6 +127,11 @@ export function glitchSuperKindForMove(moveId: string): GlitchSuperKind | null {
 }
 
 export function glitchSuperCostForMove(moveId: string): number | null {
+  if ((Object.values(GLITCH_SPECIAL_IDS) as readonly string[])
+    .filter((id) => id.includes('.ex.'))
+    .includes(moveId)) {
+    return 25;
+  }
   const kind = glitchSuperKindForMove(moveId);
   if (kind === null) return null;
   return kind === 'patchNotes' ? GLITCH_LEVEL_THREE_COST : GLITCH_LEVEL_ONE_COST;

@@ -2,23 +2,20 @@ import { MeterLedger } from '@/src/hud';
 import type { CommandContext } from '@/src/input';
 import type { CombatEvent, FighterSnapshot } from '@/src/sim';
 import type { CharacterSelection } from '@/src/data/characterRoster';
-import { LuckLedger } from '@/src/data/lucky/luck';
 
 /** Adapter between the meter ledger, the command tables and the HUD. */
 export class MeterController {
   private readonly ledger = new MeterLedger();
-  private readonly luck = new LuckLedger();
-
   public constructor(private readonly selection: CharacterSelection) {}
 
   public inputContext(fighter: FighterSnapshot): CommandContext {
     return {
       grounded: fighter.grounded,
-      stanceId: null,
+      stanceId: fighter.statusId,
       gauge: this.isVorgh(fighter.id)
         ? fighter.resource
         : this.isLucky(fighter.id)
-          ? this.luck.charge(fighter.id)
+          ? fighter.resource
           : 0,
       superMeter: this.ledger.charge(fighter.id),
       ultimateReady: this.isUltimateReady(fighter),
@@ -27,7 +24,6 @@ export class MeterController {
 
   public accept(events: readonly CombatEvent[]): void {
     this.ledger.accept(events);
-    this.luck.accept(events);
   }
 
   public superChargeState(
@@ -56,7 +52,7 @@ export class MeterController {
     const state: Record<string, number> = {};
     for (const fighter of fighters) {
       state[fighter.id] = this.isLucky(fighter.id)
-        ? this.luck.charge(fighter.id)
+        ? fighter.resource
         : 0;
     }
     return state;
@@ -74,15 +70,20 @@ export class MeterController {
 
   public reset(): void {
     this.ledger.reset();
-    this.luck.reset();
   }
 
   private isUltimateReady(fighter: FighterSnapshot): boolean {
-    return this.ledger.isUltimateReady(
+    const healthReady = this.ledger.isUltimateReady(
       fighter.id,
       fighter.health,
       fighter.maxHealth,
     );
+    const luckReady = (
+      this.isLucky(fighter.id)
+      && fighter.resource >= 75
+      && !this.ledger.ultimateUsed(fighter.id)
+    );
+    return healthReady || luckReady;
   }
 
   private isLucky(fighterId: string): boolean {

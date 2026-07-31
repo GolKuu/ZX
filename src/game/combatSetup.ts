@@ -14,8 +14,14 @@ import { ECHO_SUPER_MOVES } from '@/src/data/echo-super-moves';
 import { CHRONO_AI_LOADOUT } from '@/src/data/chrono-ai';
 import { CHRONO_MOVES } from '@/src/data/chrono-combat-moves';
 import { CHRONO_SUPER_MOVES } from '@/src/data/chrono-super-moves';
-import { GLITCH_AI_LOADOUT } from '@/src/data/glitch-ai';
-import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
+import { glitchAiLoadout } from '@/src/data/glitch-ai';
+import {
+  GLITCH_HURTBOXES,
+  GLITCH_DEFENSE_RULES,
+  GLITCH_MAX_HEALTH,
+  GLITCH_MOVEMENT,
+  GLITCH_MOVES,
+} from '@/src/data/glitch-combat-moves';
 import { GLITCH_SUPER_MOVES } from '@/src/data/glitch-super-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
 import { MIM_SPECIAL_MOVES } from '@/src/data/mim-special-moves';
@@ -38,6 +44,13 @@ import {
   VORGH_RESOURCE,
 } from '@/src/data/vorgh';
 import { TAUNT_MOVES } from '@/src/data/taunt-move';
+import {
+  TITAN_AI_LOADOUT,
+  TITAN_ALL_MOVES,
+  TITAN_HURTBOXES,
+  TITAN_MAX_HEALTH,
+  TITAN_MOVEMENT,
+} from '@/src/data/titan';
 import { HudBridge } from '@/src/hud';
 import {
   CombatEngine,
@@ -67,6 +80,7 @@ export const ALL_COMBAT_MOVES = [
   ...LUCKY_SPECIAL_MOVES,
   ...LUCKY_SUPER_MOVES,
   ...VORGH_MOVES,
+  ...TITAN_ALL_MOVES,
   ...TAUNT_MOVES,
 ];
 
@@ -94,6 +108,8 @@ export function createCombatAi(
     moves: ALL_COMBAT_MOVES,
     loadout: characterId === 'vorgh'
       ? VORGH_AI_LOADOUTS[difficulty]
+      : characterId === 'titan'
+        ? TITAN_AI_LOADOUT
       : characterId === 'lucky'
       ? LUCKY_AI_LOADOUT
       : characterId === 'echo'
@@ -101,7 +117,7 @@ export function createCombatAi(
       : characterId === 'chrono'
         ? CHRONO_AI_LOADOUT
         : characterId === 'glitch'
-          ? GLITCH_AI_LOADOUT
+          ? glitchAiLoadout(difficulty)
           : KADE_AI_LOADOUT,
     seed: 29,
   });
@@ -147,19 +163,40 @@ function fighterDefinition(
     team,
     maxHealth: characterId === 'vorgh'
       ? VORGH_MAX_HEALTH
+      : characterId === 'titan'
+        ? TITAN_MAX_HEALTH
       : characterId === 'lucky'
         ? LUCKY_MAX_HEALTH
-        : 1_000,
+        : characterId === 'glitch'
+          ? GLITCH_MAX_HEALTH
+          : 1_000,
     spawn: { x: fixed(x), y: 0 },
     facing,
     hurtboxes: characterId === 'vorgh'
       ? VORGH_HURTBOXES
+      : characterId === 'titan'
+        ? TITAN_HURTBOXES
       : characterId === 'lucky'
         ? LUCKY_HURTBOXES
-        : KADE_HURTBOXES,
-    ...(characterId === 'lucky' ? { movement: LUCKY_MOVEMENT } : {}),
+        : characterId === 'glitch'
+          ? GLITCH_HURTBOXES
+          : KADE_HURTBOXES,
+    ...(characterId === 'lucky'
+      ? {
+          movement: LUCKY_MOVEMENT,
+          resource: {
+            maximum: 100,
+            initial: 0,
+            damageTakenPercent: 0,
+            perfectBlockGain: 4,
+          },
+        }
+      : characterId === 'glitch'
+        ? { movement: GLITCH_MOVEMENT, resource: GLITCH_DEFENSE_RULES }
+        : {}),
     ...(characterId === 'vorgh'
       ? { movement: VORGH_MOVEMENT, resource: VORGH_RESOURCE }
       : {}),
+    ...(characterId === 'titan' ? { movement: TITAN_MOVEMENT } : {}),
   };
 }

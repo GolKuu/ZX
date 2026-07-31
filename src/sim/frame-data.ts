@@ -35,6 +35,8 @@ export interface GroundBounceData {
   readonly verticalSpeed: number;
   readonly horizontalScale: Ratio;
   readonly minimumHitstun: number;
+  /** When true, the bounce is granted only if the defender was already acting. */
+  readonly counterHitOnly?: boolean;
 }
 
 export interface HitData {
@@ -76,6 +78,8 @@ export interface MoveCounterData {
   readonly into: string;
   /** Frames the baited attacker is frozen for, so the read is readable. */
   readonly attackerHitstop: number;
+  /** Throw-tech windows reject grapples without countering ordinary strikes. */
+  readonly grappleOnly?: boolean;
 }
 
 export interface MoveArmourData {
@@ -84,6 +88,20 @@ export interface MoveArmourData {
   /** Percent of incoming damage kept while armour absorbs the stagger. */
   readonly damagePercent: number;
 }
+
+export interface MoveStatusData {
+  readonly id: string;
+  readonly durationFrames: number;
+  readonly recoveryPercent: number;
+  readonly resourceDrainIntervalFrames?: number;
+  readonly resourceDrainAmount?: number;
+  readonly armourHits?: number;
+  readonly armourDamagePercent?: number;
+  readonly cancelInto?: readonly string[];
+  readonly cancelFrom?: readonly string[];
+}
+
+export type AttackLevel = 'high' | 'mid' | 'low' | 'throw' | 'unblockable';
 
 export type GrappleKind =
   | 'normal'
@@ -117,6 +135,12 @@ export interface MoveDisplacementData {
   readonly clearVelocity?: boolean;
 }
 
+export interface AirComboRuleData {
+  readonly juggleLimit: number;
+  readonly hitstunDecayPerHit: number;
+  readonly repeatedMoveDamagePercent: number;
+}
+
 export interface MoveObstacleData {
   /** Local-space obstacle volume, mirrored by fighter facing. */
   readonly box: FixedBox;
@@ -126,6 +150,7 @@ export interface MoveObstacleData {
 
 export interface MoveFrameData {
   readonly id: string;
+  readonly attackLevel?: AttackLevel;
   readonly startup: number;
   readonly active: number;
   readonly recovery: number;
@@ -155,6 +180,8 @@ export interface MoveFrameData {
    * unconditionally: the follow-up simply never starts if nothing connected.
    */
   readonly onHitFollowUp?: string;
+  /** Recovery clip started only when this move reached its end without contact. */
+  readonly onWhiffFollowUp?: string;
   /** Generic character-resource gates used by Rage and future stance meters. */
   readonly minimumResource?: number;
   readonly resourceCost?: number;
@@ -162,9 +189,12 @@ export interface MoveFrameData {
   readonly resourceGainOnBlock?: number;
   /** Limited, authored armour. It never removes damage or recovery entirely. */
   readonly armour?: MoveArmourData;
+  readonly status?: MoveStatusData;
   /** Marks the active hitbox as a real grab instead of an unblockable strike. */
   readonly grapple?: MoveGrappleData;
   readonly displacements?: readonly MoveDisplacementData[];
+  readonly airCombo?: AirComboRuleData;
+  readonly cooldownFrames?: number;
 }
 
 export type MovePhase = 'startup' | 'active' | 'recovery';
@@ -188,7 +218,7 @@ export function effectiveMoveFrames(
   move: MoveFrameData,
   recoveryPercent: number,
 ): number {
-  if (recoveryPercent >= 100) {
+  if (recoveryPercent === 100) {
     return totalMoveFrames(move);
   }
   const scaled = Math.ceil((move.recovery * recoveryPercent) / 100);

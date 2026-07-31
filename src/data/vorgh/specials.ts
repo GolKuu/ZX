@@ -14,7 +14,7 @@ const rows: readonly VorghRow[] = [
     startup: 14, active: 5, recovery: 24, rageGain: 5,
     hits: [strike([1.12, 1.08, 0.72, 0.46], 74, 29, 17, [0.3, 0.06], 10)],
     armour: { frames: { from: 8, toExclusive: 13 }, hits: 1, damagePercent: 75 },
-    cancels: [N.predatorRake], tags: ['dash-trail'],
+    tags: ['dash-trail'],
   },
   {
     id: S.painCounter, name: 'Pain Counter', level: 'mid',
@@ -39,6 +39,11 @@ const rows: readonly VorghRow[] = [
     startup: 17, active: 7, recovery: 24, rageGain: 5,
     hits: [strike([0.72, 1.4, 0.54, 0.6], 80, 31, 18, [0.22, -0.16], 12)],
     cancels: [N.airLight, N.airMedium], tags: ['leap-arc'],
+    displacements: [{
+      frame: 7,
+      offset: { x: fixed(0.22), y: fixed(0.42) },
+      clearVelocity: true,
+    }],
   },
   {
     id: S.bloodRoar, name: 'Blood Roar', level: 'mid',

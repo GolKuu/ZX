@@ -1,7 +1,10 @@
 import type {
   GroundBounceData,
   MoveArmourData,
+  MoveCounterData,
   MoveDisplacementData,
+  MoveGrappleData,
+  MoveStatusData,
   WallBounceData,
 } from '../../sim/frame-data.js';
 
@@ -58,8 +61,11 @@ export interface GlitchMoveRow {
   readonly cancels?: readonly GlitchCancel[];
   readonly displacements?: readonly MoveDisplacementData[];
   readonly armour?: MoveArmourData;
+  readonly counter?: MoveCounterData;
+  readonly grapple?: MoveGrappleData;
   readonly meterCost?: number;
   readonly onHitFollowUp?: string;
+  readonly status?: MoveStatusData;
   readonly presentation: GlitchPresentation;
   readonly tags: readonly string[];
 }

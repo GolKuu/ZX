@@ -1,4 +1,7 @@
-import type { FighterMovementData } from '../../sim/state.js';
+import type {
+  FighterMovementData,
+  FighterResourceData,
+} from '../../sim/state.js';
 import { fixed, type FixedBox } from '../../sim/math.js';
 
 function box(
@@ -41,6 +44,17 @@ export const GLITCH_MOVEMENT: FighterMovementData = {
 };
 
 export const GLITCH_MAX_HEALTH = 850;
+
+/** Enables the universal three-frame Perfect Block without adding a power bar. */
+export const GLITCH_DEFENSE_RULES: FighterResourceData = {
+  maximum: 0,
+  initial: 0,
+  damageTakenPercent: 0,
+  perfectBlockGain: 0,
+  painGuardCost: 1,
+  guardBreakLoss: 0,
+  guardBreakLockFrames: 0,
+};
 
 export const GLITCH_STATS = {
   health: 85,

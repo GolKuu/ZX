@@ -47,6 +47,10 @@ function validateMove(move: MoveFrameData): void {
     assertNonNegativeInteger(move.armour.hits, `${move.id}.armour.hits`);
     assertNonNegativeInteger(move.armour.damagePercent, `${move.id}.armour.damagePercent`);
   }
+  if (move.status !== undefined) {
+    assertNonNegativeInteger(move.status.durationFrames, `${move.id}.status.durationFrames`);
+    assertNonNegativeInteger(move.status.recoveryPercent, `${move.id}.status.recoveryPercent`);
+  }
   if (move.grapple !== undefined) {
     assertNonNegativeInteger(
       move.grapple.pairedFrames,
@@ -97,7 +101,11 @@ function validateHurtbox(
   if (hurtbox.frames.toExclusive > total) {
     throw new Error(`${moveId}.hurtbox exceeds the move duration`);
   }
-  validateBoxes(hurtbox.boxes, `${moveId}.hurtbox.boxes`);
+  // An explicit empty list is a bounded invulnerability window. The frame
+  // range is still validated above, so it cannot silently extend past recovery.
+  if (hurtbox.boxes.length > 0) {
+    validateBoxes(hurtbox.boxes, `${moveId}.hurtbox.boxes`);
+  }
 }
 
 function validateHit(hit: HitData, label: string): void {

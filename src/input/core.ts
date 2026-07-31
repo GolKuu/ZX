@@ -59,6 +59,8 @@ export {
 
 export { VORGH_COMMANDS } from './vorghCommands.js';
 
+export { TITAN_COMMANDS } from './titanCommands.js';
+
 export {
   LUCKY_COMMANDS,
 } from './luckyCommands.js';

@@ -50,39 +50,63 @@
   transform: scale(1.35);
 }
 
-.luckyHead {
+.vorghHead {
   position: absolute;
   z-index: 2;
-  top: 13%;
-  left: 22%;
-  width: 56%;
-  height: 68%;
+  inset: 14% 22% 15%;
   background:
-    linear-gradient(135deg, transparent 0 30%, #171912 31% 42%, transparent 43%),
-    linear-gradient(155deg, #171912 0 25%, #b57a64 26% 76%, transparent 77%);
-  border-radius: 48% 48% 42% 44%;
+    linear-gradient(72deg, transparent 0 42%, #ff4c17 43% 47%, transparent 48%),
+    linear-gradient(145deg, #0b0708 0 28%, #985f4e 29% 72%, #d0b184 73%);
+  border-radius: 44% 50% 38% 46%;
   filter: drop-shadow(0 0.3cqw 0.2cqw #000);
-  transform: skew(-4deg);
+  transform: skew(-7deg);
 }
 
-.luckyHead b {
+.vorghHead b {
   position: absolute;
-  top: 43%;
-  right: 8%;
-  width: 26%;
-  height: 6%;
-  background: #e5b94c;
-  box-shadow: 0 0 0.35cqw #e5b94c;
+  top: 42%;
+  right: 4%;
+  width: 31%;
+  height: 7%;
+  background: #ff5a16;
+  box-shadow: 0 0 0.45cqw #ff5a16;
 }
 
-.luckyHead u {
+.vorghHead u {
   position: absolute;
-  right: -12%;
-  bottom: -15%;
-  width: 74%;
-  height: 44%;
-  background: #164a35;
-  clip-path: polygon(22% 0, 100% 15%, 72% 100%, 0 65%);
+  right: -24%;
+  bottom: -19%;
+  width: 92%;
+  height: 52%;
+  background: #3a1215;
+  clip-path: polygon(20% 0, 100% 22%, 74% 100%, 0 72%);
+}
+
+.titanHead {
+  position: absolute;
+  inset: 17% 24% 13%;
+  display: block;
+  border: 2px solid #778188;
+  background: linear-gradient(145deg, #4b555b 0 42%, #171d20 43% 100%);
+  clip-path: polygon(16% 0, 84% 0, 100% 22%, 92% 100%, 8% 100%, 0 22%);
+  box-shadow: inset 0 -10px 12px rgb(0 0 0 / 55%), 0 0 11px rgb(255 116 23 / 28%);
+}
+
+.titanHead b {
+  position: absolute;
+  inset: 42% 8% auto;
+  height: 12%;
+  background: #ff7417;
+  box-shadow: 0 0 9px #ff7417;
+}
+
+.titanHead u {
+  position: absolute;
+  inset: 4% 23% auto;
+  height: 12%;
+  border: 1px solid #89949a;
+  background: #252c30;
+  text-decoration: none;
 }
 
 @container combat-hud (max-width: 760px) {

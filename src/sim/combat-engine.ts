@@ -80,6 +80,7 @@ export class CombatEngine {
 
     faceAttackingFightersTowardOpponents(this.fighters, inputs);
     for (const fighter of this.fighters) {
+      advanceMoveCooldowns(fighter);
       fighter.previousPosition.x = fighter.position.x;
       fighter.previousPosition.y = fighter.position.y;
       if (fighter.hitstop > 0) {
@@ -88,7 +89,7 @@ export class CombatEngine {
         continue;
       }
       applyNeutralInput(fighter, inputs[fighter.id]);
-      advanceDefensiveResources(fighter);
+      advanceDefensiveResources(fighter, this.moves);
       const started = tryStartMove(
         fighter,
         inputs[fighter.id],
@@ -100,7 +101,7 @@ export class CombatEngine {
         this.nextActionSerial += 1;
         events.push(started);
       }
-      applyAuthoredDisplacement(fighter, this.moves);
+      applyAuthoredDisplacement(fighter, this.moves, this.config.groundY);
       integrateFighter(fighter, this.config, this.completedFrames, events);
     }
 
@@ -239,25 +240,61 @@ export class CombatEngine {
       const move = this.moves.get(action.moveId);
       // Frame Inertia and anything else that shortens recovery lands here, so
       // the move genuinely ends earlier rather than merely looking like it.
+      const tierRecovery = fighter.resource
+        >= (fighter.resourceRules?.highRageThreshold ?? 101)
+        ? fighter.resourceRules?.recoveryPercentAtHighRage ?? 100
+        : 100;
+      const recoveryPercent = Math.ceil(
+        fighter.recoveryPercent * tierRecovery / 100,
+      );
       const length = move === undefined
         ? 0
-        : effectiveMoveFrames(move, fighter.recoveryPercent);
+        : effectiveMoveFrames(move, recoveryPercent);
       if (move !== undefined && action.frame >= length) {
-        fighter.action = null;
         events.push({
           type: 'moveEnded',
           frame: this.completedFrames,
           fighterId: fighter.id,
           moveId: move.id,
         });
+        const whiff = action.hitLedger.length === 0
+          ? move.onWhiffFollowUp
+          : undefined;
+        if (whiff === undefined) {
+          fighter.action = null;
+        } else {
+          fighter.action = {
+            moveId: whiff,
+            frame: 0,
+            serial: this.nextActionSerial,
+            hitLedger: [],
+            armourHitsUsed: 0,
+          };
+          this.nextActionSerial += 1;
+          events.push({
+            type: 'moveStarted',
+            frame: this.completedFrames,
+            fighterId: fighter.id,
+            moveId: whiff,
+          });
+        }
       }
     }
+  }
+}
+
+function advanceMoveCooldowns(fighter: MutableFighterState): void {
+  for (const moveId of Object.keys(fighter.moveCooldowns)) {
+    const remaining = (fighter.moveCooldowns[moveId] ?? 0) - 1;
+    if (remaining <= 0) delete fighter.moveCooldowns[moveId];
+    else fighter.moveCooldowns[moveId] = remaining;
   }
 }
 
 function applyAuthoredDisplacement(
   fighter: MutableFighterState,
   moves: ReadonlyMap<string, MoveFrameData>,
+  groundY: number,
 ): void {
   const action = fighter.action;
   if (action === null) return;
@@ -268,7 +305,7 @@ function applyAuthoredDisplacement(
   fighter.position.x += displacement.offset.x * fighter.facing;
   fighter.position.y = Math.max(
     fighter.position.y + displacement.offset.y,
-    0,
+    groundY,
   );
   if (displacement.offset.y !== 0) fighter.grounded = false;
   if (displacement.clearVelocity === true) {
@@ -277,7 +314,10 @@ function applyAuthoredDisplacement(
   }
 }
 
-function advanceDefensiveResources(fighter: MutableFighterState): void {
+function advanceDefensiveResources(
+  fighter: MutableFighterState,
+  moves: ReadonlyMap<string, MoveFrameData>,
+): void {
   if (fighter.resourceLockFrames > 0) fighter.resourceLockFrames -= 1;
   if (fighter.guarding) {
     fighter.guardFrames += 1;
@@ -285,13 +325,36 @@ function advanceDefensiveResources(fighter: MutableFighterState): void {
     fighter.guardFrames = 0;
     fighter.guardHealth = Math.min(100, fighter.guardHealth + 1);
   }
-  const drain = fighter.resourceRules?.drainAtMaximumPerFrame ?? 0;
-  if (
-    drain > 0
-    && fighter.resourceMaximum > 0
-    && fighter.resource >= fighter.resourceMaximum
-  ) {
-    fighter.resource = Math.max(0, fighter.resource - drain);
+  if (fighter.statusFrames > 0) {
+    fighter.statusFrames -= 1;
+    const status = [...moves.values()].find(
+      (move) => move.status?.id === fighter.statusId,
+    )?.status;
+    const drainEvery = status?.resourceDrainIntervalFrames ?? 0;
+    if (drainEvery > 0) {
+      fighter.statusResourceDrainCounter += 1;
+      if (fighter.statusResourceDrainCounter >= drainEvery) {
+        fighter.statusResourceDrainCounter = 0;
+        fighter.resource = Math.max(
+          0,
+          fighter.resource - (status?.resourceDrainAmount ?? 0),
+        );
+      }
+    }
+    if (fighter.statusFrames === 0) {
+      fighter.statusId = null;
+      fighter.recoveryPercent = 100;
+      fighter.statusArmourHitsUsed = 0;
+    }
+  }
+  if (fighter.resourceOverdrive) {
+    fighter.resourceDrainCounter += 1;
+    const interval = fighter.resourceRules?.overdriveDrainIntervalFrames ?? 1;
+    if (fighter.resourceDrainCounter >= interval) {
+      fighter.resourceDrainCounter = 0;
+      fighter.resource = Math.max(0, fighter.resource - 1);
+    }
+    if (fighter.resource < 75) fighter.resourceOverdrive = false;
   }
 }
 

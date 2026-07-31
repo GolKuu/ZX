@@ -112,4 +112,7 @@ function resolveGround(
 
   fighter.velocity.y = 0;
   fighter.grounded = true;
+  fighter.airJuggleHits = 0;
+  fighter.lastAirHitMoveId = null;
+  fighter.repeatedAirHitCount = 0;
 }

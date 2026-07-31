@@ -22,8 +22,8 @@ export class LuckLedger {
       } else if (event.type === 'hit' && event.moveId.startsWith('lucky.')) {
         const comboReward = event.damage >= 70 ? 8 : 5;
         this.add(event.attackerId, comboReward);
-      } else if (event.type === 'block' && event.defenderId !== '') {
-        this.add(event.defenderId, 1);
+      } else if (event.type === 'block' && event.perfect) {
+        this.add(event.defenderId, 4);
       }
     }
   }

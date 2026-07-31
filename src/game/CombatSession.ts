@@ -3,7 +3,9 @@ import type {
   KeyboardInputSource,
 } from '@/src/input';
 import { FighterVoiceController } from '@/src/audio/FighterVoiceController';
+import { TitanSoundController } from '@/src/audio/TitanSoundController';
 import { LuckySoundController } from '@/src/audio/LuckySoundController';
+import { GlitchSoundController } from '@/src/audio/GlitchSoundController';
 import {
   getCharacterDefinition,
   type CharacterSelection,
@@ -63,7 +65,9 @@ export class CombatSession {
   private roundRestartInFrames = 0;
   private championAtRoundEnd: ChampionSide = null;
   private readonly fighterVoice: FighterVoiceController;
+  private readonly titanSound: TitanSoundController;
   private readonly luckySound: LuckySoundController;
+  private readonly glitchSound: GlitchSoundController;
   private readonly xray = new XrayController();
   private readonly meters: MeterController;
   private readonly attackInput = new AttackInputPolicy(ALL_COMBAT_MOVES);
@@ -80,7 +84,9 @@ export class CombatSession {
       useHudStore.getState().aiDifficulty,
     );
     this.fighterVoice = new FighterVoiceController(this.fighterSelection);
+    this.titanSound = new TitanSoundController(this.fighterSelection);
     this.luckySound = new LuckySoundController(this.fighterSelection);
+    this.glitchSound = new GlitchSoundController(this.fighterSelection);
     this.publishInitialState();
   }
 
@@ -161,10 +167,12 @@ export class CombatSession {
     this.attackInput.accept(result.state, result.events);
     this.meters.accept(result.events);
     this.luckySound.accept(result.events);
+    this.glitchSound.accept(result.events);
     this.xray.accept(result.events);
     publishCombatFrame(result.state, 0);
     publishCombatHits(result.state, result.events);
     this.fighterVoice.accept(result.state, result.events);
+    this.titanSound.accept(result.events);
     this.publishHud(result.state, result.events);
     this.handleImpact(result.events);
 

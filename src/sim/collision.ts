@@ -88,6 +88,13 @@ export function findHit(
   defenderHurtboxes: readonly FixedBox[],
   defenderMove?: MoveFrameData,
 ): HitCandidate | null {
+  const targetSize = move.grapple?.targetSize;
+  if (
+    (targetSize === 'grounded' && !defender.grounded)
+    || (targetSize === 'airborne' && defender.grounded)
+  ) {
+    return null;
+  }
   for (const localHitbox of hitbox.boxes) {
     const worldHitbox = toWorldBox(attacker, localHitbox);
     for (const localHurtbox of defenderHurtboxes) {

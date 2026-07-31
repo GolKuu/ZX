@@ -21,3 +21,10 @@ export const GLITCH_CINEMATIC_FRAMES = {
   critical: 84,
   patchNotes: 39,
 } as const;
+
+/** Initial simulation freeze; the authored move continues after this beat. */
+export const GLITCH_CINEMATIC_FREEZE_FRAMES = {
+  error: 12,
+  critical: 16,
+  patchNotes: 24,
+} as const;

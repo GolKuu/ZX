@@ -1,0 +1,27 @@
+{
+  "displayScale": 1.1,
+  "facesRight": true,
+  "textureScale": 2,
+  "poses": {
+    "lp": {
+      "width": 128,
+      "height": 240,
+      "ground": 0.92
+    },
+    "lk": {
+      "width": 128,
+      "height": 240,
+      "ground": 0.92
+    },
+    "hp": {
+      "width": 128,
+      "height": 240,
+      "ground": 0.92
+    },
+    "hk": {
+      "width": 128,
+      "height": 240,
+      "ground": 0.92
+    }
+  }
+}

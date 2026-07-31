@@ -13,6 +13,9 @@ import { MIM_WALL_SPECIAL_MOVES } from './mim/wall-specials.js';
 export const MIM_SPECIAL_MOVE_IDS = {
   ...MIM_WALL_IDS,
   ...MIM_STORY_IDS,
+  /** Legacy presentation hooks; aliases preserve gameplay ids. */
+  bananaTrap: MIM_WALL_IDS.invisibleWall,
+  fakeOpening: MIM_WALL_IDS.wallLaunch,
 } as const;
 
 export const MIM_SPECIAL_MOVES: readonly MoveFrameData[] = [

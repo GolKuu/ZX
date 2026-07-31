@@ -136,6 +136,19 @@
   box-shadow: 0 0 2rem rgb(216 175 67 / 42%);
 }
 
+.panel[data-character="vorgh"] .portrait i {
+  background: linear-gradient(145deg, #351013, #ff5a16);
+  box-shadow: 0 0 3rem rgb(255 74 22 / 28%);
+}
+
+.panel[data-character="titan"] .portrait i {
+  background:
+    linear-gradient(90deg, transparent 0 42%, #ff7417 43% 57%, transparent 58%),
+    repeating-linear-gradient(135deg, #4b555b 0 8px, #171d20 8px 16px);
+  border-color: #778188;
+  box-shadow: 0 0 18px rgb(255 116 23 / 32%);
+}
+
 .identity {
   position: relative;
   z-index: 2;

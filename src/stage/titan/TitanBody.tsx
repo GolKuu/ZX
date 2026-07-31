@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/refs -- R3F attaches these refs during render. */
 import type { FighterRigRefs } from '../fighterRigRefs';
+import { TitanDetails } from './TitanDetails';
 
 const METAL = '#252c31';
 const DARK = '#0d1114';
@@ -46,6 +47,7 @@ export function TitanBody({ refs }: { readonly refs: FighterRigRefs }) {
       <TitanArm refValue={refs.rightArm} side={1} />
       <TitanLeg refValue={refs.leftLeg} side={-1} />
       <TitanLeg refValue={refs.rightLeg} side={1} />
+      <TitanDetails />
 
       <group ref={refs.leftSword} />
       <group ref={refs.rightSword} />

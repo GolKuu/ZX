@@ -17,6 +17,7 @@ export function copyWorldConfig(
 export function copyMove(move: MoveFrameData): MoveFrameData {
   return {
     id: move.id,
+    attackLevel: move.attackLevel,
     startup: move.startup,
     active: move.active,
     recovery: move.recovery,
@@ -37,6 +38,8 @@ export function copyMove(move: MoveFrameData): MoveFrameData {
                 hitstop: { ...hitbox.hit.block.hitstop },
                 knockback: { ...hitbox.hit.block.knockback },
                 chipDamage: hitbox.hit.block.chipDamage,
+                guardDamage: hitbox.hit.block.guardDamage,
+                guardBreak: hitbox.hit.block.guardBreak,
               },
         wallBounce:
           hitbox.hit.wallBounce === undefined
@@ -82,6 +85,7 @@ export function copyMove(move: MoveFrameData): MoveFrameData {
       ? undefined
       : { ...move.counter, frames: { ...move.counter.frames } },
     onHitFollowUp: move.onHitFollowUp,
+    onWhiffFollowUp: move.onWhiffFollowUp,
     minimumResource: move.minimumResource,
     resourceCost: move.resourceCost,
     resourceGainOnHit: move.resourceGainOnHit,
@@ -89,11 +93,22 @@ export function copyMove(move: MoveFrameData): MoveFrameData {
     armour: move.armour === undefined
       ? undefined
       : { ...move.armour, frames: { ...move.armour.frames } },
+    status: move.status === undefined ? undefined : {
+      ...move.status,
+      cancelInto: move.status.cancelInto === undefined
+        ? undefined
+        : [...move.status.cancelInto],
+      cancelFrom: move.status.cancelFrom === undefined
+        ? undefined
+        : [...move.status.cancelFrom],
+    },
     grapple: move.grapple === undefined ? undefined : { ...move.grapple },
     displacements: move.displacements?.map((displacement) => ({
       ...displacement,
       offset: { ...displacement.offset },
     })),
+    airCombo: move.airCombo === undefined ? undefined : { ...move.airCombo },
+    cooldownFrames: move.cooldownFrames,
   };
 }
 
@@ -118,6 +133,7 @@ export function createFighterState(
     facing: definition.facing,
     grounded: definition.spawn.y === groundY,
     guarding: false,
+    crouching: false,
     guardMode: 'normal',
     guardFrames: 0,
     guardHealth: 100,
@@ -127,9 +143,17 @@ export function createFighterState(
     resource: definition.resource?.initial ?? 0,
     resourceMaximum: definition.resource?.maximum ?? 0,
     resourceLockFrames: 0,
+    resourceOverdrive: false,
+    resourceDrainCounter: 0,
     resourceRules: definition.resource === undefined
       ? null
       : { ...definition.resource },
+    statusId: null,
+    statusFrames: 0,
+    statusResourceDrainCounter: 0,
+    statusArmourHitsUsed: 0,
+    statusArmourHitsMaximum: 0,
+    statusArmourDamagePercent: 100,
     dashFrames: 0,
     dashDirection: 0,
     lungeFrames: 0,
@@ -145,6 +169,10 @@ export function createFighterState(
       groundHorizontalDenominator: 1,
       groundMinimumHitstun: 0,
     },
+    airJuggleHits: 0,
+    lastAirHitMoveId: null,
+    repeatedAirHitCount: 0,
+    moveCooldowns: {},
     wallRun: { phase: 'none', wallId: null, frame: 0, climb: 0 },
   };
 }

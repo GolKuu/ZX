@@ -1,6 +1,10 @@
 import { fixed } from '../../sim/math.js';
 import { buildVorgh, type VorghRow } from './builder.js';
-import { VORGH_SUPER_IDS as U } from './ids.js';
+import {
+  VORGH_NORMAL_IDS as N,
+  VORGH_SPECIAL_IDS as S,
+  VORGH_SUPER_IDS as U,
+} from './ids.js';
 
 const rows: readonly VorghRow[] = [
   dominion(U.savageDominion, 'Savage Dominion', 18, 152, 0, 34),
@@ -8,8 +12,26 @@ const rows: readonly VorghRow[] = [
   dominion(U.savageDominionHigh, 'Savage Dominion: Apex', 14, 224, 75, 54),
   {
     id: U.unchained, name: 'Unchained', level: 'mid',
-    startup: 12, active: 6, recovery: 18, minimumRage: 50, rageCost: 35,
+    startup: 12, active: 6, recovery: 18, minimumRage: 50, rageCost: 20,
     hits: [], tags: ['super', 'unchained-aura'],
+    status: {
+      id: 'vorgh.unchained',
+      durationFrames: 300,
+      recoveryPercent: 86,
+      resourceDrainIntervalFrames: 20,
+      resourceDrainAmount: 1,
+      armourHits: 1,
+      armourDamagePercent: 75,
+      cancelInto: [
+        N.predatorRake, N.skullRam, N.huntingSweep, N.risingMaul,
+        S.rageSlash, S.berserkDash, S.predatorLeap, S.bloodRoar,
+      ],
+      cancelFrom: [
+        N.predatorRake, N.skullRam, N.huntingSweep, N.risingMaul,
+        N.crouchLight, N.crouchMedium,
+        S.rageSlash, S.berserkDash,
+      ],
+    },
   },
   {
     id: U.lastBeast, name: 'Last Beast', level: 'unblockable',
