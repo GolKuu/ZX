@@ -133,7 +133,8 @@ export function AaaVisualJudge() {
     state.mimSuperVersion
     + state.echoSuperVersion
     + state.chronoSuperVersion
-    + state.glitchSuperVersion,
+    + state.glitchSuperVersion
+    + state.luckySuperVersion,
   );
 
   const [samples, setSamples] = useState<Partial<Record<CapturePhase, FrameAnalysis>>>({});
@@ -163,6 +164,13 @@ export function AaaVisualJudge() {
     if (recorded.length === 0) return null;
     const sum = recorded.reduce((acc, sample) => acc + sample.overall, 0);
     return Math.round((sum / recorded.length) * 10) / 10;
+  }, [samples]);
+  const characterScore = useMemo(() => {
+    const recorded = Object.values(samples).filter(
+      (sample): sample is FrameAnalysis => sample !== undefined,
+    );
+    if (recorded.length === 0) return null;
+    return Math.min(...recorded.map((sample) => sample.categories.character));
   }, [samples]);
 
   useEffect(() => {
@@ -247,8 +255,9 @@ export function AaaVisualJudge() {
         [phase]: analysisWithMeta,
       }));
       setLog((current) => {
+        const character = analysisWithMeta.categories.character;
         const next = [
-          `[${phase.toUpperCase()}] ${analysisWithMeta.overall}/100 - ${analysisWithMeta.findings[0] ?? 'No show-stopper found'}`,
+          `[${phase.toUpperCase()}] CHARACTER ${character}/100 ${qualityVerdict(character)} - ${analysisWithMeta.findings[0] ?? 'No show-stopper found'}`,
           ...current,
         ];
         return next.slice(0, MAX_UI_LOG);
@@ -264,7 +273,14 @@ export function AaaVisualJudge() {
           AAA Judge
           <small>{open ? 'Collapse' : 'Expand'}</small>
         </button>
-        {overall !== null && <strong>Overall: {overall}/100</strong>}
+        {characterScore !== null && (
+          <strong
+            data-pass={characterScore >= MINIMUM_CHARACTER_SCORE}
+            title={overall === null ? undefined : `Scene overall: ${overall}/100`}
+          >
+            Character {characterScore}/100 · {qualityVerdict(characterScore)}
+          </strong>
+        )}
       </header>
       {open && (
         <section className={styles.content}>
@@ -280,7 +296,10 @@ export function AaaVisualJudge() {
                 <li key={`${phase}-${sample.time}`}>
                   <div className={styles.phaseHeader}>
                     <span>{phase}</span>
-                    <b>{sample.overall}/100</b>
+                    <b>
+                      Character {sample.categories.character}/100 ·{' '}
+                      {qualityVerdict(sample.categories.character)}
+                    </b>
                   </div>
                   <div className={styles.categoryRow}>
                     {Object.entries(sample.categories).map(([category, score]) => (
@@ -649,6 +668,10 @@ function saturation(red: number, green: number, blue: number) {
 
 function clamp(value: number, max = 100) {
   return Math.max(0, Math.min(max, value));
+}
+
+function qualityVerdict(score: number): 'ACCEPTED' | 'REJECTED' {
+  return score >= MINIMUM_CHARACTER_SCORE ? 'ACCEPTED' : 'REJECTED';
 }
 
 function clamp01(value: number, min = 0, max = 1): number {

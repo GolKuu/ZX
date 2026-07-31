@@ -12,6 +12,7 @@ import { EchoSuperCinematic } from './EchoSuperCinematic';
 import { ChronoSuperCinematic } from './ChronoSuperCinematic';
 import { GlitchSuperCinematic } from './GlitchSuperCinematic';
 import { LuckySuperCinematic } from './LuckySuperCinematic';
+import { AaaVisualJudge } from './AaaVisualJudge';
 import styles from './PlayOverlay.module.css';
 
 export function PlayOverlay() {
@@ -43,8 +44,9 @@ function DevelopmentTools() {
   const previewGlitch = useRenderStore((state) => state.triggerGlitchSuper);
   const previewLucky = useRenderStore((state) => state.triggerLuckySuper);
   return (
-    <aside className={styles.devTools} aria-label="Development tools">
-      <span className={styles.fps}><FpsMeter /></span>
+    <>
+      <aside className={styles.devTools} aria-label="Development tools">
+        <span className={styles.fps}><FpsMeter /></span>
       <button type="button" onClick={() => preview('p1', 'mirrorArena')}>MIM · ARENA</button>
       <button type="button" onClick={() => preview('p1', 'falseOpening')}>MIM · BAIT</button>
       <button type="button" onClick={() => preview('p1', 'perfectBox')}>MIM · BOX</button>
@@ -65,6 +67,8 @@ function DevelopmentTools() {
       >
         FX {effectsEnabled ? 'on' : 'off'}
       </button>
-    </aside>
+      </aside>
+      <AaaVisualJudge />
+    </>
   );
 }

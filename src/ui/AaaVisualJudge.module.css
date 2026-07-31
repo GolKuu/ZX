@@ -49,6 +49,14 @@
   color: #f9faff;
 }
 
+.header strong[data-pass="false"] {
+  color: #ff8794;
+}
+
+.header strong[data-pass="true"] {
+  color: #8df0b9;
+}
+
 .content {
   padding: 0.75rem;
   overflow: auto;
