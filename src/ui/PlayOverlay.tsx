@@ -7,6 +7,7 @@ import { FightControlStrip } from './FightControlStrip';
 import { FpsMeter } from './FpsMeter';
 import { XrayCinematic } from './XrayCinematic';
 import { MobileControls } from './MobileControls';
+import { MobileModeToggle } from './MobileModeToggle';
 import { MimSuperCinematic } from './MimSuperCinematic';
 import { GlitchSuperCinematic } from './GlitchSuperCinematic';
 import { LuckySuperCinematic } from './LuckySuperCinematic';
@@ -25,7 +26,12 @@ export function PlayOverlay() {
       <LuckySuperCinematic />
       <CombatHud />
       <FightControlStrip />
-      {screen === 'fight' && <MobileControls forcedVisible={mobileMode} />}
+      {screen === 'fight' && (
+        <>
+          <MobileModeToggle />
+          <MobileControls visible={mobileMode} />
+        </>
+      )}
       {process.env.NODE_ENV !== 'production' && <DevelopmentTools />}
     </div>
   );

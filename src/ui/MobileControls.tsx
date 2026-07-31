@@ -5,34 +5,47 @@ import {
   MobileInputController,
   type MobileControl,
 } from '@/src/input/mobile-controller';
+import { useHudStore } from '@/src/store/hudStore';
 import styles from './CombatHud.module.css';
 
 const mobileController = new MobileInputController();
-
-const leftControls: readonly ControlButton[] = [
-  { control: 'back', label: '◀', ariaLabel: 'Move back' },
-  { control: 'guard', label: 'G', ariaLabel: 'Guard' },
-  { control: 'forward', label: '▶', ariaLabel: 'Move forward' },
-];
-
-const attackControls: readonly ControlButton[] = [
-  { control: 'light', label: 'L', ariaLabel: 'Light attack' },
-  { control: 'medium', label: 'M', ariaLabel: 'Medium attack' },
-  { control: 'heavy', label: 'H', ariaLabel: 'Heavy attack' },
-  { control: 'special', label: 'S', ariaLabel: 'Special attack' },
-];
 
 interface ControlButton {
   readonly control: MobileControl;
   readonly label: string;
   readonly ariaLabel: string;
+  readonly tone?: 'utility' | 'power';
 }
 
-interface MobileControlsProps {
-  readonly forcedVisible: boolean;
-}
+const movementControls: readonly ControlButton[] = [
+  { control: 'up', label: '↑', ariaLabel: 'Прыжок' },
+  { control: 'left', label: '←', ariaLabel: 'Движение влево' },
+  { control: 'down', label: '↓', ariaLabel: 'Присесть' },
+  { control: 'right', label: '→', ariaLabel: 'Движение вправо' },
+];
 
-export function MobileControls({ forcedVisible }: MobileControlsProps) {
+const combatControls: readonly ControlButton[] = [
+  { control: 'lp', label: 'LP', ariaLabel: 'Лёгкий удар рукой' },
+  { control: 'hp', label: 'HP', ariaLabel: 'Сильный удар рукой' },
+  { control: 'lk', label: 'LK', ariaLabel: 'Лёгкий удар ногой' },
+  { control: 'hk', label: 'HK', ariaLabel: 'Сильный удар ногой' },
+  { control: 'block', label: 'БЛК', ariaLabel: 'Блок', tone: 'utility' },
+  { control: 'dash', label: 'РЫВ', ariaLabel: 'Рывок', tone: 'utility' },
+  { control: 'taunt', label: 'Т', ariaLabel: 'Насмешка', tone: 'utility' },
+  { control: 'super', label: 'SUP', ariaLabel: 'Супер', tone: 'power' },
+  { control: 'ultimate', label: 'ULT', ariaLabel: 'Ультимейт', tone: 'power' },
+];
+
+const mimControls: readonly ControlButton[] = [
+  { control: 'mimQ', label: 'Q', ariaLabel: 'Приём MIM Q', tone: 'utility' },
+  { control: 'mimE', label: 'E', ariaLabel: 'Приём MIM E', tone: 'utility' },
+  { control: 'mimR', label: 'R', ariaLabel: 'Приём MIM R', tone: 'utility' },
+  { control: 'mimF', label: 'F', ariaLabel: 'Приём MIM F', tone: 'utility' },
+];
+
+export function MobileControls({ visible }: { readonly visible: boolean }) {
+  const isMim = useHudStore((state) => state.fighterSelection[0] === 'mim');
+
   useEffect(() => {
     const release = () => mobileController.releaseAll();
     window.addEventListener('blur', release);
@@ -44,28 +57,40 @@ export function MobileControls({ forcedVisible }: MobileControlsProps) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!visible) mobileController.releaseAll();
+  }, [visible]);
+
   return (
     <section
-      aria-label="Mobile combat controls"
-      className={`${styles.mobileControls} ${
-        forcedVisible ? styles.mobileControlsForced : ''
-      }`}
+      aria-label="Сенсорное управление боем"
+      className={styles.mobileControls}
+      data-visible={visible}
     >
       <div className={styles.movementPad}>
-        {leftControls.map((button) => (
+        {movementControls.map((button) => (
           <MobileButton key={button.control} {...button} />
         ))}
       </div>
-      <div className={styles.attackPad}>
-        {attackControls.map((button) => (
-          <MobileButton key={button.control} {...button} />
-        ))}
+      <div className={styles.combatPad}>
+        {isMim && (
+          <div className={styles.characterPad} aria-label="Особые приёмы MIM">
+            {mimControls.map((button) => (
+              <MobileButton key={button.control} {...button} />
+            ))}
+          </div>
+        )}
+        <div className={styles.attackPad}>
+          {combatControls.map((button) => (
+            <MobileButton key={button.control} {...button} />
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-export function readMobileInput() {
+export function readMobileControls(): ReadonlySet<MobileControl> {
   return mobileController.read();
 }
 
@@ -73,10 +98,8 @@ export function resetMobileInput(): void {
   mobileController.releaseAll();
 }
 
-function MobileButton({ control, label, ariaLabel }: ControlButton) {
-  const release = (
-    event: React.PointerEvent<HTMLButtonElement>,
-  ): void => {
+function MobileButton({ control, label, ariaLabel, tone }: ControlButton) {
+  const release = (event: React.PointerEvent<HTMLButtonElement>): void => {
     mobileController.release(event.pointerId);
     delete event.currentTarget.dataset.pressed;
   };
@@ -86,6 +109,7 @@ function MobileButton({ control, label, ariaLabel }: ControlButton) {
       aria-label={ariaLabel}
       className={styles.mobileButton}
       data-control={control}
+      data-tone={tone}
       type="button"
       onContextMenu={(event) => event.preventDefault()}
       onPointerCancel={release}
@@ -95,16 +119,9 @@ function MobileButton({ control, label, ariaLabel }: ControlButton) {
         event.currentTarget.dataset.pressed = 'true';
         mobileController.press(event.pointerId, control);
       }}
-      onPointerLeave={(event) => {
-        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-          return;
-        }
-        release(event);
-      }}
       onPointerUp={release}
     >
-      <span>{label}</span>
-      <small>{control}</small>
+      {label}
     </button>
   );
 }

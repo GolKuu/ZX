@@ -19,7 +19,7 @@ import {
 } from '@/src/input';
 import { useControlStore } from '@/src/store/controlStore';
 import { useHudStore } from '@/src/store/hudStore';
-import { readMobileInput, resetMobileInput } from '@/src/ui/MobileControls';
+import { readMobileControls, resetMobileInput } from '@/src/ui/MobileControls';
 import type {
   CharacterId,
   CharacterSelection,
@@ -45,23 +45,8 @@ class MobileAwareInputSource implements InputSource {
     attacksLocked = false,
     context: CommandContext = DEFAULT_CONTEXT,
   ): FighterInput {
-    const keyboardInput = this.keyboard.sample(facing, attacksLocked, context);
-    const mobileInput = readMobileInput();
-
-    if (
-      mobileInput.movement === 0
-      && !mobileInput.guard
-      && mobileInput.move === undefined
-    ) {
-      return keyboardInput;
-    }
-
-    return {
-      ...keyboardInput,
-      movement: mobileInput.movement === 0 ? keyboardInput.movement : mobileInput.movement,
-      guard: mobileInput.guard || keyboardInput.guard,
-      ...(mobileInput.move === undefined ? {} : { move: mobileInput.move }),
-    };
+    this.keyboard.setVirtualControls(readMobileControls());
+    return this.keyboard.sample(facing, attacksLocked, context);
   }
 
   public updateBindings(

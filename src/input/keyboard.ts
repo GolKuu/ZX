@@ -8,6 +8,7 @@
 import type { FighterInput } from '../sim/state.js';
 import {
   DEFAULT_BINDINGS,
+  bindingFor,
   horizontalOf,
   isCrouching as isCrouchDirection,
   isJumping,
@@ -15,6 +16,7 @@ import {
   resolveDirection,
   toFacingRelative,
   type Direction,
+  type BindableControl,
   type KeyBindings,
 } from './bindings.js';
 import { InputBuffer } from './buffer.js';
@@ -36,6 +38,7 @@ export interface KeyboardSourceOptions {
 
 export class KeyboardInputSource {
   private readonly held = new Set<string>();
+  private virtualControls: ReadonlySet<BindableControl> = new Set();
   private readonly buffer = new InputBuffer();
   private readonly attackGate = new AttackButtonGate();
   private bindings: KeyBindings;
@@ -106,10 +109,11 @@ export class KeyboardInputSource {
     attacksLocked = false,
     context: CommandContext = DEFAULT_CONTEXT,
   ): FighterInput {
-    const screenDirection = resolveDirection(this.held, this.bindings);
+    const held = this.readHeldKeys();
+    const screenDirection = resolveDirection(held, this.bindings);
     const direction = toFacingRelative(screenDirection, facing);
     const buttons = this.attackGate.filter(
-      readButtonMask(this.held, this.bindings),
+      readButtonMask(held, this.bindings),
       attacksLocked,
     );
     this.buffer.push(direction, buttons);
@@ -147,6 +151,10 @@ export class KeyboardInputSource {
     this.attackGate.reset();
   }
 
+  public setVirtualControls(controls: ReadonlySet<BindableControl>): void {
+    this.virtualControls = controls;
+  }
+
   /** Exposed for the input display and for replay capture. */
   public get history(): InputBuffer {
     return this.buffer;
@@ -171,6 +179,17 @@ export class KeyboardInputSource {
       return true;
     }
     return Object.values(buttons).includes(code);
+  }
+
+  private readHeldKeys(): ReadonlySet<string> {
+    if (this.virtualControls.size === 0) {
+      return this.held;
+    }
+    const held = new Set(this.held);
+    for (const control of this.virtualControls) {
+      held.add(bindingFor(this.bindings, control));
+    }
+    return held;
   }
 }
 

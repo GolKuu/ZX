@@ -25,6 +25,8 @@ export const MIM_BUTTONS = ['mimQ', 'mimE', 'mimR', 'mimF'] as const;
 export type MimButton = (typeof MIM_BUTTONS)[number];
 
 export type Button = AttackButton | ModifierButton | MimButton;
+export type DirectionControl = 'up' | 'down' | 'left' | 'right';
+export type BindableControl = DirectionControl | Button;
 
 /** Bit positions. Stable — the buffer stores these as a packed mask. */
 export const BUTTON_BIT: Readonly<Record<Button, number>> = {
@@ -51,6 +53,21 @@ export interface KeyBindings {
   readonly left: string;
   readonly right: string;
   readonly buttons: Readonly<Record<Button, string>>;
+}
+
+export function bindingFor(
+  bindings: KeyBindings,
+  control: BindableControl,
+): string {
+  if (
+    control === 'up'
+    || control === 'down'
+    || control === 'left'
+    || control === 'right'
+  ) {
+    return bindings[control];
+  }
+  return bindings.buttons[control];
 }
 
 /**
