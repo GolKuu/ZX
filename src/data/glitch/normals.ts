@@ -31,7 +31,8 @@ const rows: readonly GlitchMoveRow[] = [
       knockback: [0.18, 0.02], guardDamage: 13,
     })],
     cancels: [{
-      from: 9, to: 16, into: [N.breakpointAxe, U.dualVector, S.phaseBreak],
+      from: 9, to: 16,
+      into: [N.breakpointAxe, U.launcher, U.dualVector, S.phaseBreak],
       limit: 1,
     }],
     presentation: present('rift-elbow', 'violet-body-offset', 'rift_step', 'elbow_hit', 'nudge'),

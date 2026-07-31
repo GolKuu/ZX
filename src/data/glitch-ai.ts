@@ -27,9 +27,9 @@ export const GLITCH_AI_LOADOUT: AiLoadout = {
     { moves: [N.phaseJab, N.riftElbow, U.launcher] },
     { moves: [N.phaseJab, N.lowVectorSweep, S.spatialDash] },
     { moves: [N.riftElbow, U.dualVector, S.realitySlice] },
-    { moves: [U.launcher, A.light, A.medium, A.finisher] },
-    { moves: [U.antiAir, A.light, S.airShift, A.heavy] },
-    { moves: [N.phaseJab, S.teleportStrike, N.riftElbow] },
+    { moves: [U.launcher, A.light, A.medium, A.heavy, A.finisher] },
+    { moves: [U.antiAir, A.light, A.launcher, A.medium, A.heavy] },
+    { moves: [N.phaseJab, S.teleportStrike] },
   ],
 };
 

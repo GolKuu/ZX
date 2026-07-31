@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { BUTTON_BIT } from '../.sim-test-build/src/input/bindings.js';
+import { validateAiLoadout } from '../.sim-test-build/src/ai/validation.js';
 import { InputBuffer } from '../.sim-test-build/src/input/buffer.js';
 import { resolveCommand } from '../.sim-test-build/src/input/command.js';
 import { GLITCH_COMMANDS } from '../.sim-test-build/src/input/glitchCommands.js';
@@ -400,6 +401,14 @@ test('AI difficulty changes teleport frequency and honest combo depth', () => {
   assert.ok(GLITCH_STORY_AI_LOADOUT.neutral.some(
     (entry) => entry.moveId === S.realitySlice,
   ));
+});
+
+test('every Glitch AI route follows authored cancel windows', () => {
+  const moves = new Map(GLITCH_MOVES.map((move) => [move.id, move]));
+  for (const difficulty of ['easy', 'normal', 'hard', 'impossible', 'story']) {
+    validateAiLoadout(glitchAiLoadout(difficulty), moves);
+  }
+  validateAiLoadout(GLITCH_STORY_AI_LOADOUT, moves);
 });
 
 test('Rift Uppercut remains a DP command and Super is meter-gated', () => {
