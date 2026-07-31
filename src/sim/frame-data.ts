@@ -60,6 +60,20 @@ export interface CancelWindow {
   readonly into: readonly string[];
 }
 
+/**
+ * A window in which being attacked converts the incoming blow into a punish.
+ *
+ * The bait has to be a real hurtbox for this to be honest: the attacker is not
+ * denied their hit by invulnerability, they are denied it by having taken it.
+ */
+export interface MoveCounterData {
+  readonly frames: FrameRange;
+  /** Move the defender is thrown into when the bait is taken. */
+  readonly into: string;
+  /** Frames the baited attacker is frozen for, so the read is readable. */
+  readonly attackerHitstop: number;
+}
+
 export interface MoveObstacleData {
   /** Local-space obstacle volume, mirrored by fighter facing. */
   readonly box: FixedBox;
@@ -89,6 +103,15 @@ export interface MoveFrameData {
   readonly wallPiercing?: boolean;
   /** Integrity removed per confirmed contact with a plane. Defaults to 1. */
   readonly wallDamage?: number;
+  /** Turns an incoming blow into a punish during the authored window. */
+  readonly counter?: MoveCounterData;
+  /**
+   * Move to continue into the instant this one lands a clean hit.
+   *
+   * This is how a cinematic can be gated on a confirmed hit rather than played
+   * unconditionally: the follow-up simply never starts if nothing connected.
+   */
+  readonly onHitFollowUp?: string;
 }
 
 export type MovePhase = 'startup' | 'active' | 'recovery';
