@@ -8,10 +8,12 @@
 export const PALETTE = {
   none: [0, 0, 0, 0],
 
-  ink: [7, 10, 20, 255],
-  navyDeep: [16, 22, 42, 255],
-  navy: [27, 37, 64, 255],
-  navyLit: [42, 55, 87, 255],
+  ink: [6, 9, 18, 255],
+  // The trousers carry most of the body area, so their ramp has to stay well
+  // clear of the arena's dark background or the legs vanish in silhouette.
+  navyDeep: [26, 34, 62, 255],
+  navy: [42, 56, 95, 255],
+  navyLit: [68, 88, 136, 255],
 
   clothLit: [255, 255, 255, 255],
   cloth: [242, 246, 255, 255],

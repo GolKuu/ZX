@@ -132,6 +132,30 @@ export class PixelCanvas {
     }
   }
 
+  /**
+   * Edge light along one direction.
+   *
+   * This is what makes MIM read as lit technology rather than flat shapes: the
+   * top-and-front edges of every cluster pick up a cold highlight, so the
+   * direction the light comes from is the same in every pose.
+   */
+  rim(dx, dy, colour, brightColour) {
+    const source = new Uint8ClampedArray(this.data);
+    const alphaAt = (x, y) => {
+      if (x < 0 || y < 0 || x >= this.width || y >= this.height) return 0;
+      return source[(y * this.width + x) * 4 + 3];
+    };
+    for (let y = 0; y < this.height; y += 1) {
+      for (let x = 0; x < this.width; x += 1) {
+        const index = (y * this.width + x) * 4;
+        if (source[index + 3] === 0 || alphaAt(x + dx, y + dy) !== 0) continue;
+        // Bright clusters take the brighter highlight so white stays white.
+        const luminance = source[index] + source[index + 1] + source[index + 2];
+        this.set(x, y, luminance > 470 ? brightColour ?? colour : colour);
+      }
+    }
+  }
+
   /** One-pixel dark contour around every opaque cluster. Never inside it. */
   outline(colour = 'ink') {
     const source = new Uint8ClampedArray(this.data);

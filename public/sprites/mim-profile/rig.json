@@ -1,101 +1,240 @@
 {
-  "source": "output/imagegen/mim-fighter-reference-v2.png",
+  "source": "scripts/mim (procedural pixel art)",
   "view": {
-    "left": 20,
-    "top": 190,
-    "width": 380,
-    "height": 430,
-    "figureHeight": 414
+    "width": 176,
+    "height": 120,
+    "figureHeight": 96
   },
-  "textureScale": 2,
+  "textureScale": 3,
   "facesRight": true,
   "origin": [
-    205,
-    411
+    88,
+    112
   ],
-  "parts": {
-    "scarf": {
-      "width": 152,
-      "height": 92,
-      "pivot": [
-        0.875,
-        0.1413
-      ],
-      "joint": [
-        166,
-        123
-      ]
+  "order": [
+    "braids",
+    "armBackUpper",
+    "armBackLower",
+    "legBackUpper",
+    "legBackLower",
+    "sash",
+    "hips",
+    "torso",
+    "head",
+    "legFrontUpper",
+    "legFrontLower",
+    "armFrontUpper",
+    "armFrontLower"
+  ],
+  "parents": {
+    "braids": {
+      "joint": "braidRoot",
+      "parent": "head"
     },
     "head": {
-      "width": 96,
-      "height": 103,
+      "joint": "neck",
+      "parent": "torso"
+    },
+    "torso": {
+      "joint": "waist",
+      "parent": null
+    },
+    "hips": {
+      "joint": "waist",
+      "parent": "torso"
+    },
+    "sash": {
+      "joint": "sashRoot",
+      "parent": "torso"
+    },
+    "armBackUpper": {
+      "joint": "shoulderBack",
+      "parent": "torso"
+    },
+    "armBackLower": {
+      "joint": "elbowBack",
+      "parent": "armBackUpper"
+    },
+    "armFrontUpper": {
+      "joint": "shoulderFront",
+      "parent": "torso"
+    },
+    "armFrontLower": {
+      "joint": "elbowFront",
+      "parent": "armFrontUpper"
+    },
+    "legBackUpper": {
+      "joint": "hipBack",
+      "parent": "hips"
+    },
+    "legBackLower": {
+      "joint": "kneeBack",
+      "parent": "legBackUpper"
+    },
+    "legFrontUpper": {
+      "joint": "hipFront",
+      "parent": "hips"
+    },
+    "legFrontLower": {
+      "joint": "kneeFront",
+      "parent": "legFrontUpper"
+    }
+  },
+  "parts": {
+    "braids": {
+      "width": 33,
+      "height": 30,
       "pivot": [
-        0.4375,
-        0.9223
+        0.8788,
+        0.0333
       ],
       "joint": [
-        219,
-        119
+        85,
+        25
+      ]
+    },
+    "armBackUpper": {
+      "width": 11,
+      "height": 24,
+      "pivot": [
+        0.4545,
+        0.2083
+      ],
+      "joint": [
+        85,
+        36
+      ]
+    },
+    "armBackLower": {
+      "width": 9,
+      "height": 23,
+      "pivot": [
+        0.4444,
+        0.1739
+      ],
+      "joint": [
+        85,
+        50
+      ]
+    },
+    "legBackUpper": {
+      "width": 13,
+      "height": 35,
+      "pivot": [
+        0.4615,
+        0.1714
+      ],
+      "joint": [
+        84,
+        66
+      ]
+    },
+    "legBackLower": {
+      "width": 15,
+      "height": 31,
+      "pivot": [
+        0.4,
+        0.1613
+      ],
+      "joint": [
+        84,
+        88
+      ]
+    },
+    "sash": {
+      "width": 38,
+      "height": 24,
+      "pivot": [
+        0.8684,
+        0.1667
+      ],
+      "joint": [
+        84,
+        62
+      ]
+    },
+    "hips": {
+      "width": 22,
+      "height": 21,
+      "pivot": [
+        0.5,
+        0.0952
+      ],
+      "joint": [
+        88,
+        61
       ]
     },
     "torso": {
-      "width": 148,
-      "height": 160,
+      "width": 21,
+      "height": 31,
       "pivot": [
-        0.4932,
-        0.925
+        0.4762,
+        0.9032
       ],
       "joint": [
-        210,
-        255
+        88,
+        61
       ]
     },
-    "leftArm": {
-      "width": 106,
-      "height": 110,
+    "head": {
+      "width": 19,
+      "height": 24,
       "pivot": [
-        0.4434,
-        0.1727
+        0.5263,
+        0.7083
       ],
       "joint": [
-        151,
-        139
+        88,
+        32
       ]
     },
-    "rightArm": {
-      "width": 90,
-      "height": 108,
+    "legFrontUpper": {
+      "width": 13,
+      "height": 35,
       "pivot": [
-        0.2556,
-        0.2037
+        0.4615,
+        0.1714
       ],
       "joint": [
-        274,
-        139
+        91,
+        66
       ]
     },
-    "leftLeg": {
-      "width": 139,
-      "height": 155,
+    "legFrontLower": {
+      "width": 15,
+      "height": 31,
       "pivot": [
-        0.7698,
-        0.0774
+        0.4,
+        0.1613
       ],
       "joint": [
-        178,
-        253
+        91,
+        88
       ]
     },
-    "rightLeg": {
-      "width": 144,
-      "height": 161,
+    "armFrontUpper": {
+      "width": 11,
+      "height": 24,
       "pivot": [
-        0.2014,
-        0.0745
+        0.4545,
+        0.2083
       ],
       "joint": [
-        240,
-        253
+        91,
+        36
+      ]
+    },
+    "armFrontLower": {
+      "width": 9,
+      "height": 23,
+      "pivot": [
+        0.4444,
+        0.1739
+      ],
+      "joint": [
+        91,
+        50
       ]
     }
   }
