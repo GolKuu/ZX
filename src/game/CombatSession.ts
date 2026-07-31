@@ -46,7 +46,7 @@ type FighterInputSource = {
 };
 
 export class CombatSession {
-  private engine = createCombatEngine();
+  private engine: ReturnType<typeof createCombatEngine>;
   private ai: ReturnType<typeof createCombatAi>;
   private hud = createCombatHud();
   private readonly runner = new FixedStepRunner(() => this.tick());
@@ -63,7 +63,7 @@ export class CombatSession {
   private championAtRoundEnd: ChampionSide = null;
   private readonly fighterVoice: FighterVoiceController;
   private readonly xray = new XrayController();
-  private readonly meters = new MeterController();
+  private readonly meters: MeterController;
   private readonly attackInput = new AttackInputPolicy(ALL_COMBAT_MOVES);
 
   public constructor(
@@ -71,6 +71,8 @@ export class CombatSession {
     private readonly playerTwo: FighterInputSource,
     private readonly fighterSelection: CharacterSelection,
   ) {
+    this.engine = createCombatEngine(fighterSelection);
+    this.meters = new MeterController(fighterSelection);
     this.ai = createCombatAi(
       this.fighterSelection[1],
       useHudStore.getState().aiDifficulty,
@@ -85,7 +87,7 @@ export class CombatSession {
   }
 
   public reset(): void {
-    this.engine = createCombatEngine();
+    this.engine = createCombatEngine(this.fighterSelection);
     this.ai = createCombatAi(
       this.fighterSelection[1],
       useHudStore.getState().aiDifficulty,
@@ -189,6 +191,7 @@ export class CombatSession {
       roundWins: this.roundWins,
       superCharge: this.meters.superChargeState(world.fighters),
       ultimateReady: this.meters.ultimateReadyState(world.fighters),
+      luck: this.meters.luckState(world.fighters),
     });
   }
 
@@ -252,7 +255,7 @@ export class CombatSession {
   }
 
   private startNextRound(): void {
-    this.engine = createCombatEngine();
+    this.engine = createCombatEngine(this.fighterSelection);
     this.ai = createCombatAi(
       this.fighterSelection[1],
       useHudStore.getState().aiDifficulty,

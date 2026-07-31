@@ -75,6 +75,7 @@ function snapshotFighter(fighter: MutableFighterState): FighterSnapshot {
             moveId: fighter.action.moveId,
             frame: fighter.action.frame,
             serial: fighter.action.serial,
+            armourHitsUsed: fighter.action.armourHitsUsed,
           },
     wallRun: { ...fighter.wallRun },
   };

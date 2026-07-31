@@ -2,7 +2,8 @@
   | 'mim'
   | 'echo'
   | 'glitch'
-  | 'chrono';
+  | 'chrono'
+  | 'lucky';
 
 export type CharacterSelection = readonly [CharacterId, CharacterId];
 
@@ -47,6 +48,14 @@ export const CHARACTER_ROSTER = [
     description:
       'РЈРїСЂР°РІР»СЏРµС‚ С‚РµРјРїРѕРј Р±РѕСЏ: Р°С‚Р°РєСѓРµС‚ РёР· Р±СѓРґСѓС‰РµРіРѕ, СЂР°СЃСЃРµРєР°РµС‚ РІСЂРµРјРµРЅРЅРѕР№ РІРѕР»РЅРѕР№ Рё РЅР°РєР°Р·С‹РІР°РµС‚ С‚РѕС‡РЅС‹РјРё РїРѕРґСЃРµС‡РєР°РјРё.',
     mark: 'C',
+  },
+  {
+    id: 'lucky',
+    displayName: 'LUCKY',
+    archetype: 'Риск · контроль вероятности',
+    description:
+      'Стремительный импровизатор: накапливает видимую Удачу точными атаками и тратит её на усиленные маршруты без скрытых случайных побед.',
+    mark: '♠',
   },
 ] as const satisfies readonly CharacterDefinition[];
 

@@ -79,6 +79,7 @@ const initialSnapshot = (
       maxHealth: 1000,
       superCharge: 0,
       ultimateReady: false,
+      luck: 0,
       roundWins: 0,
     },
     {
@@ -90,6 +91,7 @@ const initialSnapshot = (
       maxHealth: 1000,
       superCharge: 0,
       ultimateReady: false,
+      luck: 0,
       roundWins: 0,
     },
   ],

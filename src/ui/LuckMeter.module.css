@@ -1,0 +1,64 @@
+.meter {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.35cqw;
+  margin-top: 0.22cqw;
+  color: #f5cb65;
+  font-size: 0.54cqw;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.meter[data-side="right"] {
+  direction: rtl;
+}
+
+.track {
+  position: relative;
+  height: 0.58cqw;
+  overflow: hidden;
+  background: #08120d;
+  border: 0.08cqw solid #6e5725;
+}
+
+.track i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, #0e6b43, #e0b642 72%, #a31d32);
+  box-shadow: 0 0 0.55cqw #d7ac45;
+  transition: width 180ms ease-out;
+}
+
+.meter[data-side="right"] .track i {
+  right: 0;
+  left: auto;
+}
+
+.track b {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #fff8;
+}
+
+.meter small {
+  white-space: nowrap;
+}
+
+.meter[data-jackpot="true"] {
+  color: #fff1a6;
+  filter: drop-shadow(0 0 0.25cqw #b71d39);
+}
+
+@media (max-width: 760px) {
+  .meter {
+    grid-template-columns: auto 1fr;
+    font-size: 0.48rem;
+  }
+
+  .meter small {
+    display: none;
+  }
+}

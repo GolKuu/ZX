@@ -6,6 +6,7 @@ import type { HudFighterSnapshot } from '@/src/hud/types';
 import { BurstMeter } from './BurstMeter';
 import { FighterPortrait } from './FighterPortrait';
 import { meterSegments } from './meterSegments';
+import { LuckMeter } from './LuckMeter';
 import styles from './PlayerStatus.module.css';
 
 export function PlayerStatus({ fighter }: {
@@ -53,6 +54,9 @@ export function PlayerStatus({ fighter }: {
           side={fighter.side}
           ultimateReady={fighter.ultimateReady}
         />
+        {characterId === 'lucky' && (
+          <LuckMeter side={fighter.side} value={fighter.luck ?? 0} />
+        )}
       </div>
     </section>
   );

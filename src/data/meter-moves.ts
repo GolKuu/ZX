@@ -11,6 +11,10 @@ import { XRAY_MOVE_ID } from './combat-moves.js';
 import { echoSuperCostForMove, ECHO_SUPER_MOVE_IDS } from './echo-super-moves.js';
 import { glitchSuperCostForMove, GLITCH_SUPER_MOVE_IDS } from './glitch-super-moves.js';
 import { mimSuperCostForMove, MIM_SUPER_MOVE_IDS } from './mim-super-moves.js';
+import {
+  luckySuperCostForMove,
+  LUCKY_SUPER_IDS,
+} from './lucky/supers.js';
 
 /** One ultimate per character. */
 export const ULTIMATE_MOVE_IDS: ReadonlySet<string> = new Set<string>([
@@ -19,6 +23,7 @@ export const ULTIMATE_MOVE_IDS: ReadonlySet<string> = new Set<string>([
   ECHO_SUPER_MOVE_IDS.statistics,
   CHRONO_SUPER_MOVE_IDS.inevitability,
   GLITCH_SUPER_MOVE_IDS.patchNotes,
+  LUCKY_SUPER_IDS.impossibleOutcome,
 ]);
 
 export function isUltimateMove(moveId: string): boolean {
@@ -33,7 +38,8 @@ export function superCostForMove(moveId: string): number | null {
   return mimSuperCostForMove(moveId)
     ?? echoSuperCostForMove(moveId)
     ?? chronoSuperCostForMove(moveId)
-    ?? glitchSuperCostForMove(moveId);
+    ?? glitchSuperCostForMove(moveId)
+    ?? luckySuperCostForMove(moveId);
 }
 
 /** Supers and ultimates both build no energy for the attacker. */

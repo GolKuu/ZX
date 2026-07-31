@@ -58,6 +58,10 @@ export {
 } from './glitchCommands.js';
 
 export {
+  LUCKY_COMMANDS,
+} from './luckyCommands.js';
+
+export {
   DEFAULT_CONTEXT,
   KADE_COMMANDS,
   isGuarding,

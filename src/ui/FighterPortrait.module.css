@@ -50,6 +50,41 @@
   transform: scale(1.35);
 }
 
+.luckyHead {
+  position: absolute;
+  z-index: 2;
+  top: 13%;
+  left: 22%;
+  width: 56%;
+  height: 68%;
+  background:
+    linear-gradient(135deg, transparent 0 30%, #171912 31% 42%, transparent 43%),
+    linear-gradient(155deg, #171912 0 25%, #b57a64 26% 76%, transparent 77%);
+  border-radius: 48% 48% 42% 44%;
+  filter: drop-shadow(0 0.3cqw 0.2cqw #000);
+  transform: skew(-4deg);
+}
+
+.luckyHead b {
+  position: absolute;
+  top: 43%;
+  right: 8%;
+  width: 26%;
+  height: 6%;
+  background: #e5b94c;
+  box-shadow: 0 0 0.35cqw #e5b94c;
+}
+
+.luckyHead u {
+  position: absolute;
+  right: -12%;
+  bottom: -15%;
+  width: 74%;
+  height: 44%;
+  background: #164a35;
+  clip-path: polygon(22% 0, 100% 15%, 72% 100%, 0 65%);
+}
+
 @container combat-hud (max-width: 760px) {
   .portrait {
     flex-basis: 9cqw;

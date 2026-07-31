@@ -175,6 +175,7 @@ export function resolveHit(
       frame: 0,
       serial: context.nextSerial,
       hitLedger: [],
+      armourHitsUsed: 0,
     };
     events.push({
       type: 'moveStarted',
@@ -211,12 +212,12 @@ function tryCounter(
   }
   attacker.hitstop = Math.max(attacker.hitstop, counter.attackerHitstop);
   attacker.action = null;
-    defender.action = {
+  defender.action = {
     moveId: counter.into,
     frame: 0,
     serial: context.nextSerial,
-      hitLedger: [],
-      armourHitsUsed: 0,
+    hitLedger: [],
+    armourHitsUsed: 0,
   };
   defender.hitstun = 0;
   events.push({

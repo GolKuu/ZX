@@ -17,6 +17,8 @@ export interface HudFighterSnapshot extends HudFighterIdentity {
   readonly superCharge: number;
   /** Low health has unlocked the ultimate and it is still unused. */
   readonly ultimateReady: boolean;
+  /** Lucky's deterministic secondary resource, 0–100. */
+  readonly luck?: number;
   readonly roundWins: number;
 }
 
@@ -41,4 +43,5 @@ export interface HudMatchState {
   /** Energy each fighter currently holds, 0–100. Owned by the meter controller. */
   readonly superCharge?: Readonly<Record<string, number | undefined>>;
   readonly ultimateReady?: Readonly<Record<string, boolean | undefined>>;
+  readonly luck?: Readonly<Record<string, number | undefined>>;
 }

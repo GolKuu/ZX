@@ -17,14 +17,21 @@ export function FighterPortrait({
   return (
     <figure className={styles.portrait} data-side={side}>
       <span aria-hidden="true">{mark}</span>
-      <Image
-        alt=""
-        fill
-        priority
-        sizes="9vw"
-        src={`/sprites/${characterId}-profile/head.png`}
-        unoptimized
-      />
+      {characterId === 'lucky' ? (
+        <i className={styles.luckyHead} aria-hidden="true">
+          <b />
+          <u />
+        </i>
+      ) : (
+        <Image
+          alt=""
+          fill
+          priority
+          sizes="9vw"
+          src={`/sprites/${characterId}-profile/head.png`}
+          unoptimized
+        />
+      )}
     </figure>
   );
 }

@@ -118,6 +118,7 @@ export class HudBridge {
       // fed straight from the engine still lights the ultimate up.
       ultimateReady: match.ultimateReady?.[fighter.id]
         ?? ultimateReadyFromHealth(health, maxHealth),
+      luck: clampSuperMeter(match.luck?.[fighter.id] ?? 0),
       roundWins: Math.min(3, nonNegativeInteger(match.roundWins[fighter.id] ?? 0, 'roundWins')),
     };
   }

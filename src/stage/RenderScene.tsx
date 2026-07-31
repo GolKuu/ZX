@@ -18,6 +18,7 @@ import { HitBlood } from './HitBlood';
 import { ImpactPulse } from './ImpactPulse';
 import { LazyPostEffects } from './LazyPostEffects';
 import { MimFighter } from './MimFighter';
+import { LuckyFighter } from './LuckyFighter';
 import { SpeedLines } from './SpeedLines';
 import { RenderDebugBridge } from './RenderDebugBridge';
 import { Sprite2DFighter } from './sprite2d/Sprite2DFighter';
@@ -106,6 +107,9 @@ function primitiveFighter(
   characterId: CharacterId,
   fighterId: 'p1' | 'p2',
 ) {
+  if (characterId === 'lucky') {
+    return <LuckyFighter fighterId={fighterId} />;
+  }
   if (characterId === 'chrono') {
     return <ChronoFighter auraColor={auraColor} fighterId={fighterId} />;
   }

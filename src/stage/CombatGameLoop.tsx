@@ -10,6 +10,7 @@ import {
   CHRONO_COMMANDS,
   ECHO_COMMANDS,
   GLITCH_COMMANDS,
+  LUCKY_COMMANDS,
   DEFAULT_CONTEXT,
   type CommandContext,
   KeyboardInputSource,
@@ -144,6 +145,7 @@ export function CombatGameLoop({
 }
 
 function commandsFor(characterId: CharacterId) {
+  if (characterId === 'lucky') return LUCKY_COMMANDS;
   if (characterId === 'chrono') return CHRONO_COMMANDS;
   if (characterId === 'echo') return ECHO_COMMANDS;
   if (characterId === 'glitch') return GLITCH_COMMANDS;

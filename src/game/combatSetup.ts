@@ -1,7 +1,9 @@
 import { CombatAiAgent, type AiDifficulty } from '@/src/ai';
 import { KADE_AI_LOADOUT } from '@/src/data/combat-ai';
 import {
+  DEFAULT_CHARACTER_SELECTION,
   getCharacterDefinition,
+  type CharacterSelection,
   type CharacterId,
 } from '@/src/data/characterRoster';
 import { KADE_HURTBOXES, KADE_MOVES } from '@/src/data/combat-moves';
@@ -18,6 +20,15 @@ import { GLITCH_SUPER_MOVES } from '@/src/data/glitch-super-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
 import { MIM_SPECIAL_MOVES } from '@/src/data/mim-special-moves';
 import { MIM_SUPER_MOVES } from '@/src/data/mim-super-moves';
+import {
+  LUCKY_AI_LOADOUT,
+  LUCKY_HURTBOXES,
+  LUCKY_MAX_HEALTH,
+  LUCKY_MOVEMENT,
+  LUCKY_MOVES,
+  LUCKY_SPECIAL_MOVES,
+  LUCKY_SUPER_MOVES,
+} from '@/src/data/lucky';
 import { TAUNT_MOVES } from '@/src/data/taunt-move';
 import { HudBridge } from '@/src/hud';
 import {
@@ -44,15 +55,20 @@ export const ALL_COMBAT_MOVES = [
   ...CHRONO_SUPER_MOVES,
   ...GLITCH_MOVES,
   ...GLITCH_SUPER_MOVES,
+  ...LUCKY_MOVES,
+  ...LUCKY_SPECIAL_MOVES,
+  ...LUCKY_SUPER_MOVES,
   ...TAUNT_MOVES,
 ];
 
-export function createCombatEngine(): CombatEngine {
+export function createCombatEngine(
+  selection: CharacterSelection = DEFAULT_CHARACTER_SELECTION,
+): CombatEngine {
   return new CombatEngine({
     moves: ALL_COMBAT_MOVES,
     fighters: [
-      fighterDefinition('p1', 1, -1.55, 1),
-      fighterDefinition('p2', 2, 1.55, -1),
+      fighterDefinition('p1', 1, -1.55, 1, selection[0]),
+      fighterDefinition('p2', 2, 1.55, -1, selection[1]),
     ],
     world: { leftWall: fixed(-4.8), rightWall: fixed(4.8) },
   });
@@ -67,7 +83,9 @@ export function createCombatAi(
     opponentId: 'p1',
     difficulty,
     moves: ALL_COMBAT_MOVES,
-    loadout: characterId === 'echo'
+    loadout: characterId === 'lucky'
+      ? LUCKY_AI_LOADOUT
+      : characterId === 'echo'
       ? ECHO_AI_LOADOUT
       : characterId === 'chrono'
         ? CHRONO_AI_LOADOUT
@@ -111,13 +129,15 @@ function fighterDefinition(
   team: number,
   x: number,
   facing: -1 | 1,
+  characterId: CharacterId,
 ) {
   return {
     id,
     team,
-    maxHealth: 1_000,
+    maxHealth: characterId === 'lucky' ? LUCKY_MAX_HEALTH : 1_000,
     spawn: { x: fixed(x), y: 0 },
     facing,
-    hurtboxes: KADE_HURTBOXES,
+    hurtboxes: characterId === 'lucky' ? LUCKY_HURTBOXES : KADE_HURTBOXES,
+    ...(characterId === 'lucky' ? { movement: LUCKY_MOVEMENT } : {}),
   };
 }
