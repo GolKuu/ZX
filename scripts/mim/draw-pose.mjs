@@ -24,22 +24,40 @@ function drawFigure(canvas, pose) {
   drawArm(canvas, pose.front, 'front');
 }
 
+/**
+ * Cloth cannot hang below the ground it is standing on.
+ *
+ * In the deep capoeira squat the waist drops close to the floor, and a coat
+ * tail authored as a rigid panel would pass straight through it. Folding the
+ * cloth at the floor row is both the physically honest reading and the only way
+ * the low poses keep a clean ground line.
+ */
+function folded(pose) {
+  const limit = pose.floor ?? Number.POSITIVE_INFINITY;
+  return (x, y) => [x, Math.min(y, limit)];
+}
+
 function drawBraids(canvas, pose) {
   const [hx, hy] = pose.head;
   const sweep = pose.braidSweep;
+  const fold = folded(pose);
   for (const [index, spec] of [
     { drop: 1, reach: 21, sag: 7 },
     { drop: 4, reach: 25, sag: 10 },
     { drop: 7, reach: 20, sag: 13 },
     { drop: 9, reach: 15, sag: 15 },
   ].entries()) {
-    let previous = [hx - 2, hy + spec.drop];
+    // Fan the strands apart. Swinging all four through the same angle collapses
+    // them into one slab exactly when the pose is most extreme, and the braid
+    // cluster is the character's signature silhouette element.
+    const strandSweep = sweep + index * 0.07 - 0.1;
+    let previous = fold(hx - 2, hy + spec.drop);
     for (let step = 1; step <= 7; step += 1) {
       const t = step / 7;
-      const point = [
-        hx - 2 - spec.reach * t * Math.cos(sweep),
-        hy + spec.drop + spec.sag * t * t - spec.reach * t * Math.sin(sweep),
-      ];
+      const point = fold(
+        hx - 2 - spec.reach * t * Math.cos(strandSweep),
+        hy + spec.drop + spec.sag * t * t - spec.reach * t * Math.sin(strandSweep),
+      );
       canvas.capsule(
         previous[0], previous[1], point[0], point[1],
         1.6 - t * 0.5,
@@ -54,13 +72,14 @@ function drawBraids(canvas, pose) {
 function drawSash(canvas, pose) {
   const [wx, wy] = pose.waist;
   const sweep = pose.sashSweep;
-  let previous = [wx - 3, wy + 2];
+  const fold = folded(pose);
+  let previous = fold(wx - 3, wy + 2);
   for (let step = 1; step <= 9; step += 1) {
     const t = step / 9;
-    const point = [
+    const point = fold(
       wx - 3 - 28 * t * Math.cos(sweep),
       wy + 2 + 18 * t * t - 28 * t * Math.sin(sweep),
-    ];
+    );
     canvas.capsule(
       previous[0], previous[1], point[0], point[1],
       3.2 - t * 2,
@@ -132,14 +151,18 @@ function drawLeg(canvas, limb, side) {
 
 function drawCoat(canvas, pose) {
   const [wx, wy] = pose.waist;
+  const fold = folded(pose);
   canvas.polygon([
-    [wx - 7, wy + 1], [wx + 8, wy + 1], [wx + 7, wy + 10], [wx - 6, wy + 10],
+    fold(wx - 7, wy + 1), fold(wx + 8, wy + 1),
+    fold(wx + 7, wy + 10), fold(wx - 6, wy + 10),
   ], 'navy');
   canvas.polygon([
-    [wx - 7, wy + 2], [wx - 2, wy + 3], [wx - 4, wy + 17], [wx - 9, wy + 13],
+    fold(wx - 7, wy + 2), fold(wx - 2, wy + 3),
+    fold(wx - 4, wy + 17), fold(wx - 9, wy + 13),
   ], 'cloth');
   canvas.polygon([
-    [wx + 4, wy + 2], [wx + 8, wy + 2], [wx + 7, wy + 12], [wx + 4, wy + 10],
+    fold(wx + 4, wy + 2), fold(wx + 8, wy + 2),
+    fold(wx + 7, wy + 12), fold(wx + 4, wy + 10),
   ], 'clothMid');
 }
 
