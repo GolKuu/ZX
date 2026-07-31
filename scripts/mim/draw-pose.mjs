@@ -6,6 +6,13 @@ import { THICKNESS } from './rig-spec.mjs';
  * edges and tips.
  */
 export function drawPose(canvas, pose) {
+  drawFigure(canvas, pose);
+  // Cold key light from the front and above, then the contour.
+  canvas.rim(0, -1, 'cyanDeep', 'clothLit');
+  canvas.rim(1, 0, 'cyan', 'clothLit');
+}
+
+function drawFigure(canvas, pose) {
   drawBraids(canvas, pose);
   drawArm(canvas, pose.back, 'back');
   drawLeg(canvas, pose.back, 'back');
@@ -76,14 +83,21 @@ function drawArm(canvas, limb, side) {
     limb.elbow[0], limb.elbow[1], limb.wrist[0], limb.wrist[1],
     THICKNESS.forearm, dark,
   );
+  // Cyan cuff, glove, then two pixels of bare finger — the fingerless glove
+  // reads at this size only if the skin stays smaller than the cuff.
+  const cuff = [
+    limb.wrist[0] - (limb.wrist[0] - limb.elbow[0]) * 0.28,
+    limb.wrist[1] - (limb.wrist[1] - limb.elbow[1]) * 0.28,
+  ];
+  canvas.disc(cuff[0], cuff[1], 2.4, 'cyanDeep');
   canvas.disc(limb.wrist[0], limb.wrist[1], THICKNESS.hand, dark);
   canvas.disc(
-    limb.wrist[0] + (limb.wrist[0] - limb.elbow[0]) * 0.18,
-    limb.wrist[1] + (limb.wrist[1] - limb.elbow[1]) * 0.18,
-    1.7,
+    limb.wrist[0] + (limb.wrist[0] - limb.elbow[0]) * 0.1,
+    limb.wrist[1] + (limb.wrist[1] - limb.elbow[1]) * 0.1,
+    1.1,
     side === 'front' ? 'skin' : 'skinShade',
   );
-  canvas.set(limb.shoulder[0] + 2, limb.shoulder[1] + 1, 'cyanDeep');
+  canvas.disc(limb.shoulder[0], limb.shoulder[1], 1.4, 'cyanDeep');
 }
 
 function drawLeg(canvas, limb, side) {
@@ -105,9 +119,15 @@ function drawLeg(canvas, limb, side) {
     limb.ankle[0] - (dy / length) * 5,
     limb.ankle[1] + (dx / length) * 5,
   ];
-  canvas.disc(limb.ankle[0], limb.ankle[1], 2.6, 'cyanDeep');
-  canvas.capsule(limb.ankle[0], limb.ankle[1], toe[0], toe[1], 2.8, cloth);
-  canvas.set(toe[0], toe[1], 'cyan');
+  canvas.capsule(
+    limb.knee[0] + (dx / length) * (length - 5),
+    limb.knee[1] + (dy / length) * (length - 5),
+    limb.ankle[0], limb.ankle[1], 2.9, 'cyan',
+  );
+  canvas.capsule(limb.ankle[0], limb.ankle[1], toe[0], toe[1], 2.9, cloth);
+  canvas.capsule(
+    limb.ankle[0], limb.ankle[1] + 1, toe[0], toe[1] + 1, 1.1, 'cyanDeep',
+  );
 }
 
 function drawCoat(canvas, pose) {
@@ -154,8 +174,24 @@ function drawHead(canvas, pose) {
   canvas.polygon([
     [hx - 6, hy + 1], [hx - 1, hy + 8], [hx - 6, hy + 7],
   ], 'maskShade');
-  canvas.set(hx + 2, hy - 2, 'cyan');
-  canvas.set(hx + 3, hy - 1, 'cyanGlow');
-  canvas.set(hx + 2, hy, 'cyan');
-  canvas.set(hx - 1, hy - 2, 'cyanDeep');
+  drawGlyph(canvas, hx, hy);
+}
+
+/**
+ * The mask mark: a slashed diamond over the eye line.
+ *
+ * It has to be a shape, not a dot — at fighting-game size a single cyan pixel
+ * reads as noise, and the mask is the one place MIM must stay recognisable.
+ */
+function drawGlyph(canvas, hx, hy) {
+  canvas.set(hx + 2, hy - 3, 'cyanDeep');
+  canvas.set(hx + 1, hy - 2, 'cyan');
+  canvas.set(hx + 2, hy - 2, 'cyanGlow');
+  canvas.set(hx + 3, hy - 2, 'cyan');
+  canvas.set(hx + 2, hy - 1, 'cyanGlow');
+  canvas.set(hx + 3, hy, 'cyan');
+  canvas.set(hx + 4, hy + 1, 'cyanDeep');
+  // Second, quieter mark on the far cheek keeps the mask asymmetric.
+  canvas.set(hx - 2, hy - 1, 'cyanDeep');
+  canvas.set(hx - 2, hy, 'cyanDeep');
 }
