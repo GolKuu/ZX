@@ -25,37 +25,57 @@ export function MimSpriteBody({
   const scale = rig.pixelScale;
   return (
     <>
-      <Limb name="leftLeg" rig={rig} setJoint={setJoint} z={-0.035} />
-      <Limb name="rightLeg" rig={rig} setJoint={setJoint} z={0.035} />
+      <Limb
+        joint="leftLeg"
+        lower="legBackLower"
+        rig={rig}
+        setJoint={setJoint}
+        upper="legBackUpper"
+        z={-0.035}
+      />
+      <Limb
+        joint="rightLeg"
+        lower="legFrontLower"
+        rig={rig}
+        setJoint={setJoint}
+        upper="legFrontUpper"
+        z={0.035}
+      />
       <group
         position={at(rig, 'torso')}
         ref={(node) => { setJoint('torso', node); }}
       >
         <group
-          position={relative(rig, 'scarf', 'torso', -0.04)}
+          position={relative(rig, 'sash', 'torso', -0.04)}
           ref={(node) => { setJoint('scarf', node); }}
         >
-          <SpritePart part={rig.scarf} pixelScale={scale} />
+          <SpritePart part={rig.sash} pixelScale={scale} />
         </group>
+        <SpritePart part={rig.hips} pixelScale={scale} />
         <SpritePart part={rig.torso} pixelScale={scale} />
         <Limb
-          name="leftArm"
+          joint="leftArm"
+          lower="armBackLower"
           parent="torso"
           rig={rig}
           setJoint={setJoint}
+          upper="armBackUpper"
           z={0.025}
         />
         <Limb
-          name="rightArm"
+          joint="rightArm"
+          lower="armFrontLower"
           parent="torso"
           rig={rig}
           setJoint={setJoint}
+          upper="armFrontUpper"
           z={0.045}
         />
         <group
           position={relative(rig, 'head', 'torso', 0.055)}
           ref={(node) => { setJoint('head', node); }}
         >
+          <SpritePart part={rig.braids} pixelScale={scale} />
           <SpritePart part={rig.head} pixelScale={scale} />
         </group>
       </group>
@@ -64,24 +84,31 @@ export function MimSpriteBody({
 }
 
 function Limb({
-  name,
+  joint,
+  lower,
   parent,
   rig,
   setJoint,
+  upper,
   z,
 }: {
-  readonly name: 'leftArm' | 'rightArm' | 'leftLeg' | 'rightLeg';
+  readonly joint: 'leftArm' | 'rightArm' | 'leftLeg' | 'rightLeg';
+  readonly lower: MimPartName;
   readonly parent?: 'torso';
   readonly rig: LoadedMimRig;
   readonly setJoint: (name: MimSpriteJointName, node: Group | null) => void;
+  readonly upper: MimPartName;
   readonly z: number;
 }) {
   const position = parent === undefined
-    ? at(rig, name, z)
-    : relative(rig, name, parent, z);
+    ? at(rig, upper, z)
+    : relative(rig, upper, parent, z);
   return (
-    <group position={position} ref={(node) => { setJoint(name, node); }}>
-      <SpritePart part={rig[name]} pixelScale={rig.pixelScale} />
+    <group position={position} ref={(node) => { setJoint(joint, node); }}>
+      <SpritePart part={rig[upper]} pixelScale={rig.pixelScale} />
+      <group position={relative(rig, lower, upper, 0.006)}>
+        <SpritePart part={rig[lower]} pixelScale={rig.pixelScale} />
+      </group>
     </group>
   );
 }

@@ -9,13 +9,19 @@ import type { LoadedSpritePart, SpritePart } from '../sprite2d/spriteRig';
 import { SPRITE_TARGET_HEIGHT } from '../sprite2d/spriteRig';
 
 export const MIM_PARTS = [
-  'scarf',
+  'braids',
+  'armBackUpper',
+  'armBackLower',
+  'legBackUpper',
+  'legBackLower',
+  'sash',
+  'hips',
+  'legFrontUpper',
+  'legFrontLower',
+  'armFrontUpper',
+  'armFrontLower',
   'head',
   'torso',
-  'leftArm',
-  'rightArm',
-  'leftLeg',
-  'rightLeg',
 ] as const;
 
 export type MimPartName = (typeof MIM_PARTS)[number];

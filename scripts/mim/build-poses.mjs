@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { PixelCanvas } from './canvas.mjs';
 import { drawPose } from './draw-pose.mjs';
@@ -31,6 +31,21 @@ export async function buildPosePanels(directory) {
       ground: round((ORIGIN[1] + OFFSET[1] - offsetY) / canvas.height),
     };
     await canvas.scaled(TEXTURE_SCALE).write(path.join(directory, `${name}.png`));
+  }
+
+  // Runtime impact panels keep the traditional button names. They are aliases
+  // of the authored move silhouettes, not a second source of character art.
+  for (const [button, poseName] of Object.entries({
+    lp: 'jab',
+    hp: 'elbow',
+    lk: 'capoeira',
+    hk: 'spin',
+  })) {
+    poses[button] = poses[poseName];
+    await copyFile(
+      path.join(directory, `${poseName}.png`),
+      path.join(directory, `${button}.png`),
+    );
   }
 
   const manifest = {

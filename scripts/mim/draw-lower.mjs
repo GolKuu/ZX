@@ -43,12 +43,13 @@ function drawShoe(canvas, ankle, cloth, side) {
     [ax - 3, floor - 6], [ax + 3, floor - 6],
     [ax + 6, floor - 2], [ax + 6, floor - 1],
     [ax - 4, floor - 1], [ax - 4, floor - 5],
-  ], cloth);
+  ], 'maskLit');
   canvas.polygon([
     [ax - 4, floor - 3], [ax + 6, floor - 2],
     [ax + 6, floor - 1], [ax - 4, floor - 1],
-  ], side === 'front' ? 'clothShade' : 'clothDeep');
-  // Sole light.
-  canvas.line(ax - 4, floor - 1, ax + 5, floor - 1, 'cyanDeep');
-  canvas.set(ax + 2, floor - 4, 'cyan');
+  ], side === 'front' ? 'clothLit' : 'clothMid');
+  // Chunky white sole with purple toe and yellow lace pixel.
+  canvas.line(ax - 4, floor - 1, ax + 5, floor - 1, 'maskLit');
+  canvas.set(ax + 4, floor - 3, 'navyDeep');
+  canvas.set(ax + 1, floor - 5, 'cyan');
 }

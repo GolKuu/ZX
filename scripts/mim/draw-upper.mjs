@@ -9,7 +9,7 @@ import { JOINTS, THICKNESS, fromCrown } from './rig-spec.mjs';
  */
 export function drawHead(canvas) {
   const [cx, cy] = JOINTS.headCentre;
-  // Hood collar behind the mask, so the white face never floats.
+  // Purple hood collar behind the sunny mask, so the face never floats.
   canvas.polygon([
     [cx - 8, cy + 2], [cx - 2, cy - 6], [cx + 3, cy - 4],
     [cx + 4, cy + 8], [cx - 6, cy + 10],
@@ -20,11 +20,9 @@ export function drawHead(canvas) {
     [cx - 6, cy + 1], [cx - 1, cy + 8], [cx - 6, cy + 7],
   ], 'maskShade');
   canvas.rect(cx - 5, cy + 6, 9, 2, 'maskShade');
-  // The glyph. Four pixels of cyan, nothing that could read as an expression.
-  canvas.set(cx + 2, cy - 2, 'cyan');
-  canvas.set(cx + 3, cy - 1, 'cyanGlow');
-  canvas.set(cx + 2, cy, 'cyan');
-  canvas.set(cx - 1, cy - 2, 'cyanDeep');
+  // Two vertical eye slots are MIM's friendly, unmistakable signature.
+  canvas.rect(cx - 3, cy - 2, 1, 4, 'ink');
+  canvas.rect(cx + 2, cy - 2, 1, 4, 'ink');
   // Neck.
   canvas.capsule(cx, cy + 7, cx, fromCrown(18), 2, 'skinShade');
 }
@@ -32,10 +30,8 @@ export function drawHead(canvas) {
 export function drawBraids(canvas) {
   const [rx, ry] = JOINTS.braidRoot;
   const strands = [
-    { drop: 2, reach: 22, sag: 6 },
-    { drop: 5, reach: 26, sag: 9 },
-    { drop: 8, reach: 21, sag: 12 },
-    { drop: 11, reach: 16, sag: 14 },
+    { drop: 4, reach: 25, sag: 7, width: 3.8 },
+    { drop: 8, reach: 30, sag: 12, width: 3.2 },
   ];
   for (const [index, strand] of strands.entries()) {
     let previous = [rx, ry + strand.drop];
@@ -48,12 +44,11 @@ export function drawBraids(canvas) {
       ];
       canvas.capsule(
         previous[0], previous[1], point[0], point[1],
-        1.6 - t * 0.5,
-        step % 2 === 0 ? 'navy' : 'navyDeep',
+        strand.width - t * 1.8,
+        step % 3 === 0 ? 'maskShade' : 'maskLit',
       );
       previous = point;
     }
-    // Cyan bead at the tip: it is what makes rotation legible in silhouette.
     canvas.set(previous[0], previous[1], index % 2 === 0 ? 'cyan' : 'cyanDeep');
   }
 }
@@ -67,7 +62,7 @@ export function drawTorso(canvas) {
     [cx - 8, shoulder], [cx + 8, shoulder],
     [cx + 6, waist], [cx - 6, waist],
   ], 'navyDeep');
-  // White jacket, asymmetric: high on the front, cut back over the rear hip.
+  // Oversized purple hoodie, asymmetric enough to preserve the fighting silhouette.
   canvas.polygon([
     [cx - 7, shoulder + 1], [cx + 8, shoulder],
     [cx + 7, waist - 2], [cx + 1, waist],
@@ -81,7 +76,7 @@ export function drawTorso(canvas) {
     [cx + 4, shoulder + 1], [cx + 8, shoulder + 1],
     [cx + 7, waist - 4],
   ], 'clothLit');
-  // Cyan collar trim and chest sigil.
+  // Yellow drawstrings and chest badge connect the torso to the mask and scarf.
   canvas.line(cx - 6, shoulder + 1, cx + 7, shoulder, 'cyan');
   canvas.set(cx + 2, shoulder + 8, 'cyanGlow');
   canvas.set(cx + 3, shoulder + 9, 'cyan');

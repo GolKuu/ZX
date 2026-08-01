@@ -82,11 +82,11 @@
   },
   "parts": {
     "braids": {
-      "width": 33,
-      "height": 30,
+      "width": 39,
+      "height": 25,
       "pivot": [
-        0.8788,
-        0.0333
+        0.8462,
+        0.04
       ],
       "joint": [
         85,

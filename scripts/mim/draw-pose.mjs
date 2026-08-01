@@ -42,10 +42,8 @@ function drawBraids(canvas, pose) {
   const sweep = pose.braidSweep;
   const fold = folded(pose);
   for (const [index, spec] of [
-    { drop: 1, reach: 21, sag: 7 },
-    { drop: 4, reach: 25, sag: 10 },
-    { drop: 7, reach: 20, sag: 13 },
-    { drop: 9, reach: 15, sag: 15 },
+    { drop: 3, reach: 25, sag: 8, width: 3.8 },
+    { drop: 7, reach: 30, sag: 12, width: 3.2 },
   ].entries()) {
     // Fan the strands apart. Swinging all four through the same angle collapses
     // them into one slab exactly when the pose is most extreme, and the braid
@@ -60,8 +58,8 @@ function drawBraids(canvas, pose) {
       );
       canvas.capsule(
         previous[0], previous[1], point[0], point[1],
-        1.6 - t * 0.5,
-        step % 2 === 0 ? 'navy' : 'navyDeep',
+        spec.width - t * 1.8,
+        step % 3 === 0 ? 'maskShade' : 'maskLit',
       );
       previous = point;
     }
@@ -102,7 +100,7 @@ function drawSash(canvas, pose) {
 }
 
 function drawArm(canvas, limb, side) {
-  const cloth = side === 'front' ? 'cloth' : 'clothMid';
+  const cloth = side === 'front' ? 'maskLit' : 'maskShade';
   const dark = side === 'front' ? 'navy' : 'navyDeep';
   canvas.capsule(
     limb.shoulder[0], limb.shoulder[1], limb.elbow[0], limb.elbow[1],
@@ -238,20 +236,9 @@ function drawHead(canvas, pose) {
 }
 
 /**
- * The mask mark: a slashed diamond over the eye line.
- *
- * It has to be a shape, not a dot — at fighting-game size a single cyan pixel
- * reads as noise, and the mask is the one place MIM must stay recognisable.
+ * MIM's two simple eye slots stay readable in every pose and facing.
  */
 function drawGlyph(canvas, hx, hy) {
-  canvas.set(hx + 2, hy - 3, 'cyanDeep');
-  canvas.set(hx + 1, hy - 2, 'cyan');
-  canvas.set(hx + 2, hy - 2, 'cyanGlow');
-  canvas.set(hx + 3, hy - 2, 'cyan');
-  canvas.set(hx + 2, hy - 1, 'cyanGlow');
-  canvas.set(hx + 3, hy, 'cyan');
-  canvas.set(hx + 4, hy + 1, 'cyanDeep');
-  // Second, quieter mark on the far cheek keeps the mask asymmetric.
-  canvas.set(hx - 2, hy - 1, 'cyanDeep');
-  canvas.set(hx - 2, hy, 'cyanDeep');
+  canvas.rect(hx - 3, hy - 2, 1, 4, 'ink');
+  canvas.rect(hx + 2, hy - 2, 1, 4, 'ink');
 }
