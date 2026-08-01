@@ -11,7 +11,6 @@ import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
 import { AttackCue } from './AttackCue';
 import { FrameProfiler } from './FrameProfiler';
-import { GlitchFighter } from './GlitchFighter';
 import { HitBlood } from './HitBlood';
 import { ImpactPulse } from './ImpactPulse';
 import { LazyPostEffects } from './LazyPostEffects';
@@ -97,6 +96,7 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
   /** Sliced clean attack panels, shown at the strike impact frame. */
   readonly attacks?: string;
 }>> = {
+  glitch: { rig: 'glitch-profile', attacks: 'glitch-attacks' },
   lucky: { rig: 'lucky-profile', attacks: 'lucky-attacks' },
 };
 
@@ -120,9 +120,6 @@ function primitiveFighter(
         rigName={sprite.rig}
       />
     );
-  }
-  if (characterId === 'glitch') {
-    return <GlitchFighter fighterId={fighterId} />;
   }
   if (characterId === 'mim') {
     return <MimFighter auraColor={auraColor} fighterId={fighterId} />;

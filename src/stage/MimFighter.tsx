@@ -67,6 +67,10 @@ export function MimFighter({
       + (fighter.position.x - fighter.previousPosition.x) * alpha
     ) / FIXED_SCALE;
     outerGroup.position.y = fighter.position.y / FIXED_SCALE;
+    // MIM is a flat cut-out while several opponents have real mesh depth.
+    // Keep the authored sprite just in front of the shared combat plane so a
+    // close-range clash cannot make the entire fighter disappear inside them.
+    outerGroup.position.z = 0.14;
     const presentation = withOpponentFacing(
       fighter,
       readCombatFighter(opponentId),
