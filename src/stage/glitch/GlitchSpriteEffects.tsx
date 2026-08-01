@@ -55,7 +55,7 @@ export function GlitchSpriteEffects({
   rig,
 }: {
   readonly fighterId: 'p1' | 'p2';
-  readonly rig: LoadedSpriteRig;
+  readonly rig?: LoadedSpriteRig;
 }) {
   const tears = useRef<Group>(null);
   const projectile = useRef<Group>(null);
@@ -133,8 +133,10 @@ export function GlitchSpriteEffects({
       <CorruptDataProjectile root={projectile} />
       <LagSpikeField root={lagField} />
       <GlitchScreenTear root={screenTear} />
-      <GlitchGhosts fighterId={fighterId} root={ghosts} rig={rig} />
-      <GlitchEnergyScarf root={scarf} />
+      {rig === undefined ? null : (
+        <GlitchGhosts fighterId={fighterId} root={ghosts} rig={rig} />
+      )}
+      {rig === undefined ? null : <GlitchEnergyScarf root={scarf} />}
     </>
   );
 }
