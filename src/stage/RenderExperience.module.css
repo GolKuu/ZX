@@ -11,3 +11,18 @@
   position: absolute;
   inset: 0;
 }
+
+.canvas::after {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  content: '';
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 3px,
+    rgb(18 8 42 / 12%) 4px
+  );
+  mix-blend-mode: soft-light;
+}

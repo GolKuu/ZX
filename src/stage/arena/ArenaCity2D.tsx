@@ -14,11 +14,11 @@ export function ArenaCity2D() {
         <group key={`${x}-${height}`} position={[x, height * 0.5, 0]}>
           <mesh>
             <planeGeometry args={[width, height]} />
-            <meshBasicMaterial color="#17162d" depthWrite={false} fog={false} />
+            <meshBasicMaterial color="#0b0b25" depthWrite={false} fog={false} />
           </mesh>
           <mesh position={[0, height * 0.5 + 0.22, 0]}>
             <planeGeometry args={[width * 0.72, 0.44]} />
-            <meshBasicMaterial color="#17162d" depthWrite={false} fog={false} />
+            <meshBasicMaterial color="#0b0b25" depthWrite={false} fog={false} />
           </mesh>
           {[0.26, 0.52, 0.78].map((heightRatio, windowIndex) => (
             <mesh
@@ -31,7 +31,7 @@ export function ArenaCity2D() {
             >
               <planeGeometry args={[0.1, 0.06]} />
               <meshBasicMaterial
-                color={buildingIndex % 3 === 0 ? '#db8b73' : '#705070'}
+                color={buildingIndex % 3 === 0 ? '#ff4fb3' : '#23d7ff'}
                 depthWrite={false}
                 fog={false}
               />
@@ -43,19 +43,19 @@ export function ArenaCity2D() {
       <group position={[-5.2, 4.55, 0.04]}>
         <mesh>
           <planeGeometry args={[0.16, 2.15]} />
-          <meshBasicMaterial color="#111326" depthWrite={false} fog={false} />
+          <meshBasicMaterial color="#07071c" depthWrite={false} fog={false} />
         </mesh>
         {[0, 0.54, 1.05].map((offset, index) => (
           <mesh key={offset} position={[0, -0.62 + offset, 0]} scale={[1 - index * 0.14, 1, 1]}>
             <planeGeometry args={[1.75, 0.12]} />
-            <meshBasicMaterial color="#111326" depthWrite={false} fog={false} />
+            <meshBasicMaterial color="#07071c" depthWrite={false} fog={false} />
           </mesh>
         ))}
       </group>
 
       <mesh position={[0, 0.12, 0.05]}>
         <planeGeometry args={[28, 0.08]} />
-        <meshBasicMaterial color="#d37a68" depthWrite={false} fog={false} />
+        <meshBasicMaterial color="#25d9ff" depthWrite={false} fog={false} />
       </mesh>
     </group>
   );

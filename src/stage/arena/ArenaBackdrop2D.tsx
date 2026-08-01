@@ -24,15 +24,15 @@ export function ArenaBackdrop2D() {
     <group>
       <mesh position={[0, 4.1, -18]} renderOrder={-20}>
         <planeGeometry args={[36, 18]} />
-        <meshBasicMaterial color="#120d29" depthWrite={false} fog={false} />
+        <meshBasicMaterial color="#080722" depthWrite={false} fog={false} />
       </mesh>
       <mesh position={[0, 1.65, -17.96]} renderOrder={-19}>
         <planeGeometry args={[36, 4.9]} />
-        <meshBasicMaterial color="#44234f" depthWrite={false} fog={false} />
+        <meshBasicMaterial color="#40145f" depthWrite={false} fog={false} />
       </mesh>
       <mesh position={[0, 0.3, -17.92]} renderOrder={-18}>
         <planeGeometry args={[36, 2.2]} />
-        <meshBasicMaterial color="#8d4d59" depthWrite={false} fog={false} />
+        <meshBasicMaterial color="#c32f72" depthWrite={false} fog={false} />
       </mesh>
 
       {STARS.map(([x, y, radius]) => (
@@ -45,13 +45,13 @@ export function ArenaBackdrop2D() {
       <group position={[4.8, 4.75, -17.78]} renderOrder={-16}>
         <mesh>
           <circleGeometry args={[1.52, 48]} />
-          <meshBasicMaterial color="#f2bd76" depthWrite={false} fog={false} />
+          <meshBasicMaterial color="#ffb24b" depthWrite={false} fog={false} />
         </mesh>
         <mesh position-z={-0.01} scale={1.18}>
           <ringGeometry args={[1.4, 1.62, 48]} />
           <meshBasicMaterial
             blending={AdditiveBlending}
-            color="#ef8f66"
+            color="#ff4ea3"
             depthWrite={false}
             opacity={0.24}
             toneMapped={false}

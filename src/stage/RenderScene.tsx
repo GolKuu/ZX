@@ -30,8 +30,8 @@ export function RenderScene({
 }) {
   return (
     <>
-      <color attach="background" args={['#030714']} />
-      <fog attach="fog" args={['#06091a', 13, 34]} />
+      <color attach="background" args={['#07061d']} />
+      <fog attach="fog" args={['#10082c', 14, 34]} />
       <StageLighting />
 
       <Arena />
