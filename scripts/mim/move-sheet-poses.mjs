@@ -13,15 +13,22 @@
  * recorded so the sheet can be read against the frame data.
  */
 
+/**
+ * The stance everything returns to.
+ *
+ * The rear forearm is carried forward rather than hanging: swung back it sits
+ * behind the torso in draw order and the hand simply vanishes, so the idle would
+ * be the one panel in the row with only one hand on it.
+ */
 const IDLE = {
   lean: 4, head: -2, hipX: 1, hipY: 2,
-  frontArm: 58, frontForearm: 74, backArm: -18, backForearm: 44,
+  frontArm: 58, frontForearm: 74, backArm: -18, backForearm: 62,
   frontThigh: 26, frontShin: -20, backThigh: -24, backShin: 22,
   braidSweep: 0.1, sashSweep: 0.05,
 };
 
 /**
- * J — Mask Jab.
+ * J - Mask Jab.
  *
  * The only linear attack in the kit: the lead hand travels in a straight line
  * and nothing else in the body swings, which is why the braids droop backwards
@@ -51,12 +58,23 @@ const MASK_JAB = {
     {
       // A five-frame startup still gets a real pull-back: the lead hand draws
       // in towards the chest and the weight settles onto the rear leg.
-      phase: 'startup', frame: 1, label: 'ANTICIPATION',
+      phase: 'anticipation', frame: 1, label: 'ANTICIPATION',
       pose: {
         lean: 8, head: -1, hipX: -2, hipY: 4,
-        frontArm: 38, frontForearm: 58, backArm: -12, backForearm: 52,
-        frontThigh: 28, frontShin: -22, backThigh: -18, backShin: 30,
+        frontArm: 38, frontForearm: 58, backArm: -12, backForearm: 58,
+        // The feet keep a clear gap: converged, the anticipation dip reads
+        // one-footed in silhouette against a two-footed idle.
+        frontThigh: 44, frontShin: -38, backThigh: -20, backShin: 54,
         braidSweep: 0.16, sashSweep: 0.12,
+      },
+    },
+    {
+      phase: 'startup', frame: 2, label: 'STARTUP',
+      pose: {
+        lean: 4, head: 0, hipX: 0, hipY: 3,
+        frontArm: 52, frontForearm: 66, backArm: -4, backForearm: 56,
+        frontThigh: 36, frontShin: -30, backThigh: -22, backShin: 40,
+        braidSweep: 0.1, sashSweep: 0.06,
       },
     },
     {
@@ -64,7 +82,7 @@ const MASK_JAB = {
       pose: {
         lean: 0, head: 1, hipX: 2, hipY: 1,
         frontArm: 72, frontForearm: 80, backArm: 6, backForearm: 58,
-        frontThigh: 26, frontShin: -20, backThigh: -26, backShin: 22,
+        frontThigh: 32, frontShin: -26, backThigh: -26, backShin: 22,
         braidSweep: 0.02, sashSweep: -0.02,
       },
     },
@@ -75,6 +93,8 @@ const MASK_JAB = {
         frontArm: 84, frontForearm: 87, backArm: 22, backForearm: 64,
         frontThigh: 26, frontShin: -20, backThigh: -34, backShin: 16,
         braidSweep: -0.12, sashSweep: -0.1,
+        // The front knee straightens as the weight arrives over it; the rear leg
+        // extends behind the hips to carry the body there.
       },
     },
     {
@@ -84,7 +104,7 @@ const MASK_JAB = {
       pose: {
         lean: -6, head: 4, hipX: 8, hipY: 0,
         frontArm: 89, frontForearm: 91, backArm: 30, backForearm: 68,
-        frontThigh: 26, frontShin: -20, backThigh: -42, backShin: 12,
+        frontThigh: 20, frontShin: -14, backThigh: -36, backShin: 14,
         braidSweep: -0.2, sashSweep: -0.16,
       },
     },
@@ -93,7 +113,7 @@ const MASK_JAB = {
       pose: {
         lean: 4, head: 0, hipX: 5, hipY: 2,
         frontArm: 66, frontForearm: 80, backArm: 10, backForearm: 50,
-        frontThigh: 26, frontShin: -20, backThigh: -34, backShin: 18,
+        frontThigh: 24, frontShin: -18, backThigh: -34, backShin: 18,
         braidSweep: -0.34, sashSweep: -0.3,
       },
     },
@@ -102,7 +122,7 @@ const MASK_JAB = {
       pose: {
         lean: 6, head: -1, hipX: 3, hipY: 3,
         frontArm: 52, frontForearm: 70, backArm: -2, backForearm: 46,
-        frontThigh: 27, frontShin: -21, backThigh: -28, backShin: 22,
+        frontThigh: 28, frontShin: -22, backThigh: -28, backShin: 22,
         braidSweep: -0.18, sashSweep: -0.14,
       },
     },
@@ -111,7 +131,7 @@ const MASK_JAB = {
       pose: {
         lean: 7, head: -3, hipX: 0, hipY: 4,
         frontArm: 46, frontForearm: 64, backArm: -22, backForearm: 40,
-        frontThigh: 30, frontShin: -24, backThigh: -28, backShin: 26,
+        frontThigh: 32, frontShin: -26, backThigh: -28, backShin: 26,
         braidSweep: -0.04, sashSweep: -0.02,
       },
     },
@@ -132,7 +152,7 @@ const MASK_JAB = {
 };
 
 /**
- * K — Back Elbow.
+ * K - Back Elbow.
  *
  * The arm stays folded for the whole move: the elbow is the leading point and
  * the fist never passes it, which is what stops this reading as a second punch.
@@ -144,7 +164,7 @@ const MASK_JAB = {
  * with a hand on the end and no elbow to see; folded back and up, the fist ends
  * beside the mask and the pose reads as guarding the face. Back and down puts
  * the fist at the ribs and leaves the elbow as the highest, furthest-forward
- * corner of the arm — which is the whole silhouette of an elbow strike.
+ * corner of the arm - which is the whole silhouette of an elbow strike.
  *
  * The trailing shin likewise keeps a clear downward run, or the shoe is
  * swallowed by the thigh capsule and the leg ends in nothing.
@@ -166,7 +186,7 @@ const BACK_ELBOW = {
       pose: IDLE,
     },
     {
-      phase: 'startup', frame: 2, label: 'ANTICIPATION',
+      phase: 'anticipation', frame: 2, label: 'ANTICIPATION',
       pose: {
         lean: 10, head: 2, hipX: -2, hipY: 6,
         frontArm: -30, frontForearm: 190, backArm: -20, backForearm: 20,
@@ -181,6 +201,15 @@ const BACK_ELBOW = {
         frontArm: 5, frontForearm: 225, backArm: -40, backForearm: -20,
         frontThigh: 30, frontShin: -32, backThigh: -28, backShin: 34,
         braidSweep: 0.36, sashSweep: 0.3,
+      },
+    },
+    {
+      phase: 'startup', frame: 7, label: 'STARTUP',
+      pose: {
+        lean: -4, head: -2, hipX: 3, hipY: 9,
+        frontArm: 24, frontForearm: 245, backArm: -50, backForearm: -38,
+        frontThigh: 25, frontShin: -32, backThigh: -29, backShin: 38,
+        braidSweep: 0.39, sashSweep: 0.33,
       },
     },
     {
@@ -245,13 +274,13 @@ const BACK_ELBOW = {
 };
 
 /**
- * I — Capoeira Kick.
+ * I - Capoeira Kick.
  *
  * The rasteira: the hips drop far enough that the sweeping shin travels along
  * the floor, and the lead hand carries the weight behind the body.
  *
  * The bracing hand has to be the lead one. The rear arm is drawn behind the
- * torso, so a rear-hand plant is simply invisible at this size — the pose then
+ * torso, so a rear-hand plant is simply invisible at this size - the pose then
  * reads as a fall rather than a supported sweep.
  */
 const CAPOEIRA_KICK = {
@@ -271,7 +300,7 @@ const CAPOEIRA_KICK = {
       pose: IDLE,
     },
     {
-      phase: 'startup', frame: 3, label: 'ANTICIPATION',
+      phase: 'anticipation', frame: 3, label: 'ANTICIPATION',
       pose: {
         lean: 16, head: -10, hipX: -1, hipY: 12,
         frontArm: 20, frontForearm: 40, backArm: -20, backForearm: 10,
@@ -289,10 +318,23 @@ const CAPOEIRA_KICK = {
       },
     },
     {
+      phase: 'startup', frame: 9, label: 'STARTUP / SINK',
+      pose: {
+        lean: 44, head: -46, hipX: -3, hipY: 28,
+        frontArm: -22, frontForearm: -12, backArm: 114, backForearm: 138,
+        frontThigh: 118, frontShin: 40, backThigh: -102, backShin: 26,
+        braidSweep: 0.47, sashSweep: 0.6,
+      },
+    },
+    {
       phase: 'startup', frame: 11, label: 'HAND PLANT',
       pose: {
-        lean: 42, head: -46, hipX: -3, hipY: 32,
-        frontArm: -34, frontForearm: -24, backArm: 130, backForearm: 152,
+        // Lean and hip drop are both tuned to one thing: the bracing hand has to
+        // reach the floor. The arm is 27px and the shoulder has to come inside
+        // that of the ground, which only happens once the torso is past about
+        // fifty degrees over deeply folded legs.
+        lean: 52, head: -54, hipX: -3, hipY: 34,
+        frontArm: -18, frontForearm: -10, backArm: 130, backForearm: 152,
         frontThigh: 104, frontShin: 54, backThigh: -108, backShin: 24,
         braidSweep: 0.52, sashSweep: 0.74,
       },
@@ -303,8 +345,8 @@ const CAPOEIRA_KICK = {
         // The bracing hand is swung clear of the tucked support shoe and the
         // sash is thrown up behind the hip, so the floor contact reads as a
         // hand rather than as one knot of hand, shoe, sash and bracer.
-        lean: 44, head: -48, hipX: -2, hipY: 35,
-        frontArm: -36, frontForearm: -26, backArm: 138, backForearm: 160,
+        lean: 51, head: -53, hipX: -2, hipY: 35,
+        frontArm: -18, frontForearm: -10, backArm: 138, backForearm: 160,
         frontThigh: 84, frontShin: 92, backThigh: -116, backShin: 22,
         braidSweep: 0.62, sashSweep: 0.82,
       },
@@ -353,14 +395,19 @@ const CAPOEIRA_KICK = {
 };
 
 /**
- * L — Spinning Kick.
+ * L - Spinning Kick.
  *
  * The heaviest normal: a full chamber, a horizontal leg through contact, and a
  * landing crouch deep enough that the punish window is visible on the sheet.
  *
- * The arms are deliberately split — lead arm down and across, rear arm up and
+ * The arms are deliberately split - lead arm down and across, rear arm up and
  * back. Swinging both to the same side turns the upper body into one dark mass
  * and the rotation stops reading.
+ *
+ * The support leg carries a real vertical arc: it compresses into the coil and
+ * the chamber, drives up through contact, and folds deep again on the landing.
+ * Without it the heaviest move in the kit travels horizontally at a constant
+ * pelvis height and weighs nothing.
  */
 const SPINNING_KICK = {
   button: 'L',
@@ -379,7 +426,7 @@ const SPINNING_KICK = {
       pose: IDLE,
     },
     {
-      phase: 'startup', frame: 4, label: 'ANTICIPATION',
+      phase: 'anticipation', frame: 4, label: 'ANTICIPATION',
       pose: {
         lean: 16, head: 4, hipX: -3, hipY: 6,
         frontArm: 14, frontForearm: 54, backArm: 60, backForearm: 96,
@@ -395,8 +442,17 @@ const SPINNING_KICK = {
         // of the hip.
         lean: 22, head: 0, hipX: -1, hipY: 0,
         frontArm: -30, frontForearm: -4, backArm: 150, backForearm: 168,
-        frontThigh: 108, frontShin: 8, backThigh: -20, backShin: 30,
+        frontThigh: 108, frontShin: 8, backThigh: -32, backShin: 42,
         braidSweep: 0.44, sashSweep: 0.4,
+      },
+    },
+    {
+      phase: 'startup', frame: 13, label: 'STARTUP / TURN',
+      pose: {
+        lean: 25, head: -2, hipX: 0, hipY: -1,
+        frontArm: -37, frontForearm: -10, backArm: 166, backForearm: 182,
+        frontThigh: 104, frontShin: 17, backThigh: -32, backShin: 43,
+        braidSweep: 0.53, sashSweep: 0.48,
       },
     },
     {
@@ -404,7 +460,7 @@ const SPINNING_KICK = {
       pose: {
         lean: 28, head: -4, hipX: 1, hipY: -3,
         frontArm: -44, frontForearm: -16, backArm: 180, backForearm: 196,
-        frontThigh: 100, frontShin: 26, backThigh: -14, backShin: 26,
+        frontThigh: 100, frontShin: 26, backThigh: -30, backShin: 40,
         braidSweep: 0.62, sashSweep: 0.56,
       },
     },
@@ -413,7 +469,9 @@ const SPINNING_KICK = {
       pose: {
         lean: 32, head: -6, hipX: 2, hipY: -4,
         frontArm: -54, frontForearm: -24, backArm: 196, backForearm: 212,
-        frontThigh: 104, frontShin: 98, backThigh: -12, backShin: 24,
+        // Hip, knee and ankle collinear: at contact the leg is locked out, and
+        // the bend only returns in the follow-through.
+        frontThigh: 100, frontShin: 100, backThigh: -12, backShin: 24,
         braidSweep: 0.78, sashSweep: 0.68,
       },
     },
@@ -463,3 +521,4 @@ const SPINNING_KICK = {
 export const MOVE_SHEET = [MASK_JAB, BACK_ELBOW, CAPOEIRA_KICK, SPINNING_KICK];
 
 export const IDLE_POSE = IDLE;
+

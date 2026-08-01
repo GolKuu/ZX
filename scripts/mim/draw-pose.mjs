@@ -50,7 +50,7 @@ function drawBraids(canvas, pose) {
     // Fan the strands apart. Swinging all four through the same angle collapses
     // them into one slab exactly when the pose is most extreme, and the braid
     // cluster is the character's signature silhouette element.
-    const strandSweep = sweep + index * 0.07 - 0.1;
+    const strandSweep = sweep + index * 0.15 - 0.22;
     let previous = fold(hx - 2, hy + spec.drop);
     for (let step = 1; step <= 7; step += 1) {
       const t = step / 7;
@@ -69,23 +69,34 @@ function drawBraids(canvas, pose) {
   }
 }
 
+/**
+ * The sash, with a lag pass.
+ *
+ * The length is driven by how hard the pose is swinging, not just its angle.
+ * Parented rigidly to the pelvis the cloth only ever rotates, so it is at its
+ * shortest on the very frames it should be longest — trailing cloth reaches its
+ * full extension at contact and through the follow-through, which is the whole
+ * reason a fighter wears any.
+ */
 function drawSash(canvas, pose) {
   const [wx, wy] = pose.waist;
   const sweep = pose.sashSweep;
   const fold = folded(pose);
+  const reach = 26 + Math.abs(sweep) * 20;
   let previous = fold(wx - 3, wy + 2);
   for (let step = 1; step <= 9; step += 1) {
     const t = step / 9;
     const point = fold(
-      wx - 3 - 28 * t * Math.cos(sweep),
-      wy + 2 + 18 * t * t - 28 * t * Math.sin(sweep),
+      wx - 3 - reach * t * Math.cos(sweep),
+      wy + 2 + 18 * t * t - reach * t * Math.sin(sweep),
     );
     canvas.capsule(
       previous[0], previous[1], point[0], point[1],
       3.2 - t * 2,
       step % 3 === 0 ? 'cyanDeep' : 'violetDeep',
     );
-    if (step === 3 || step === 6) canvas.set(point[0], point[1] - 1, 'violet');
+    // The reference's lighter violet lives on the upper edge of the cloth.
+    if (step % 2 === 1) canvas.set(point[0], point[1] - 1, 'violet');
     previous = point;
   }
 }
@@ -134,6 +145,23 @@ function drawLeg(canvas, limb, side) {
   const dx = limb.ankle[0] - limb.knee[0];
   const dy = limb.ankle[1] - limb.knee[1];
   const length = Math.hypot(dx, dy) || 1;
+  // The knee break.
+  //
+  // An extended leg puts thigh and shin nearly in line, and without a joint mark
+  // the two capsules render as one uniform tube — a plank, which reads as longer
+  // and slower than the leg actually is. A dark line across the limb at the knee
+  // restores the two-segment read exactly when the leg is straightest.
+  const acrossX = -(dy / length);
+  const acrossY = dx / length;
+  canvas.line(
+    limb.knee[0] - acrossX * 3.4, limb.knee[1] - acrossY * 3.4,
+    limb.knee[0] + acrossX * 3.4, limb.knee[1] + acrossY * 3.4,
+    'ink',
+  );
+  canvas.set(
+    limb.knee[0] + acrossX * 1.6, limb.knee[1] + acrossY * 1.6,
+    side === 'front' ? 'cyan' : 'cyanDeep',
+  );
   const toe = [
     limb.ankle[0] - (dy / length) * 5,
     limb.ankle[1] + (dx / length) * 5,
@@ -188,11 +216,20 @@ function drawTorso(canvas, pose) {
 function drawHead(canvas, pose) {
   const [hx, hy] = pose.head;
   const [nx, ny] = pose.neck;
+  // A dark collar shaft and a dark rim around the mask.
+  //
+  // The mask and the jacket are both near-white, so in any leaned or horizontal
+  // pose they merge into one mass and the character loses its head — worst of
+  // all on the contact frames, where the pose is most extreme. These two marks
+  // cost a few pixels and guarantee the break in every orientation, instead of
+  // relying on the upright silhouette to provide it.
+  canvas.capsule(nx, ny, hx, hy, 3.4, 'ink');
   canvas.capsule(nx, ny, hx, hy, 2, 'skinShade');
   canvas.polygon([
     [hx - 8, hy + 2], [hx - 2, hy - 6], [hx + 3, hy - 4],
     [hx + 4, hy + 8], [hx - 6, hy + 10],
   ], 'navyDeep');
+  canvas.ellipse(hx, hy, 7, 8.6, 'ink');
   canvas.ellipse(hx, hy, 6, 7.5, 'maskLit');
   canvas.polygon([
     [hx - 6, hy + 1], [hx - 1, hy + 8], [hx - 6, hy + 7],

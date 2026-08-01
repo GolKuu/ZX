@@ -85,9 +85,3 @@ export function text(canvas, x, y, string, colour, spacing = 1) {
   }
   return cursor - spacing;
 }
-
-/** The same string one pixel down in a dark tone first, so type holds on any cell. */
-export function shadowText(canvas, x, y, string, colour, shadow = 'ink', spacing = 1) {
-  text(canvas, x + 1, y + 1, string, shadow, spacing);
-  return text(canvas, x, y, string, colour, spacing);
-}
