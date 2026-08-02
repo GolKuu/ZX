@@ -14,7 +14,7 @@ import { FrameProfiler } from './FrameProfiler';
 import { HitBlood } from './HitBlood';
 import { ImpactPulse } from './ImpactPulse';
 import { LazyPostEffects } from './LazyPostEffects';
-import { PhotoSpriteFighter } from './photoSprite/PhotoSpriteFighter';
+import { MimFighter } from './MimFighter';
 import { SpeedLines } from './SpeedLines';
 import { RenderDebugBridge } from './RenderDebugBridge';
 import { Sprite2DFighter } from './sprite2d/Sprite2DFighter';
@@ -96,6 +96,7 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
   /** Sliced clean attack panels, shown at the strike impact frame. */
   readonly attacks?: string;
 }>> = {
+  glitch: { rig: 'glitch-profile', attacks: 'glitch-attacks' },
   lucky: { rig: 'lucky-profile', attacks: 'lucky-attacks' },
 };
 
@@ -121,10 +122,7 @@ function primitiveFighter(
     );
   }
   if (characterId === 'mim') {
-    return <PhotoSpriteFighter fighterId={fighterId} kind="mim" />;
-  }
-  if (characterId === 'glitch') {
-    return <PhotoSpriteFighter fighterId={fighterId} kind="glitch" />;
+    return <MimFighter auraColor={auraColor} fighterId={fighterId} />;
   }
   return null;
 }

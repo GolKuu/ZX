@@ -760,7 +760,9 @@ export function spritePoseFor(
     return withinLimits(dash(forward, dashPhase(fighter.dashFrames)));
   }
 
-  const base = stance(Math.sin(time * 2.2));
+  // Keep neutral planted. Character motion comes from deliberate gameplay
+  // states; cycling the whole rig while stationary reads as constant dancing.
+  const base = stance(0);
   const speed = Math.abs(fighter.velocity.x) / FIXED_SCALE;
   // Authored ground speed is roughly 0.053–0.065 engine units per sim frame.
   // Normalising by 3.5 made the old walk play at under two percent amplitude.

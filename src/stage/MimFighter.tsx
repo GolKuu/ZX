@@ -84,17 +84,16 @@ export function MimFighter({
       ? null
       : mimAnimationBeat(fighter.action.moveId, fighter.action.frame);
     const strike = beat?.phase === 'strike' ? beat.button : null;
-    const breath = beat === null ? Math.sin(clock.elapsedTime * 2.2) : 0;
     const strikeCompression = beat?.phase === 'strike'
       ? 1 - Math.abs(beat.amount * 2 - 1)
       : 0;
     bodyGroup.scale.set(
-      1 + strikeCompression * 0.055 - breath * 0.004,
-      1 - strikeCompression * 0.07 + breath * 0.006,
+      1 + strikeCompression * 0.055,
+      1 - strikeCompression * 0.07,
       1,
     );
     bodyGroup.rotation.z = beat === null
-      ? breath * 0.004
+      ? 0
       : beat.phase === 'approach'
         ? -0.025 * (1 - beat.amount)
         : beat.phase === 'strike'

@@ -4,7 +4,6 @@ import type { SpriteJoints } from '../sprite2d/SpriteRigBody';
 import { readGlitchDefenseState } from './glitchDefenseState';
 
 const FRAME_SKIP_STEPS = 9;
-export const GLITCH_IDLE_FRAMES = 18;
 
 /**
  * Render-only broken interpolation. Simulation frames, hitboxes, and timings
@@ -88,23 +87,6 @@ export function applyGlitchSpriteCorruption(
     rotate(joints.shin, -fighter.facing * 0.2);
   }
 
-  if (isNeutral) applyEighteenFrameIdle(joints, time);
-}
-
-function applyEighteenFrameIdle(joints: SpriteJoints, time: number): void {
-  const frame = Math.floor(time * 60) % GLITCH_IDLE_FRAMES;
-  const phase = (frame / GLITCH_IDLE_FRAMES) * Math.PI * 2;
-  const breath = Math.sin(phase);
-  const weight = Math.sin(phase + Math.PI / 2);
-  rotate(joints.torso, breath * 0.012);
-  rotate(joints.head, -breath * 0.008);
-  rotate(joints.thigh, weight * 0.014);
-  rotate(joints.farThigh, -weight * 0.012);
-  rotate(joints.forearm, -breath * 0.018);
-  // A two-frame local desync at the loop midpoint; the root/pivot never moves.
-  if (frame === 8 || frame === 9) {
-    rotate(joints.farForearm, frame === 8 ? 0.045 : -0.045);
-  }
 }
 
 function applySpatialGuard(

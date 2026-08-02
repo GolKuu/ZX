@@ -93,8 +93,9 @@ export function mimSpritePoseFor(
     );
   }
 
-  const breath = Math.sin(time * 2.2);
-  const base = fightingStance(breath);
+  // Neutral must read as a held fighting stance, not a looping dance. Motion
+  // resumes immediately for walking, dashing, defense and authored attacks.
+  const base = fightingStance(0);
   const speed = Math.min(
     1,
     Math.abs(fighter.velocity.x) / FIXED_SCALE / 0.058,
