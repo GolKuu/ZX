@@ -30,7 +30,6 @@ import {
   showCorruptData,
   showDesync,
   showGuardRift,
-  showIdleFault,
   showLagSpike,
 } from './glitchSpriteEffectMotion';
 
@@ -69,6 +68,14 @@ export function GlitchSpriteEffects({
     const fighter = readCombatFighter(fighterId);
     const action = fighter?.action ?? null;
     const moveId = action?.moveId ?? null;
+    const hasMotion = fighter !== null && (
+      action !== null
+      || fighter.hitstun > 0
+      || fighter.guarding
+      || !fighter.grounded
+      || fighter.dashFrames > 0
+      || Math.abs(fighter.velocity.x) > 16
+    );
     hideGlitchEffects(
       tears.current,
       projectile.current,
@@ -76,7 +83,12 @@ export function GlitchSpriteEffects({
       ghosts.current,
       screenTear.current,
     );
-    animateScarf(scarf.current, clock.elapsedTime, action?.frame ?? 0);
+    animateScarf(
+      scarf.current,
+      clock.elapsedTime,
+      action?.frame ?? 0,
+      hasMotion,
+    );
 
     if (moveId !== lastMove.current) {
       if (
@@ -96,8 +108,6 @@ export function GlitchSpriteEffects({
           fighter.hitstun,
           fighter.crouching,
         );
-      } else {
-        showIdleFault(tears.current, clock.elapsedTime, fighterId);
       }
       return;
     }

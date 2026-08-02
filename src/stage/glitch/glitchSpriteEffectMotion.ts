@@ -4,10 +4,17 @@ export function animateScarf(
   group: Group | null,
   time: number,
   actionFrame: number,
+  active: boolean,
 ): void {
   if (group === null) return;
+  if (!active) {
+    group.rotation.z = 0.05;
+    group.scale.set(1, 1, 1);
+    group.position.y = 0;
+    return;
+  }
   const combatSnap = actionFrame > 0 ? Math.sin(actionFrame * 1.8) * 0.04 : 0;
-  group.rotation.z = Math.sin(time * 3.1) * 0.045 + combatSnap;
+  group.rotation.z = 0.05 + Math.sin(time * 3.1) * 0.045 + combatSnap;
   group.scale.y = 0.96 + Math.sin(time * 4.2 + 0.6) * 0.045;
   group.position.y = Math.sin(time * 2.7) * 0.018;
 }
@@ -29,18 +36,6 @@ export function showGuardRift(
   const impact = blockstun > 0 ? Math.min(1, blockstun / 18) : 0;
   group.scale.set(0.55 + open * 0.4 + impact * 0.22, 1.1 + impact * 0.32, 1);
   group.rotation.z = (crouching ? -0.52 : -0.18) + impact * 0.08;
-}
-
-export function showIdleFault(
-  group: Group | null,
-  time: number,
-  fighterId: string,
-): void {
-  if (group === null) return;
-  const tick = Math.floor(time * 7) + (fighterId === 'p1' ? 0 : 5);
-  group.visible = tick % 17 === 8 || tick % 23 === 2;
-  group.position.x = tick % 2 === 0 ? 0.05 : -0.04;
-  group.scale.set(0.72, 0.72, 0.72);
 }
 
 export function showAttackTears(
