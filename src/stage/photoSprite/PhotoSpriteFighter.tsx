@@ -3,7 +3,6 @@
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import {
-  AdditiveBlending,
   DoubleSide,
   Group,
   NearestFilter,
@@ -100,15 +99,7 @@ export function PhotoSpriteFighter({
         {kind === 'mim' ? <MimAttackEffects fighterId={fighterId} /> : null}
         <group ref={body} position-y={centerY}>
           {texture === null ? null : (
-            <>
-              {kind === 'glitch' ? (
-                <>
-                  <PhotoPlane texture={texture} width={width} color="#16e6ff" x={-0.045} opacity={0.16} additive />
-                  <PhotoPlane texture={texture} width={width} color="#ff2bd6" x={0.045} opacity={0.14} additive />
-                </>
-              ) : null}
-              <PhotoPlane texture={texture} width={width} />
-            </>
+            <PhotoPlane texture={texture} width={width} />
           )}
         </group>
         {kind === 'glitch' ? <GlitchSpriteEffects fighterId={fighterId} /> : null}
@@ -118,33 +109,20 @@ export function PhotoSpriteFighter({
 }
 
 function PhotoPlane({
-  additive = false,
-  color = '#ffffff',
-  opacity = 1,
   texture,
   width,
-  x = 0,
 }: {
-  readonly additive?: boolean;
-  readonly color?: string;
-  readonly opacity?: number;
   readonly texture: Texture;
   readonly width: number;
-  readonly x?: number;
 }) {
   return (
-    <mesh position={[x, 0, additive ? -0.025 : 0]}>
+    <mesh>
       <planeGeometry args={[width, DISPLAY_HEIGHT]} />
       <meshBasicMaterial
-        alphaTest={0.08}
-        blending={additive ? AdditiveBlending : undefined}
-        color={color}
-        depthWrite={!additive}
+        alphaTest={0.5}
         map={texture}
-        opacity={opacity}
         side={DoubleSide}
         toneMapped={false}
-        transparent
       />
     </mesh>
   );

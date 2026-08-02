@@ -7,6 +7,7 @@ const output = path.resolve('public/sprites/photo-fighters');
 const columns = 6;
 const rows = 8;
 const cellSize = 40;
+const renderScale = 4;
 const left = 21;
 const top = 5;
 
@@ -27,18 +28,20 @@ for (let pixel = 0; pixel < info.width * info.height; pixel += 1) {
   const green = Math.max(0, data[input + 1] - 11);
   const blue = Math.max(0, data[input + 2] - 20);
   const brightness = Math.max(data[input], data[input + 1], data[input + 2]);
-  const alpha = clamp((brightness - 30) * 14);
+  // The source has soft antialiased fringe pixels. They turn into a grey halo
+  // when a 40 px fighter is enlarged in WebGL, so author a hard pixel mask.
+  const alpha = brightness >= 36 ? 255 : 0;
 
-  mim[outputPixel] = clamp(red * 1.85);
-  mim[outputPixel + 1] = clamp(green * 1.65);
-  mim[outputPixel + 2] = clamp(blue * 1.48);
+  mim[outputPixel] = quantize(clamp(red * 1.9));
+  mim[outputPixel + 1] = quantize(clamp(green * 1.68));
+  mim[outputPixel + 2] = quantize(clamp(blue * 1.5));
   mim[outputPixel + 3] = alpha;
 
   const light = Math.max(red, green, blue);
   const cyan = Math.max(0, blue - red * 0.35);
-  glitch[outputPixel] = clamp(light * 0.78 + cyan * 0.5);
-  glitch[outputPixel + 1] = clamp(green * 0.65 + light * 0.15);
-  glitch[outputPixel + 2] = clamp(light * 1.62);
+  glitch[outputPixel] = quantize(clamp(light * 0.58 + cyan * 0.36));
+  glitch[outputPixel + 1] = quantize(clamp(green * 0.84 + light * 0.2));
+  glitch[outputPixel + 2] = quantize(clamp(light * 1.78));
   glitch[outputPixel + 3] = alpha;
 }
 
@@ -49,6 +52,7 @@ await Promise.all([
     columns,
     rows,
     cellSize,
+    renderScale,
     frameCount: columns * rows,
     ground: 0.91,
     facesRight: true,
@@ -59,10 +63,15 @@ console.log(`Built ${String(columns * rows)} photo-animation frames for Mim and 
 
 function saveAtlas(name, pixels, width, height) {
   return sharp(pixels, { raw: { width, height, channels: 4 } })
+    .resize(width * renderScale, height * renderScale, { kernel: 'nearest' })
     .png({ compressionLevel: 9, palette: true })
     .toFile(path.join(output, name));
 }
 
 function clamp(value) {
   return Math.max(0, Math.min(255, Math.round(value)));
+}
+
+function quantize(value) {
+  return clamp(Math.round(value / 24) * 24);
 }

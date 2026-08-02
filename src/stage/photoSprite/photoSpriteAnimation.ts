@@ -32,7 +32,9 @@ export function photoFrameFor(
   if (Math.abs(fighter.velocity.x) > 16) {
     return frame(5, Math.floor(elapsedTime * 10) % PHOTO_COLUMNS);
   }
-  return frame(0, Math.floor(elapsedTime * 4) % PHOTO_COLUMNS);
+  // A motionless fighter holds the authored neutral silhouette. Cycling the
+  // six unrelated source poses here made idle look like a broken dance.
+  return frame(0, 0);
 }
 
 function frame(row: number, column: number): number {

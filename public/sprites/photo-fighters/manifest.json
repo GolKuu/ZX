@@ -2,6 +2,7 @@
   "columns": 6,
   "rows": 8,
   "cellSize": 40,
+  "renderScale": 4,
   "frameCount": 48,
   "ground": 0.91,
   "facesRight": true
