@@ -80,7 +80,7 @@ export function ControlsMenu() {
                 <span>ЛОКАЛЬНЫЙ БОЙ · P2</span>
                 <p>Стрелки — движение. Num 1 / 2 — атаки руками, Num 4 / 5 — атаки ногами.</p>
               </header>
-              {CONTROL_ROWS.slice(0, 9).map((row) => (
+              {CONTROL_ROWS.map((row) => (
                 <div key={`p2-${row.id}`} className={styles.bindingRow}>
                   <strong>{row.label}</strong>
                   <kbd>{keyLabel(bindingCode(PLAYER_TWO_BINDINGS, row.id))}</kbd>

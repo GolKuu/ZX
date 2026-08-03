@@ -1,5 +1,4 @@
 import { CombatAiAgent, type AiDifficulty } from '@/src/ai';
-import { KADE_AI_LOADOUT } from '@/src/data/combat-ai';
 import {
   DEFAULT_CHARACTER_SELECTION,
   getCharacterDefinition,
@@ -19,6 +18,8 @@ import { GLITCH_SUPER_MOVES } from '@/src/data/glitch-super-moves';
 import { MIM_MOVES } from '@/src/data/mim-moves';
 import { MIM_SPECIAL_MOVES } from '@/src/data/mim-special-moves';
 import { MIM_SUPER_MOVES } from '@/src/data/mim-super-moves';
+import { MIM_AI_LOADOUT } from '@/src/data/mim-ai';
+import { MIM_HURTBOXES, MIM_MAX_HEALTH, MIM_MOVEMENT } from '@/src/data/mim';
 import {
   LUCKY_AI_LOADOUT,
   LUCKY_HURTBOXES,
@@ -103,7 +104,7 @@ export function createCombatAi(
       ? LUCKY_AI_LOADOUT
       : characterId === 'glitch'
           ? glitchAiLoadout(difficulty)
-          : KADE_AI_LOADOUT,
+          : MIM_AI_LOADOUT,
     seed: 29,
   });
 }
@@ -154,7 +155,7 @@ function fighterDefinition(
         ? LUCKY_MAX_HEALTH
         : characterId === 'glitch'
           ? GLITCH_MAX_HEALTH
-          : 1_000,
+          : MIM_MAX_HEALTH,
     spawn: { x: fixed(x), y: 0 },
     facing,
     hurtboxes: characterId === 'vorgh'
@@ -165,7 +166,7 @@ function fighterDefinition(
         ? LUCKY_HURTBOXES
         : characterId === 'glitch'
           ? GLITCH_HURTBOXES
-          : KADE_HURTBOXES,
+          : MIM_HURTBOXES,
     ...(characterId === 'lucky'
       ? {
           movement: LUCKY_MOVEMENT,
@@ -181,5 +182,6 @@ function fighterDefinition(
       ? { movement: VORGH_MOVEMENT, resource: VORGH_RESOURCE }
       : {}),
     ...(characterId === 'titan' ? { movement: TITAN_MOVEMENT } : {}),
+    ...(characterId === 'mim' ? { movement: MIM_MOVEMENT } : {}),
   };
 }

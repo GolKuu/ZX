@@ -67,7 +67,7 @@ export function CharacterSelectMenu() {
     setFocus: setMenuFocus,
   });
 
-  const opponentTag = mode === 'ai' ? 'CPU' : 'P2';
+  const opponentTag = mode === 'local' ? 'P2' : 'CPU';
 
   return (
     <div

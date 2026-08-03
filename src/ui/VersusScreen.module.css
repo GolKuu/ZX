@@ -45,6 +45,9 @@
   grid-template-columns: 1fr 10cqw 1fr;
 }
 
+.controlsPreview { position: absolute; z-index: 7; right: 4cqw; bottom: 6.2cqw; left: 4cqw; display: flex; justify-content: space-between; gap: 20px; color: #9fb0c2; font: 700 clamp(10px, .72cqw, 14px)/1.4 monospace; }
+.controlsPreview b { color: #71ddff; }
+
 .card {
   position: relative;
   min-width: 0;
@@ -185,4 +188,5 @@
 @media (max-width: 760px) {
   .footer { grid-template-columns: 1fr 1fr; height: auto; gap: 8px; padding: 10px; }
   .footer i { display: none; }
+  .controlsPreview { bottom: 120px; flex-direction: column; }
 }

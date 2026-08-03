@@ -15,14 +15,14 @@ export function VersusScreen() {
   const left = getCharacterDefinition(selection[0]);
   const right = getCharacterDefinition(selection[1]);
   const [p1Ready, setP1Ready] = useState(false);
-  const [p2Ready, setP2Ready] = useState(mode === 'ai');
+  const [p2Ready, setP2Ready] = useState(mode !== 'local');
   const canStart = p1Ready && p2Ready;
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.code === 'Enter' || event.code === 'Space') {
         event.preventDefault();
-        if (mode === 'ai' && p1Ready) enterFight();
+        if (mode !== 'local' && p1Ready) enterFight();
         else setP1Ready(true);
       } else if (event.code === 'NumpadEnter' && mode === 'local') {
         event.preventDefault();
@@ -58,9 +58,14 @@ export function VersusScreen() {
         </div>
         <FighterCard
           side="right"
-          player={mode === 'ai' ? 'CPU' : 'P2'}
+          player={mode === 'local' ? 'P2' : 'CPU'}
           character={right}
         />
+      </div>
+
+      <div className={styles.controlsPreview}>
+        <span><b>P1</b> WASD · J K I L · Shift блок · Ctrl рывок</span>
+        <span><b>{mode === 'local' ? 'P2' : 'CPU'}</b> {mode === 'local' ? 'Стрелки · Num 1 2 4 5 · Num 0 блок · Num Enter рывок' : 'Управляется игрой'}</span>
       </div>
 
       <footer className={styles.footer}>

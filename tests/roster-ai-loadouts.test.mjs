@@ -2,6 +2,8 @@ import test from 'node:test';
 
 import { validateAiLoadout } from '../.sim-test-build/src/ai/validation.js';
 import { KADE_AI_LOADOUT } from '../.sim-test-build/src/data/combat-ai.js';
+import { MIM_AI_LOADOUT } from '../.sim-test-build/src/data/mim-ai.js';
+import { MIM_ALL_MOVES } from '../.sim-test-build/src/data/mim/index.js';
 import { KADE_MOVES } from '../.sim-test-build/src/data/combat-moves.js';
 import {
   GLITCH_AI_LOADOUT,
@@ -33,7 +35,11 @@ function moveMap(moves) {
 }
 
 test('every roster AI loadout follows authored cancel windows', () => {
-  validateAiLoadout(KADE_AI_LOADOUT, moveMap(KADE_MOVES));
+validateAiLoadout(KADE_AI_LOADOUT, moveMap(KADE_MOVES));
+
+test('MIM AI uses only authored MIM moves and valid cancels', () => {
+  validateAiLoadout(MIM_AI_LOADOUT, moveMap(MIM_ALL_MOVES));
+});
 
   const glitchMoves = moveMap([...GLITCH_MOVES, ...GLITCH_SUPER_MOVES]);
   validateAiLoadout(GLITCH_AI_LOADOUT, glitchMoves);
