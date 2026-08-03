@@ -2,7 +2,7 @@
   position: relative;
   width: 100vw;
   height: 100svh;
-  min-height: 560px;
+  min-height: min(560px, 100svh);
   overflow: hidden;
   background: #050814;
 }

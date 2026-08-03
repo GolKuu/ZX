@@ -157,6 +157,7 @@ export interface MutableFighterState {
   airJuggleHits: number;
   lastAirHitMoveId: string | null;
   repeatedAirHitCount: number;
+  comboHitsTaken: number;
   moveCooldowns: Record<string, number>;
   wallRun: WallRunState;
 }

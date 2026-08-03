@@ -19,31 +19,31 @@ export function FightControlStrip() {
   };
 
   return (
-    <section className={styles.strip} aria-label="Combat controls">
+    <section className={styles.strip} aria-label="Управление боем">
       <ControlGroup
-        label="Movement"
+        label="Движение"
         codes={['up', 'left', 'down', 'right'].map(
           (id) => bindingCode(bindings, id as 'up' | 'left' | 'down' | 'right'),
         )}
       />
       <ControlGroup
-        label="Attacks"
-        codes={['lp', 'hp', 'lk', 'hk'].map(
-          (id) => bindingCode(bindings, id as 'lp' | 'hp' | 'lk' | 'hk'),
+        label="Атаки J K I L"
+        codes={['lp', 'lk', 'hp', 'hk'].map(
+          (id) => bindingCode(bindings, id as 'lp' | 'lk' | 'hp' | 'hk'),
         )}
       />
-      <ControlGroup label="Block" codes={[bindingCode(bindings, 'block')]} />
-      <ControlGroup label="Dash" codes={[bindingCode(bindings, 'dash')]} />
-      <ControlGroup label="Super" codes={[bindingCode(bindings, 'super')]} />
-      <ControlGroup label="Ultimate" codes={[bindingCode(bindings, 'ultimate')]} />
-      <ControlGroup label="Taunt" codes={[bindingCode(bindings, 'taunt')]} />
+      <ControlGroup label="Блок" codes={[bindingCode(bindings, 'block')]} />
+      <ControlGroup label="Рывок" codes={[bindingCode(bindings, 'dash')]} />
+      <ControlGroup label="Супер" codes={[bindingCode(bindings, 'super')]} />
+      <ControlGroup label="Ультимейт" codes={[bindingCode(bindings, 'ultimate')]} />
+      <ControlGroup label="Насмешка" codes={[bindingCode(bindings, 'taunt')]} />
       {selection[0] === 'mim' && <MimMoveGroup fighterId="p1" />}
       {selection[1] === 'mim' && <MimMoveGroup fighterId="p2" />}
       {selection[0] === 'glitch' && <GlitchMoveGroup fighterId="p1" />}
       {selection[1] === 'glitch' && <GlitchMoveGroup fighterId="p2" />}
       {selection[0] === 'vorgh' && <VorghMoveGroup fighterId="p1" />}
       {selection[1] === 'vorgh' && <VorghMoveGroup fighterId="p2" />}
-      <button type="button" onClick={openControls}>Controls</button>
+      <button type="button" onClick={openControls}>Все приёмы</button>
     </section>
   );
 }
@@ -52,7 +52,7 @@ function VorghMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) 
   return (
     <MoveGroup
       fighterId={fighterId}
-      hint="QCF/QCB/DP · SHIFT+U PAIN GUARD"
+      hint="четверть круга вперёд/назад, Z-ввод · Shift+U"
       moves="RAGE SLASH · BERSERK DASH · LAST BEAST"
     />
   );
@@ -72,7 +72,7 @@ function GlitchMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId })
   return (
     <MoveGroup
       fighterId={fighterId}
-      hint="QCF / QCB / DP + J/K"
+      hint="четверть круга вперёд/назад или Z-ввод + J/K"
       moves="PACKET LOSS В· CORRUPTED ZONE В· DESYNC JUMP"
     />
   );

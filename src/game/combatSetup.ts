@@ -5,7 +5,6 @@ import {
   type CharacterSelection,
   type CharacterId,
 } from '@/src/data/characterRoster';
-import { KADE_HURTBOXES, KADE_MOVES } from '@/src/data/combat-moves';
 import { glitchAiLoadout } from '@/src/data/glitch-ai';
 import {
   GLITCH_HURTBOXES,
@@ -60,7 +59,6 @@ import { useHudStore } from '@/src/store/hudStore';
  * the command tables in `src/input/`, not here.
  */
 export const ALL_COMBAT_MOVES = [
-  ...KADE_MOVES,
   ...MIM_MOVES,
   ...MIM_SPECIAL_MOVES,
   ...MIM_SUPER_MOVES,

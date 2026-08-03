@@ -14,7 +14,7 @@ export function HomeHeader() {
       <div className={styles.actions}>
         <span className={styles.status}>
           <i aria-hidden="true" />
-          PLAYABLE BUILD
+          ИГРОВАЯ СБОРКА
         </span>
         <HomeSettingsButton variant="compact" />
         <AccountLinkButton />

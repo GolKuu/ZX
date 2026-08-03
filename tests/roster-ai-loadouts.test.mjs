@@ -35,12 +35,8 @@ function moveMap(moves) {
 }
 
 test('every roster AI loadout follows authored cancel windows', () => {
-validateAiLoadout(KADE_AI_LOADOUT, moveMap(KADE_MOVES));
-
-test('MIM AI uses only authored MIM moves and valid cancels', () => {
+  validateAiLoadout(KADE_AI_LOADOUT, moveMap(KADE_MOVES));
   validateAiLoadout(MIM_AI_LOADOUT, moveMap(MIM_ALL_MOVES));
-});
-
   const glitchMoves = moveMap([...GLITCH_MOVES, ...GLITCH_SUPER_MOVES]);
   validateAiLoadout(GLITCH_AI_LOADOUT, glitchMoves);
   for (const difficulty of ['easy', 'normal', 'hard', 'impossible', 'story']) {

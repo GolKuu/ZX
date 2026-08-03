@@ -106,6 +106,24 @@
   transform: skew(6deg);
 }
 
+.card:not([data-character='titan']) .portrait i {
+  bottom: 0;
+  width: 34cqw;
+  height: 48cqw;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-size: 600% 800%;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2cqw 2cqw rgb(0 0 0 / 72%));
+  transform: none;
+}
+
+.card[data-character='mim'] .portrait i { background-image: url('/sprites/photo-fighters/mim-atlas.png'); }
+.card[data-character='glitch'] .portrait i { background-image: url('/sprites/photo-fighters/glitch-atlas.png'); }
+.card[data-character='lucky'] .portrait i { background-image: url('/sprites/photo-fighters/lucky-atlas.png'); }
+.card[data-character='vorgh'] .portrait i { background-image: url('/sprites/photo-fighters/vorgh-atlas.png'); }
+
 .identity {
   position: absolute;
   z-index: 2;

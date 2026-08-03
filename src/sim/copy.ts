@@ -172,6 +172,7 @@ export function createFighterState(
     airJuggleHits: 0,
     lastAirHitMoveId: null,
     repeatedAirHitCount: 0,
+    comboHitsTaken: 0,
     moveCooldowns: {},
     wallRun: { phase: 'none', wallId: null, frame: 0, climb: 0 },
   };

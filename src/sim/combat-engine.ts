@@ -231,6 +231,7 @@ export class CombatEngine {
         && !bouncedThisFrame.has(fighter.id)
       ) {
         fighter.hitstun -= 1;
+        if (fighter.hitstun === 0) fighter.comboHitsTaken = 0;
       }
       const action = fighter.action;
       if (action === null || fighter.hitstop > 0) {

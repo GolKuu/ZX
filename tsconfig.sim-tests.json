@@ -39,6 +39,7 @@
     "src/data/arenas.ts",
     "src/data/meter-moves.ts",
     "src/data/mim-ai.ts",
+    "src/data/mim/index.ts",
     "src/data/move-kind.ts",
     "src/data/taunt-move.ts",
     "src/data/glitch-combat-moves.ts",

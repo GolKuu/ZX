@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     title: 'Circle Clash Ultimate',
     description: 'Cel-shaded 3D combat built for a smooth 60 FPS browser experience.',
     siteName: 'Circle Clash Ultimate',
-    locale: 'en_US',
+    locale: 'ru_RU',
     type: 'website',
     url: '/',
   },
@@ -49,7 +49,7 @@ type RootLayoutProps = Readonly<{
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en">
+    <html lang="ru">
       <body>
         {children}
         <Analytics />

@@ -1,6 +1,7 @@
 import type { HitCandidate } from './collision.js';
 import type { CombatEvent } from './events.js';
 import { clampInteger } from './math.js';
+import { comboDamagePercent } from './combo-scaling.js';
 
 export interface ResolveContext {
   /** Serial to give a counter or follow-up action, when one starts. */
@@ -121,9 +122,14 @@ export function resolveHit(
   const damage = Math.max(
     1,
     Math.ceil(
-      baseDamage * airScaling.damagePercent * rageDamagePercent / 10_000,
+      baseDamage
+        * airScaling.damagePercent
+        * rageDamagePercent
+        * comboDamagePercent(defender.comboHitsTaken)
+        / 1_000_000,
     ),
   );
+  defender.comboHitsTaken += 1;
   defender.health = Math.max(0, defender.health - damage);
   const lowHealthMultiplier =
     defender.health * 100 <= defender.maxHealth * 30 ? 125 : 100;

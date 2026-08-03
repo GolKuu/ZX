@@ -47,25 +47,25 @@ function InMatchMenus() {
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const pauseItems: readonly MenuItem[] = [
-    { label: 'Resume', detail: 'Return to fight', action: resume },
-    { label: 'Restart match', detail: 'Reset the current set', action: requestCombatReset },
-    { label: 'Controls', detail: 'View every binding', action: openControls },
+    { label: 'Продолжить', detail: 'Вернуться в бой', action: resume },
+    { label: 'Начать заново', detail: 'Сбросить текущий матч', action: requestCombatReset },
+    { label: 'Управление', detail: 'Клавиши и приёмы', action: openControls },
     {
-      label: 'Change fighters',
-      detail: 'Start a new match with another pair',
+      label: 'Сменить бойцов',
+      detail: 'Новый матч с другой парой',
       action: openCharacterSelect,
     },
     {
-      label: 'Change mode',
-      detail: 'Leave the current match',
+      label: 'Сменить режим',
+      detail: 'Покинуть текущий матч',
       action: openModeMenu,
     },
   ];
   const resultItems: readonly MenuItem[] = [
-    { label: 'Rematch', action: requestCombatReset },
-    { label: 'Change fighters', action: openCharacterSelect },
-    { label: 'Change mode', action: openModeMenu },
-    { label: 'Main menu', action: () => router.push('/') },
+    { label: 'Рематч', action: requestCombatReset },
+    { label: 'Сменить бойцов', action: openCharacterSelect },
+    { label: 'Сменить режим', action: openModeMenu },
+    { label: 'Главное меню', action: () => router.push('/') },
   ];
   const items = screen === 'result' ? resultItems : pauseItems;
 
@@ -124,8 +124,8 @@ function InMatchMenus() {
         <ResultHeader result={result} />
       ) : (
         <div className={styles.pauseHeading}>
-          <span>Match suspended</span>
-          <h2>Paused</h2>
+          <span>БОЙ ОСТАНОВЛЕН</span>
+          <h2>Пауза</h2>
         </div>
       )}
       <nav
@@ -163,14 +163,14 @@ function ResultHeader({
   readonly result: ReturnType<typeof useHudStore.getState>['result'];
 }) {
   const stats = [
-    ['Rounds', result.rounds],
-    ['Max combo', String(result.maxCombo)],
-    ['Clashes', String(result.clashes)],
-    ['Duration', result.duration],
+    ['Раунды', result.rounds],
+    ['Макс. комбо', String(result.maxCombo)],
+    ['Столкновения', String(result.clashes)],
+    ['Время', result.duration],
   ];
   return (
     <section className={styles.resultHeader}>
-      <span>Player one wins</span>
+      <span>{result.winner.startsWith('P1') ? 'ИГРОК 1 ПОБЕДИЛ' : 'ИГРОК 2 ПОБЕДИЛ'}</span>
       <h2>{result.winner}</h2>
       <div className={styles.resultStats}>
         {stats.map(([label, value]) => (
@@ -187,9 +187,9 @@ function ResultHeader({
 function HintBar({ screen }: { readonly screen: HudScreen }) {
   return (
     <footer className={styles.hintBar}>
-      <span><kbd>A</kbd> {screen === 'controls' ? 'Back' : 'Select'}</span>
-      <span><kbd>B</kbd> Back</span>
-      <span><kbd>↑↓</kbd> Navigate</span>
+      <span><kbd>Enter</kbd> {screen === 'controls' ? 'Назад' : 'Выбрать'}</span>
+      <span><kbd>Esc</kbd> Назад</span>
+      <span><kbd>↑↓</kbd> Навигация</span>
     </footer>
   );
 }

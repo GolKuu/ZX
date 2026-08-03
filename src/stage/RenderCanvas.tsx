@@ -6,6 +6,7 @@ import type { CharacterSelection } from '@/src/data/characterRoster';
 import type { ArenaId } from '@/src/data/arenas';
 import { RenderScene } from './RenderScene';
 import { useRenderStore } from '@/src/store/renderStore';
+import { useHudStore } from '@/src/store/hudStore';
 
 export function RenderCanvas({
   fighterSelection,
@@ -15,6 +16,7 @@ export function RenderCanvas({
   readonly arenaId: ArenaId;
 }) {
   const graphicsPreset = useRenderStore((state) => state.graphicsPreset);
+  const simulationActive = useHudStore((state) => state.screen === 'fight');
   const dpr: [number, number] = graphicsPreset === 'high' ? [1, 1.5] : graphicsPreset === 'medium' ? [1, 1.25] : [1, 1];
   return (
     <Canvas
@@ -25,7 +27,7 @@ export function RenderCanvas({
           WebGL недоступен. Включите аппаратное ускорение или используйте современный браузер.
         </div>
       )}
-      frameloop="always"
+      frameloop={simulationActive ? 'always' : 'never'}
       gl={{
         alpha: false,
         // AA is SMAA in the composite chain — MSAA cannot coexist cheaply with
