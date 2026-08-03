@@ -309,6 +309,7 @@ function tryCounter(
     || action.frame < counter.frames.from
     || action.frame >= counter.frames.toExclusive
     || (counter.grappleOnly === true && candidate.attackerMove?.grapple === undefined)
+    || (counter.strikeOnly === true && candidate.attackerMove?.grapple !== undefined)
   ) {
     return false;
   }

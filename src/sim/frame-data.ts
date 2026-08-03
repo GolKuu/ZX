@@ -80,6 +80,14 @@ export interface MoveCounterData {
   readonly attackerHitstop: number;
   /** Throw-tech windows reject grapples without countering ordinary strikes. */
   readonly grappleOnly?: boolean;
+  /**
+   * The mirror of `grappleOnly`: catches strikes and is beaten by throws.
+   *
+   * A counter stance that also answered grabs would have no counter-play at
+   * all, so every parry-shaped move needs to name which half of the offence it
+   * loses to.
+   */
+  readonly strikeOnly?: boolean;
 }
 
 export interface MoveArmourData {
