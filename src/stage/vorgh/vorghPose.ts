@@ -275,7 +275,26 @@ function actionPose(id: string, frame: number): VorghPose {
   if (id.includes('sweep') || id.includes('crouch-heavy')) {
     return pose({ rootY: -0.34, lean: -0.9, frontLeg: -1.3 + phase * 2.1, backLeg: 0.76, frontArm: -0.4, scaleY: 0.78 });
   }
-  if (id.includes('rising-maul') || id.includes('predator-leap')) {
+  if (id.includes('rising-maul')) {
+    // L / HK: chamber the knee, then drive the heel above shoulder height.
+    // The arms counter-swing instead of delivering the hit, so the silhouette
+    // remains unmistakably a kick even under Vorgh's oversized gauntlets.
+    const kick = Math.sin(phase * Math.PI * 0.5);
+    return pose({
+      lean: -0.3 - kick * 0.48,
+      head: -kick * 0.14,
+      frontArm: -0.72 - kick * 0.38,
+      backArm: 0.64 + kick * 0.52,
+      frontForearm: -0.62,
+      backForearm: 0.58,
+      frontLeg: -0.32 + kick * 2.02,
+      backLeg: 0.42 + kick * 0.3,
+      rootX: kick * 0.12,
+      rootY: kick * 0.16,
+      scaleX: 1.06,
+    });
+  }
+  if (id.includes('predator-leap')) {
     return pose({ lean: -0.38, frontArm: -2.55, backArm: 2.45, frontForearm: -0.2, backForearm: 0.2, rootY: phase * 0.14 });
   }
   if (id.includes('roar') || id.includes('unchained')) {

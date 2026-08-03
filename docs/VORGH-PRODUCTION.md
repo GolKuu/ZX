@@ -55,7 +55,7 @@ blockstun, Rage gain / cost.
 | Predator Rake | 6/4/10 | high | 34 | 17/12 | +3/0 |
 | Skull Ram | 9/4/14 | mid | 52 | 23/15 | +4/0 |
 | Hunting Sweep | 12/5/15 | low KD | 61 | 28/17 | +5/0 |
-| Rising Maul | 16/5/18 | anti-air launcher | 72 | 31/18 | +6/0 |
+| Rising Heel | 16/5/18 | anti-air kick launcher | 72 | 31/18 | +6/0 |
 | Shin Gouge | 5/3/11 | crouch low | 27 | 15/10 | +2/0 |
 | Rib Tear | 8/4/13 | crouch mid | 43 | 20/13 | +3/0 |
 | Beast Pivot | 14/5/20 | crouch low | 69 | 27/17 | +5/0 |

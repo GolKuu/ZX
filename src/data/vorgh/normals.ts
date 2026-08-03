@@ -29,7 +29,7 @@ const rows: readonly VorghRow[] = [
     cancels: [S.predatorLeap], tags: ['dust-rake'],
   },
   {
-    id: N.risingMaul, name: 'Rising Maul', level: 'mid',
+    id: N.risingMaul, name: 'Rising Heel', level: 'mid',
     startup: 16, active: 5, recovery: 18, rageGain: 6,
     hits: [hit([0.52, 1.74, 0.46, 0.78], 72, 31, 18, [0.12, 0.38])],
     cancels: [S.predatorLeap], tags: ['rising-ember'],
