@@ -21,7 +21,6 @@ import { RenderDebugBridge } from './RenderDebugBridge';
 import { Sprite2DFighter } from './sprite2d/Sprite2DFighter';
 import { StageLighting } from './StageLighting';
 import { TitanFighter } from './TitanFighter';
-import { VorghFighter } from './VorghFighter';
 
 export function RenderScene({
   fighterSelection,
@@ -107,7 +106,7 @@ function primitiveFighter(
   fighterId: 'p1' | 'p2',
 ) {
   if (characterId === 'vorgh') {
-    return <VorghFighter fighterId={fighterId} />;
+    return <PhotoSpriteFighter fighterId={fighterId} kind="vorgh" />;
   }
   if (characterId === 'titan') {
     return <TitanFighter fighterId={fighterId} />;
