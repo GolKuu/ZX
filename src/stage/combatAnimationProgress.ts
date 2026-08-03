@@ -9,6 +9,7 @@ import {
   LUCKY_SPECIAL_MOVES,
   LUCKY_SUPER_MOVES,
 } from '@/src/data/lucky';
+import { TITAN_ALL_MOVES } from '@/src/data/titan';
 import { totalMoveFrames } from '@/src/sim';
 import {
   spriteAttackBeat,
@@ -30,6 +31,7 @@ const MOVES_BY_ID = new Map(
     ...LUCKY_MOVES,
     ...LUCKY_SPECIAL_MOVES,
     ...LUCKY_SUPER_MOVES,
+    ...TITAN_ALL_MOVES,
   ].map((move) => [move.id, move]),
 );
 

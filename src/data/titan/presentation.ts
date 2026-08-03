@@ -17,16 +17,16 @@ export interface TitanPresentation {
 
 export const TITAN_PRESENTATION: Readonly<Record<string, TitanPresentation>> = {
   'titan.normal.piston-hammer': {
-    name: 'Piston Hammer', vfx: [], sounds: ['servo', 'piston'], camera: 'none',
+    name: 'Right Piston', vfx: ['pixel-impact'], sounds: ['servo', 'piston'], camera: 'none',
   },
   'titan.normal.bulkhead-backfist': {
-    name: 'Bulkhead Backfist', vfx: [], sounds: ['servo', 'metalImpact'], camera: 'none',
+    name: 'Left Bulkhead', vfx: ['pixel-impact'], sounds: ['servo', 'metalImpact'], camera: 'none',
   },
   'titan.normal.seismic-stomp': {
-    name: 'Seismic Stomp', vfx: ['dust-wave'], sounds: ['groundRupture'], camera: 'shake',
+    name: 'Right Seismic Stomp', vfx: ['pixel-dust-wave'], sounds: ['groundRupture'], camera: 'shake',
   },
   'titan.normal.siege-ram': {
-    name: 'Siege Ram', vfx: ['armour-trail'], sounds: ['servo', 'metalImpact'], camera: 'impact',
+    name: 'Left Siege Kick', vfx: ['pixel-armour-trail'], sounds: ['servo', 'metalImpact'], camera: 'impact',
   },
   'titan.special.armour-charge': {
     name: 'Armour Charge', vfx: ['reactor-wake', 'armour-sparks'],

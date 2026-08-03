@@ -62,7 +62,7 @@ function ImpactBurst() {
   return (
     <group>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.5, 0.032, 6, 48]} />
+        <torusGeometry args={[0.5, 0.045, 4, 12]} />
         <meshBasicMaterial
           blending={AdditiveBlending}
           color={ORANGE}
@@ -72,16 +72,16 @@ function ImpactBurst() {
           transparent
         />
       </mesh>
-      {Array.from({ length: 8 }, (_, index) => {
-        const angle = (index / 8) * Math.PI * 2;
+      {Array.from({ length: 12 }, (_, index) => {
+        const angle = (index / 12) * Math.PI * 2;
         return (
           <mesh
             key={index}
-            position={[Math.cos(angle) * 0.43, Math.sin(angle) * 0.43, 0]}
+            position={[Math.cos(angle) * 0.48, Math.sin(angle) * 0.48, 0]}
             rotation={[0, 0, angle]}
-            scale={[0.16 + (index % 3) * 0.05, 0.025, 0.025]}
+            scale={[0.14 + (index % 3) * 0.07, 0.035, 0.035]}
           >
-            <octahedronGeometry />
+            <boxGeometry />
             <meshBasicMaterial
               blending={AdditiveBlending}
               color={index % 2 === 0 ? HOT : ORANGE}

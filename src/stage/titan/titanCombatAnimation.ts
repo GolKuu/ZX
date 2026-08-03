@@ -1,6 +1,6 @@
 import { TITAN_MOVE_IDS as ID } from '@/src/data/titan/ids';
 import type { FighterSnapshot } from '@/src/sim';
-import { combatAnimationProgress } from '../combatAnimationProgress';
+import { spriteAnimationProgress } from '../combatAnimationProgress';
 import { pulse, setPosition, setRotation, type FighterRig } from '../fighterRig';
 
 export function applyTitanCombatAnimation(
@@ -13,7 +13,7 @@ export function applyTitanCombatAnimation(
     return attack(
       rig,
       fighter.action.moveId,
-      combatAnimationProgress(fighter.action.moveId, fighter.action.frame),
+      spriteAnimationProgress(fighter.action.moveId, fighter.action.frame),
       fighter.facing,
     );
   }
@@ -37,6 +37,11 @@ function idle18(rig: FighterRig, time: number): void {
 
 function attack(rig: FighterRig, id: string, p: number, facing: -1 | 1): void {
   const weight = pulse(p, 0.58);
+  if (id === ID.pistonHammer) return rightPistonPunch(rig, p, weight, facing);
+  if (id === ID.bulkheadBackfist) return leftBackfist(rig, p, weight, facing);
+  if (id === ID.seismicStomp) return rightSeismicStomp(rig, p, weight, facing);
+  if (id === ID.siegeRam) return leftSiegeKick(rig, p, weight, facing);
+
   const grab = id.includes('.grab.') || id.includes('slam') || id.includes('anchor');
   const stomp = id === ID.seismicStomp || id.includes('ground-slam');
   const ram = id === ID.siegeRam || id.includes('charge') || id.includes('siege-engine');
@@ -60,6 +65,103 @@ function attack(rig: FighterRig, id: string, p: number, facing: -1 | 1): void {
     rig.torso.rotation.z -= facing * weight * 0.28;
   }
   showImpact(rig, p, weight, facing, ram);
+}
+
+/** J / LP: a short, fast right piston. Every pose is deliberately quantized. */
+function rightPistonPunch(
+  rig: FighterRig,
+  p: number,
+  weight: number,
+  facing: -1 | 1,
+): void {
+  rig.root.position.x += facing * weight * 0.14;
+  rig.torso.rotation.z -= facing * weight * 0.2;
+  rig.leftArm.rotation.z += facing * weight * 0.2;
+  rig.rightArm.rotation.z += facing * weight * 0.92;
+  rig.rightArm.rotation.x -= weight * 0.14;
+  rig.rightArm.position.x += facing * weight * 0.9;
+  rig.rightArm.position.y += weight * 0.16;
+  limbImpact(rig, p, weight, facing, 1.58, 1.08, false);
+}
+
+/** K / LK: the opposite shoulder winds up and throws a broad left backfist. */
+function leftBackfist(
+  rig: FighterRig,
+  p: number,
+  weight: number,
+  facing: -1 | 1,
+): void {
+  rig.root.position.x += facing * weight * 0.2;
+  rig.torso.rotation.z += facing * weight * 0.31;
+  rig.head.rotation.z -= facing * weight * 0.1;
+  rig.leftArm.rotation.z += facing * weight * 2.2;
+  rig.leftArm.rotation.x += weight * 0.2;
+  rig.leftArm.position.x += facing * weight * 1.04;
+  rig.leftArm.position.y += weight * 0.08;
+  rig.rightArm.rotation.z -= facing * weight * 0.22;
+  limbImpact(rig, p, weight, facing, 1.52, 1.2, true);
+}
+
+/** I / HP: right boot rises, pauses, then crushes the floor in five sprite beats. */
+function rightSeismicStomp(
+  rig: FighterRig,
+  p: number,
+  weight: number,
+  facing: -1 | 1,
+): void {
+  rig.root.position.y += weight * 0.08;
+  rig.root.position.x -= facing * weight * 0.08;
+  rig.torso.rotation.z += facing * weight * 0.25;
+  rig.leftLeg.rotation.z -= facing * weight * 0.14;
+  rig.rightLeg.rotation.z -= facing * weight * 0.62;
+  rig.rightLeg.rotation.x -= weight * 0.48;
+  rig.rightLeg.position.x += facing * weight * 0.46;
+  rig.rightLeg.position.y += weight * 0.48;
+  rig.leftArm.rotation.z -= facing * weight * 0.3;
+  rig.rightArm.rotation.z += facing * weight * 0.26;
+  limbImpact(rig, p, weight, facing, 0.16, 0.74, true);
+}
+
+/** L / HK: a slower left siege kick with the full reactor mass behind it. */
+function leftSiegeKick(
+  rig: FighterRig,
+  p: number,
+  weight: number,
+  facing: -1 | 1,
+): void {
+  rig.root.position.x += facing * weight * 0.32;
+  rig.root.position.y += weight * 0.12;
+  rig.torso.rotation.z -= facing * weight * 0.42;
+  rig.leftLeg.rotation.z += facing * weight * 1.16;
+  rig.leftLeg.rotation.x += weight * 0.22;
+  rig.leftLeg.position.x += facing * weight * 0.94;
+  rig.leftLeg.position.y += weight * 0.32;
+  rig.rightLeg.rotation.z -= facing * weight * 0.25;
+  rig.leftArm.rotation.z -= facing * weight * 0.24;
+  rig.rightArm.rotation.z += facing * weight * 0.38;
+  limbImpact(rig, p, weight, facing, 0.72, 1.28, true);
+}
+
+function limbImpact(
+  rig: FighterRig,
+  p: number,
+  weight: number,
+  facing: -1 | 1,
+  height: number,
+  reach: number,
+  heavy: boolean,
+): void {
+  rig.slash.visible = p >= 0.52 && p <= 0.68;
+  setPosition(rig.slash, facing * reach, height, 0.12);
+  rig.slash.rotation.z = heavy ? facing * 0.2 : facing * -0.1;
+  rig.slash.scale.setScalar((heavy ? 0.58 : 0.42) + weight * 0.42);
+  rig.echoes.visible = heavy && p >= 0.34 && p <= 0.72;
+  setPosition(rig.echoes, facing * reach * 0.58, height, 0.02);
+  rig.echoes.rotation.z = facing * (height < 0.5 ? -0.4 : 0.12);
+  rig.echoes.scale.setScalar(0.72 + weight * 0.4);
+  rig.aura.visible = heavy && p >= 0.34 && p <= 0.68;
+  setPosition(rig.aura, 0, 1.34, -0.08);
+  rig.aura.scale.setScalar(0.42 + weight * 0.3);
 }
 
 function grapple(
