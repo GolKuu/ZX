@@ -10,12 +10,25 @@ import { luckyMove } from './moveBuilder.js';
  * guarding opponent, and only the second one is honest here.
  */
 export const LUCKY_THROWS: readonly MoveFrameData[] = [
-  // J + I — the neutral throw.
+  /**
+   * J + I — the neutral throw, and the throw escape.
+   *
+   * The escape is the same command on purpose: the grapple-only counter window
+   * covers the throw's own startup, so answering an incoming grab with J+I
+   * rejects it. One input, so a player never has to know which of the two
+   * situations they are in.
+   */
   luckyMove({
     id: ID.throw,
     startup: 7, active: 2, recovery: 22, damage: 75,
     level: 'throw', reach: 0.5, height: 1.05,
     grapple: ['normal', 24, 'grounded'],
+    counter: {
+      frames: { from: 0, toExclusive: 7 },
+      into: ID.throw,
+      attackerHitstop: 12,
+      grappleOnly: true,
+    },
   }),
   // Forward + J + I — same grab, opponent lands in front.
   luckyMove({

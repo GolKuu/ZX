@@ -28,12 +28,20 @@ import {
   type CommandRow,
 } from './command.js';
 import { AttackButtonGate } from './attack-gate.js';
+import {
+  DEFAULT_INPUT_PROFILE,
+  DoubleTapDash,
+  isDirectionalGuard,
+  type InputProfile,
+} from './profiles.js';
 
 export interface KeyboardSourceOptions {
   readonly bindings?: KeyBindings;
   readonly commands: readonly CommandRow[];
   /** Prevent the browser scrolling on arrows and space. */
   readonly preventDefault?: boolean;
+  /** How guard and dash are read. Defaults to the dedicated-button scheme. */
+  readonly profile?: InputProfile;
 }
 
 export class KeyboardInputSource {
@@ -41,9 +49,11 @@ export class KeyboardInputSource {
   private virtualControls: ReadonlySet<BindableControl> = new Set();
   private readonly buffer = new InputBuffer();
   private readonly attackGate = new AttackButtonGate();
+  private readonly doubleTapDash = new DoubleTapDash();
   private bindings: KeyBindings;
   private readonly commands: readonly CommandRow[];
   private readonly preventDefault: boolean;
+  private readonly profile: InputProfile;
   private attached = false;
 
   private readonly onKeyDown = (event: KeyboardEvent): void => {
@@ -68,12 +78,14 @@ export class KeyboardInputSource {
   private readonly onBlur = (): void => {
     this.held.clear();
     this.attackGate.reset();
+    this.doubleTapDash.reset();
   };
 
   public constructor(options: KeyboardSourceOptions) {
     this.bindings = copyBindings(options.bindings ?? DEFAULT_BINDINGS);
     this.commands = options.commands;
     this.preventDefault = options.preventDefault ?? true;
+    this.profile = options.profile ?? DEFAULT_INPUT_PROFILE;
   }
 
   public attach(target: EventTarget = globalThis): void {
@@ -96,6 +108,7 @@ export class KeyboardInputSource {
     this.held.clear();
     this.buffer.clear();
     this.attackGate.reset();
+    this.doubleTapDash.reset();
     this.attached = false;
   }
 
@@ -118,17 +131,36 @@ export class KeyboardInputSource {
     );
     this.buffer.push(direction, buttons);
 
-    const guard = isGuarding(this.buffer);
-    const command = resolveCommand(this.buffer, this.commands, context);
-    const dash = guard ? 0 : this.readDashPress(direction);
+    const command = resolveCommand(this.buffer, this.commands, context, {
+      ...(this.profile.leeway === undefined
+        ? {}
+        : { leeway: this.profile.leeway }),
+      ...(this.profile.settleFrames === undefined
+        ? {}
+        : { settleFrames: this.profile.settleFrames }),
+    });
+    // A directional guard yields to any command the player actually committed,
+    // so Back+K+L is Lucky Guard rather than a block that swallows the input.
+    const guard = this.profile.guard === 'holdBack'
+      ? isDirectionalGuard(direction) && command === null
+      : isGuarding(this.buffer);
+    const dash = guard
+      ? 0
+      : this.profile.dash === 'doubleTap'
+        ? this.doubleTapDash.read(this.buffer, direction)
+        : this.readDashPress(direction);
+    const walkingGuard = guard && this.profile.guardWhileWalking === true;
+    const suppressJump = command !== null
+      && this.profile.suppressJumpFor?.has(command.moveId) === true;
 
     const horizontal = horizontalOf(direction);
     return {
-      movement: guard ? 0 : horizontal,
+      movement: guard && !walkingGuard ? 0 : horizontal,
       guard,
+      ...(walkingGuard ? { guardWhileWalking: true } : {}),
       guardMode: guard && this.buffer.isHeld('super') ? 'pain' : 'normal',
       crouching: isCrouchDirection(direction),
-      jump: !guard && isJumping(direction),
+      jump: !guard && !suppressJump && isJumping(direction),
       dash,
       // Mounted controls. The engine ignores these unless a plane is held, so
       // they cost nothing on the ground: up alone climbs, up plus a horizontal
@@ -149,6 +181,7 @@ export class KeyboardInputSource {
     this.held.clear();
     this.buffer.clear();
     this.attackGate.reset();
+    this.doubleTapDash.reset();
   }
 
   public setVirtualControls(controls: ReadonlySet<BindableControl>): void {

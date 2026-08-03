@@ -7,10 +7,15 @@ import {
   readCombatResetVersion,
 } from '@/src/game/combatRuntime';
 import {
+  DEFAULT_INPUT_PROFILE,
   GLITCH_COMMANDS,
   LUCKY_COMMANDS,
+  LUCKY_INPUT_PROFILE,
+  LUCKY_INPUT_TUNING,
+  LUCKY_JUMP_SUPPRESSING_MOVES,
   DEFAULT_CONTEXT,
   type CommandContext,
+  type InputProfile,
   KeyboardInputSource,
   MIM_COMMANDS,
   PLAYER_TWO_BINDINGS,
@@ -73,6 +78,7 @@ export function CombatGameLoop({
     () => new MobileAwareInputSource(new KeyboardInputSource({
       bindings: useControlStore.getState().bindings,
       commands: commandsFor(fighterSelection[0]),
+      profile: profileFor(fighterSelection[0]),
     })),
     [fighterSelection],
   );
@@ -80,6 +86,7 @@ export function CombatGameLoop({
     () => new KeyboardInputSource({
       bindings: PLAYER_TWO_BINDINGS,
       commands: commandsFor(fighterSelection[1]),
+      profile: profileFor(fighterSelection[1]),
     }),
     [fighterSelection],
   );
@@ -135,4 +142,18 @@ function commandsFor(characterId: CharacterId) {
   if (characterId === 'lucky') return LUCKY_COMMANDS;
   if (characterId === 'glitch') return GLITCH_COMMANDS;
   return MIM_COMMANDS;
+}
+
+/**
+ * Lucky guards with Back and dashes with a double tap; everyone else keeps the
+ * dedicated block and dash keys they were built around.
+ */
+function profileFor(characterId: CharacterId): InputProfile {
+  if (characterId !== 'lucky') return DEFAULT_INPUT_PROFILE;
+  return {
+    ...LUCKY_INPUT_PROFILE,
+    leeway: LUCKY_INPUT_TUNING.leeway,
+    settleFrames: LUCKY_INPUT_TUNING.settleFrames,
+    suppressJumpFor: LUCKY_JUMP_SUPPRESSING_MOVES,
+  };
 }

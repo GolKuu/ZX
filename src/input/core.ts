@@ -52,8 +52,39 @@ export { VORGH_COMMANDS } from './vorghCommands.js';
 export { TITAN_COMMANDS } from './titanCommands.js';
 
 export {
+  LUCKY_ATTACK_MASK,
+  LUCKY_BUTTONS,
+  LUCKY_BUTTON_KEY,
+  LUCKY_BUTTON_LIMB,
+  LUCKY_BUTTON_SLOT,
+  LUCKY_CATALOGUE,
   LUCKY_COMMANDS,
+  LUCKY_INPUT_TUNING,
+  LUCKY_JUMP_SUPPRESSING_MOVES,
+  LUCKY_SLOT_BUTTON,
+  luckyChordNotation,
+  luckyKeysFor,
+  type LuckyButton,
+  type LuckyCategory,
+  type LuckyCommandSpec,
+  type LuckyDirection,
+  type LuckyLimb,
 } from './luckyCommands.js';
+
+export {
+  DEFAULT_INPUT_PROFILE,
+  DoubleTapDash,
+  LUCKY_INPUT_PROFILE,
+  isDirectionalGuard,
+  type InputProfile,
+} from './profiles.js';
+
+export {
+  LUCKY_MOVE_LIST,
+  luckyKeyboardNotation,
+  luckyRelativeNotation,
+  type LuckyMoveListEntry,
+} from './lucky/moveList.js';
 
 export {
   DEFAULT_CONTEXT,
@@ -61,6 +92,7 @@ export {
   isGuarding,
   resolveCommand,
   type CommandContext,
+  type CommandResolutionOptions,
   type CommandRow,
   type ResolvedCommand,
 } from './command.js';

@@ -44,6 +44,15 @@ export interface FighterInput {
   readonly move?: string;
   readonly movement?: -1 | 0 | 1;
   readonly guard?: boolean;
+  /**
+   * Keep walking while guarding.
+   *
+   * Characters who guard with a button stand still, which is the historic
+   * behaviour and stays the default. A character who guards by holding Back
+   * has to keep walking, or holding Back could not mean both "retreat" and
+   * "block" the way the genre expects.
+   */
+  readonly guardWhileWalking?: boolean;
   readonly guardMode?: GuardMode;
   readonly crouching?: boolean;
   readonly jump?: boolean;

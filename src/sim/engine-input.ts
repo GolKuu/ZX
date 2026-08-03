@@ -70,9 +70,12 @@ export function applyNeutralInput(
     endDash(fighter);
     return;
   }
-  const movement = fighter.guarding ? 0 : (input?.movement ?? 0);
+  const walkingGuard = fighter.guarding && input?.guardWhileWalking === true;
+  const movement = fighter.guarding && !walkingGuard
+    ? 0
+    : (input?.movement ?? 0);
   const jumping = input?.jump === true && !fighter.guarding;
-  if (fighter.guarding || jumping) {
+  if ((fighter.guarding && !walkingGuard) || jumping) {
     endDash(fighter);
   } else {
     requestDash(fighter, input);
