@@ -22,6 +22,8 @@ import { RenderDebugBridge } from './RenderDebugBridge';
 import { Sprite2DFighter } from './sprite2d/Sprite2DFighter';
 import { StageLighting } from './StageLighting';
 import { TitanFighter } from './TitanFighter';
+import { TrainingTarget } from './TrainingTarget';
+import { useHudStore } from '@/src/store/hudStore';
 
 export function RenderScene({
   fighterSelection,
@@ -31,6 +33,7 @@ export function RenderScene({
   readonly arenaId: ArenaId;
 }) {
   const arena = getArenaDefinition(arenaId);
+  const training = useHudStore((state) => state.mode === 'training');
   return (
     <>
       <color attach="background" args={[arena.background]} />
@@ -44,11 +47,15 @@ export function RenderScene({
         characterId={fighterSelection[0]}
         fighterId="p1"
       />
-      <SelectedFighter
-        auraColor="#b07cff"
-        characterId={fighterSelection[1]}
-        fighterId="p2"
-      />
+      {training ? (
+        <TrainingTarget />
+      ) : (
+        <SelectedFighter
+          auraColor="#b07cff"
+          characterId={fighterSelection[1]}
+          fighterId="p2"
+        />
+      )}
       <SpeedLines />
       <AttackCue />
       <HitBlood />

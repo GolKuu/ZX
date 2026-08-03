@@ -12,6 +12,8 @@ import { OnlineNotice } from './OnlineNotice';
 import { VersusScreen } from './VersusScreen';
 import { StageSelectMenu } from './StageSelectMenu';
 import { FeatureHub } from './FeatureHub';
+import { StoryModeScreen } from './StoryModeScreen';
+import { StoryCutscene } from './StoryCutscene';
 import styles from './CombatHud.module.css';
 
 interface MenuItem {
@@ -25,7 +27,9 @@ export function MatchMenus() {
   if (screen === 'mode') return <ModeMenu />;
   if (screen === 'character') return <CharacterSelectMenu />;
   if (screen === 'stage') return <StageSelectMenu />;
-  if (screen === 'story' || screen === 'tutorial' || screen === 'progression') {
+  if (screen === 'story') return <StoryModeScreen />;
+  if (screen === 'story-scene') return <StoryCutscene />;
+  if (screen === 'tutorial' || screen === 'progression') {
     return <FeatureHub screen={screen} />;
   }
   if (screen === 'difficulty') return <DifficultyMenu />;
@@ -39,14 +43,16 @@ function InMatchMenus() {
   const screen = useHudStore((state) => state.screen);
   const menuFocus = useHudStore((state) => state.menuFocus);
   const result = useHudStore((state) => state.result);
+  const mode = useHudStore((state) => state.mode);
   const resume = useHudStore((state) => state.resume);
   const openControls = useHudStore((state) => state.openControls);
   const openCharacterSelect = useHudStore((state) => state.openCharacterSelect);
   const openModeMenu = useHudStore((state) => state.openModeMenu);
   const setMenuFocus = useHudStore((state) => state.setMenuFocus);
+  const completeStoryChapter = useHudStore((state) => state.completeStoryChapter);
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
-  const pauseItems: readonly MenuItem[] = [
+  const commonPauseItems: readonly MenuItem[] = [
     { label: 'Продолжить', detail: 'Вернуться в бой', action: resume },
     { label: 'Начать заново', detail: 'Сбросить текущий матч', action: requestCombatReset },
     { label: 'Управление', detail: 'Клавиши и приёмы', action: openControls },
@@ -61,12 +67,26 @@ function InMatchMenus() {
       action: openModeMenu,
     },
   ];
-  const resultItems: readonly MenuItem[] = [
+  const pauseItems: readonly MenuItem[] = mode === 'story' || mode === 'training'
+    ? commonPauseItems.filter((item) => item.action !== openCharacterSelect)
+    : commonPauseItems;
+  const standardResultItems: readonly MenuItem[] = [
     { label: 'Рематч', action: requestCombatReset },
     { label: 'Сменить бойцов', action: openCharacterSelect },
     { label: 'Сменить режим', action: openModeMenu },
     { label: 'Главное меню', action: () => router.push('/') },
   ];
+  const storyWon = result.winner.startsWith('P1');
+  const resultItems: readonly MenuItem[] = mode === 'story'
+    ? [
+      storyWon
+        ? { label: 'CONTINUE STORY', detail: 'Save checkpoint and continue as Glitch', action: completeStoryChapter }
+        : { label: 'RETRY AS GLITCH', detail: 'Reload the last safe checkpoint', action: requestCombatReset },
+      ...(storyWon ? [{ label: 'RETRY AS GLITCH', action: requestCombatReset }] : []),
+      { label: 'STORY MENU', action: openModeMenu },
+      { label: 'MAIN MENU', action: () => router.push('/') },
+    ]
+    : standardResultItems;
   const items = screen === 'result' ? resultItems : pauseItems;
 
   useEffect(() => {

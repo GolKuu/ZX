@@ -7,6 +7,18 @@ import {
 import type { AiDifficulty } from '@/src/ai';
 import type { HudSnapshot } from '@/src/hud/types';
 import { DEFAULT_ARENA, type ArenaId } from '@/src/data/arenas';
+import {
+  STORY_PLAYER_CHARACTER_ID,
+  storyChapter,
+  storySelection,
+} from '@/src/story/campaign';
+import {
+  completeStoryBattle,
+  migrateStorySave,
+  newStorySave,
+  STORY_SAVE_KEY,
+  type StorySave,
+} from '@/src/story/save';
 
 const AI_DIFFICULTY_ORDER: readonly AiDifficulty[] = [
   'easy',
@@ -15,6 +27,7 @@ const AI_DIFFICULTY_ORDER: readonly AiDifficulty[] = [
   'impossible',
 ];
 const initialAiDifficulty: AiDifficulty = 'normal';
+export const TRAINING_CHARACTER_SELECTION: CharacterSelection = ['mim', 'titan'];
 
 export type HudScreen =
   | 'mode'
@@ -22,6 +35,7 @@ export type HudScreen =
   | 'character'
   | 'stage'
   | 'story'
+  | 'story-scene'
   | 'tutorial'
   | 'progression'
   | 'versus'
@@ -51,6 +65,8 @@ type HudState = {
   arenaId: ArenaId;
   menuFocus: number;
   result: MatchResult;
+  storySave: StorySave | null;
+  storyLine: number;
   publishSnapshot: (snapshot: HudSnapshot) => void;
   resetMatchUi: () => void;
   openPause: () => void;
@@ -70,6 +86,29 @@ type HudState = {
   openStageSelect: () => void;
   enterFight: () => void;
   setMenuFocus: (index: number) => void;
+  startStory: () => void;
+  continueStory: () => void;
+  setStoryLine: (index: number) => void;
+  startStoryBattle: () => void;
+  completeStoryChapter: () => void;
+  setStorySubtitles: (language: 'en' | 'ru', autoAdvance: boolean) => void;
+};
+
+const readStorySave = (): StorySave | null => {
+  if (typeof window === 'undefined') return null;
+  const raw = window.localStorage.getItem(STORY_SAVE_KEY);
+  if (raw === null) return null;
+  try {
+    return migrateStorySave(JSON.parse(raw) as unknown);
+  } catch {
+    return null;
+  }
+};
+
+const writeStorySave = (save: StorySave): void => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(STORY_SAVE_KEY, JSON.stringify(save));
+  }
 };
 
 const initialSnapshot = (
@@ -94,8 +133,12 @@ const initialSnapshot = (
     },
     {
       id: 'p2',
-      displayName: getCharacterDefinition(selection[1]).displayName,
-      playerTag: mode === 'ai' ? 'CPU' : 'P2',
+      displayName: mode === 'training'
+        ? 'МИШЕНЬ'
+        : getCharacterDefinition(selection[1]).displayName,
+      playerTag: mode === 'training'
+        ? 'DUMMY'
+        : mode === 'ai' || mode === 'story' ? 'CPU' : 'P2',
       side: 'right',
       health: 1000,
       maxHealth: 1000,
@@ -126,13 +169,20 @@ export const useHudStore = create<HudState>((set) => ({
   arenaId: DEFAULT_ARENA,
   menuFocus: 0,
   result: initialResult,
+  storySave: null,
+  storyLine: 0,
   publishSnapshot: (snapshot) => set({ snapshot }),
   resetMatchUi: () =>
     set((state) => ({
       snapshot: initialSnapshot(
         state.mode ?? 'local',
-        state.fighterSelection,
+        state.mode === 'story'
+          ? storySelection(state.storySave?.chapterIndex ?? 0)
+          : state.fighterSelection,
       ),
+      fighterSelection: state.mode === 'story'
+        ? storySelection(state.storySave?.chapterIndex ?? 0)
+        : state.fighterSelection,
       screen: state.screen === 'versus' ? 'versus' : 'fight',
       menuFocus: 0,
     })),
@@ -142,6 +192,12 @@ export const useHudStore = create<HudState>((set) => ({
   openResult: (result) => set({ screen: 'result', menuFocus: 0, result }),
   openModeMenu: () => set({ screen: 'mode', menuFocus: 0 }),
   openCharacterSelect: () => set((state) => {
+    if (state.mode === 'training') {
+      return { screen: 'fight', menuFocus: 0 };
+    }
+    if (state.mode === 'story') {
+      return { screen: 'story', menuFocus: 0 };
+    }
     if (state.mode === 'ai') {
       const menuFocus = AI_DIFFICULTY_ORDER.indexOf(state.aiDifficulty);
       return {
@@ -151,7 +207,9 @@ export const useHudStore = create<HudState>((set) => ({
     }
     return { screen: 'character', menuFocus: 0 };
   }),
-  returnToCharacterSelect: () => set({ screen: 'character', menuFocus: 0 }),
+  returnToCharacterSelect: () => set((state) => state.mode === 'story'
+    ? { screen: 'story', menuFocus: 0 }
+    : { screen: 'character', menuFocus: 0 }),
   openDifficultySelect: () => set((state) => {
     const menuFocus = AI_DIFFICULTY_ORDER.indexOf(state.aiDifficulty);
     return {
@@ -162,6 +220,11 @@ export const useHudStore = create<HudState>((set) => ({
   openProgression: () => set({ screen: 'progression', menuFocus: 0 }),
   selectMode: (mode) => set((state) => {
     const requestedMode = state.mobileMode && mode === 'local' ? 'ai' : mode;
+    const selection = requestedMode === 'story'
+      ? storySelection(readStorySave()?.chapterIndex ?? 0)
+      : requestedMode === 'training'
+        ? TRAINING_CHARACTER_SELECTION
+        : DEFAULT_CHARACTER_SELECTION;
     const requestedMenuFocus = requestedMode === 'ai'
       ? AI_DIFFICULTY_ORDER.indexOf(state.aiDifficulty)
       : 0;
@@ -175,9 +238,13 @@ export const useHudStore = create<HudState>((set) => ({
             ? 'story'
             : requestedMode === 'tutorial'
               ? 'tutorial'
+              : requestedMode === 'training'
+                ? 'fight'
               : 'character',
-      fighterSelection: DEFAULT_CHARACTER_SELECTION,
-      snapshot: initialSnapshot(requestedMode, DEFAULT_CHARACTER_SELECTION),
+      fighterSelection: selection,
+      arenaId: requestedMode === 'training' ? DEFAULT_ARENA : state.arenaId,
+      snapshot: initialSnapshot(requestedMode, selection),
+      storySave: requestedMode === 'story' ? readStorySave() : state.storySave,
       menuFocus: requestedMenuFocus >= 0 ? requestedMenuFocus : 0,
     };
   }),
@@ -200,15 +267,90 @@ export const useHudStore = create<HudState>((set) => ({
   }),
   startMatch: (fighterSelection) =>
     set((state) => ({
-      fighterSelection: [...fighterSelection],
+      fighterSelection: state.mode === 'story'
+        ? storySelection(state.storySave?.chapterIndex ?? 0)
+        : [...fighterSelection],
       screen: 'stage',
-      snapshot: initialSnapshot(state.mode ?? 'local', fighterSelection),
+      snapshot: initialSnapshot(
+        state.mode ?? 'local',
+        state.mode === 'story'
+          ? storySelection(state.storySave?.chapterIndex ?? 0)
+          : fighterSelection,
+      ),
       menuFocus: 0,
     })),
   selectArena: (arenaId) => set({ arenaId, screen: 'versus', menuFocus: 0 }),
-  openStageSelect: () => set({ screen: 'stage', menuFocus: 0 }),
+  openStageSelect: () => set((state) => state.mode === 'story'
+    ? { screen: 'story-scene', menuFocus: 0 }
+    : { screen: 'stage', menuFocus: 0 }),
   enterFight: () => set({ screen: 'fight', menuFocus: 0 }),
   setMenuFocus: (menuFocus) => set({ menuFocus }),
+  startStory: () => set(() => {
+    const storySave = newStorySave();
+    writeStorySave(storySave);
+    const fighterSelection = storySelection(0);
+    return {
+      mode: 'story',
+      screen: 'story-scene',
+      storySave,
+      storyLine: 0,
+      fighterSelection,
+      arenaId: storyChapter(0).arenaId,
+      snapshot: initialSnapshot('story', fighterSelection),
+      menuFocus: 0,
+    };
+  }),
+  continueStory: () => set(() => {
+    const storySave = readStorySave() ?? newStorySave();
+    writeStorySave(storySave);
+    const fighterSelection = storySelection(storySave.chapterIndex);
+    return {
+      mode: 'story',
+      screen: 'story-scene',
+      storySave,
+      storyLine: 0,
+      fighterSelection,
+      arenaId: storyChapter(storySave.chapterIndex).arenaId,
+      snapshot: initialSnapshot('story', fighterSelection),
+      menuFocus: 0,
+    };
+  }),
+  setStoryLine: (storyLine) => set({ storyLine: Math.max(0, storyLine) }),
+  startStoryBattle: () => set((state) => {
+    const chapterIndex = state.storySave?.chapterIndex ?? 0;
+    const fighterSelection = storySelection(chapterIndex);
+    return {
+      mode: 'story',
+      screen: 'versus',
+      fighterSelection,
+      arenaId: storyChapter(chapterIndex).arenaId,
+      snapshot: initialSnapshot('story', fighterSelection),
+      menuFocus: 0,
+    };
+  }),
+  completeStoryChapter: () => set((state) => {
+    const storySave = completeStoryBattle(state.storySave ?? newStorySave());
+    writeStorySave(storySave);
+    const fighterSelection = storySelection(storySave.chapterIndex);
+    return {
+      screen: 'story-scene',
+      storySave,
+      storyLine: 0,
+      fighterSelection,
+      arenaId: storyChapter(storySave.chapterIndex).arenaId,
+      snapshot: initialSnapshot('story', fighterSelection),
+      menuFocus: 0,
+    };
+  }),
+  setStorySubtitles: (language, autoAdvance) => set((state) => {
+    const storySave = migrateStorySave({
+      ...(state.storySave ?? newStorySave()),
+      playableCharacterId: STORY_PLAYER_CHARACTER_ID,
+      subtitleSettings: { language, autoAdvance },
+    });
+    writeStorySave(storySave);
+    return { storySave };
+  }),
 }));
 
 export function resetHudStore(): void {
@@ -221,5 +363,7 @@ export function resetHudStore(): void {
     arenaId: DEFAULT_ARENA,
     menuFocus: 0,
     result: initialResult,
+    storySave: null,
+    storyLine: 0,
   });
 }

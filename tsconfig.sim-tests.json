@@ -65,6 +65,8 @@
     "src/stage/mim/mimSpriteTimeline.ts",
     "src/stage/sprite2d/spriteAttackTimeline.ts",
     "src/stage/sprite2d/spritePose.ts",
-    "src/data/combat-ai.ts"
+    "src/data/combat-ai.ts",
+    "src/story/**/*.ts",
+    "src/tutorial/trainingLessons.ts"
   ]
 }

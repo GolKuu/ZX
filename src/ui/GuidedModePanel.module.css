@@ -6,4 +6,7 @@
 .panel button, .panel kbd { padding: 8px 10px; color: #eaf7ff; cursor: pointer; background: #142235; border: 1px solid #425d79; }
 .panel[data-complete='true'] { border-color: #55e7a6; }
 .keys kbd[data-done='true'] { color: #06140e; background: #55e7a6; border-color: #55e7a6; }
+.panel > small { display: block; margin-top: 7px; color: #d9f7ff; font: 700 12px monospace; text-align: right; }
+.progressTrack { width: 100%; height: 7px; margin-top: 14px !important; overflow: hidden; background: #0a1420; border: 1px solid #304b63; }
+.progressTrack i { display: block; height: 100%; background: linear-gradient(90deg, #43bde2, #55e7a6); box-shadow: 0 0 14px #43bde2; transition: width 180ms ease; }
 @media (max-width: 640px) { .panel { bottom: 150px; } }

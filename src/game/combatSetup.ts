@@ -109,7 +109,9 @@ export function createCombatAi(
 
 export function createCombatHud(): HudBridge {
   const { fighterSelection, mode } = useHudStore.getState();
-  const opponentTag = mode === 'ai' ? 'CPU' : 'P2';
+  const opponentTag = mode === 'training'
+    ? 'DUMMY'
+    : mode === 'ai' || mode === 'story' ? 'CPU' : 'P2';
   return new HudBridge(
     [
       {
@@ -120,7 +122,9 @@ export function createCombatHud(): HudBridge {
       },
       {
         id: 'p2',
-        displayName: getCharacterDefinition(fighterSelection[1]).displayName,
+        displayName: mode === 'training'
+          ? 'МИШЕНЬ'
+          : getCharacterDefinition(fighterSelection[1]).displayName,
         playerTag: opponentTag,
         side: 'right',
       },

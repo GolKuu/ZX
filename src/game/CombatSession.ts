@@ -83,7 +83,7 @@ export class CombatSession {
     this.meters = new MeterController(fighterSelection);
     this.ai = createCombatAi(
       this.fighterSelection[1],
-      useHudStore.getState().aiDifficulty,
+      storyAwareDifficulty(),
     );
     this.fighterVoice = new FighterVoiceController(this.fighterSelection);
     this.titanSound = new TitanSoundController(this.fighterSelection);
@@ -101,7 +101,7 @@ export class CombatSession {
     this.engine = createCombatEngine(this.fighterSelection);
     this.ai = createCombatAi(
       this.fighterSelection[1],
-      useHudStore.getState().aiDifficulty,
+      storyAwareDifficulty(),
     );
     this.hud = createCombatHud();
     this.runner.reset();
@@ -282,7 +282,7 @@ export class CombatSession {
     this.engine = createCombatEngine(this.fighterSelection);
     this.ai = createCombatAi(
       this.fighterSelection[1],
-      useHudStore.getState().aiDifficulty,
+      storyAwareDifficulty(),
     );
     this.hud = createCombatHud();
     this.runner.reset();
@@ -303,5 +303,10 @@ export class CombatSession {
 function formatDuration(frames: number): string {
   const seconds = Math.floor(frames / 60);
   return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+}
+
+function storyAwareDifficulty() {
+  const hud = useHudStore.getState();
+  return hud.mode === 'story' ? 'story' as const : hud.aiDifficulty;
 }
 
