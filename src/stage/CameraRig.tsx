@@ -96,6 +96,7 @@ export function CameraRig() {
     + state.glitchSuperVersion,
   );
   const impactVersion = useRenderStore((state) => state.impactVersion);
+  const screenShakeEnabled = useRenderStore((state) => state.screenShakeEnabled);
 
   useFrame(({ clock }, delta) => {
     if (impactVersion !== impactVersionRef.current) {
@@ -167,7 +168,7 @@ export function CameraRig() {
 
     // Sway and shake move the eye, never the aim height: the moment the camera
     // tilts, the flat stage layers keystone.
-    const shakeAmount = shakeRef.current;
+    const shakeAmount = screenShakeEnabled ? shakeRef.current : 0;
     activeCamera.position.x = pan
       + impactKickRef.current
       + Math.sin(time * 0.24) * 0.06

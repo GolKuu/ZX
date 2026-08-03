@@ -11,6 +11,7 @@ const DeferredPostEffects = dynamic(
 
 export function LazyPostEffects() {
   const effectsEnabled = useRenderStore((state) => state.effectsEnabled);
+  const graphicsPreset = useRenderStore((state) => state.graphicsPreset);
   const [browserIsIdle, setBrowserIsIdle] = useState(false);
 
   useEffect(() => {
@@ -25,5 +26,7 @@ export function LazyPostEffects() {
     return () => window.clearTimeout(timeoutId);
   }, []);
 
-  return effectsEnabled && browserIsIdle ? <DeferredPostEffects /> : null;
+  return effectsEnabled && graphicsPreset !== 'low' && browserIsIdle
+    ? <DeferredPostEffects />
+    : null;
 }

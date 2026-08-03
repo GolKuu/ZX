@@ -27,6 +27,10 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
   const effectsEnabled = useRenderStore((state) => state.effectsEnabled);
   const hydratePreferences = useRenderStore((state) => state.hydratePreferences);
   const toggleEffects = useRenderStore((state) => state.toggleEffects);
+  const graphicsPreset = useRenderStore((state) => state.graphicsPreset);
+  const setGraphicsPreset = useRenderStore((state) => state.setGraphicsPreset);
+  const screenShakeEnabled = useRenderStore((state) => state.screenShakeEnabled);
+  const toggleScreenShake = useRenderStore((state) => state.toggleScreenShake);
   const bindings = useControlStore((state) => state.bindings);
   const hydrateControls = useControlStore((state) => state.hydrate);
   const resetControls = useControlStore((state) => state.reset);
@@ -103,6 +107,20 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
                 <i aria-hidden="true" />
                 <span>{effectsEnabled ? 'Вкл.' : 'Выкл.'}</span>
               </button>
+            </div>
+            <div className={panelStyles.settingRow}>
+              <div><strong>Тряска экрана</strong><p>Короткое смещение камеры при сильных попаданиях.</p></div>
+              <button aria-pressed={screenShakeEnabled} className={panelStyles.toggle} type="button" onClick={toggleScreenShake}>
+                <i aria-hidden="true" /><span>{screenShakeEnabled ? 'Вкл.' : 'Выкл.'}</span>
+              </button>
+            </div>
+            <div className={panelStyles.settingRow}>
+              <div><strong>Качество графики</strong><p>Ограничивает DPR, тени и постобработку.</p></div>
+              <div>
+                {(['low', 'medium', 'high'] as const).map((preset) => (
+                  <button key={preset} aria-pressed={graphicsPreset === preset} type="button" onClick={() => setGraphicsPreset(preset)}>{preset.toUpperCase()}</button>
+                ))}
+              </div>
             </div>
 
             <section className={controlsStyles.controls} aria-label="Текущая раскладка">

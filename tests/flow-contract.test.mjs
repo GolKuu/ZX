@@ -5,6 +5,7 @@ import {
   PLAYER_TWO_BINDINGS,
 } from '../.sim-test-build/src/input/bindings.js';
 import { ARENAS, DEFAULT_ARENA } from '../.sim-test-build/src/data/arenas.js';
+import { isPracticeMode, ROUNDS_TO_WIN } from '../.sim-test-build/src/game/matchRules.js';
 
 test('P1 exposes WASD plus the physical J K I L combat layout', () => {
   assert.deepEqual(
@@ -45,4 +46,12 @@ test('stage flow always has a valid neutral default and readable metadata', () =
     assert.ok(arena.name.length > 3);
     assert.ok(arena.note.length > 20);
   }
+});
+
+test('default match is best of three and practice modes use an idle dummy', () => {
+  assert.equal(ROUNDS_TO_WIN, 2);
+  assert.equal(isPracticeMode('training'), true);
+  assert.equal(isPracticeMode('tutorial'), true);
+  assert.equal(isPracticeMode('local'), false);
+  assert.equal(isPracticeMode('ai'), false);
 });

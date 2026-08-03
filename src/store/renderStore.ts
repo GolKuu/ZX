@@ -5,6 +5,8 @@ import type { LuckySuperKind } from '@/src/data/lucky/supers';
 
 type RenderState = {
   effectsEnabled: boolean;
+  graphicsPreset: 'low' | 'medium' | 'high';
+  screenShakeEnabled: boolean;
   glitchSuperFighterId: 'p1' | 'p2' | null;
   glitchSuperKind: GlitchSuperKind | null;
   glitchSuperVersion: number;
@@ -19,6 +21,8 @@ type RenderState = {
   xrayVersion: number;
   hydratePreferences: () => void;
   toggleEffects: () => void;
+  setGraphicsPreset: (preset: RenderState['graphicsPreset']) => void;
+  toggleScreenShake: () => void;
   triggerImpact: () => void;
   triggerGlitchSuper: (
     fighterId: 'p1' | 'p2',
@@ -37,6 +41,8 @@ type RenderState = {
 
 export const useRenderStore = create<RenderState>((set) => ({
   effectsEnabled: true,
+  graphicsPreset: 'medium',
+  screenShakeEnabled: true,
   glitchSuperFighterId: null,
   glitchSuperKind: null,
   glitchSuperVersion: 0,
@@ -51,7 +57,13 @@ export const useRenderStore = create<RenderState>((set) => ({
   xrayVersion: 0,
   hydratePreferences: () => {
     const savedEffects = readSavedEffects();
-    if (savedEffects !== null) set({ effectsEnabled: savedEffects });
+    const graphicsPreset = readGraphicsPreset();
+    const screenShakeEnabled = readBoolean(SHAKE_STORAGE_KEY);
+    set({
+      ...(savedEffects === null ? {} : { effectsEnabled: savedEffects }),
+      ...(graphicsPreset === null ? {} : { graphicsPreset }),
+      ...(screenShakeEnabled === null ? {} : { screenShakeEnabled }),
+    });
   },
   toggleEffects: () =>
     set((state) => {
@@ -59,6 +71,15 @@ export const useRenderStore = create<RenderState>((set) => ({
       saveEffects(effectsEnabled);
       return { effectsEnabled };
     }),
+  setGraphicsPreset: (graphicsPreset) => {
+    saveValue(GRAPHICS_STORAGE_KEY, graphicsPreset);
+    set({ graphicsPreset });
+  },
+  toggleScreenShake: () => set((state) => {
+    const screenShakeEnabled = !state.screenShakeEnabled;
+    saveValue(SHAKE_STORAGE_KEY, String(screenShakeEnabled));
+    return { screenShakeEnabled };
+  }),
   triggerImpact: () =>
     set((state) => ({ impactVersion: state.impactVersion + 1 })),
   triggerGlitchSuper: (glitchSuperFighterId, glitchSuperKind) =>
@@ -87,6 +108,8 @@ export const useRenderStore = create<RenderState>((set) => ({
 }));
 
 const EFFECTS_STORAGE_KEY = 'cc-effects-enabled-v1';
+const GRAPHICS_STORAGE_KEY = 'cc-graphics-preset-v1';
+const SHAKE_STORAGE_KEY = 'cc-screen-shake-v1';
 
 function saveEffects(effectsEnabled: boolean): void {
   if (typeof window === 'undefined') return;
@@ -98,13 +121,30 @@ function saveEffects(effectsEnabled: boolean): void {
 }
 
 function readSavedEffects(): boolean | null {
+  return readBoolean(EFFECTS_STORAGE_KEY);
+}
+
+function saveValue(key: string, value: string): void {
+  if (typeof window === 'undefined') return;
+  try { window.localStorage.setItem(key, value); } catch { /* Session fallback. */ }
+}
+
+function readBoolean(key: string): boolean | null {
   if (typeof window === 'undefined') return null;
   try {
-    const saved = window.localStorage.getItem(EFFECTS_STORAGE_KEY);
+    const saved = window.localStorage.getItem(key);
     if (saved === 'true') return true;
     if (saved === 'false') return false;
   } catch {
     return null;
   }
   return null;
+}
+
+function readGraphicsPreset(): RenderState['graphicsPreset'] | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const saved = window.localStorage.getItem(GRAPHICS_STORAGE_KEY);
+    return saved === 'low' || saved === 'medium' || saved === 'high' ? saved : null;
+  } catch { return null; }
 }

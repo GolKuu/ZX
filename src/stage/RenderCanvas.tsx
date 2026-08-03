@@ -5,6 +5,7 @@ import { ACESFilmicToneMapping, PCFShadowMap, SRGBColorSpace } from 'three';
 import type { CharacterSelection } from '@/src/data/characterRoster';
 import type { ArenaId } from '@/src/data/arenas';
 import { RenderScene } from './RenderScene';
+import { useRenderStore } from '@/src/store/renderStore';
 
 export function RenderCanvas({
   fighterSelection,
@@ -13,10 +14,12 @@ export function RenderCanvas({
   readonly fighterSelection: CharacterSelection;
   readonly arenaId: ArenaId;
 }) {
+  const graphicsPreset = useRenderStore((state) => state.graphicsPreset);
+  const dpr: [number, number] = graphicsPreset === 'high' ? [1, 1.5] : graphicsPreset === 'medium' ? [1, 1.25] : [1, 1];
   return (
     <Canvas
       camera={{ fov: 40, far: 80, near: 0.1, position: [0, 2.42, 8.2] }}
-      dpr={[1, 1.5]}
+      dpr={dpr}
       fallback={(
         <div role="alert">
           WebGL недоступен. Включите аппаратное ускорение или используйте современный браузер.
@@ -41,7 +44,7 @@ export function RenderCanvas({
         gl.toneMappingExposure = 1.05;
         gl.shadowMap.type = PCFShadowMap;
       }}
-      shadows
+      shadows={graphicsPreset !== 'low'}
     >
       <RenderScene arenaId={arenaId} fighterSelection={fighterSelection} />
     </Canvas>

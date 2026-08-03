@@ -132,7 +132,8 @@
 .modeList {
   display: grid;
   align-content: center;
-  padding: 6cqw 7cqw 5cqw 9cqw;
+  overflow-y: auto;
+  padding: clamp(72px, 6cqw, 96px) clamp(28px, 5cqw, 72px) clamp(62px, 5cqw, 78px) clamp(36px, 7cqw, 110px);
 }
 
 .modeList > p {
@@ -147,7 +148,7 @@
 .modeList button {
   position: relative;
   display: grid;
-  min-height: 7.4cqw;
+  min-height: clamp(54px, 5.2cqw, 76px);
   align-items: center;
   gap: 1.3cqw;
   padding: 1.2cqw 1.4cqw 1.2cqw 3.3cqw;
@@ -180,8 +181,8 @@
 }
 
 .modeList button > span { display: grid; gap: 0.35cqw; }
-.modeList strong { font-size: 2.65cqw; letter-spacing: 0.04em; text-transform: uppercase; }
-.modeList small { color: #344154; font-size: 0.9cqw; letter-spacing: 0.1em; text-transform: uppercase; }
+.modeList strong { font-size: clamp(18px, 1.8cqw, 30px); letter-spacing: 0.04em; text-transform: uppercase; }
+.modeList small { color: #5f7188; font-size: clamp(9px, .7cqw, 12px); letter-spacing: 0.08em; text-transform: uppercase; }
 .modeList b { color: #3e4b5d; font-size: 0.7cqw; letter-spacing: 0.1em; }
 
 .modeList button[data-focused="true"],

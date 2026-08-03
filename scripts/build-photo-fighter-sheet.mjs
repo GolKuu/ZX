@@ -1,13 +1,15 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
+import { renderPixelFighter } from './photo-fighters/pixel-art.mjs';
 
 const source = path.resolve('public/sprites/photo-fighters/source.png');
 const output = path.resolve('public/sprites/photo-fighters');
 const columns = 6;
 const rows = 8;
 const cellSize = 40;
-const renderScale = 4;
+const detailScale = 2;
+const renderScale = 2;
 const left = 21;
 const top = 5;
 const framePadding = 1;
@@ -49,16 +51,31 @@ for (let y = 0; y < info.height; y += 1) {
 // to the same usable bounds before coloring it. Wide attack poses are scaled
 // only as far as the cell permits, which keeps every animation coordinate safe.
 const normalized = normalizeFrames(sourcePixels, info.width);
-const mim = colorize(normalized, 'mim');
-const glitch = colorize(normalized, 'glitch');
+const mim = renderPixelFighter(normalized, info.width, info.height, {
+  columns,
+  rows,
+  cellSize,
+  detailScale,
+  kind: 'mim',
+});
+const glitch = renderPixelFighter(normalized, info.width, info.height, {
+  columns,
+  rows,
+  cellSize,
+  detailScale,
+  kind: 'glitch',
+});
+const detailedWidth = info.width * detailScale;
+const detailedHeight = info.height * detailScale;
 
 await Promise.all([
-  saveAtlas('mim-atlas.png', mim, info.width, info.height),
-  saveAtlas('glitch-atlas.png', glitch, info.width, info.height),
+  saveAtlas('mim-atlas.png', mim, detailedWidth, detailedHeight),
+  saveAtlas('glitch-atlas.png', glitch, detailedWidth, detailedHeight),
   writeFile(path.join(output, 'manifest.json'), `${JSON.stringify({
     columns,
     rows,
     cellSize,
+    detailCellSize: cellSize * detailScale,
     renderScale,
     frameCount: columns * rows,
     ground: 0.91,
@@ -73,14 +90,6 @@ function saveAtlas(name, pixels, width, height) {
     .resize(width * renderScale, height * renderScale, { kernel: 'nearest' })
     .png({ compressionLevel: 9, palette: true })
     .toFile(path.join(output, name));
-}
-
-function clamp(value) {
-  return Math.max(0, Math.min(255, Math.round(value)));
-}
-
-function quantize(value) {
-  return clamp(Math.round(value / 24) * 24);
 }
 
 function normalizeFrames(pixels, width) {
@@ -137,67 +146,4 @@ function alphaBounds(pixels, width, cellX, cellY) {
 
 function clampToCell(value, size) {
   return Math.max(framePadding, Math.min(cellSize - framePadding - size, value));
-}
-
-function colorize(pixels, kind) {
-  const output = Buffer.alloc(pixels.length);
-  for (let pixel = 0; pixel < pixels.length / 4; pixel += 1) {
-    const input = pixel * 4;
-    const alpha = pixels[input + 3];
-    if (alpha === 0) continue;
-    const red = pixels[input];
-    const green = pixels[input + 1];
-    const blue = pixels[input + 2];
-    if (kind === 'mim') {
-      output[input] = quantize(clamp(red * 1.9));
-      output[input + 1] = quantize(clamp(green * 1.68));
-      output[input + 2] = quantize(clamp(blue * 1.5));
-    } else {
-      const light = Math.max(red, green, blue);
-      const cyan = Math.max(0, blue - red * 0.35);
-      output[input] = quantize(clamp(light * 0.58 + cyan * 0.36));
-      output[input + 1] = quantize(clamp(green * 0.84 + light * 0.2));
-      output[input + 2] = quantize(clamp(light * 1.78));
-    }
-    output[input + 3] = alpha;
-  }
-  addFaceDetails(output, info.width, kind);
-  return output;
-}
-
-function addFaceDetails(pixels, width, kind) {
-  for (let frame = 0; frame < columns * rows; frame += 1) {
-    const cellX = (frame % columns) * cellSize;
-    const cellY = Math.floor(frame / columns) * cellSize;
-    const bounds = alphaBounds(pixels, width, cellX, cellY);
-    if (bounds === null) continue;
-    const searchBottom = bounds.top + Math.max(5, Math.round((bounds.bottom - bounds.top) * 0.35));
-    const lightPixels = [];
-    for (let y = bounds.top; y <= Math.min(bounds.bottom, searchBottom); y += 1) {
-      for (let x = bounds.left; x <= bounds.right; x += 1) {
-        const offset = ((cellY + y) * width + cellX + x) * 4;
-        if (pixels[offset + 3] === 0) continue;
-        const luminance = pixels[offset] * 0.22 + pixels[offset + 1] * 0.7 + pixels[offset + 2] * 0.08;
-        if (luminance >= (kind === 'mim' ? 150 : 95)) lightPixels.push([x, y]);
-      }
-    }
-    if (lightPixels.length < 4) continue;
-    const faceRight = Math.max(...lightPixels.map(([x]) => x));
-    const faceTop = Math.min(...lightPixels.map(([, y]) => y));
-    const faceBottom = Math.max(...lightPixels.map(([, y]) => y));
-    const eyeY = Math.min(faceBottom - 1, faceTop + Math.max(2, Math.floor((faceBottom - faceTop) * 0.55)));
-    paintEye(pixels, width, cellX, cellY, faceRight - 1, eyeY, kind);
-    if (faceRight - Math.min(...lightPixels.map(([x]) => x)) >= 5) {
-      paintEye(pixels, width, cellX, cellY, faceRight - 4, eyeY, kind);
-    }
-  }
-}
-
-function paintEye(pixels, width, cellX, cellY, x, y, kind) {
-  const offset = ((cellY + y) * width + cellX + x) * 4;
-  if (pixels[offset + 3] === 0) return;
-  const color = kind === 'mim' ? [8, 12, 22] : [24, 240, 255];
-  pixels[offset] = color[0];
-  pixels[offset + 1] = color[1];
-  pixels[offset + 2] = color[2];
 }

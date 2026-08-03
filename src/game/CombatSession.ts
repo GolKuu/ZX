@@ -33,9 +33,9 @@ import {
 } from './combatSetup';
 import { MeterController } from './MeterController';
 import { XrayController } from './XrayController';
+import { isPracticeMode, ROUNDS_TO_WIN } from './matchRules';
 
 const ROUND_FRAMES = 99 * 60;
-const ROUNDS_TO_WIN = 2;
 const ROUND_RESTART_DELAY_FRAMES = 90;
 const DEFAULT_ROUND_WINS = { p1: 0, p2: 0 } as const;
 
@@ -149,7 +149,9 @@ export class CombatSession {
     const player = readFighter(before, 'p1');
     const opponent = readFighter(before, 'p2');
     const mode = useHudStore.getState().mode;
-    const opponentInput = mode === 'local'
+    const opponentInput = isPracticeMode(mode)
+      ? {}
+      : mode === 'local'
       ? this.playerTwo.sample(
           opponent.facing,
           this.attackInput.isLocked(opponent),
