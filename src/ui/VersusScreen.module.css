@@ -208,3 +208,23 @@
   .footer i { display: none; }
   .controlsPreview { bottom: 120px; flex-direction: column; }
 }
+
+.card .portrait i {
+  bottom: 0;
+  width: 34cqw;
+  height: 48cqw;
+  background-color: transparent;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: 400% 400%;
+  box-shadow: none;
+  filter: drop-shadow(0 2cqw 2cqw rgb(0 0 0 / 72%));
+  image-rendering: pixelated;
+  transform: none;
+}
+
+.card[data-character='mim'] .portrait i { background-image: url('/sprites/reference-fighters/mim-atlas.webp'); }
+.card[data-character='glitch'] .portrait i { background-image: url('/sprites/reference-fighters/glitch-atlas.webp'); }
+.card[data-character='lucky'] .portrait i { background-image: url('/sprites/reference-fighters/lucky-atlas.webp'); }
+.card[data-character='vorgh'] .portrait i { background-image: url('/sprites/reference-fighters/vorgh-atlas.webp'); }
+.card[data-character='titan'] .portrait i { background-image: url('/sprites/reference-fighters/titan-atlas.webp'); }

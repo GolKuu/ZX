@@ -30,7 +30,7 @@ export function PhotoSpriteFighter({
   kind,
 }: {
   readonly fighterId: 'p1' | 'p2';
-  readonly kind: 'glitch' | 'lucky' | 'mim' | 'vorgh';
+  readonly kind: 'glitch' | 'lucky' | 'mim' | 'titan' | 'vorgh';
 }) {
   const outer = useRef<Group>(null);
   const body = useRef<Group>(null);
@@ -40,7 +40,7 @@ export function PhotoSpriteFighter({
   useEffect(() => {
     let disposed = false;
     let loaded: Texture | null = null;
-    new TextureLoader().loadAsync(`/sprites/photo-fighters/${kind}-atlas.png`)
+    new TextureLoader().loadAsync(`/sprites/reference-fighters/${kind}-atlas.webp`)
       .then((result) => {
         if (disposed) {
           result.dispose();

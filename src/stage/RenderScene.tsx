@@ -21,7 +21,6 @@ import { SpeedLines } from './SpeedLines';
 import { RenderDebugBridge } from './RenderDebugBridge';
 import { Sprite2DFighter } from './sprite2d/Sprite2DFighter';
 import { StageLighting } from './StageLighting';
-import { TitanFighter } from './TitanFighter';
 import { TrainingTarget } from './TrainingTarget';
 import { useHudStore } from '@/src/store/hudStore';
 
@@ -115,11 +114,8 @@ function primitiveFighter(
   characterId: CharacterId,
   fighterId: 'p1' | 'p2',
 ) {
-  if (characterId === 'vorgh') {
-    return <PhotoSpriteFighter fighterId={fighterId} kind="vorgh" />;
-  }
-  if (characterId === 'titan') {
-    return <TitanFighter fighterId={fighterId} />;
+  if (characterId === 'vorgh' || characterId === 'titan') {
+    return <PhotoSpriteFighter fighterId={fighterId} kind={characterId} />;
   }
   const sprite = SPRITE_RIGS[characterId];
   if (sprite !== undefined) {

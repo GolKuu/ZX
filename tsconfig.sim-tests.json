@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["ES2020"],
+    "lib": ["ES2020", "DOM"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "strict": true,
@@ -67,6 +67,8 @@
     "src/stage/sprite2d/spritePose.ts",
     "src/data/combat-ai.ts",
     "src/story/**/*.ts",
-    "src/tutorial/trainingLessons.ts"
-  ]
+    "src/tutorial/trainingLessons.ts",
+    "src/progression/**/*.ts"
+  ],
+  "exclude": ["src/progression/cloudSync.ts"]
 }

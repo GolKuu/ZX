@@ -5,6 +5,8 @@ import { useHudStore } from '@/src/store/hudStore';
 import { useRenderStore } from '@/src/store/renderStore';
 import { PlayOverlay } from '@/src/ui/PlayOverlay';
 import { RenderCanvas } from './RenderCanvas';
+import { useProgressionStore } from '@/src/store/progressionStore';
+import { ProgressionNotifications } from '@/src/ui/progression/ProgressionNotifications';
 import styles from './RenderExperience.module.css';
 
 export function RenderExperience() {
@@ -13,6 +15,7 @@ export function RenderExperience() {
 
   useEffect(() => {
     useRenderStore.getState().hydratePreferences();
+    useProgressionStore.getState().hydrate();
     useHudStore.getState().openModeMenu();
   }, []);
 
@@ -22,6 +25,7 @@ export function RenderExperience() {
         <RenderCanvas arenaId={arenaId} fighterSelection={fighterSelection} />
       </div>
       <PlayOverlay />
+      <ProgressionNotifications />
     </main>
   );
 }

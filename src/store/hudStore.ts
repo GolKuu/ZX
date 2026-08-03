@@ -19,6 +19,8 @@ import {
   STORY_SAVE_KEY,
   type StorySave,
 } from '@/src/story/save';
+import { gameplayEvent } from '@/src/progression/eventEngine';
+import { useProgressionStore } from './progressionStore';
 
 const AI_DIFFICULTY_ORDER: readonly AiDifficulty[] = [
   'easy',
@@ -329,6 +331,15 @@ export const useHudStore = create<HudState>((set) => ({
     };
   }),
   completeStoryChapter: () => set((state) => {
+    const completedId = state.storySave === null ? 'prologue' : storyChapter(state.storySave.chapterIndex).id;
+    useProgressionStore.getState().dispatch(gameplayEvent('StoryChapterCompleted', `story:${completedId}`, { metadata: { chapterId: completedId } }));
+    useProgressionStore.getState().dispatch(gameplayEvent('StoryBattleCompleted', `story-battle:${completedId}`));
+    const storyAchievementEvent: Readonly<Record<string, string>> = {
+      prologue:'StoryPrologueCompleted','silent-wall':'StoryMimDefeated','winning-version':'StoryLuckyDefeated',
+      'last-order':'StoryTitanDefeated','all-the-pain':'StoryVorghDefeated','the-fifth':'StoryFifthDefeated','zero-form':'StoryZeroDefeated',
+    };
+    const eventType = storyAchievementEvent[completedId];
+    if (eventType !== undefined) useProgressionStore.getState().dispatch(gameplayEvent(eventType, `story-achievement:${completedId}`));
     const storySave = completeStoryBattle(state.storySave ?? newStorySave());
     writeStorySave(storySave);
     const fighterSelection = storySelection(storySave.chapterIndex);

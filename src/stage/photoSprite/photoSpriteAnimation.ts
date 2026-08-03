@@ -1,25 +1,21 @@
 import type { FighterSnapshot } from '@/src/sim';
 import { spriteAnimationFrame } from '../combatAnimationProgress';
 
-export const PHOTO_COLUMNS = 6;
-export const PHOTO_ROWS = 8;
+export const PHOTO_COLUMNS = 4;
+export const PHOTO_ROWS = 4;
 
 export function photoFrameFor(
   fighter: FighterSnapshot,
   elapsedTime: number,
 ): number {
   if (fighter.hitstun > 0) {
-    return fighter.hitstun > 16 ? frame(6, 3) : frame(3, 2);
+    return frame(1, 3);
   }
   if (!fighter.grounded) {
-    return fighter.velocity.y > 10
-      ? frame(2, 2)
-      : fighter.velocity.y < -10
-        ? frame(1, 5)
-        : frame(2, 3);
+    return frame(1, 2);
   }
   if (fighter.guarding || fighter.crouching) {
-    return frame(fighter.crouching ? 4 : 1, 1);
+    return frame(1, fighter.crouching ? 1 : 0);
   }
   if (fighter.dashFrames > 0) {
     return WALK_FRAMES[
@@ -49,15 +45,15 @@ function frame(row: number, column: number): number {
 }
 
 const IDLE = frame(0, 0);
-const WALK_FRAMES = [frame(6, 0), frame(6, 1), frame(6, 2), frame(6, 1)];
+const WALK_FRAMES = [frame(0, 2), frame(0, 3), frame(0, 2), IDLE];
 
 const ATTACK_SEQUENCES = {
-  jab: [IDLE, frame(5, 4), frame(0, 2), frame(0, 2), frame(0, 1), frame(0, 2), frame(0, 2), frame(5, 4), IDLE],
-  heavy: [IDLE, frame(5, 3), frame(5, 0), frame(5, 2), frame(5, 4), frame(5, 2), frame(5, 0), frame(5, 3), IDLE],
-  kick: [IDLE, frame(2, 2), frame(1, 1), frame(3, 4), frame(0, 3), frame(3, 4), frame(1, 1), frame(2, 2), IDLE],
-  highKick: [IDLE, frame(3, 4), frame(1, 1), frame(3, 4), frame(0, 4), frame(3, 4), frame(1, 1), frame(3, 4), IDLE],
-  sweep: [IDLE, frame(4, 1), frame(1, 4), frame(2, 1), frame(0, 5), frame(2, 1), frame(1, 4), frame(4, 1), IDLE],
-  uppercut: [IDLE, frame(4, 1), frame(5, 0), frame(5, 2), frame(5, 4), frame(5, 2), frame(5, 0), frame(4, 1), IDLE],
+  jab: [IDLE, frame(2, 0), frame(2, 0), frame(2, 1), frame(2, 1), frame(2, 1), frame(2, 0), frame(2, 0), IDLE],
+  heavy: [IDLE, frame(2, 0), frame(2, 0), frame(2, 2), frame(2, 2), frame(2, 2), frame(2, 0), frame(2, 0), IDLE],
+  kick: [IDLE, frame(1, 0), frame(3, 0), frame(3, 0), frame(3, 0), frame(3, 0), frame(1, 0), frame(1, 0), IDLE],
+  highKick: [IDLE, frame(1, 0), frame(3, 1), frame(3, 1), frame(3, 1), frame(3, 1), frame(1, 0), frame(1, 0), IDLE],
+  sweep: [IDLE, frame(1, 1), frame(2, 3), frame(2, 3), frame(2, 3), frame(2, 3), frame(1, 1), frame(1, 1), IDLE],
+  uppercut: [IDLE, frame(1, 1), frame(3, 2), frame(3, 2), frame(3, 2), frame(3, 2), frame(1, 0), frame(1, 0), IDLE],
 } as const;
 
 function attackSequenceFor(moveId: string): readonly number[] {

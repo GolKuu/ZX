@@ -3,6 +3,7 @@
 import { CHARACTER_ROSTER } from '@/src/data/characterRoster';
 import { useHudStore, type HudScreen } from '@/src/store/hudStore';
 import styles from './FeatureHub.module.css';
+import { ProgressionHub } from './progression/ProgressionHub';
 
 const LESSONS = [
   'Движение', 'J/K/I/L атаки', 'Блок стоя', 'Блок сидя',
@@ -13,7 +14,7 @@ const LESSONS = [
 export function FeatureHub({ screen }: { readonly screen: HudScreen }) {
   const back = useHudStore((state) => state.openModeMenu);
   const begin = useHudStore((state) => state.openCharacterSelect);
-  if (screen === 'progression') return <ProgressionHub onBack={back} />;
+  if (screen === 'progression') return <ProgressionHub />;
   const tutorial = screen === 'tutorial';
 
   return (
@@ -57,22 +58,5 @@ function StoryChapters() {
         </li>
       ))}
     </ol>
-  );
-}
-
-function ProgressionHub({ onBack }: { readonly onBack: () => void }) {
-  return (
-    <div className={styles.scrim} role="dialog" aria-modal="true">
-      <header><span>PVE · МАСТЕРСТВО</span><h1>ПРОГРЕСС БОЙЦОВ</h1><p>Усиления действуют только в истории, PvE и пользовательской тренировке.</p></header>
-      <div className={styles.trees}>
-        {CHARACTER_ROSTER.map((fighter) => (
-          <article key={fighter.id}>
-            <h2>{fighter.displayName}</h2><small>{fighter.archetype}</small>
-            <ul><li>Нейтраль</li><li>Давление</li><li>Механика</li></ul>
-          </article>
-        ))}
-      </div>
-      <footer><button type="button" onClick={onBack}>Назад</button></footer>
-    </div>
   );
 }

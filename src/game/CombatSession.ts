@@ -36,6 +36,9 @@ import { XrayController } from './XrayController';
 import { isPracticeMode, ROUNDS_TO_WIN } from './matchRules';
 import { loadGeminiOpponentStrategy } from '@/src/lib/geminiOpponent';
 import type { AiStrategy } from '@/src/ai';
+import { progressionEventsFromCombat } from '@/src/progression/combatEvents';
+import { gameplayEvent } from '@/src/progression/eventEngine';
+import { useProgressionStore } from '@/src/store/progressionStore';
 
 const ROUND_FRAMES = 99 * 60;
 const ROUND_RESTART_DELAY_FRAMES = 90;
@@ -52,6 +55,7 @@ type FighterInputSource = {
 };
 
 export class CombatSession {
+  private readonly progressionSessionId = `match-${Date.now()}`;
   private engine: ReturnType<typeof createCombatEngine>;
   private ai: ReturnType<typeof createCombatAi>;
   private hud = createCombatHud();
@@ -95,6 +99,7 @@ export class CombatSession {
     this.luckySound = new LuckySoundController(this.fighterSelection);
     this.glitchSound = new GlitchSoundController(this.fighterSelection);
     this.publishInitialState();
+    useProgressionStore.getState().dispatch(gameplayEvent('MatchStarted', `${this.progressionSessionId}:start`, { characterId: this.fighterSelection[0] }));
   }
 
   private loadGeminiStrategy(): void {
@@ -204,6 +209,9 @@ export class CombatSession {
     this.titanSound.accept(result.events);
     this.publishHud(result.state, result.events);
     this.handleImpact(result.events);
+    for (const event of progressionEventsFromCombat(result.events, result.state, this.progressionSessionId, this.fighterSelection[0])) {
+      useProgressionStore.getState().dispatch(event);
+    }
 
     if (mode === 'training' && result.state.fighters.some((entry) => entry.health <= 0)) {
       this.startNextRound();
@@ -298,6 +306,9 @@ export class CombatSession {
       clashes: 0,
       duration: formatDuration(ROUND_FRAMES - this.timerFrames),
     });
+    if (championSide === 'p1') {
+      useProgressionStore.getState().dispatch(gameplayEvent('MatchWon', `${this.progressionSessionId}:won`, { characterId: this.fighterSelection[0] }));
+    }
   }
 
   private startNextRound(): void {

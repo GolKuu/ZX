@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import type { CharacterId } from '@/src/data/characterRoster';
 import type { HudFighterSnapshot } from '@/src/hud/types';
 import styles from './FighterPortrait.module.css';
@@ -17,26 +16,11 @@ export function FighterPortrait({
   return (
     <figure className={styles.portrait} data-side={side}>
       <span aria-hidden="true">{mark}</span>
-      {characterId === 'vorgh' ? (
-        <i className={styles.vorghHead} aria-hidden="true">
-          <b />
-          <u />
-        </i>
-      ) : characterId === 'titan' ? (
-        <i className={styles.titanHead} aria-hidden="true">
-          <b />
-          <u />
-        </i>
-      ) : (
-        <Image
-          alt=""
-          fill
-          priority
-          sizes="9vw"
-          src={`/sprites/${characterId}-profile/head.png`}
-          unoptimized
-        />
-      )}
+      <i
+        aria-hidden="true"
+        className={styles.atlas}
+        data-character={characterId}
+      />
     </figure>
   );
 }
