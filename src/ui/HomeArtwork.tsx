@@ -5,16 +5,16 @@ export function HomeArtwork() {
   return (
     <div className={styles.artwork}>
       <Image
-        alt="Мим атакует соперника на арене Null Circle"
+        alt="VORGH сражается с GLITCH на арене Null Circle"
         className={styles.image}
         fill
         priority
         sizes="(max-width: 760px) 100vw, 62vw"
-        src="/assets/modes/ai-battle-preview.webp"
+        src="/assets/home/current-fighters.webp"
       />
       <div className={styles.caption}>
         <span>NULL CIRCLE · ARENA 01</span>
-        <strong>Бой против ИИ</strong>
+        <strong>VORGH VS GLITCH</strong>
       </div>
     </div>
   );
