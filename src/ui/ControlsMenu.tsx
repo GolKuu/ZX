@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { DEFAULT_BINDINGS } from '@/src/input/bindings';
+import { LuckyMoveList } from './LuckyMoveList';
 import {
   bindingCode,
   CONTROL_ROWS,
@@ -19,6 +20,7 @@ export function ControlsMenu() {
   const setKey = useControlStore((state) => state.setKey);
   const startEditing = useControlStore((state) => state.startEditing);
   const openPause = useHudStore((state) => state.openPause);
+  const [showMoves, setShowMoves] = useState(false);
 
   useEffect(hydrate, [hydrate]);
   useEffect(() => {
@@ -49,30 +51,37 @@ export function ControlsMenu() {
           <h2>Клавиши</h2>
           <p>Нажми на клавишу в таблице, затем нажми новую. Настройка сохранится автоматически.</p>
         </header>
-        <div className={styles.bindingHeader} aria-hidden="true">
-          <span>Действие</span>
-          <span>Клавиша</span>
-          <span>Тип</span>
-          <span>По умолчанию</span>
-        </div>
-        {CONTROL_ROWS.map((row) => (
-          <div key={row.id} className={styles.bindingRow}>
-            <strong>{row.label}</strong>
-            <button
-              data-editing={editing === row.id}
-              type="button"
-              onClick={() => startEditing(row.id)}
-            >
-              {editing === row.id
-                ? 'Нажми…'
-                : keyLabel(bindingCode(bindings, row.id))}
-            </button>
-            <span>{row.detail}</span>
-            <kbd>{keyLabel(bindingCode(DEFAULT_BINDINGS, row.id))}</kbd>
-          </div>
-        ))}
+        {showMoves ? <LuckyMoveList /> : (
+          <>
+            <div className={styles.bindingHeader} aria-hidden="true">
+              <span>Действие</span>
+              <span>Клавиша</span>
+              <span>Тип</span>
+              <span>По умолчанию</span>
+            </div>
+            {CONTROL_ROWS.map((row) => (
+              <div key={row.id} className={styles.bindingRow}>
+                <strong>{row.label}</strong>
+                <button
+                  data-editing={editing === row.id}
+                  type="button"
+                  onClick={() => startEditing(row.id)}
+                >
+                  {editing === row.id
+                    ? 'Нажми…'
+                    : keyLabel(bindingCode(bindings, row.id))}
+                </button>
+                <span>{row.detail}</span>
+                <kbd>{keyLabel(bindingCode(DEFAULT_BINDINGS, row.id))}</kbd>
+              </div>
+            ))}
+          </>
+        )}
         <div className={styles.controlActions}>
           <button type="button" onClick={openPause}>Назад</button>
+          <button type="button" onClick={() => setShowMoves(!showMoves)}>
+            {showMoves ? 'Клавиши' : 'Приёмы Lucky'}
+          </button>
           <button type="button" onClick={reset}>Сбросить раскладку</button>
         </div>
       </section>

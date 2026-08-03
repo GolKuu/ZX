@@ -89,13 +89,6 @@ function bone(from, to, thickness, fill) {
   return out;
 }
 
-/** An outlined limb: the ink pass is one pixel fatter on every side. */
-function limbBone(from, to, thickness, fill, accent) {
-  return bone(from, to, thickness + 2, C.ink)
-    + bone(from, to, thickness, fill)
-    + (accent === undefined ? '' : bone(from, to, Math.max(1, thickness - 4), accent));
-}
-
 /** A joint cap, so elbows and knees are not square corners. */
 function joint(at, size, fill) {
   return blob(Math.round(at[0] - size / 2), Math.round(at[1] - size / 2), size, size, fill);
