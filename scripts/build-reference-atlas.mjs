@@ -9,10 +9,16 @@ if (!id || !input) {
 }
 
 const size = 1024;
+const source = sharp(path.resolve(input));
+const metadata = await source.metadata();
+if (!metadata.hasAlpha) {
+  throw new Error('Input must be a chroma-keyed PNG with transparency.');
+}
+
 const outputDirectory = path.resolve('public/sprites/reference-fighters');
 await mkdir(outputDirectory, { recursive: true });
 const output = path.join(outputDirectory, `${id}-atlas.webp`);
-await sharp(path.resolve(input))
+await source
   .resize(size, size, { fit: 'fill', kernel: sharp.kernel.nearest })
   .webp({ quality: 82, alphaQuality: 94, smartSubsample: true })
   .toFile(output);
