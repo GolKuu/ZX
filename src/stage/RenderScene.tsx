@@ -4,6 +4,7 @@ import type {
   CharacterId,
   CharacterSelection,
 } from '@/src/data/characterRoster';
+import { getArenaDefinition, type ArenaId } from '@/src/data/arenas';
 import { modelUrlFor } from '@/src/data/characterModels';
 import { Arena } from './Arena';
 import { LazyModelFighter } from './LazyModelFighter';
@@ -24,13 +25,16 @@ import { TitanFighter } from './TitanFighter';
 
 export function RenderScene({
   fighterSelection,
+  arenaId,
 }: {
   readonly fighterSelection: CharacterSelection;
+  readonly arenaId: ArenaId;
 }) {
+  const arena = getArenaDefinition(arenaId);
   return (
     <>
-      <color attach="background" args={['#07061d']} />
-      <fog attach="fog" args={['#10082c', 14, 34]} />
+      <color attach="background" args={[arena.background]} />
+      <fog attach="fog" args={[arena.fog, 14, 34]} />
       <StageLighting />
 
       <Arena />

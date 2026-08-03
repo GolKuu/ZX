@@ -129,6 +129,13 @@ export class KeyboardInputSource {
     this.sampler.reset();
   }
 
+  /** Clears held keys and buffered motions when a modal pauses the simulation. */
+  public releaseAll(): void {
+    this.held.clear();
+    this.virtualControls = new Set();
+    this.sampler.reset();
+  }
+
   public setVirtualControls(controls: ReadonlySet<BindableControl>): void {
     this.virtualControls = controls;
   }

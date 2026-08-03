@@ -12,6 +12,7 @@ import { MimSuperCinematic } from './MimSuperCinematic';
 import { GlitchSuperCinematic } from './GlitchSuperCinematic';
 import { LuckySuperCinematic } from './LuckySuperCinematic';
 import { AaaVisualJudge } from './AaaVisualJudge';
+import { GuidedModePanel } from './GuidedModePanel';
 import styles from './PlayOverlay.module.css';
 
 export function PlayOverlay() {
@@ -26,6 +27,7 @@ export function PlayOverlay() {
       <LuckySuperCinematic />
       <CombatHud />
       <FightControlStrip />
+      {screen === 'fight' && <GuidedModePanel />}
       {screen === 'fight' && (
         <>
           <MobileModeToggle />

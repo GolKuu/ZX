@@ -35,6 +35,7 @@
     "src/game/attackInputPolicy.ts",
     "src/game/CinematicFreeze.ts",
     "src/data/combat-moves.ts",
+    "src/data/arenas.ts",
     "src/data/meter-moves.ts",
     "src/data/move-kind.ts",
     "src/data/taunt-move.ts",

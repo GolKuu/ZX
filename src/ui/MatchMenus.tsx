@@ -10,6 +10,8 @@ import { ModeMenu } from './ModeMenu';
 import { DifficultyMenu } from './DifficultyMenu';
 import { OnlineNotice } from './OnlineNotice';
 import { VersusScreen } from './VersusScreen';
+import { StageSelectMenu } from './StageSelectMenu';
+import { FeatureHub } from './FeatureHub';
 import styles from './CombatHud.module.css';
 
 interface MenuItem {
@@ -22,6 +24,10 @@ export function MatchMenus() {
   const screen = useHudStore((state) => state.screen);
   if (screen === 'mode') return <ModeMenu />;
   if (screen === 'character') return <CharacterSelectMenu />;
+  if (screen === 'stage') return <StageSelectMenu />;
+  if (screen === 'story' || screen === 'tutorial' || screen === 'progression') {
+    return <FeatureHub screen={screen} />;
+  }
   if (screen === 'difficulty') return <DifficultyMenu />;
   if (screen === 'versus') return <VersusScreen />;
   if (screen === 'online') return <OnlineNotice />;

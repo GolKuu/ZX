@@ -1,0 +1,9 @@
+.panel { position: absolute; z-index: 18; right: clamp(12px, 2vw, 30px); bottom: clamp(72px, 8vw, 120px); width: min(360px, calc(100% - 24px)); padding: 18px; color: #eaf7ff; pointer-events: auto; background: rgb(5 11 19 / 92%); border: 1px solid #42627f; box-shadow: 0 18px 55px rgb(0 0 0 / 45%); }
+.panel > span { display: block; margin-bottom: 8px; color: #71ddff; font: 700 11px monospace; letter-spacing: .14em; }
+.panel > strong { display: block; font-size: 18px; }
+.panel p { margin: 8px 0; color: #a9b8c7; font-size: 13px; }
+.panel div { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.panel button, .panel kbd { padding: 8px 10px; color: #eaf7ff; cursor: pointer; background: #142235; border: 1px solid #425d79; }
+.panel[data-complete='true'] { border-color: #55e7a6; }
+.keys kbd[data-done='true'] { color: #06140e; background: #55e7a6; border-color: #55e7a6; }
+@media (max-width: 640px) { .panel { bottom: 150px; } }

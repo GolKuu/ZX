@@ -3,12 +3,15 @@
 import { Canvas } from '@react-three/fiber';
 import { ACESFilmicToneMapping, PCFSoftShadowMap, SRGBColorSpace } from 'three';
 import type { CharacterSelection } from '@/src/data/characterRoster';
+import type { ArenaId } from '@/src/data/arenas';
 import { RenderScene } from './RenderScene';
 
 export function RenderCanvas({
   fighterSelection,
+  arenaId,
 }: {
   readonly fighterSelection: CharacterSelection;
+  readonly arenaId: ArenaId;
 }) {
   return (
     <Canvas
@@ -35,7 +38,7 @@ export function RenderCanvas({
       }}
       shadows
     >
-      <RenderScene fighterSelection={fighterSelection} />
+      <RenderScene arenaId={arenaId} fighterSelection={fighterSelection} />
     </Canvas>
   );
 }

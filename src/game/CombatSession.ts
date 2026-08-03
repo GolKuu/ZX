@@ -35,7 +35,7 @@ import { MeterController } from './MeterController';
 import { XrayController } from './XrayController';
 
 const ROUND_FRAMES = 99 * 60;
-const ROUNDS_TO_WIN = 3;
+const ROUNDS_TO_WIN = 2;
 const ROUND_RESTART_DELAY_FRAMES = 90;
 const DEFAULT_ROUND_WINS = { p1: 0, p2: 0 } as const;
 
@@ -164,7 +164,9 @@ export class CombatSession {
       ),
       p2: opponentInput,
     });
-    this.timerFrames = Math.max(0, this.timerFrames - 1);
+    if (mode !== 'training') {
+      this.timerFrames = Math.max(0, this.timerFrames - 1);
+    }
     this.lastEvents = result.events;
     this.attackInput.accept(result.state, result.events);
     this.meters.accept(result.events);
@@ -179,6 +181,10 @@ export class CombatSession {
     this.publishHud(result.state, result.events);
     this.handleImpact(result.events);
 
+    if (mode === 'training' && result.state.fighters.some((entry) => entry.health <= 0)) {
+      this.startNextRound();
+      return;
+    }
     if (
       (
         this.timerFrames === 0

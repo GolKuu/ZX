@@ -29,6 +29,7 @@ interface InputSource {
   attach(target: EventTarget): void;
   detach(target: EventTarget): void;
   updateBindings(bindings: Parameters<KeyboardInputSource['updateBindings']>[0]): void;
+  releaseAll(): void;
 }
 
 class MobileAwareInputSource implements InputSource {
@@ -55,6 +56,11 @@ class MobileAwareInputSource implements InputSource {
 
   public detach(target: EventTarget): void {
     this.keyboard.detach(target);
+  }
+
+  public releaseAll(): void {
+    this.keyboard.releaseAll();
+    resetMobileInput();
   }
 }
 
@@ -96,8 +102,15 @@ export function CombatGameLoop({
         playerOne.updateBindings(state.bindings);
       }
     });
+    const unsubscribeHud = useHudStore.subscribe((state, previous) => {
+      if (state.screen !== previous.screen) {
+        playerOne.releaseAll();
+        playerTwoAI.releaseAll();
+      }
+    });
     return () => {
       unsubscribe();
+      unsubscribeHud();
       playerOne.detach(window);
       playerTwoAI.detach(window);
       resetMobileInput();
@@ -124,4 +137,3 @@ export function CombatGameLoop({
 
   return null;
 }
-

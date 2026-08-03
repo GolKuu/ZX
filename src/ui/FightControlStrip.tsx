@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { bindingCode, keyLabel, useControlStore } from '@/src/store/controlStore';
 import { useHudStore } from '@/src/store/hudStore';
@@ -63,7 +63,7 @@ function MimMoveGroup({ fighterId }: { readonly fighterId: CombatFighterId }) {
     <MoveGroup
       fighterId={fighterId}
       hint="U В· 1 / 3 В· O ULT"
-      moves="РџР РђРќРљ В· Р“Р›РђР’РќР«Р™ Р“Р•Р РћР™ В· ALT+F4"
+      moves="ПРАНК · ГЛАВНЫЙ ГЕРОЙ · ALT+F4"
     />
   );
 }

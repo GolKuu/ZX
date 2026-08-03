@@ -9,6 +9,7 @@ import styles from './RenderExperience.module.css';
 
 export function RenderExperience() {
   const fighterSelection = useHudStore((state) => state.fighterSelection);
+  const arenaId = useHudStore((state) => state.arenaId);
 
   useEffect(() => {
     useRenderStore.getState().hydratePreferences();
@@ -18,7 +19,7 @@ export function RenderExperience() {
   return (
     <main className={styles.experience}>
       <div className={styles.canvas}>
-        <RenderCanvas fighterSelection={fighterSelection} />
+        <RenderCanvas arenaId={arenaId} fighterSelection={fighterSelection} />
       </div>
       <PlayOverlay />
     </main>

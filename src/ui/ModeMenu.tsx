@@ -9,6 +9,20 @@ import styles from './ModeMenu.module.css';
 
 const MODES = [
   {
+    id: 'story',
+    label: 'История',
+    detail: 'Кампания: вступление, главы бойцов, соперник и финал',
+    status: 'ПРОЛОГ',
+    description: 'Пройдите интерактивный пролог MIM и откройте главы остальных бойцов.',
+  },
+  {
+    id: 'ai',
+    label: 'Бой с ИИ',
+    detail: 'Тактический матч против настраиваемого соперника',
+    status: 'ДОСТУПНО',
+    description: 'Выберите сложность, двух бойцов и арену перед подтверждением матча.',
+  },
+  {
     id: 'local',
     label: 'Локальный бой',
     detail: 'Быстрый бой на одной клавиатуре: P1 и P2',
@@ -17,12 +31,25 @@ const MODES = [
       'Классическая локальная дуэль: второй игрок управляется клавишами клавиатуры и клавишами курсора.',
   },
   {
-    id: 'ai',
-    label: 'Бой с ИИ',
-    detail: 'Сражайтесь с контролируемым ИИ соперником',
-    status: 'Доступно',
-    description:
-      'Выбирайте уровень сложности и тактику ИИ. Противник реагирует на действия.',
+    id: 'training',
+    label: 'Тренировка',
+    detail: 'Свободная практика с бесконечным временем и быстрым сбросом',
+    status: 'ДОСТУПНО',
+    description: 'Изучайте дистанцию, вводы и маршруты комбо на реальной боевой логике.',
+  },
+  {
+    id: 'tutorial',
+    label: 'Обучение',
+    detail: 'Практические уроки движения, защиты и атак',
+    status: '12 УРОКОВ',
+    description: 'Короткие задания объясняют не только ввод, но и причину ошибки.',
+  },
+  {
+    id: 'progression',
+    label: 'Прогресс бойцов',
+    detail: 'Три ветки мастерства для каждого персонажа',
+    status: 'PVE',
+    description: 'Открывайте варианты стиля для истории и тренировки без преимущества в Versus.',
   },
   {
     id: 'online',
@@ -33,7 +60,7 @@ const MODES = [
       'Сетевая версия пока загружается. Сейчас доступен только локальный и AI-режим.',
   },
 ] as const satisfies readonly {
-  id: MatchMode;
+  id: MatchMode | 'progression';
   label: string;
   detail: string;
   status: string;
@@ -52,6 +79,7 @@ export function ModeMenu() {
   const setMenuFocus = useHudStore((state) => state.setMenuFocus);
   const mobileMode = useHudStore((state) => state.mobileMode);
   const toggleMobileMode = useHudStore((state) => state.toggleMobileMode);
+  const openProgression = useHudStore((state) => state.openProgression);
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const visibleModes = useMemo(
@@ -60,9 +88,10 @@ export function ModeMenu() {
   );
   const selected = visibleModes[menuFocus] ?? visibleModes[0];
 
-  const startMode = useCallback((mode: MatchMode) => {
-    selectMode(mode);
-  }, [selectMode]);
+  const startMode = useCallback((mode: MatchMode | 'progression') => {
+    if (mode === 'progression') openProgression();
+    else selectMode(mode);
+  }, [openProgression, selectMode]);
   const confirm = useCallback(() => {
     const mode = visibleModes[useHudStore.getState().menuFocus];
     if (mode !== undefined) {

@@ -1,33 +1,40 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getCharacterDefinition } from '@/src/data/characterRoster';
+import { getArenaDefinition } from '@/src/data/arenas';
 import { useHudStore } from '@/src/store/hudStore';
 import styles from './VersusScreen.module.css';
-
-const INTRO_DURATION_MS = 3200;
 
 export function VersusScreen() {
   const mode = useHudStore((state) => state.mode);
   const selection = useHudStore((state) => state.fighterSelection);
   const enterFight = useHudStore((state) => state.enterFight);
+  const openStageSelect = useHudStore((state) => state.openStageSelect);
+  const arena = getArenaDefinition(useHudStore((state) => state.arenaId));
   const left = getCharacterDefinition(selection[0]);
   const right = getCharacterDefinition(selection[1]);
+  const [p1Ready, setP1Ready] = useState(false);
+  const [p2Ready, setP2Ready] = useState(mode === 'ai');
+  const canStart = p1Ready && p2Ready;
 
   useEffect(() => {
-    const timeout = window.setTimeout(enterFight, INTRO_DURATION_MS);
-    const skip = (event: KeyboardEvent) => {
+    const onKeyDown = (event: KeyboardEvent) => {
       if (event.code === 'Enter' || event.code === 'Space') {
         event.preventDefault();
-        enterFight();
+        if (mode === 'ai' && p1Ready) enterFight();
+        else setP1Ready(true);
+      } else if (event.code === 'NumpadEnter' && mode === 'local') {
+        event.preventDefault();
+        setP2Ready(true);
+      } else if (event.code === 'Escape' || event.code === 'Backspace') {
+        event.preventDefault();
+        openStageSelect();
       }
     };
-    window.addEventListener('keydown', skip);
-    return () => {
-      window.clearTimeout(timeout);
-      window.removeEventListener('keydown', skip);
-    };
-  }, [enterFight]);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [enterFight, mode, openStageSelect, p1Ready]);
 
   return (
     <section
@@ -35,7 +42,6 @@ export function VersusScreen() {
       aria-modal="true"
       className={styles.screen}
       role="dialog"
-      onClick={enterFight}
     >
       <header className={styles.header}>
         <strong>CC//ULTIMATE</strong>
@@ -58,9 +64,12 @@ export function VersusScreen() {
       </div>
 
       <footer className={styles.footer}>
-        <span>АРЕНА <b>NULL CIRCLE</b></span>
+        <span>АРЕНА <b>{arena.name}</b></span>
         <i aria-hidden="true" />
-        <small>ENTER · ПРОПУСТИТЬ</small>
+        <button type="button" onClick={openStageSelect}>НАЗАД</button>
+        <button type="button" data-ready={p1Ready} onClick={() => setP1Ready(true)}>P1 {p1Ready ? 'ГОТОВ' : 'ENTER'}</button>
+        {mode === 'local' && <button type="button" data-ready={p2Ready} onClick={() => setP2Ready(true)}>P2 {p2Ready ? 'ГОТОВ' : 'NUM ENTER'}</button>}
+        <button type="button" disabled={!canStart} onClick={enterFight}>НАЧАТЬ БОЙ</button>
       </footer>
     </section>
   );

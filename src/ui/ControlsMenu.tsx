@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { DEFAULT_BINDINGS } from '@/src/input/bindings';
+import { DEFAULT_BINDINGS, PLAYER_TWO_BINDINGS } from '@/src/input/bindings';
 import { LuckyMoveList } from './LuckyMoveList';
 import {
   bindingCode,
@@ -75,6 +75,20 @@ export function ControlsMenu() {
                 <kbd>{keyLabel(bindingCode(DEFAULT_BINDINGS, row.id))}</kbd>
               </div>
             ))}
+            <section aria-label="Раскладка второго игрока">
+              <header>
+                <span>ЛОКАЛЬНЫЙ БОЙ · P2</span>
+                <p>Стрелки — движение. Num 1 / 2 — атаки руками, Num 4 / 5 — атаки ногами.</p>
+              </header>
+              {CONTROL_ROWS.slice(0, 9).map((row) => (
+                <div key={`p2-${row.id}`} className={styles.bindingRow}>
+                  <strong>{row.label}</strong>
+                  <kbd>{keyLabel(bindingCode(PLAYER_TWO_BINDINGS, row.id))}</kbd>
+                  <span>{row.detail}</span>
+                  <small>P2</small>
+                </div>
+              ))}
+            </section>
           </>
         )}
         <div className={styles.controlActions}>

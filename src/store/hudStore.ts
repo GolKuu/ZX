@@ -6,6 +6,7 @@ import {
 } from '@/src/data/characterRoster';
 import type { AiDifficulty } from '@/src/ai';
 import type { HudSnapshot } from '@/src/hud/types';
+import { DEFAULT_ARENA, type ArenaId } from '@/src/data/arenas';
 
 const AI_DIFFICULTY_ORDER: readonly AiDifficulty[] = [
   'easy',
@@ -19,6 +20,10 @@ export type HudScreen =
   | 'mode'
   | 'difficulty'
   | 'character'
+  | 'stage'
+  | 'story'
+  | 'tutorial'
+  | 'progression'
   | 'versus'
   | 'fight'
   | 'pause'
@@ -26,7 +31,7 @@ export type HudScreen =
   | 'result'
   | 'online';
 
-export type MatchMode = 'local' | 'ai' | 'online';
+export type MatchMode = 'local' | 'ai' | 'training' | 'story' | 'tutorial' | 'online';
 
 export interface MatchResult {
   readonly winner: string;
@@ -43,6 +48,7 @@ type HudState = {
   mode: MatchMode | null;
   aiDifficulty: AiDifficulty;
   fighterSelection: CharacterSelection;
+  arenaId: ArenaId;
   menuFocus: number;
   result: MatchResult;
   publishSnapshot: (snapshot: HudSnapshot) => void;
@@ -54,10 +60,13 @@ type HudState = {
   openModeMenu: () => void;
   openCharacterSelect: () => void;
   openDifficultySelect: () => void;
+  openProgression: () => void;
   selectMode: (mode: MatchMode) => void;
   selectAiDifficulty: (difficulty: AiDifficulty) => void;
   toggleMobileMode: () => void;
   startMatch: (selection: CharacterSelection) => void;
+  selectArena: (arenaId: ArenaId) => void;
+  openStageSelect: () => void;
   enterFight: () => void;
   setMenuFocus: (index: number) => void;
 };
@@ -113,6 +122,7 @@ export const useHudStore = create<HudState>((set) => ({
   mode: null,
   aiDifficulty: initialAiDifficulty,
   fighterSelection: DEFAULT_CHARACTER_SELECTION,
+  arenaId: DEFAULT_ARENA,
   menuFocus: 0,
   result: initialResult,
   publishSnapshot: (snapshot) => set({ snapshot }),
@@ -147,6 +157,7 @@ export const useHudStore = create<HudState>((set) => ({
       menuFocus: menuFocus >= 0 ? menuFocus : 0,
     };
   }),
+  openProgression: () => set({ screen: 'progression', menuFocus: 0 }),
   selectMode: (mode) => set((state) => {
     const requestedMode = state.mobileMode && mode === 'local' ? 'ai' : mode;
     const requestedMenuFocus = requestedMode === 'ai'
@@ -158,7 +169,11 @@ export const useHudStore = create<HudState>((set) => ({
         ? 'online'
         : requestedMode === 'ai'
           ? 'difficulty'
-          : 'character',
+          : requestedMode === 'story'
+            ? 'story'
+            : requestedMode === 'tutorial'
+              ? 'tutorial'
+              : 'character',
       fighterSelection: DEFAULT_CHARACTER_SELECTION,
       snapshot: initialSnapshot(requestedMode, DEFAULT_CHARACTER_SELECTION),
       menuFocus: requestedMenuFocus >= 0 ? requestedMenuFocus : 0,
@@ -184,10 +199,12 @@ export const useHudStore = create<HudState>((set) => ({
   startMatch: (fighterSelection) =>
     set((state) => ({
       fighterSelection: [...fighterSelection],
-      screen: 'versus',
+      screen: 'stage',
       snapshot: initialSnapshot(state.mode ?? 'local', fighterSelection),
       menuFocus: 0,
     })),
+  selectArena: (arenaId) => set({ arenaId, screen: 'versus', menuFocus: 0 }),
+  openStageSelect: () => set({ screen: 'stage', menuFocus: 0 }),
   enterFight: () => set({ screen: 'fight', menuFocus: 0 }),
   setMenuFocus: (menuFocus) => set({ menuFocus }),
 }));
@@ -199,6 +216,7 @@ export function resetHudStore(): void {
     mode: null,
     aiDifficulty: initialAiDifficulty,
     fighterSelection: DEFAULT_CHARACTER_SELECTION,
+    arenaId: DEFAULT_ARENA,
     menuFocus: 0,
     result: initialResult,
   });
