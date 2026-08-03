@@ -36,6 +36,7 @@
     "models:check": "node scripts/check-models.mjs",
     "sprites:mim": "node scripts/slice-mim.mjs",
     "sprites:vorgh": "node scripts/build-vorgh-photo-atlas.mjs",
+    "sprites:lucky": "node scripts/build-lucky-photo-atlas.mjs",
     "sprites:mim:preview": "node scripts/preview-mim-sprites.mjs",
     "shoot": "node scripts/shoot.mjs"
   },

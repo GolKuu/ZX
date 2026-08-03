@@ -77,10 +77,10 @@ const DIRECTION_RELATIVE = {
 export function luckyKeyboardNotation(spec: LuckyCommandSpec): string {
   const chord = luckyChordNotation(spec.buttons);
   const motion = MOTION_KEYS[spec.motion];
-  const direction = spec.direction === undefined
-    ? ''
-    : DIRECTION_KEYS[spec.direction];
-  const press = direction === '' ? chord : `${direction}+${chord}`;
+  const direction = heldDirectionOf(spec);
+  const press = direction === null
+    ? chord
+    : `${DIRECTION_KEYS[direction]}+${chord}`;
   const air = spec.stance === 'air' ? ' (in air)' : '';
   return motion === '' ? `${press}${air}` : `${motion}+${chord}${air}`;
 }
@@ -88,12 +88,26 @@ export function luckyKeyboardNotation(spec: LuckyCommandSpec): string {
 export function luckyRelativeNotation(spec: LuckyCommandSpec): string {
   const chord = luckyChordNotation(spec.buttons);
   const motion = MOTION_RELATIVE[spec.motion];
-  const direction = spec.direction === undefined
-    ? ''
-    : DIRECTION_RELATIVE[spec.direction];
-  const press = direction === '' ? chord : `${direction} + ${chord}`;
+  const direction = heldDirectionOf(spec);
+  const press = direction === null
+    ? chord
+    : `${DIRECTION_RELATIVE[direction]} + ${chord}`;
   const air = spec.stance === 'air' ? ' (in air)' : '';
   return motion === '' ? `${press}${air}` : `${motion} + ${chord}${air}`;
+}
+
+/**
+ * A crouching row is entered by holding Down even though it carries no
+ * `direction` of its own — the stance *is* the direction. Without this the move
+ * list prints `J` for both Quick Draw and Low Palm, which is exactly the
+ * "printed list disagrees with runtime behaviour" defect the brief rejects on.
+ */
+function heldDirectionOf(
+  spec: LuckyCommandSpec,
+): keyof typeof DIRECTION_KEYS | null {
+  if (spec.direction !== undefined) return spec.direction;
+  if (spec.motion === 'none' && spec.stance === 'crouching') return 'down';
+  return null;
 }
 
 function costOf(spec: LuckyCommandSpec): string {

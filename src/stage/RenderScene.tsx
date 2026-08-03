@@ -97,7 +97,6 @@ const SPRITE_RIGS: Partial<Record<CharacterId, {
   /** Sliced clean attack panels, shown at the strike impact frame. */
   readonly attacks?: string;
 }>> = {
-  lucky: { rig: 'lucky-profile', attacks: 'lucky-attacks' },
 };
 
 function primitiveFighter(
@@ -126,6 +125,9 @@ function primitiveFighter(
   }
   if (characterId === 'glitch') {
     return <PhotoSpriteFighter fighterId={fighterId} kind="glitch" />;
+  }
+  if (characterId === 'lucky') {
+    return <PhotoSpriteFighter fighterId={fighterId} kind="lucky" />;
   }
   return null;
 }

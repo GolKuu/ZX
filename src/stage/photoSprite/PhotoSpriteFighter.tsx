@@ -16,6 +16,7 @@ import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
 import { MimAttackEffects } from '../mim/MimAttackEffects';
 import { MimSpecialEffects } from '../mim/MimSpecialEffects';
 import { MimVoiceCallouts } from '../mim/MimVoiceCallouts';
+import { LuckySpriteEffects } from '../lucky/LuckySpriteEffects';
 import { VorghAudioPlayer } from '../vorgh/VorghAudioPlayer';
 import { VorghEffects } from '../vorgh/VorghEffects';
 import { spriteFacingScale, withOpponentFacing } from '../fighterPresentation';
@@ -29,7 +30,7 @@ export function PhotoSpriteFighter({
   kind,
 }: {
   readonly fighterId: 'p1' | 'p2';
-  readonly kind: 'mim' | 'glitch' | 'vorgh';
+  readonly kind: 'glitch' | 'lucky' | 'mim' | 'vorgh';
 }) {
   const outer = useRef<Group>(null);
   const body = useRef<Group>(null);
@@ -97,13 +98,18 @@ export function PhotoSpriteFighter({
     <>
       {kind === 'mim' ? <MimVoiceCallouts fighterId={fighterId} /> : null}
       {kind === 'mim' ? <MimSpecialEffects fighterId={fighterId} /> : null}
+      {kind === 'lucky' ? <LuckySpriteEffects fighterId={fighterId} /> : null}
       {kind === 'vorgh' ? <VorghAudioPlayer fighterId={fighterId} /> : null}
       {kind === 'vorgh' ? <VorghEffects fighterId={fighterId} /> : null}
       <group ref={outer}>
         {kind === 'mim' ? <MimAttackEffects fighterId={fighterId} /> : null}
         <group ref={body} position-y={centerY}>
           {texture === null ? null : (
-            <PhotoPlane texture={texture} width={width} tint={kind === 'vorgh' ? '#ffffff' : '#d7dce4'} />
+            <PhotoPlane
+              texture={texture}
+              width={width}
+              tint={kind === 'mim' || kind === 'glitch' ? '#d7dce4' : '#ffffff'}
+            />
           )}
         </group>
         {kind === 'glitch' ? <GlitchSpriteEffects fighterId={fighterId} /> : null}

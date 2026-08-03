@@ -413,6 +413,31 @@ test('the move list spells the same command both ways round', () => {
   assert.equal(sliding?.relative, 'Down, Down-Forward, Forward + I');
 });
 
+test('no two printed commands read the same', () => {
+  // A crouching normal that printed as a bare "J" would be indistinguishable
+  // from the standing normal on the page, even though the game can tell them
+  // apart. Rows that differ in the game must differ on the page.
+  const printed = new Map();
+  for (const entry of LUCKY_MOVE_LIST) {
+    const key = `${entry.keyboard}|${entry.cost}`;
+    const previous = printed.get(key);
+    assert.equal(
+      previous,
+      undefined,
+      `"${entry.name}" prints as "${entry.keyboard}", same as "${previous ?? ''}"`,
+    );
+    printed.set(key, entry.name);
+  }
+  assert.equal(
+    LUCKY_MOVE_LIST.find((e) => e.moveId === 'lucky.low-palm')?.keyboard,
+    'S+J',
+  );
+  assert.equal(
+    LUCKY_MOVE_LIST.find((e) => e.moveId === 'lucky.quick-draw')?.keyboard,
+    'J',
+  );
+});
+
 // ------------------------------------------------------------------ buffer
 
 test('a press expires once it leaves the buffer window', () => {
