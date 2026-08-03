@@ -12,6 +12,7 @@ import { CombatGameLoop } from './CombatGameLoop';
 import { AttackCue } from './AttackCue';
 import { FrameProfiler } from './FrameProfiler';
 import { HitBlood } from './HitBlood';
+import { HitSparkBurst } from './HitSparkBurst';
 import { ImpactPulse } from './ImpactPulse';
 import { LazyPostEffects } from './LazyPostEffects';
 import { PhotoSpriteFighter } from './photoSprite/PhotoSpriteFighter';
@@ -48,6 +49,7 @@ export function RenderScene({
       <SpeedLines />
       <AttackCue />
       <HitBlood />
+      <HitSparkBurst />
       <ImpactPulse />
       <CameraRig />
       <LazyPostEffects />

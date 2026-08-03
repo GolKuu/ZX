@@ -6,6 +6,7 @@ import { FighterVoiceController } from '@/src/audio/FighterVoiceController';
 import { TitanSoundController } from '@/src/audio/TitanSoundController';
 import { LuckySoundController } from '@/src/audio/LuckySoundController';
 import { GlitchSoundController } from '@/src/audio/GlitchSoundController';
+import { ImpactSoundController } from '@/src/audio/ImpactSoundController';
 import {
   getCharacterDefinition,
   type CharacterSelection,
@@ -68,6 +69,7 @@ export class CombatSession {
   private readonly titanSound: TitanSoundController;
   private readonly luckySound: LuckySoundController;
   private readonly glitchSound: GlitchSoundController;
+  private readonly impactSound = new ImpactSoundController();
   private readonly xray = new XrayController();
   private readonly meters: MeterController;
   private readonly attackInput = new AttackInputPolicy(ALL_COMBAT_MOVES);
@@ -168,6 +170,7 @@ export class CombatSession {
     this.meters.accept(result.events);
     this.luckySound.accept(result.events);
     this.glitchSound.accept(result.events);
+    this.impactSound.accept(result.events);
     this.xray.accept(result.events);
     publishCombatFrame(result.state, 0);
     publishCombatHits(result.state, result.events);

@@ -79,6 +79,7 @@ export function CameraRig() {
   const cameraRef = useRef(camera as PerspectiveCamera);
   const shakeRef = useRef(0);
   const fovTargetRef = useRef(BASE_FOV);
+  const impactKickRef = useRef(0);
   const impactVersionRef = useRef(useRenderStore.getState().impactVersion);
   const superVersionRef = useRef(
     useRenderStore.getState().mimSuperVersion
@@ -115,6 +116,7 @@ export function CameraRig() {
       seenHitSerial.current[defenderId] = hit.serial;
       const impactWeight = Math.min(MAX_SHAKE, 0.48 + hit.damage / 72);
       shakeRef.current = Math.min(MAX_SHAKE, Math.max(shakeRef.current, impactWeight));
+      impactKickRef.current = hit.away * Math.min(0.11, 0.025 + hit.damage / 900);
       fovTargetRef.current = Math.min(
         43.8,
         Math.max(
@@ -127,6 +129,7 @@ export function CameraRig() {
     const activeCamera = cameraRef.current;
     const time = clock.elapsedTime;
     shakeRef.current = approach(shakeRef.current, 0, IMPACT_SHAKE_RETURN, delta);
+    impactKickRef.current = approach(impactKickRef.current, 0, 18, delta);
     fovTargetRef.current = approach(fovTargetRef.current, BASE_FOV + 0.35, FOV_RETURN, delta);
     activeCamera.fov = approach(activeCamera.fov, fovTargetRef.current, 7, delta);
     activeCamera.updateProjectionMatrix();
@@ -166,6 +169,7 @@ export function CameraRig() {
     // tilts, the flat stage layers keystone.
     const shakeAmount = shakeRef.current;
     activeCamera.position.x = pan
+      + impactKickRef.current
       + Math.sin(time * 0.24) * 0.06
       + Math.sin(time * 67) * 0.06 * shakeAmount
       + Math.sin(time * 41) * 0.018 * shakeAmount;
