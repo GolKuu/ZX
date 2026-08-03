@@ -6,10 +6,16 @@
  * normals that share their button.
  */
 
-import type { Button, Direction } from './bindings.js';
+import type { AttackButton, Button, Direction } from './bindings.js';
 import { XRAY_MOVE_ID } from '../data/combat-moves.js';
 import { TAUNT_COMMAND } from './sharedCommands.js';
-import { hasButton, horizontalOf, isCrouching, isJumping } from './bindings.js';
+import {
+  BUTTON_BIT,
+  hasButton,
+  horizontalOf,
+  isCrouching,
+  isJumping,
+} from './bindings.js';
 import { INPUT_LEEWAY_FRAMES, type InputBuffer } from './buffer.js';
 import { matchesMotion, type MotionId } from './motion.js';
 
@@ -42,6 +48,21 @@ export interface CommandRow {
   readonly holdDirection?: 'forward' | 'back' | 'up' | 'down' | 'neutral';
   /** Optional gate — stance systems, gauge costs, air-only moves. */
   readonly available?: (context: CommandContext) => boolean;
+  /**
+   * Exact chord: the set of attack buttons the player assembled must equal this
+   * list, nothing more and nothing less.
+   *
+   * `alsoPressed` answers "was K also down?", which cannot distinguish `J+K`
+   * from `J+K+I` without a matching `forbiddenPressed` on every row — a table
+   * of 60 commands would need hundreds of hand-maintained exclusions and one
+   * omission silently fires the wrong move. Stating the whole set instead makes
+   * every chord mutually exclusive by construction, which is what lets the
+   * priority table below be proved rather than argued.
+   *
+   * Only meaningful when `resolveCommand` is given `settleFrames`, because the
+   * set is not knowable until the player has stopped adding buttons to it.
+   */
+  readonly exactChord?: readonly AttackButton[];
 }
 
 export interface CommandContext {
@@ -111,6 +132,22 @@ export interface ResolvedCommand {
   readonly pressedAgo: number;
 }
 
+export interface CommandResolutionOptions {
+  /** How stale a committing press may be and still start a move. */
+  readonly leeway?: number;
+  /**
+   * Frames of quiet required before a chord table is read.
+   *
+   * Without this, `J` resolves on the frame it goes down and the `J+I` throw
+   * two frames later never happens — the throw's own button already started a
+   * normal. Waiting for the player to stop pressing makes the assembled set
+   * final before it is matched, which is the only way `exactChord` can mean
+   * anything. Costs this many frames of input latency on every attack, so it
+   * belongs to characters whose whole command set is chord-based.
+   */
+  readonly settleFrames?: number;
+}
+
 /**
  * Resolve the highest-priority command whose button was pressed within the
  * leeway window and whose motion completed by that press.
@@ -119,11 +156,23 @@ export function resolveCommand(
   buffer: InputBuffer,
   table: readonly CommandRow[],
   context: CommandContext = DEFAULT_CONTEXT,
-  leeway = INPUT_LEEWAY_FRAMES,
+  options: CommandResolutionOptions = {},
 ): ResolvedCommand | null {
+  const leeway = options.leeway ?? INPUT_LEEWAY_FRAMES;
+  const settleFrames = options.settleFrames;
+  const chord = settleFrames === undefined
+    ? null
+    : settledAttackChord(buffer, settleFrames);
+  if (settleFrames !== undefined && chord === null) {
+    return null;
+  }
+
   for (const row of table) {
     const pressedAgo = buffer.framesSincePress(row.button);
     if (pressedAgo === null || pressedAgo >= leeway) {
+      continue;
+    }
+    if (chord !== null && chord !== expectedChordMask(row)) {
       continue;
     }
     if (row.requiresModifier === true && !buffer.isHeld('super')) {
@@ -155,6 +204,62 @@ export function resolveCommand(
     };
   }
   return null;
+}
+
+/** Attack slots an `exactChord` table may name. */
+const CHORD_SLOTS: readonly AttackButton[] = ['lp', 'hp', 'lk', 'hk'];
+
+const CHORD_MASK = CHORD_SLOTS.reduce(
+  (mask, button) => mask | BUTTON_BIT[button],
+  0,
+);
+
+/**
+ * The set of attack buttons the player has finished assembling, or `null` while
+ * they are still adding to it.
+ *
+ * "Finished" is `settleFrames` with no new attack press. The set spans from the
+ * newest press back to now, so a button tapped and released as part of the
+ * chord still counts while one released before the chord began does not.
+ */
+function settledAttackChord(
+  buffer: InputBuffer,
+  settleFrames: number,
+): number | null {
+  let newestPressAgo: number | null = null;
+  for (const button of CHORD_SLOTS) {
+    const ago = buffer.framesSincePress(button);
+    if (ago !== null && (newestPressAgo === null || ago < newestPressAgo)) {
+      newestPressAgo = ago;
+    }
+  }
+  if (newestPressAgo === null) {
+    return null;
+  }
+  // A full four-button chord cannot grow, so it never has to wait.
+  const union = chordUnion(buffer, newestPressAgo);
+  if (newestPressAgo < settleFrames && union !== CHORD_MASK) {
+    return null;
+  }
+  return union;
+}
+
+function chordUnion(buffer: InputBuffer, sinceAgo: number): number {
+  let union = 0;
+  for (let ago = 0; ago <= sinceAgo; ago += 1) {
+    union |= buffer.at(ago).held & CHORD_MASK;
+  }
+  return union;
+}
+
+function expectedChordMask(row: CommandRow): number {
+  if (row.exactChord !== undefined) {
+    return row.exactChord.reduce(
+      (mask, button) => mask | BUTTON_BIT[button],
+      0,
+    );
+  }
+  return BUTTON_BIT[row.button];
 }
 
 function allButtonsUp(

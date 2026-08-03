@@ -22,13 +22,25 @@ export interface InputFrame {
   readonly held: ButtonMask;
   /** Buttons that went down on this frame specifically. */
   readonly pressed: ButtonMask;
+  /** Consecutive frames Back has been held, including this one. */
+  readonly backChargeFrames: number;
+  /** Consecutive frames Down has been held, including this one. */
+  readonly downChargeFrames: number;
 }
 
-const NEUTRAL_FRAME: InputFrame = { direction: 5, held: 0, pressed: 0 };
+const NEUTRAL_FRAME: InputFrame = {
+  direction: 5,
+  held: 0,
+  pressed: 0,
+  backChargeFrames: 0,
+  downChargeFrames: 0,
+};
 
 export class InputBuffer {
   private readonly frames: InputFrame[] = [];
   private previousHeld = 0;
+  private backCharge = 0;
+  private downCharge = 0;
 
   /**
    * Append one frame. Call exactly once per simulation tick — the buffer counts
@@ -37,7 +49,18 @@ export class InputBuffer {
   public push(direction: Direction, held: ButtonMask): void {
     const pressed = held & ~this.previousHeld;
     this.previousHeld = held;
-    this.frames.push({ direction, held, pressed });
+    // Charge is counted, not remembered: a 40-frame hold would otherwise need a
+    // 40-frame history window, and the buffer would have to grow for every
+    // character to serve one character's charge moves.
+    this.backCharge = isBackDirection(direction) ? this.backCharge + 1 : 0;
+    this.downCharge = isDownDirection(direction) ? this.downCharge + 1 : 0;
+    this.frames.push({
+      direction,
+      held,
+      pressed,
+      backChargeFrames: this.backCharge,
+      downChargeFrames: this.downCharge,
+    });
     if (this.frames.length > BUFFER_CAPACITY) {
       this.frames.shift();
     }
@@ -46,6 +69,8 @@ export class InputBuffer {
   public clear(): void {
     this.frames.length = 0;
     this.previousHeld = 0;
+    this.backCharge = 0;
+    this.downCharge = 0;
   }
 
   public get length(): number {
@@ -96,4 +121,12 @@ export class InputBuffer {
   public toArray(): readonly InputFrame[] {
     return [...this.frames];
   }
+}
+
+function isBackDirection(direction: Direction): boolean {
+  return direction === 1 || direction === 4 || direction === 7;
+}
+
+function isDownDirection(direction: Direction): boolean {
+  return direction === 1 || direction === 2 || direction === 3;
 }

@@ -22,7 +22,11 @@ export type MotionId =
   | 'rdp'
   | 'dd'
   | 'ff'
-  | 'bb';
+  | 'bb'
+  /** Hold Back, then Forward. */
+  | 'chargeBackForward'
+  /** Hold Down, then Up. */
+  | 'chargeDownUp';
 
 /** Direction sets, facing-relative. */
 const DOWN: readonly Direction[] = [1, 2, 3];
@@ -41,7 +45,45 @@ interface MotionDefinition {
   readonly window: number;
 }
 
-const MOTIONS: Readonly<Record<Exclude<MotionId, 'none'>, MotionDefinition>> = {
+interface ChargeDefinition {
+  /** Frames the charge direction must be held before release. */
+  readonly holdFrames: number;
+  /** Directions that count as holding the charge. */
+  readonly release: readonly Direction[];
+  /** How long after letting go the release still counts. */
+  readonly releaseWindow: number;
+  /** Which counter on the frame carries the charge. */
+  readonly counter: 'backChargeFrames' | 'downChargeFrames';
+}
+
+/**
+ * Charge inputs, kept separate from the step-sequence motions above.
+ *
+ * A charge is "a direction was held for a long time", which a fixed-length step
+ * list cannot express — the buffer would have to retain the whole hold. The
+ * per-frame counters on `InputFrame` carry it instead, so the check reads one
+ * frame no matter how long the charge was.
+ */
+const CHARGES: Readonly<
+  Record<'chargeBackForward' | 'chargeDownUp', ChargeDefinition>
+> = {
+  chargeBackForward: {
+    holdFrames: 40,
+    release: [3, 6, 9],
+    releaseWindow: 10,
+    counter: 'backChargeFrames',
+  },
+  chargeDownUp: {
+    holdFrames: 40,
+    release: [7, 8, 9],
+    releaseWindow: 10,
+    counter: 'downChargeFrames',
+  },
+};
+
+const MOTIONS: Readonly<
+  Record<Exclude<MotionId, 'none' | keyof typeof CHARGES>, MotionDefinition>
+> = {
   qcf2: {
     steps: [DOWN, DOWN_FORWARD, FORWARD, DOWN, DOWN_FORWARD, FORWARD],
     slack: 6,
@@ -86,6 +128,9 @@ export function matchesMotion(
   if (motion === 'none') {
     return true;
   }
+  if (motion === 'chargeBackForward' || motion === 'chargeDownUp') {
+    return matchesCharge(buffer, CHARGES[motion], endingAgo);
+  }
   const definition = MOTIONS[motion];
   const steps = definition.steps;
   const lastIndex = steps.length - 1;
@@ -123,6 +168,31 @@ export function matchesMotion(
 }
 
 /**
+ * The release direction is held now, and the charge was full just before it.
+ *
+ * Reading the counter from a frame inside the release window rather than from
+ * the press frame matters: the moment the player rolls onto Forward the Back
+ * counter is already zero, so the evidence of the charge only exists slightly
+ * in the past.
+ */
+function matchesCharge(
+  buffer: InputBuffer,
+  definition: ChargeDefinition,
+  endingAgo: number,
+): boolean {
+  if (!definition.release.includes(buffer.at(endingAgo).direction)) {
+    return false;
+  }
+  const limit = endingAgo + definition.releaseWindow;
+  for (let ago = endingAgo; ago <= limit; ago += 1) {
+    if (buffer.at(ago)[definition.counter] >= definition.holdFrames) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Highest-priority motion completing at `endingAgo`, longest first so a
  * half-circle is never mistaken for the quarter-circle inside it.
  */
@@ -130,6 +200,10 @@ export function detectMotion(
   buffer: InputBuffer,
   endingAgo = 0,
   candidates: readonly MotionId[] = [
+    // Charges first: a 40-frame hold is strictly more specific than any of the
+    // rolling motions that can be read out of its release.
+    'chargeBackForward',
+    'chargeDownUp',
     'qcf2',
     'qcb2',
     'hcb',
