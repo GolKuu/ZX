@@ -9,28 +9,38 @@ export function photoFrameFor(
   elapsedTime: number,
 ): number {
   if (fighter.hitstun > 0) {
-    return frame(2, Math.floor(elapsedTime * 12) % PHOTO_COLUMNS);
+    return fighter.hitstun > 16 ? frame(6, 3) : frame(3, 2);
   }
   if (!fighter.grounded) {
-    const airborne = fighter.velocity.y > 10 ? 0 : fighter.velocity.y < -10 ? 4 : 2;
-    return frame(3, airborne);
+    return fighter.velocity.y > 10
+      ? frame(2, 2)
+      : fighter.velocity.y < -10
+        ? frame(1, 5)
+        : frame(2, 3);
   }
   if (fighter.guarding || fighter.crouching) {
-    return frame(4, fighter.crouching ? 1 : 4);
+    return frame(fighter.crouching ? 4 : 1, 1);
   }
   if (fighter.dashFrames > 0) {
-    return frame(7, Math.abs(12 - fighter.dashFrames) % PHOTO_COLUMNS);
+    return WALK_FRAMES[
+      Math.abs(12 - fighter.dashFrames) % WALK_FRAMES.length
+    ] ?? IDLE;
   }
   if (fighter.action !== null) {
-    const row = 1 + stableHash(fighter.action.moveId) % 7;
     const progress = spriteAnimationProgress(
       fighter.action.moveId,
       fighter.action.frame,
     );
-    return frame(row, Math.min(PHOTO_COLUMNS - 1, Math.floor(progress * PHOTO_COLUMNS)));
+    const sequence = attackSequenceFor(fighter.action.moveId);
+    return sequence[Math.min(
+      sequence.length - 1,
+      Math.floor(progress * sequence.length),
+    )] ?? IDLE;
   }
   if (Math.abs(fighter.velocity.x) > 16) {
-    return frame(5, Math.floor(elapsedTime * 10) % PHOTO_COLUMNS);
+    return WALK_FRAMES[
+      Math.floor(elapsedTime * 9) % WALK_FRAMES.length
+    ] ?? IDLE;
   }
   // A motionless fighter holds the authored neutral silhouette. Cycling the
   // six unrelated source poses here made idle look like a broken dance.
@@ -41,10 +51,38 @@ function frame(row: number, column: number): number {
   return row * PHOTO_COLUMNS + column;
 }
 
-function stableHash(value: string): number {
-  let hash = 0;
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+const IDLE = frame(0, 0);
+const WALK_FRAMES = [frame(6, 0), frame(6, 1), frame(6, 2), frame(6, 1)];
+
+const ATTACK_SEQUENCES = {
+  jab: [IDLE, frame(0, 2), frame(0, 1), frame(0, 2), IDLE],
+  heavy: [IDLE, frame(5, 3), frame(5, 4), frame(5, 3), IDLE],
+  kick: [IDLE, frame(2, 2), frame(0, 3), frame(2, 2), IDLE],
+  highKick: [IDLE, frame(3, 4), frame(0, 4), frame(3, 4), IDLE],
+  sweep: [IDLE, frame(4, 1), frame(0, 5), frame(4, 1), IDLE],
+  uppercut: [IDLE, frame(4, 1), frame(5, 0), frame(5, 2), IDLE],
+} as const;
+
+function attackSequenceFor(moveId: string): readonly number[] {
+  const id = moveId.toLowerCase();
+  if (includesAny(id, ['sweep', 'crouch', 'low-vector'])) {
+    return ATTACK_SEQUENCES.sweep;
   }
-  return hash;
+  if (includesAny(id, ['uppercut', 'anti-air', 'launcher'])) {
+    return ATTACK_SEQUENCES.uppercut;
+  }
+  if (includesAny(id, ['axe', 'spin', 'triple-kick', 'butterfly'])) {
+    return ATTACK_SEQUENCES.highKick;
+  }
+  if (includesAny(id, ['kick', 'knee', 'vault', 'wall-dive'])) {
+    return ATTACK_SEQUENCES.kick;
+  }
+  if (includesAny(id, ['jab', 'light', 'elbow', 'strike'])) {
+    return ATTACK_SEQUENCES.jab;
+  }
+  return ATTACK_SEQUENCES.heavy;
+}
+
+function includesAny(value: string, needles: readonly string[]): boolean {
+  return needles.some((needle) => value.includes(needle));
 }

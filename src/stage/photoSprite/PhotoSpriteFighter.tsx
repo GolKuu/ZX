@@ -120,9 +120,10 @@ function PhotoPlane({
       <planeGeometry args={[width, DISPLAY_HEIGHT]} />
       <meshBasicMaterial
         alphaTest={0.5}
+        color="#d7dce4"
         map={texture}
         side={DoubleSide}
-        toneMapped={false}
+        toneMapped
       />
     </mesh>
   );

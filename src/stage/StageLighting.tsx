@@ -7,7 +7,6 @@ import { ARENA_RADIUS } from './arena/arenaData';
 import { useRenderStore } from '@/src/store/renderStore';
 
 const SHADOW_EXTENT = ARENA_RADIUS + 3.4;
-const HARMONIC_RATE = 4.7;
 
 export function StageLighting() {
   const keyLightRef = useRef<DirectionalLight>(null);
@@ -26,8 +25,7 @@ export function StageLighting() {
   const impactEnergy = useRef(0);
   const superEnergy = useRef(0);
 
-  useFrame((state, delta) => {
-    const time = state.clock.elapsedTime;
+  useFrame((_, delta) => {
     if (impactVersion !== impactVersionRef.current) {
       impactVersionRef.current = impactVersion;
       impactEnergy.current = 1;
@@ -44,61 +42,35 @@ export function StageLighting() {
     const superPulse = MathUtils.smoothstep(0.04, 1, superEnergy.current);
     const rimPulse = Math.max(impactPulse, superPulse * 1.2);
 
-    const breathing = 0.5 + Math.sin(time * 0.4) * 0.02;
     const key = keyLightRef.current;
     const impactPulseLight = impactPulseRef.current;
     const superPulseLight = superPulseRef.current;
     const superWash = superWashRef.current;
     if (key !== null) {
-      key.intensity = MathUtils.lerp(2.95, 4.35, rimPulse);
-      key.color.setHSL(0.07 + superPulse * 0.1 + impactPulse * 0.05, 0.25, 0.55 + rimPulse * 0.15);
+      key.intensity = MathUtils.lerp(2.75, 3.45, rimPulse);
       key.shadow.radius = MathUtils.lerp(2.6, 3.2, rimPulse);
     }
     if (impactPulseLight !== null) {
-      impactPulseLight.intensity = MathUtils.lerp(0.1, 3.4, impactPulse);
-      impactPulseLight.color.setHSL(
-        0.71,
-        MathUtils.lerp(0.6, 0.75, rimPulse),
-        MathUtils.lerp(0.72, 0.85, impactPulse),
-      );
+      impactPulseLight.intensity = MathUtils.lerp(0, 1.6, impactPulse);
     }
     if (superPulseLight !== null) {
-      superPulseLight.intensity = MathUtils.lerp(0.2, 6.2, superPulse);
-      superPulseLight.color.setHSL(
-        0.58 - superPulse * 0.03,
-        0.84,
-        0.5 + superPulse * 0.16,
-      );
+      superPulseLight.intensity = MathUtils.lerp(0, 3.4, superPulse);
     }
     if (superWash !== null) {
-      superWash.intensity = 0.8 + superPulse * 1.2 + impactPulse * 0.24;
-      superWash.color.setHSL(
-        0.58 - superPulse * 0.08,
-        0.66,
-        0.42 + superPulse * 0.12,
-      );
-    }
-
-    if (key !== null) {
-      const keyWave = (Math.sin(time * HARMONIC_RATE + breathing) + 1) * 0.5;
-      key.position.set(
-        MathUtils.lerp(-5.2, -4.8, 0.5 + rimPulse * 0.5),
-        MathUtils.lerp(8.6, 9.1, rimPulse),
-        MathUtils.lerp(5.4, 5.0 + keyWave * 0.16, impactPulse),
-      );
+      superWash.intensity = superPulse * 0.7 + impactPulse * 0.12;
     }
   });
 
   return (
     <>
-      <hemisphereLight args={['#516da2', '#090914', 0.46]} />
-      <ambientLight color="#1b2540" intensity={0.18} />
+      <hemisphereLight args={['#9aa8c4', '#090914', 0.38]} />
+      <ambientLight color="#394052" intensity={0.16} />
 
       <directionalLight
         ref={keyLightRef}
         castShadow
         color="#ffe8c9"
-        intensity={3.25}
+        intensity={2.75}
         position={[-5.2, 8.6, 5.4]}
         shadow-bias={-0.0006}
         shadow-camera-bottom={-SHADOW_EXTENT}
@@ -114,7 +86,7 @@ export function StageLighting() {
       />
       <pointLight
         ref={impactPulseRef}
-        color="#d8cbff"
+        color="#f3f0e8"
         decay={2}
         distance={25}
         intensity={0}
@@ -122,7 +94,7 @@ export function StageLighting() {
       />
       <pointLight
         ref={superPulseRef}
-        color="#7be8ff"
+        color="#b8dfff"
         decay={2}
         distance={38}
         intensity={0}
@@ -130,7 +102,7 @@ export function StageLighting() {
       />
       <pointLight
         ref={superWashRef}
-        color="#ffe9a2"
+        color="#ffe9c7"
         decay={2}
         distance={28}
         intensity={0}
@@ -138,30 +110,30 @@ export function StageLighting() {
       />
 
       <directionalLight
-        color="#697bff"
-        intensity={1.65}
+        color="#8794b8"
+        intensity={0.75}
         position={[4.6, 5.8, -6.2]}
       />
 
       <directionalLight
-        color="#43cfff"
-        intensity={1.05}
+        color="#b8c6dc"
+        intensity={0.42}
         position={[6.4, 2.1, 4.2]}
       />
 
       <pointLight
-        color="#7b5cff"
+        color="#66708c"
         decay={2}
         distance={34}
-        intensity={12}
+        intensity={3.2}
         position={[-4.8, 4.8, -9]}
       />
 
       <pointLight
-        color="#1e9bd1"
+        color="#8290a8"
         decay={2}
         distance={9}
-        intensity={2.8}
+        intensity={1.1}
         position={[0, 0.55, 0.6]}
       />
     </>
