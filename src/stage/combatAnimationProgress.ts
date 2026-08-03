@@ -10,7 +10,10 @@ import {
   LUCKY_SUPER_MOVES,
 } from '@/src/data/lucky';
 import { totalMoveFrames } from '@/src/sim';
-import { spriteAttackBeat } from './sprite2d/spriteAttackTimeline';
+import {
+  spriteAttackBeat,
+  spriteAttackFrame,
+} from './sprite2d/spriteAttackTimeline';
 
 const WINDUP_END = 0.34;
 const ACTIVE_END = 0.58;
@@ -90,6 +93,23 @@ export function spriteAnimationProgress(
   if (beat.phase === 'approach') return WINDUP_END * beat.amount;
   if (beat.phase === 'strike') return ACTIVE_END;
   return ACTIVE_END + (1 - ACTIVE_END) * (1 - beat.amount);
+}
+
+/**
+ * Exact paper-doll drawing for the current simulation frame.
+ *
+ * Unlike a progress float, this preserves all nine authored beats: four
+ * anticipation drawings, one impact drawing and four recovery drawings.
+ */
+export function spriteAnimationFrame(
+  moveId: string,
+  frame: number,
+): number {
+  const move = MOVES_BY_ID.get(moveId);
+  if (move === undefined) {
+    return Math.min(8, Math.floor(combatAnimationProgress(moveId, frame) * 9));
+  }
+  return spriteAttackFrame(frame, move);
 }
 
 function clamp01(value: number): number {

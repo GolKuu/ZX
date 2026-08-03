@@ -1,5 +1,5 @@
 import type { FighterSnapshot } from '@/src/sim';
-import { spriteAnimationProgress } from '../combatAnimationProgress';
+import { spriteAnimationFrame } from '../combatAnimationProgress';
 
 export const PHOTO_COLUMNS = 6;
 export const PHOTO_ROWS = 8;
@@ -27,15 +27,12 @@ export function photoFrameFor(
     ] ?? IDLE;
   }
   if (fighter.action !== null) {
-    const progress = spriteAnimationProgress(
+    const animationFrame = spriteAnimationFrame(
       fighter.action.moveId,
       fighter.action.frame,
     );
     const sequence = attackSequenceFor(fighter.action.moveId);
-    return sequence[Math.min(
-      sequence.length - 1,
-      Math.floor(progress * sequence.length),
-    )] ?? IDLE;
+    return sequence[animationFrame] ?? IDLE;
   }
   if (Math.abs(fighter.velocity.x) > 16) {
     return WALK_FRAMES[
@@ -55,12 +52,12 @@ const IDLE = frame(0, 0);
 const WALK_FRAMES = [frame(6, 0), frame(6, 1), frame(6, 2), frame(6, 1)];
 
 const ATTACK_SEQUENCES = {
-  jab: [IDLE, frame(0, 2), frame(0, 1), frame(0, 2), IDLE],
-  heavy: [IDLE, frame(5, 3), frame(5, 4), frame(5, 3), IDLE],
-  kick: [IDLE, frame(2, 2), frame(0, 3), frame(2, 2), IDLE],
-  highKick: [IDLE, frame(3, 4), frame(0, 4), frame(3, 4), IDLE],
-  sweep: [IDLE, frame(4, 1), frame(0, 5), frame(4, 1), IDLE],
-  uppercut: [IDLE, frame(4, 1), frame(5, 0), frame(5, 2), IDLE],
+  jab: [IDLE, frame(5, 4), frame(0, 2), frame(0, 2), frame(0, 1), frame(0, 2), frame(0, 2), frame(5, 4), IDLE],
+  heavy: [IDLE, frame(5, 3), frame(5, 0), frame(5, 2), frame(5, 4), frame(5, 2), frame(5, 0), frame(5, 3), IDLE],
+  kick: [IDLE, frame(2, 2), frame(1, 1), frame(3, 4), frame(0, 3), frame(3, 4), frame(1, 1), frame(2, 2), IDLE],
+  highKick: [IDLE, frame(3, 4), frame(1, 1), frame(3, 4), frame(0, 4), frame(3, 4), frame(1, 1), frame(3, 4), IDLE],
+  sweep: [IDLE, frame(4, 1), frame(1, 4), frame(2, 1), frame(0, 5), frame(2, 1), frame(1, 4), frame(4, 1), IDLE],
+  uppercut: [IDLE, frame(4, 1), frame(5, 0), frame(5, 2), frame(5, 4), frame(5, 2), frame(5, 0), frame(4, 1), IDLE],
 } as const;
 
 function attackSequenceFor(moveId: string): readonly number[] {

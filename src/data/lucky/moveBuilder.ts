@@ -147,9 +147,15 @@ function hitData(
   final: boolean,
   damage: number,
 ) {
+  // Lucky's clean photo poses need a slightly longer contact beat than the
+  // old blockout. The freeze makes the strike readable without moving the
+  // hitbox or changing startup/recovery balance.
+  const hitstop = heavy
+    ? { attacker: 14, defender: 18 }
+    : { attacker: 9, defender: 12 };
   return {
     damage,
-    hitstop: { attacker: heavy ? 10 : 6, defender: heavy ? 14 : 8 },
+    hitstop,
     hitstun: final ? (heavy ? 26 : 17) : 12,
     knockback: {
       x: fixed(final ? (heavy ? 0.2 : 0.1) : 0.02),
@@ -159,7 +165,9 @@ function hitData(
       ? {
           block: {
             blockstun: heavy ? 17 : 10,
-            hitstop: { attacker: heavy ? 8 : 5, defender: heavy ? 11 : 7 },
+            hitstop: heavy
+              ? { attacker: 11, defender: 14 }
+              : { attacker: 7, defender: 10 },
             knockback: { x: fixed(heavy ? 0.17 : 0.08), y: 0 },
             chipDamage: heavy ? 4 : 0,
           },

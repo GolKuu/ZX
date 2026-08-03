@@ -50,12 +50,14 @@ function drawFrame(frame) {
 function poseFor(frame) {
   const bob = frame % 2;
   const pose = {
-    hip: [19, 24 + bob], shoulder: [20, 14 + bob], head: [22, 8 + bob],
-    backArm: [[18, 15], [15, 20], [17, 24]],
-    frontArm: [[23, 15], [27, 19], [25, 23]],
-    backLeg: [[17, 24], [14, 30], [13, FLOOR]],
-    frontLeg: [[21, 24], [24, 30], [25, FLOOR]],
-    coat: [[17, 21], [12, 27], [8, 32]],
+    // MIM's skeleton ratios: compact head, long upright torso and hip-to-floor
+    // legs that occupy roughly the lower third of the silhouette.
+    hip: [19, 23 + bob], shoulder: [20, 12 + bob], head: [21, 6 + bob],
+    backArm: [[18, 13], [15, 19], [17, 24]],
+    frontArm: [[22, 13], [26, 18], [24, 24]],
+    backLeg: [[17, 23], [15, 29], [14, FLOOR]],
+    frontLeg: [[21, 23], [23, 29], [24, FLOOR]],
+    coat: [[17, 20], [12, 27], [8, 32]],
   };
   if ([1, 2].includes(frame)) {
     pose.frontArm = frame === 1
@@ -105,26 +107,26 @@ function drawBody(canvas, pose) {
   const [hx, hy] = pose.hip;
   const [sx, sy] = pose.shoulder;
   const [headX, headY] = pose.head;
-  canvas.polygon([[sx - 5, sy - 2], [sx + 6, sy - 1], [hx + 4, hy], [hx - 4, hy]], P.greenDeep);
-  canvas.polygon([[sx + 1, sy - 1], [sx + 6, sy], [hx + 4, hy - 1], [hx + 1, hy - 1]], P.green);
+  canvas.polygon([[sx - 4, sy - 2], [sx + 5, sy - 1], [hx + 3, hy], [hx - 3, hy]], P.greenDeep);
+  canvas.polygon([[sx + 1, sy - 1], [sx + 5, sy], [hx + 3, hy - 1], [hx + 1, hy - 1]], P.green);
   canvas.line(sx - 2, sy, hx + 1, hy - 2, P.gold);
   canvas.set(hx + 2, hy - 4, P.goldLit);
-  canvas.rect(hx - 5, hy - 1, 10, 3, P.black);
-  canvas.capsule(sx, sy - 1, headX, headY + 3, 2, P.skinShade);
-  canvas.ellipse(headX, headY + 1, 4.5, 5, P.skin);
-  canvas.polygon([[headX - 6, headY - 5], [headX + 2, headY - 6], [headX + 5, headY - 2], [headX - 4, headY]], P.hair);
-  canvas.polygon([[headX - 6, headY - 3], [headX - 9, headY], [headX - 6, headY + 3], [headX - 3, headY]], P.hairShade);
-  canvas.rect(headX - 4, headY, 9, 3, P.visor);
-  canvas.rect(headX + 1, headY, 4, 1, P.visorLit);
-  canvas.set(headX - 5, headY + 1, P.gold);
+  canvas.rect(hx - 4, hy - 1, 8, 3, P.black);
+  canvas.capsule(sx, sy - 1, headX, headY + 3, 1.5, P.skinShade);
+  canvas.ellipse(headX, headY + 1, 3.5, 4, P.skin);
+  canvas.polygon([[headX - 5, headY - 4], [headX + 2, headY - 5], [headX + 4, headY - 2], [headX - 3, headY]], P.hair);
+  canvas.polygon([[headX - 5, headY - 3], [headX - 7, headY], [headX - 5, headY + 2], [headX - 3, headY]], P.hairShade);
+  canvas.rect(headX - 3, headY, 7, 2, P.visor);
+  canvas.rect(headX + 1, headY, 3, 1, P.visorLit);
+  canvas.set(headX - 4, headY + 1, P.gold);
 }
 
 function drawLimb(canvas, points, front, leg) {
   const [a, b, c] = points;
   const base = front ? P.greenDeep : P.black;
-  canvas.capsule(a[0], a[1], b[0], b[1], leg ? 2.7 : 2.1, base);
-  canvas.disc(b[0], b[1], leg ? 2.8 : 2.4, front ? P.green : P.blackLit);
-  canvas.capsule(b[0], b[1], c[0], c[1], leg ? 2.3 : 1.9, base);
+  canvas.capsule(a[0], a[1], b[0], b[1], leg ? 2.15 : 1.65, base);
+  canvas.disc(b[0], b[1], leg ? 2.25 : 1.9, front ? P.green : P.blackLit);
+  canvas.capsule(b[0], b[1], c[0], c[1], leg ? 1.85 : 1.45, base);
   if (leg) {
     canvas.capsule(c[0] - 1, c[1], c[0] + 4, c[1], 1.8, P.blackLit);
     canvas.set(c[0] + 2, c[1] - 1, P.gold);

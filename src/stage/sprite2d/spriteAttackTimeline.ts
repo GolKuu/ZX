@@ -45,6 +45,17 @@ export function spriteAttackBeat(
   return { amount: (4 - step) / 4, phase: 'return', step };
 }
 
+/** Zero-based drawing index: four approach, impact, four return. */
+export function spriteAttackFrame(
+  frame: number,
+  timing: SpriteAttackTiming,
+): number {
+  const beat = spriteAttackBeat(frame, timing);
+  if (beat.phase === 'approach') return beat.step - 1;
+  if (beat.phase === 'strike') return 4;
+  return 4 + beat.step;
+}
+
 function quantizedStep(
   frame: number,
   duration: number,
