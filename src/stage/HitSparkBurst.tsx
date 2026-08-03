@@ -6,14 +6,12 @@ import {
   AdditiveBlending,
   InstancedMesh,
   Matrix4,
-  PointLight,
   Quaternion,
   Vector3,
 } from 'three';
 import { readLatestHit } from '@/src/game/combatRuntime';
 
 const POOL_SIZE = 84;
-const HEAVY_HIT = 72;
 
 interface Spark {
   readonly position: Vector3;
@@ -37,10 +35,8 @@ function makeSpark(): Spark {
 
 export function HitSparkBurst() {
   const mesh = useRef<InstancedMesh>(null);
-  const light = useRef<PointLight>(null);
   const sparks = useRef(Array.from({ length: POOL_SIZE }, makeSpark));
   const cursor = useRef(0);
-  const lightEnergy = useRef(0);
   const seen = useRef({ p1: 0, p2: 0 });
   const scratch = useRef({
     matrix: new Matrix4(),
@@ -57,17 +53,11 @@ export function HitSparkBurst() {
       const hit = readLatestHit(fighterId);
       if (hit === null || hit.serial === seen.current[fighterId]) continue;
       seen.current[fighterId] = hit.serial;
-      const intensity = Math.min(1.65, 0.7 + hit.damage / 78);
-      const count = Math.round(10 + Math.min(12, hit.damage / 6));
+      const intensity = Math.min(1.35, 0.65 + hit.damage / 100);
+      const count = Math.round(7 + Math.min(8, hit.damage / 9));
       for (let index = 0; index < count; index += 1) {
         spawnSpark(sparks.current, cursor, hit.x, hit.y, hit.away, intensity, index);
       }
-      const flash = light.current;
-      if (flash !== null) {
-        flash.position.set(hit.x, hit.y, 1.15);
-        flash.color.set(hit.damage >= HEAVY_HIT ? '#fff0b5' : '#dffcff');
-      }
-      lightEnergy.current = Math.min(2.2, 0.85 + hit.damage / 70);
     }
 
     const step = Math.min(delta, 1 / 30);
@@ -91,25 +81,19 @@ export function HitSparkBurst() {
       instances.setMatrixAt(index, matrix);
     }
     instances.instanceMatrix.needsUpdate = true;
-
-    lightEnergy.current = Math.max(0, lightEnergy.current - step * 11);
-    if (light.current !== null) light.current.intensity = lightEnergy.current * 7.5;
   });
 
   return (
-    <>
-      <instancedMesh args={[undefined, undefined, POOL_SIZE]} frustumCulled={false} ref={mesh}>
-        <planeGeometry args={[1, 1]} />
-        <meshBasicMaterial
-          blending={AdditiveBlending}
-          color="#fff4c8"
-          depthWrite={false}
-          toneMapped={false}
-          transparent
-        />
-      </instancedMesh>
-      <pointLight color="#e8fbff" decay={2} distance={4.8} intensity={0} ref={light} />
-    </>
+    <instancedMesh args={[undefined, undefined, POOL_SIZE]} frustumCulled={false} ref={mesh}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial
+        blending={AdditiveBlending}
+        color="#ffd98a"
+        depthWrite={false}
+        toneMapped={false}
+        transparent
+      />
+    </instancedMesh>
   );
 }
 
@@ -120,12 +104,12 @@ function spawnSpark(
   const spark = sparks[cursor.current % sparks.length];
   cursor.current = (cursor.current + 1) % sparks.length;
   if (spark === undefined) return;
-  const radial = index < 4 ? index * Math.PI * 0.5 + Math.PI * 0.25 : (Math.random() - 0.5) * 2.25;
-  const speed = (index < 4 ? 5.4 : 2.6 + Math.random() * 4.1) * intensity;
+  const radial = index < 3 ? index * Math.PI * 0.66 + Math.PI * 0.3 : (Math.random() - 0.5) * 2.1;
+  const speed = (index < 3 ? 4.2 : 2.2 + Math.random() * 3.2) * intensity;
   spark.position.set(x, y, 0.42 + Math.random() * 0.08);
   spark.velocity.set(Math.cos(radial) * speed * away, Math.sin(radial) * speed, 0);
-  spark.span = 0.11 + Math.random() * 0.18;
+  spark.span = 0.08 + Math.random() * 0.14;
   spark.life = spark.span;
-  spark.length = (index < 4 ? 0.42 : 0.2 + Math.random() * 0.34) * intensity;
-  spark.width = index < 4 ? 0.055 : 0.018 + Math.random() * 0.025;
+  spark.length = (index < 3 ? 0.24 : 0.12 + Math.random() * 0.2) * intensity;
+  spark.width = index < 3 ? 0.035 : 0.012 + Math.random() * 0.018;
 }
