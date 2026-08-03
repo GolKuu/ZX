@@ -48,7 +48,7 @@ export const useProgressionStore = create<ProgressionState>((set, get) => ({
   },
   respec: (id) => { const result = respec(get().profile, id); set((state) => ({ profile: persist(result.profile), notices: [...state.notices, notice('FULL REFUND', `${id.toUpperCase()} tree reset`)] })); },
   equip: (fighter, ids) => { const result = setLoadout(get().profile, fighter, ids); if (result.error === undefined) set({ profile: persist(result.profile) }); return result.error; },
-  dispatch: (event) => { const result = processGameplayEvent(get().profile, event); const profile=processChallenges(result.profile,event); set((state) => ({ profile: persist(profile), notices: [...state.notices, ...result.completed.map((id) => notice('ACHIEVEMENT COMPLETE', id))] })); },
+  dispatch: (event) => { const challenged=processChallenges(get().profile,event); const result=processGameplayEvent(challenged,event); set((state) => ({ profile: persist(result.profile), notices: [...state.notices, ...result.completed.map((id) => notice('ACHIEVEMENT COMPLETE', id))] })); },
   dismissNotice: (id) => set((state) => ({ notices: state.notices.filter((entry) => entry.id !== id) })),
   setLanguage: (language) => set({ language }),
 }));

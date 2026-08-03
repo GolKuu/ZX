@@ -11,10 +11,12 @@ export function processGameplayEvent(profile: ProgressionProfile, event: Gamepla
   for (const definition of ACHIEVEMENTS.filter((item) => item.progressSource === event.type)) {
     const prior = next.achievements[definition.id] ?? { progress: 0, rewardClaimed: false };
     if (prior.completedAt !== undefined) continue;
-    const progress = Math.min(definition.target, prior.progress + Math.max(1, event.value ?? 1));
+    const uniqueKey = definition.progressSource.startsWith('UniqueFighter') ? event.characterId : undefined;
+    const uniqueValues = uniqueKey === undefined ? prior.uniqueValues : [...new Set([...(prior.uniqueValues ?? []), uniqueKey])];
+    const progress = uniqueValues === undefined ? Math.min(definition.target, prior.progress + Math.max(1, event.value ?? 1)) : uniqueValues.length;
     const done = progress >= definition.target;
     next = { ...next, achievements: { ...next.achievements, [definition.id]: {
-      progress, completedAt: done ? event.timestamp : undefined, rewardClaimed: done,
+      progress, completedAt: done ? event.timestamp : undefined, rewardClaimed: done, uniqueValues,
     } } };
     if (!done) continue;
     next = transact(next, { type: 'AchievementReward', amount: definition.tokenReward,

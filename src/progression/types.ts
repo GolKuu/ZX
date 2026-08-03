@@ -36,6 +36,7 @@ export interface AchievementDefinition {
 
 export interface AchievementState {
   readonly progress: number; readonly completedAt?: string; readonly rewardClaimed: boolean;
+  readonly uniqueValues?: readonly string[];
 }
 
 export interface ChallengeState { readonly progress: number; readonly claimed: boolean; }
@@ -46,7 +47,7 @@ export interface ProgressionProfile {
   readonly transactions: readonly TokenTransaction[]; readonly completedRewardIds: readonly string[];
   readonly daily: { readonly lastClaimUtc?: string; readonly periodId?: string; readonly sequence: number;
     readonly lastTrustedUtc?: string; readonly utcOffsetMinutes: number; readonly suspiciousClock: boolean;
-    readonly streak: number; };
+    readonly streak: number; readonly unverifiedClaims: number; };
   readonly achievements: Readonly<Record<string, AchievementState>>;
   readonly purchasedNodes: Readonly<Record<CharacterId, readonly string[]>>;
   readonly loadouts: Readonly<Record<CharacterId, readonly string[]>>;

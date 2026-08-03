@@ -4,7 +4,7 @@ import type { ProgressionProfile } from './types.js';
 const BACKWARD_TOLERANCE_MS = 5 * 60 * 1000;
 export interface DailyStatus {
   readonly available: boolean; readonly periodId: string; readonly nextResetUtc: string;
-  readonly suspiciousClock: boolean; readonly reason?: 'ALREADY_CLAIMED' | 'CLOCK_ROLLBACK';
+  readonly suspiciousClock: boolean; readonly reason?: 'ALREADY_CLAIMED' | 'CLOCK_ROLLBACK' | 'OFFLINE_LIMIT' | 'FORWARD_JUMP';
 }
 
 export function dailyPeriod(now: Date, savedOffsetMinutes: number): { readonly id: string; readonly nextResetUtc: string } {
@@ -20,6 +20,9 @@ export function dailyStatus(profile: ProgressionProfile, localNow: Date, trusted
   const lastTrusted = profile.daily.lastTrustedUtc === undefined ? undefined : Date.parse(profile.daily.lastTrustedUtc);
   const rollback = lastTrusted !== undefined && now.getTime() + BACKWARD_TOLERANCE_MS < lastTrusted;
   const period = dailyPeriod(now, profile.daily.utcOffsetMinutes);
+  const lastClaim = profile.daily.lastClaimUtc === undefined ? undefined : Date.parse(profile.daily.lastClaimUtc);
+  if (trustedNow === undefined && profile.daily.unverifiedClaims >= 7) return { available:false,periodId:period.id,nextResetUtc:period.nextResetUtc,suspiciousClock:true,reason:'OFFLINE_LIMIT' };
+  if (trustedNow === undefined && lastClaim !== undefined && now.getTime() - lastClaim > 48 * 3_600_000) return { available:false,periodId:period.id,nextResetUtc:period.nextResetUtc,suspiciousClock:true,reason:'FORWARD_JUMP' };
   if (rollback) return { available: false, periodId: period.id, nextResetUtc: period.nextResetUtc, suspiciousClock: true, reason: 'CLOCK_ROLLBACK' };
   if (profile.daily.periodId === period.id) return { available: false, periodId: period.id, nextResetUtc: period.nextResetUtc, suspiciousClock: false, reason: 'ALREADY_CLAIMED' };
   return { available: true, periodId: period.id, nextResetUtc: period.nextResetUtc, suspiciousClock: false };
@@ -38,5 +41,6 @@ export function claimDaily(profile: ProgressionProfile, localNow: Date, trustedN
   const rewarded = transact(profile, { type: 'DailyReward', amount, sourceId: status.periodId,
     idempotencyKey: `daily:${status.periodId}`, now });
   return { ...rewarded, daily: { ...rewarded.daily, lastClaimUtc: now.toISOString(), periodId: status.periodId,
-    sequence: profile.daily.sequence + 1, lastTrustedUtc: now.toISOString(), suspiciousClock: false, streak } };
+    sequence: profile.daily.sequence + 1, lastTrustedUtc: now.toISOString(),
+    suspiciousClock: false, streak, unverifiedClaims: trustedNow === undefined ? profile.daily.unverifiedClaims + 1 : 0 } };
 }

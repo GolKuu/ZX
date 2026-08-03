@@ -9,7 +9,7 @@ export function createProfile(profileId = 'offline-player', now = new Date()): P
   return {
     schemaVersion: 3, profileId, tokenBalance: 0, lifetimeEarned: 0, lifetimeSpent: 0,
     transactions: [], completedRewardIds: [], daily: {
-      sequence: 0, utcOffsetMinutes: -now.getTimezoneOffset(), suspiciousClock: false, streak: 0,
+      sequence: 0, utcOffsetMinutes: -now.getTimezoneOffset(), suspiciousClock: false, streak: 0, unverifiedClaims: 0,
     }, achievements: {}, purchasedNodes: emptyLists(), loadouts: emptyLists(),
     freeRespecUsed: emptyFlags(), challenges: {}, cosmetics: [], updatedAt: now.toISOString(),
   };
@@ -79,5 +79,5 @@ const migrateDaily = (value: unknown, base: ProgressionProfile): ProgressionProf
     periodId: typeof value.periodId === 'string' ? value.periodId : undefined,
     sequence: Math.max(0, integer(value.sequence)), lastTrustedUtc: typeof value.lastTrustedUtc === 'string' ? value.lastTrustedUtc : undefined,
     utcOffsetMinutes: integer(value.utcOffsetMinutes), suspiciousClock: value.suspiciousClock === true,
-    streak: Math.max(0, integer(value.streak)) };
+    streak: Math.max(0, integer(value.streak)), unverifiedClaims: Math.max(0, integer(value.unverifiedClaims)) };
 };

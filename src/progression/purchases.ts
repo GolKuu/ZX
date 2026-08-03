@@ -4,6 +4,7 @@ import { fighterNodes, nodeById } from './treeData.js';
 import type { ProgressionMode, ProgressionProfile } from './types.js';
 
 export interface PurchaseResult { readonly profile: ProgressionProfile; readonly error?: string; }
+export const ACTIVE_LOADOUT_BUDGET = 20;
 
 export function purchaseNode(profile: ProgressionProfile, nodeId: string, now = new Date()): PurchaseResult {
   const node = nodeById(nodeId);
@@ -24,6 +25,8 @@ export function setLoadout(profile: ProgressionProfile, fighterId: CharacterId, 
   const legal = requested.filter((id) => profile.purchasedNodes[fighterId].includes(id) && nodeById(id)?.fighterId === fighterId);
   if (legal.length !== requested.length) return { profile, error: 'UNOWNED_NODE' };
   if (legal.filter((id) => nodeById(id)?.capstone).length > 1) return { profile, error: 'CAPSTONE_LIMIT' };
+  if (!legal.every((id)=>nodeById(id)?.prerequisites.every((required)=>legal.includes(required))===true)) return {profile,error:'PREREQUISITE_MISSING'};
+  if (loadoutCost(legal)>ACTIVE_LOADOUT_BUDGET) return {profile,error:'LOADOUT_BUDGET'};
   return { profile: { ...profile, loadouts: { ...profile.loadouts, [fighterId]: [...new Set(legal)] } } };
 }
 
@@ -47,9 +50,12 @@ export function effectiveLoadout(profile: ProgressionProfile, fighterId: Charact
 }
 
 const legalLoadout = (nodes: readonly string[]): readonly string[] => {
-  let capstone = false;
+  let capstone = false; let spent=0;
   return nodes.filter((id) => {
-    if (nodeById(id)?.capstone) { if (capstone) return false; capstone = true; }
+    const node=nodeById(id);if(node===undefined||spent+node.cost>ACTIVE_LOADOUT_BUDGET)return false;
+    if (node.capstone) { if (capstone) return false; capstone = true; }
+    spent+=node.cost;
     return true;
   });
 };
+export const loadoutCost=(nodes:readonly string[]):number=>nodes.reduce((sum,id)=>sum+(nodeById(id)?.cost??0),0);

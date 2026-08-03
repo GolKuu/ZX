@@ -18,8 +18,9 @@ import { transact } from './profile.js';
 import type { GameplayEvent, ProgressionProfile } from './types.js';
 
 export function processChallenges(profile: ProgressionProfile, event: GameplayEvent): ProgressionProfile {
-  let next = profile;
-  for (const challenge of CHALLENGES.filter((item) => item.event === event.type)) {
+  const eventKey=`challenge-event:${event.id}`; if(profile.completedRewardIds.includes(eventKey)) return profile;
+  let next: ProgressionProfile={...profile,completedRewardIds:[...profile.completedRewardIds,eventKey]};
+  for (const challenge of activeChallenges(new Date(event.timestamp)).filter((item) => item.event === event.type)) {
     const period = challengePeriod(challenge.cadence, new Date(event.timestamp));
     const stateId = `${challenge.id}:${period}`;
     const prior = next.challenges[stateId] ?? { progress: 0, claimed: false };
@@ -30,6 +31,13 @@ export function processChallenges(profile: ProgressionProfile, event: GameplayEv
       sourceId:stateId, idempotencyKey:`challenge:${stateId}`, now:new Date(event.timestamp) });
   }
   return next;
+}
+
+export function activeChallenges(now: Date): readonly ChallengeDefinition[] {
+  const daily=CHALLENGES.filter((item)=>item.cadence==='daily'); const dayIndex=Math.floor(now.getTime()/86_400_000);
+  const weekly=CHALLENGES.filter((item)=>item.cadence==='weekly'); const weekIndex=Math.floor(dayIndex/7);
+  const chosenDaily=daily[((dayIndex%daily.length)+daily.length)%daily.length]!;
+  return [chosenDaily,...Array.from({length:3},(_,index)=>weekly[(weekIndex+index)%weekly.length]!)];
 }
 
 export function challengePeriod(cadence: 'daily' | 'weekly', now: Date): string {

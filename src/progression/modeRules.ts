@@ -1,5 +1,5 @@
 import type { CharacterId } from '../data/characterRoster.js';
-import { effectiveLoadout } from './purchases.js';
+import { effectiveLoadout, loadoutCost } from './purchases.js';
 import type { ProgressionMode, ProgressionProfile } from './types.js';
 
 export interface ModeProgression {
@@ -15,5 +15,5 @@ export function resolveModeProgression(profile: ProgressionProfile, mode: Progre
 }
 
 export function casualBudgetsMatch(first: readonly string[], second: readonly string[]): boolean {
-  return first.length === second.length;
+  return loadoutCost(first) === loadoutCost(second);
 }

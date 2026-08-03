@@ -33,6 +33,13 @@ const SPECS: Readonly<Record<CharacterId, readonly BranchSpec[]>> = {
 
 const tiers = [1, 1, 2, 2, 3, 3, 3, 4] as const;
 const costs = [1, 1, 2, 2, 3, 3, 3, 5] as const;
+const TARGETS:Readonly<Record<CharacterId,Readonly<Record<string,readonly string[]>>>>={
+  mim:{'invisible-architecture':['mim.wall.invisible','mim.wall.launch'],'flow-acrobatics':['mim.capoeira','mim.wall.run'],'spatial-deception':['mim.super.false-opening','mim.dual.mirror-strike']},
+  glitch:{'rift-mobility':['glitch.spatial-dash','glitch.teleport-strike'],'airspace-dominance':['glitch.air-light','glitch.air-shift'],'reality-corruption':['glitch.reality-slice','glitch.phase-break']},
+  lucky:{'loaded-odds':['lucky.luck.prepare','lucky.enhanced.loaded-strike'],'winning-momentum':['lucky.special.step','lucky.running-low-kick'],'risk-management':['lucky.luck.guard','lucky.probability-counter']},
+  titan:{'grapple-authority':['titan.grab.command','titan.grab.anti-air'],'siege-armour':['titan.special.armour-charge','titan.enhanced.armour-charge'],'impact-engineering':['titan.normal.piston-hammer','titan.normal.seismic-stomp']},
+  vorgh:{'controlled-fury':['vorgh.special.rage-slash','vorgh.super.unchained'],'predator-pressure':['vorgh.special.predator-leap','vorgh.normal.predator-rake'],'pain-transmutation':['vorgh.special.pain-counter','vorgh.special.blood-roar']},
+};
 
 export const PROGRESSION_BRANCHES = SPECS;
 
@@ -43,11 +50,11 @@ export const PROGRESSION_NODES: readonly ProgressionNode[] = Object.entries(PROG
     const tier = tiers[index]!;
     return {
       id, fighterId: fighter as CharacterId, branchId: branch.id, tier, name,
-      description: `${name} expands ${branch.focus} with a bounded tactical option; it never removes counterplay.`,
+      description: `${name} expands ${branch.focus}. Active builds cap at 20 Tokens; recovery gains stop at 3 frames and never cross the fighter safety floor.`,
       cost: costs[index]!, prerequisites: prior, exclusions: [], capstone: tier === 4,
-      affectedMoves: [branch.focus], effect: {
+      affectedMoves: TARGETS[fighter as CharacterId][branch.id] ?? [], effect: {
         stat: index % 2 === 0 ? 'recovery / resource efficiency' : 'route flexibility',
-        before: 'Base frame data and resource limits', after: `Tier ${tier} ${branch.focus} tuning`,
+        before: 'Authored base frame data', after: `Tier ${tier}: contributes to capped movement/recovery tuning with a health tradeoff`,
         maxBonusPercent: tier === 4 ? 12 : tier * 3,
       },
     };

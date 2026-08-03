@@ -52,6 +52,9 @@ import {
   type WorldSnapshot,
 } from '@/src/sim';
 import { useHudStore } from '@/src/store/hudStore';
+import { useProgressionStore } from '@/src/store/progressionStore';
+import { effectiveLoadout } from '@/src/progression/purchases';
+import { compileFighterModifier, compileProgressionMoves } from '@/src/progression/runtimeModifiers';
 
 /**
  * One flat table for the whole roster. The engine takes a single move set and
@@ -75,10 +78,13 @@ export const ALL_COMBAT_MOVES = [
 export function createCombatEngine(
   selection: CharacterSelection = DEFAULT_CHARACTER_SELECTION,
 ): CombatEngine {
+  const mode=useHudStore.getState().mode;const profile=useProgressionStore.getState().profile;
+  const progressionMode=mode==='training'?'training':mode==='story'?'story':mode==='ai'?'ai':'ranked';
+  const playerNodes=effectiveLoadout(profile,selection[0],progressionMode,mode==='training'?'all':'purchased');
   return new CombatEngine({
-    moves: ALL_COMBAT_MOVES,
+    moves: compileProgressionMoves(ALL_COMBAT_MOVES,selection[0],playerNodes),
     fighters: [
-      fighterDefinition('p1', 1, -1.55, 1, selection[0]),
+      fighterDefinition('p1', 1, -1.55, 1, selection[0],playerNodes),
       fighterDefinition('p2', 2, 1.55, -1, selection[1]),
     ],
     world: { leftWall: fixed(-4.8), rightWall: fixed(4.8) },
@@ -147,19 +153,17 @@ function fighterDefinition(
   x: number,
   facing: -1 | 1,
   characterId: CharacterId,
+  progressionNodes:readonly string[]=[],
 ) {
+  const maxHealth=characterId === 'vorgh'
+      ? VORGH_MAX_HEALTH : characterId === 'titan' ? TITAN_MAX_HEALTH : characterId === 'lucky'
+      ? LUCKY_MAX_HEALTH : characterId === 'glitch' ? GLITCH_MAX_HEALTH : MIM_MAX_HEALTH;
+  const baseMovement=characterId==='vorgh'?VORGH_MOVEMENT:characterId==='titan'?TITAN_MOVEMENT:characterId==='lucky'?LUCKY_MOVEMENT:characterId==='glitch'?GLITCH_MOVEMENT:MIM_MOVEMENT;
+  const modifier=compileFighterModifier(characterId,progressionNodes,baseMovement,maxHealth);
   return {
     id,
     team,
-    maxHealth: characterId === 'vorgh'
-      ? VORGH_MAX_HEALTH
-      : characterId === 'titan'
-        ? TITAN_MAX_HEALTH
-      : characterId === 'lucky'
-        ? LUCKY_MAX_HEALTH
-        : characterId === 'glitch'
-          ? GLITCH_MAX_HEALTH
-          : MIM_MAX_HEALTH,
+    maxHealth: modifier.maxHealth,
     spawn: { x: fixed(x), y: 0 },
     facing,
     hurtboxes: characterId === 'vorgh'
@@ -171,21 +175,19 @@ function fighterDefinition(
         : characterId === 'glitch'
           ? GLITCH_HURTBOXES
           : MIM_HURTBOXES,
+    movement:modifier.movement,
     ...(characterId === 'lucky'
       ? {
-          movement: LUCKY_MOVEMENT,
           // Luck is earned by playing well, never by being hit:
           // `damageTakenPercent: 0` is what stops a losing Lucky from farming
           // the resource off their own health bar.
           resource: LUCKY_RESOURCE,
         }
       : characterId === 'glitch'
-        ? { movement: GLITCH_MOVEMENT, resource: GLITCH_DEFENSE_RULES }
+        ? { resource: GLITCH_DEFENSE_RULES }
         : {}),
     ...(characterId === 'vorgh'
-      ? { movement: VORGH_MOVEMENT, resource: VORGH_RESOURCE }
+      ? { resource: VORGH_RESOURCE }
       : {}),
-    ...(characterId === 'titan' ? { movement: TITAN_MOVEMENT } : {}),
-    ...(characterId === 'mim' ? { movement: MIM_MOVEMENT } : {}),
   };
 }
