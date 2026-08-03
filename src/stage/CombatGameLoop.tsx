@@ -7,28 +7,17 @@ import {
   readCombatResetVersion,
 } from '@/src/game/combatRuntime';
 import {
-  DEFAULT_INPUT_PROFILE,
-  GLITCH_COMMANDS,
-  LUCKY_COMMANDS,
-  LUCKY_INPUT_PROFILE,
-  LUCKY_INPUT_TUNING,
-  LUCKY_JUMP_SUPPRESSING_MOVES,
   DEFAULT_CONTEXT,
   type CommandContext,
-  type InputProfile,
   KeyboardInputSource,
-  MIM_COMMANDS,
   PLAYER_TWO_BINDINGS,
-  TITAN_COMMANDS,
-  VORGH_COMMANDS,
+  commandsFor,
+  profileFor,
 } from '@/src/input';
 import { useControlStore } from '@/src/store/controlStore';
 import { useHudStore } from '@/src/store/hudStore';
 import { readMobileControls, resetMobileInput } from '@/src/ui/MobileControls';
-import type {
-  CharacterId,
-  CharacterSelection,
-} from '@/src/data/characterRoster';
+import type { CharacterSelection } from '@/src/data/characterRoster';
 import type { FighterInput } from '@/src/sim/state';
 
 interface InputSource {
@@ -136,24 +125,3 @@ export function CombatGameLoop({
   return null;
 }
 
-function commandsFor(characterId: CharacterId) {
-  if (characterId === 'titan') return TITAN_COMMANDS;
-  if (characterId === 'vorgh') return VORGH_COMMANDS;
-  if (characterId === 'lucky') return LUCKY_COMMANDS;
-  if (characterId === 'glitch') return GLITCH_COMMANDS;
-  return MIM_COMMANDS;
-}
-
-/**
- * Lucky guards with Back and dashes with a double tap; everyone else keeps the
- * dedicated block and dash keys they were built around.
- */
-function profileFor(characterId: CharacterId): InputProfile {
-  if (characterId !== 'lucky') return DEFAULT_INPUT_PROFILE;
-  return {
-    ...LUCKY_INPUT_PROFILE,
-    leeway: LUCKY_INPUT_TUNING.leeway,
-    settleFrames: LUCKY_INPUT_TUNING.settleFrames,
-    suppressJumpFor: LUCKY_JUMP_SUPPRESSING_MOVES,
-  };
-}

@@ -79,6 +79,8 @@ export {
   type InputProfile,
 } from './profiles.js';
 
+export { commandsFor, profileFor } from './characterProfile.js';
+
 export {
   LUCKY_MOVEMENT_LIST,
   LUCKY_MOVE_LIST,
