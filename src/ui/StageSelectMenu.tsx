@@ -10,7 +10,7 @@ export function StageSelectMenu() {
   const focus = useHudStore((state) => state.menuFocus);
   const selectArena = useHudStore((state) => state.selectArena);
   const setFocus = useHudStore((state) => state.setMenuFocus);
-  const back = useHudStore((state) => state.openCharacterSelect);
+  const back = useHudStore((state) => state.returnToCharacterSelect);
   const selected = ARENAS[focus] ?? ARENAS[0]!;
   const confirm = useCallback(() => selectArena(selected.id), [selectArena, selected.id]);
 

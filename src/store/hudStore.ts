@@ -59,6 +59,7 @@ type HudState = {
   openResult: (result: MatchResult) => void;
   openModeMenu: () => void;
   openCharacterSelect: () => void;
+  returnToCharacterSelect: () => void;
   openDifficultySelect: () => void;
   openProgression: () => void;
   selectMode: (mode: MatchMode) => void;
@@ -150,6 +151,7 @@ export const useHudStore = create<HudState>((set) => ({
     }
     return { screen: 'character', menuFocus: 0 };
   }),
+  returnToCharacterSelect: () => set({ screen: 'character', menuFocus: 0 }),
   openDifficultySelect: () => set((state) => {
     const menuFocus = AI_DIFFICULTY_ORDER.indexOf(state.aiDifficulty);
     return {

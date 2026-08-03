@@ -35,6 +35,13 @@ export function CharacterPanel({
       <div className={styles.identity}>
         <span>{character.archetype}</span>
         <h2>{character.displayName}</h2>
+        <p>{character.mechanic}</p>
+        <dl>
+          <div><dt>HP</dt><dd>{character.health}</dd></div>
+          <div><dt>SPD</dt><dd>{character.speed}</dd></div>
+          <div><dt>DMG</dt><dd>{character.damage}</dd></div>
+          <div><dt>СЛОЖН.</dt><dd>{'◆'.repeat(character.difficulty)}</dd></div>
+        </dl>
       </div>
     </section>
   );

@@ -103,6 +103,22 @@
   transform: skew(-3deg);
 }
 
+.panel:not([data-character='titan']) .portrait i {
+  width: 24cqw;
+  height: 34cqw;
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-size: 600% 800%;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 1cqw 1.5cqw rgb(0 0 0 / 75%));
+  transform: none;
+}
+
+.panel[data-character='mim'] .portrait i { background-image: url('/sprites/photo-fighters/mim-atlas.png'); }
+.panel[data-character='glitch'] .portrait i { background-image: url('/sprites/photo-fighters/glitch-atlas.png'); }
+.panel[data-character='lucky'] .portrait i { background-image: url('/sprites/photo-fighters/lucky-atlas.png'); }
+.panel[data-character='vorgh'] .portrait i { background-image: url('/sprites/photo-fighters/vorgh-atlas.png'); }
+
 .panel[data-character="glitch"] .portrait i {
   background:
     repeating-linear-gradient(0deg, transparent 0 1.1cqw, rgb(22 230 255 / 55%) 1.1cqw 1.28cqw, transparent 1.28cqw 2.2cqw),
@@ -140,6 +156,20 @@
   box-shadow: 0 0 18px rgb(255 116 23 / 32%);
 }
 
+.panel:not([data-character='titan']) .portrait i {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-size: 600% 800%;
+  filter: drop-shadow(0 1cqw 1.5cqw rgb(0 0 0 / 75%));
+  transform: none;
+}
+
+.panel[data-character='mim'] .portrait i { background-image: url('/sprites/photo-fighters/mim-atlas.png'); }
+.panel[data-character='glitch'] .portrait i { background-image: url('/sprites/photo-fighters/glitch-atlas.png'); }
+.panel[data-character='lucky'] .portrait i { background-image: url('/sprites/photo-fighters/lucky-atlas.png'); }
+.panel[data-character='vorgh'] .portrait i { background-image: url('/sprites/photo-fighters/vorgh-atlas.png'); }
+
 .identity {
   position: relative;
   z-index: 2;
@@ -160,6 +190,12 @@
   line-height: 0.9;
   text-transform: uppercase;
 }
+
+.identity p { margin: .5cqw 0; color: #b9d9ea; font-size: .72cqw; }
+.identity dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .25cqw .8cqw; margin: .55cqw 0 0; }
+.identity dl div { display: flex; justify-content: space-between; gap: .5cqw; border-top: 1px solid rgb(150 190 220 / 18%); padding-top: .2cqw; }
+.identity dt { color: #71859c; font: 700 .55cqw monospace; }
+.identity dd { margin: 0; color: #e8f7ff; font: 700 .55cqw monospace; }
 
 .panelRight .identity h2 {
   margin-left: auto;

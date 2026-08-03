@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { ACESFilmicToneMapping, PCFSoftShadowMap, SRGBColorSpace } from 'three';
+import { ACESFilmicToneMapping, PCFShadowMap, SRGBColorSpace } from 'three';
 import type { CharacterSelection } from '@/src/data/characterRoster';
 import type { ArenaId } from '@/src/data/arenas';
 import { RenderScene } from './RenderScene';
@@ -17,6 +17,11 @@ export function RenderCanvas({
     <Canvas
       camera={{ fov: 40, far: 80, near: 0.1, position: [0, 2.42, 8.2] }}
       dpr={[1, 1.5]}
+      fallback={(
+        <div role="alert">
+          WebGL недоступен. Включите аппаратное ускорение или используйте современный браузер.
+        </div>
+      )}
       frameloop="always"
       gl={{
         alpha: false,
@@ -34,7 +39,7 @@ export function RenderCanvas({
         // FX-off path, are not written out linear.
         gl.toneMapping = ACESFilmicToneMapping;
         gl.toneMappingExposure = 1.05;
-        gl.shadowMap.type = PCFSoftShadowMap;
+        gl.shadowMap.type = PCFShadowMap;
       }}
       shadows
     >
