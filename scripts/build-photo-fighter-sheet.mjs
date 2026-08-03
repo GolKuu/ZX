@@ -94,7 +94,7 @@ function normalizeFrames(pixels, width) {
     const sourceWidth = bounds.right - bounds.left + 1;
     const sourceHeight = bounds.bottom - bounds.top + 1;
     const available = cellSize - framePadding * 2;
-    const scale = Math.min(available / sourceWidth, available / sourceHeight);
+    const scale = Math.min(1.2, available / sourceWidth, available / sourceHeight);
     const targetWidth = Math.max(sourceWidth, Math.round(sourceWidth * scale));
     const targetHeight = Math.max(sourceHeight, Math.round(sourceHeight * scale));
     const centerX = (bounds.left + bounds.right) / 2;
