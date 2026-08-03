@@ -5,6 +5,7 @@ import { TITAN_SPECIAL_MOVES } from './specials.js';
 import { TITAN_SUPER_MOVES } from './supers.js';
 
 export * from './ai.js';
+export { TITAN_DAMAGE_PERCENT } from './builder.js';
 export * from './character.js';
 export * from './grapples.js';
 export * from './ids.js';

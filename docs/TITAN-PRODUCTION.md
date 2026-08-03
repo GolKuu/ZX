@@ -15,6 +15,9 @@
 
 ## Full moveset
 
+Titan's complete runtime moveset now applies a **15% damage increase** after
+authored move values are loaded; frame timing, armour and recovery are unchanged.
+
 | Group | Moves |
 |---|---|
 | Standing | Piston Hammer, Bulkhead Backfist, Seismic Stomp, Siege Ram |

@@ -5,6 +5,7 @@ import { VORGH_SUPER_SPECS } from './supers.js';
 import { VORGH_TECHNIQUE_SPECS } from './techniques.js';
 
 export * from './character.js';
+export { VORGH_DAMAGE_PERCENT } from './builder.js';
 export * from './ids.js';
 export * from './types.js';
 export { VORGH_AI_LOADOUTS } from './ai.js';

@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
   VORGH_MOVE_SPECS,
+  VORGH_DAMAGE_PERCENT,
   VORGH_RESOURCE,
   VORGH_NORMAL_IDS,
   VORGH_SPECIAL_IDS,
@@ -20,6 +21,7 @@ import {
 } from '../.sim-test-build/src/stage/vorgh/VorghAnimationController.js';
 
 test('Vorgh meets the authored Mim-width baseline', () => {
+  assert.equal(VORGH_DAMAGE_PERCENT, 115);
   assert.ok(VORGH_MOVE_SPECS.length >= 27);
   assert.equal(VORGH_MOVES.length, VORGH_MOVE_SPECS.length);
   assert.equal(new Set(VORGH_MOVES.map(({ id }) => id)).size, VORGH_MOVES.length);
@@ -105,7 +107,13 @@ test('J K I L normals keep exact requested timing and unique geometry', () => {
     boxes.add(JSON.stringify(spec.move.hitboxes[0].boxes[0]));
   }
   assert.equal(boxes.size, 4);
+  assert.equal(damageOf(VORGH_NORMAL_IDS.huntingSweep), 70);
+  assert.equal(damageOf(VORGH_NORMAL_IDS.risingMaul), 83);
 });
+
+function damageOf(moveId) {
+  return VORGH_MOVES.find(({ id }) => id === moveId)?.hitboxes[0]?.hit.damage;
+}
 
 test('three Rage idles are 18-frame loops and transitions are authored clips', () => {
   for (const id of ['idle-low', 'idle-medium', 'idle-high']) {

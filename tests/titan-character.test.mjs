@@ -9,6 +9,7 @@ import {
 import {
   TITAN_ALL_MOVES,
   TITAN_GRAPPLE_MOVES,
+  TITAN_DAMAGE_PERCENT,
   TITAN_HURTBOXES,
   TITAN_MAX_HEALTH,
   TITAN_MOVEMENT,
@@ -36,9 +37,12 @@ test('Titan has four distinct J K I L silhouettes and exact brief frames', () =>
     ]);
   }
   assert.equal(new Set(Object.values(expected).map(([id]) => id)).size, 4);
+  assert.equal(damageOf(ID.seismicStomp), 87);
+  assert.equal(damageOf(ID.siegeRam), 110);
 });
 
 test('Titan meets heavyweight body and roster-stat contract', () => {
+  assert.equal(TITAN_DAMAGE_PERCENT, 115);
   assert.equal(TITAN_MAX_HEALTH, 1_200);
   assert.ok(TITAN_HURTBOXES.length >= 3);
   assert.ok(TITAN_MOVEMENT.forwardPerFrame < 50);
@@ -128,4 +132,8 @@ function resolvePress(button, superMeter = 0, ultimateReady = false) {
     superMeter,
     ultimateReady,
   });
+}
+
+function damageOf(moveId) {
+  return TITAN_ALL_MOVES.find(({ id }) => id === moveId)?.hitboxes[0]?.hit.damage;
 }

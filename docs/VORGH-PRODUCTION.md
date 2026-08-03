@@ -50,6 +50,10 @@ recovery.
 Columns: startup / active / recovery, total damage, first-hit hitstun /
 blockstun, Rage gain / cost.
 
+The table keeps authored base values. Runtime damage is now **15% higher**
+(rounded to the nearest point) across Vorgh's complete moveset; Rage costs,
+frame timing and recovery are unchanged.
+
 | Move | S/A/R | Level | Dmg | HS/BS | Rage +/− |
 |---|---:|---|---:|---:|---:|
 | Predator Rake | 6/4/10 | high | 34 | 17/12 | +3/0 |

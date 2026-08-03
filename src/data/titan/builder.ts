@@ -28,20 +28,24 @@ export interface TitanMoveSpec {
   readonly resourceCost?: number;
 }
 
+/** Requested roster-wide damage increase without changing authored frame data. */
+export const TITAN_DAMAGE_PERCENT = 115;
+
 export function titanMove(spec: TitanMoveSpec): MoveFrameData {
   const heavy = spec.damage >= 78;
+  const damage = Math.round(spec.damage * TITAN_DAMAGE_PERCENT / 100);
   const hitstop = heavy ? { attacker: 11, defender: 16 } : { attacker: 7, defender: 10 };
   return {
     id: spec.id,
     startup: spec.startup,
     active: spec.active,
     recovery: spec.recovery,
-    hitboxes: spec.damage === 0 ? [] : [{
+    hitboxes: damage === 0 ? [] : [{
       hitId: spec.level,
       frames: { from: spec.startup, toExclusive: spec.startup + spec.active },
       boxes: [attackBox(spec.reach, spec.height, spec.level === 'grab')],
       hit: {
-        damage: spec.damage,
+        damage,
         hitstop,
         hitstun: spec.grapple?.[1] ?? (heavy ? 28 : 18),
         knockback: {

@@ -20,10 +20,13 @@ import { LuckySpriteEffects } from '../lucky/LuckySpriteEffects';
 import { VorghAudioPlayer } from '../vorgh/VorghAudioPlayer';
 import { VorghEffects } from '../vorgh/VorghEffects';
 import { spriteFacingScale, withOpponentFacing } from '../fighterPresentation';
+import { combatAnimationProgress } from '../combatAnimationProgress';
+import { photoAttackMotion } from './photoKickAnimation';
 import { PHOTO_COLUMNS, PHOTO_ROWS, photoFrameFor } from './photoSpriteAnimation';
 
 const DISPLAY_HEIGHT = 3.05;
 const GROUND = 0.91;
+const CENTER_Y = (GROUND - 0.5) * DISPLAY_HEIGHT;
 
 export function PhotoSpriteFighter({
   fighterId,
@@ -86,14 +89,24 @@ export function PhotoSpriteFighter({
       texture.offset.set(column / PHOTO_COLUMNS, 1 - (row + 1) / PHOTO_ROWS);
     }
     const impact = fighter.hitstop > 0 ? 0.06 : 0;
-    drawing.scale.set(1 + impact, 1 - impact, 1);
+    const motion = fighter.action === null
+      ? photoAttackMotion('', 0)
+      : photoAttackMotion(
+        fighter.action.moveId,
+        combatAnimationProgress(fighter.action.moveId, fighter.action.frame),
+      );
+    drawing.position.set(motion.x, CENTER_Y + motion.y, 0);
+    drawing.scale.set(
+      motion.scaleX * (1 + impact),
+      motion.scaleY * (1 - impact),
+      1,
+    );
     drawing.rotation.z = fighter.hitstun > 0
       ? Math.sin(clock.elapsedTime * 42) * 0.035
-      : 0;
+      : motion.rotation;
   });
 
   const width = DISPLAY_HEIGHT;
-  const centerY = (GROUND - 0.5) * DISPLAY_HEIGHT;
   return (
     <>
       {kind === 'mim' ? <MimVoiceCallouts fighterId={fighterId} /> : null}
@@ -103,7 +116,7 @@ export function PhotoSpriteFighter({
       {kind === 'vorgh' ? <VorghEffects fighterId={fighterId} /> : null}
       <group ref={outer}>
         {kind === 'mim' ? <MimAttackEffects fighterId={fighterId} /> : null}
-        <group ref={body} position-y={centerY}>
+        <group ref={body} position-y={CENTER_Y}>
           {texture === null ? null : (
             <PhotoPlane
               texture={texture}

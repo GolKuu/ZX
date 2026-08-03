@@ -29,6 +29,9 @@ export type VorghRow = {
   readonly grapple?: MoveFrameData['grapple'];
 };
 
+/** Requested roster-wide damage increase without changing Rage or frame data. */
+export const VORGH_DAMAGE_PERCENT = 115;
+
 export function buildVorgh(row: VorghRow): VorghMoveSpec {
   const end = row.startup + row.active;
   const move: MoveFrameData = {
@@ -39,7 +42,7 @@ export function buildVorgh(row: VorghRow): VorghMoveSpec {
       frames: { from: hit.from ?? row.startup, toExclusive: hit.to ?? end },
       boxes: [box(hit.box)],
       hit: {
-        damage: hit.damage,
+        damage: Math.round(hit.damage * VORGH_DAMAGE_PERCENT / 100),
         hitstop: { attacker: hit.hitstop?.[0] ?? 8, defender: hit.hitstop?.[1] ?? 11 },
         hitstun: hit.hitstun,
         knockback: { x: fixed(hit.push?.[0] ?? 0.12), y: fixed(hit.push?.[1] ?? 0) },
