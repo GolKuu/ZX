@@ -129,7 +129,6 @@ export function resolveHit(
         / 1_000_000,
     ),
   );
-  defender.comboHitsTaken += 1;
   defender.health = Math.max(0, defender.health - damage);
   const lowHealthMultiplier =
     defender.health * 100 <= defender.maxHealth * 30 ? 125 : 100;
@@ -168,6 +167,7 @@ export function resolveHit(
     });
     return { startedAction: false };
   }
+  defender.comboHitsTaken += 1;
   defender.action = null;
   defender.guarding = false;
   defender.hitstun = Math.max(

@@ -55,6 +55,20 @@ test('armour is one-hit and keeps meaningful damage', () => {
   assert.equal(fighter(result.state, 'vorgh').action?.moveId, VORGH_SPECIAL_IDS.berserkDash);
 });
 
+test('an armour-absorbed hit does not scale the next neutral punish', () => {
+  const engine = duel();
+  engine.tick({ vorgh: { move: VORGH_SPECIAL_IDS.berserkDash } });
+  for (let frame = 0; frame < 7; frame += 1) engine.tick();
+  const absorbed = connect(engine, 'probe-heavy');
+  assert.ok(absorbed.events.some(({ type }) => type === 'armourAbsorbed'));
+  assert.equal(fighter(absorbed.state, 'vorgh').health, 975);
+
+  for (let frame = 0; frame < 60; frame += 1) engine.tick();
+  const punish = connect(engine, 'probe-wide');
+  assert.ok(punish.events.some(({ type }) => type === 'hit'));
+  assert.equal(fighter(punish.state, 'vorgh').health, 875);
+});
+
 test('standing and crouching guard obey high-low rules', () => {
   const standingLow = connect(duel(), 'probe-low', { guard: true });
   assert.ok(standingLow.events.some(({ type }) => type === 'hit'));
@@ -80,6 +94,7 @@ function duel(initialResource = 0) {
       probe('probe-breaker', true),
       probe('probe-low', false, 'low'),
       probe('probe-high', false, 'high'),
+      probe('probe-wide', false, 'mid', 6),
     ],
     fighters: [
       {
@@ -97,14 +112,14 @@ function duel(initialResource = 0) {
   });
 }
 
-function probe(id, guardBreak = false, attackLevel = 'mid') {
+function probe(id, guardBreak = false, attackLevel = 'mid', halfWidth = 0.55) {
   return {
     id, attackLevel, startup: 1, active: 2, recovery: 18,
     hitboxes: [{
       hitId: 'hit', frames: { from: 1, toExclusive: 3 },
       boxes: [{
         offset: { x: fixed(0.75), y: fixed(1.2) },
-        halfSize: { x: fixed(0.55), y: fixed(0.7) },
+        halfSize: { x: fixed(halfWidth), y: fixed(0.7) },
       }],
       hit: {
         damage: 100, hitstop: { attacker: 4, defender: 6 }, hitstun: 24,

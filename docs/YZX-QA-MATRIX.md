@@ -25,6 +25,6 @@
 | Tutorial | lessons 2–12 playable success detectors | OPEN |
 | Visual | 720p/1080p/1440p/4K screenshots and console | MANUAL |
 
-Последний автоматизированный прогон: ESLint и TypeScript без ошибок, 213 combat-тестов и 3 utility-теста пройдены, production build и bundle budget пройдены (705.1 KB gzip суммарного route + lazy JavaScript).
+Последний автоматизированный прогон: ESLint и TypeScript без ошибок, 214 combat-тестов и 3 utility-теста пройдены, production build и bundle budget пройдены (705.1 KB gzip суммарного route + lazy JavaScript).
 
 Последняя ручная визуальная проверка должна охватить обе стороны, все арены, паузу, экран управления, Local Versus readiness и мобильную ширину.
