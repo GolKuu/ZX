@@ -1,10 +1,11 @@
 'use client';
 
 import { useFrame } from '@react-three/fiber';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 import {
   DoubleSide,
   Group,
+  MeshBasicMaterial,
   NearestFilter,
   SRGBColorSpace,
   Texture,
@@ -27,6 +28,12 @@ import { PHOTO_COLUMNS, PHOTO_ROWS, photoFrameFor } from './photoSpriteAnimation
 const DISPLAY_HEIGHT = 3.05;
 const GROUND = 0.91;
 const CENTER_Y = (GROUND - 0.5) * DISPLAY_HEIGHT;
+const FRAME_BLEND_SECONDS = 0.065;
+
+interface PhotoTextures {
+  readonly current: Texture;
+  readonly previous: Texture;
+}
 
 export function PhotoSpriteFighter({
   fighterId,
@@ -37,33 +44,39 @@ export function PhotoSpriteFighter({
 }) {
   const outer = useRef<Group>(null);
   const body = useRef<Group>(null);
-  const [texture, setTexture] = useState<Texture | null>(null);
+  const currentMaterial = useRef<MeshBasicMaterial>(null);
+  const previousMaterial = useRef<MeshBasicMaterial>(null);
+  const lastFrame = useRef<number | null>(null);
+  const transitionAt = useRef(-1);
+  const [textures, setTextures] = useState<PhotoTextures | null>(null);
   const opponentId = fighterId === 'p1' ? 'p2' : 'p1';
 
   useEffect(() => {
     let disposed = false;
-    let loaded: Texture | null = null;
+    let loaded: PhotoTextures | null = null;
     new TextureLoader().loadAsync(`/sprites/reference-fighters/${kind}-atlas.webp`)
       .then((result) => {
         if (disposed) {
           result.dispose();
           return;
         }
-        loaded = result;
-        result.colorSpace = SRGBColorSpace;
-        result.magFilter = NearestFilter;
-        result.minFilter = NearestFilter;
-        result.generateMipmaps = false;
-        result.repeat.set(1 / PHOTO_COLUMNS, 1 / PHOTO_ROWS);
-        setTexture(result);
+        prepareTexture(result);
+        const previous = result.clone();
+        prepareTexture(previous);
+        previous.needsUpdate = true;
+        loaded = { current: result, previous };
+        lastFrame.current = null;
+        transitionAt.current = -1;
+        setTextures(loaded);
       })
       .catch((error: unknown) => {
         console.warn(`Could not load ${kind} photo animation.`, error);
       });
     return () => {
       disposed = true;
-      loaded?.dispose();
-      setTexture(null);
+      loaded?.current.dispose();
+      loaded?.previous.dispose();
+      setTextures(null);
     };
   }, [kind]);
 
@@ -83,10 +96,27 @@ export function PhotoSpriteFighter({
     root.scale.x = spriteFacingScale(true, presentation.facing);
 
     const frame = photoFrameFor(fighter, clock.elapsedTime);
-    if (texture !== null) {
-      const column = frame % PHOTO_COLUMNS;
-      const row = Math.floor(frame / PHOTO_COLUMNS);
-      texture.offset.set(column / PHOTO_COLUMNS, 1 - (row + 1) / PHOTO_ROWS);
+    if (textures !== null) {
+      const previousFrame = lastFrame.current;
+      if (previousFrame === null) {
+        setTextureFrame(textures.current, frame);
+        if (currentMaterial.current !== null) currentMaterial.current.opacity = 1;
+        if (previousMaterial.current !== null) previousMaterial.current.opacity = 0;
+      } else if (previousFrame !== frame) {
+        setTextureFrame(textures.previous, previousFrame);
+        setTextureFrame(textures.current, frame);
+        transitionAt.current = clock.elapsedTime;
+      }
+      lastFrame.current = frame;
+      if (transitionAt.current >= 0) {
+        const blend = Math.min(
+          1,
+          (clock.elapsedTime - transitionAt.current) / FRAME_BLEND_SECONDS,
+        );
+        if (currentMaterial.current !== null) currentMaterial.current.opacity = blend;
+        if (previousMaterial.current !== null) previousMaterial.current.opacity = 1 - blend;
+        if (blend >= 1) transitionAt.current = -1;
+      }
     }
     const impact = fighter.hitstop > 0 ? 0.06 : 0;
     const motion = fighter.action === null
@@ -117,12 +147,23 @@ export function PhotoSpriteFighter({
       <group ref={outer}>
         {kind === 'mim' ? <MimAttackEffects fighterId={fighterId} /> : null}
         <group ref={body} position-y={CENTER_Y}>
-          {texture === null ? null : (
-            <PhotoPlane
-              texture={texture}
-              width={width}
-              tint={kind === 'mim' || kind === 'glitch' ? '#d7dce4' : '#ffffff'}
-            />
+          {textures === null ? null : (
+            <>
+              <PhotoPlane
+                materialRef={previousMaterial}
+                positionZ={-0.002}
+                texture={textures.previous}
+                tint={kind === 'mim' || kind === 'glitch' ? '#d7dce4' : '#ffffff'}
+                width={width}
+              />
+              <PhotoPlane
+                materialRef={currentMaterial}
+                positionZ={0}
+                texture={textures.current}
+                width={width}
+                tint={kind === 'mim' || kind === 'glitch' ? '#d7dce4' : '#ffffff'}
+              />
+            </>
           )}
         </group>
         {kind === 'glitch' ? <GlitchSpriteEffects fighterId={fighterId} /> : null}
@@ -132,24 +173,45 @@ export function PhotoSpriteFighter({
 }
 
 function PhotoPlane({
+  materialRef,
+  positionZ,
   texture,
   tint,
   width,
 }: {
+  readonly materialRef: RefObject<MeshBasicMaterial | null>;
+  readonly positionZ: number;
   readonly texture: Texture;
   readonly tint: string;
   readonly width: number;
 }) {
   return (
-    <mesh>
+    <mesh position-z={positionZ}>
       <planeGeometry args={[width, DISPLAY_HEIGHT]} />
       <meshBasicMaterial
-        alphaTest={0.5}
+        ref={materialRef}
+        alphaTest={0.05}
         color={tint}
+        depthWrite={false}
         map={texture}
+        transparent
         side={DoubleSide}
         toneMapped
       />
     </mesh>
   );
+}
+
+function prepareTexture(texture: Texture): void {
+  texture.colorSpace = SRGBColorSpace;
+  texture.magFilter = NearestFilter;
+  texture.minFilter = NearestFilter;
+  texture.generateMipmaps = false;
+  texture.repeat.set(1 / PHOTO_COLUMNS, 1 / PHOTO_ROWS);
+}
+
+function setTextureFrame(texture: Texture, frame: number): void {
+  const column = frame % PHOTO_COLUMNS;
+  const row = Math.floor(frame / PHOTO_COLUMNS);
+  texture.offset.set(column / PHOTO_COLUMNS, 1 - (row + 1) / PHOTO_ROWS);
 }
