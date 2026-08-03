@@ -80,11 +80,26 @@ export {
 } from './profiles.js';
 
 export {
+  LUCKY_MOVEMENT_LIST,
   LUCKY_MOVE_LIST,
   luckyKeyboardNotation,
   luckyRelativeNotation,
   type LuckyMoveListEntry,
 } from './lucky/moveList.js';
+
+export {
+  InputSampler,
+  type RecordedInputFrame,
+} from './sampler.js';
+
+export {
+  DIRECTION_GLYPH,
+  InputRecorder,
+  ReplayInputSource,
+  luckyButtonMask,
+  readInputHistory,
+  type InputHistoryEntry,
+} from './training.js';
 
 export {
   DEFAULT_CONTEXT,

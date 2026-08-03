@@ -25,6 +25,7 @@ import {
   LUCKY_MAX_HEALTH,
   LUCKY_MOVEMENT,
   LUCKY_MOVES,
+  LUCKY_RESOURCE,
   LUCKY_SPECIAL_MOVES,
   LUCKY_SUPER_MOVES,
 } from '@/src/data/lucky';
@@ -168,12 +169,10 @@ function fighterDefinition(
     ...(characterId === 'lucky'
       ? {
           movement: LUCKY_MOVEMENT,
-          resource: {
-            maximum: 100,
-            initial: 0,
-            damageTakenPercent: 0,
-            perfectBlockGain: 4,
-          },
+          // Luck is earned by playing well, never by being hit:
+          // `damageTakenPercent: 0` is what stops a losing Lucky from farming
+          // the resource off their own health bar.
+          resource: LUCKY_RESOURCE,
         }
       : characterId === 'glitch'
         ? { movement: GLITCH_MOVEMENT, resource: GLITCH_DEFENSE_RULES }

@@ -13,7 +13,7 @@ import {
   readCombatFighter,
   readLatestHit,
 } from '@/src/game/combatRuntime';
-import { LUCKY_MOVE_IDS } from '@/src/data/lucky/moves';
+import { LUCKY_POSE_FOR_MOVE } from '@/src/input/lucky/catalogue';
 import { FIXED_SCALE } from '@/src/sim';
 import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
 import { LuckySpriteEffects } from '../lucky/LuckySpriteEffects';
@@ -320,10 +320,11 @@ function hurtZoneOf(fighterId: string, feetY: number): HurtZone {
  * to the four attack columns.
  */
 function buttonOf(moveId: string): AttackPoseName | null {
-  if (moveId === LUCKY_MOVE_IDS.quickDraw) return 'lp';
-  if (moveId === LUCKY_MOVE_IDS.loadedShoulder) return 'lk';
-  if (moveId === LUCKY_MOVE_IDS.slidingBet) return 'hp';
-  if (moveId === LUCKY_MOVE_IDS.fortuneHeel) return 'hk';
+  // Lucky's whole move set is mapped from the command catalogue, so the drawing
+  // always matches the limb the committing button promises: a J move shows a
+  // hand, an I move shows a leg.
+  const luckyPose = LUCKY_POSE_FOR_MOVE.get(moveId);
+  if (luckyPose !== undefined) return luckyPose as AttackPoseName;
   const suffix = moveId.slice(moveId.lastIndexOf('.') + 1).toLowerCase();
   if (suffix === 'lp' || suffix === 'hp' || suffix === 'lk' || suffix === 'hk') {
     return suffix;

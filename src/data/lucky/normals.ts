@@ -1,6 +1,6 @@
 import type { MoveFrameData } from '../../sim/frame-data.js';
 import { LUCKY_LOW_PROFILE } from './character.js';
-import { LUCKY_MOVE_IDS as ID } from './ids.js';
+import { LUCKY_MOVE_IDS as ID, LUCKY_SPECIAL_IDS as SP } from './ids.js';
 import { luckyMove } from './moveBuilder.js';
 
 /**
@@ -17,14 +17,14 @@ export const LUCKY_STANDING_NORMALS: readonly MoveFrameData[] = [
     id: ID.quickDraw,
     startup: 5, active: 3, recovery: 9, damage: 28,
     level: 'high', reach: 0.7, height: 1.55,
-    cancels: [ID.loadedShoulder, ID.slidingBet, ID.doubleTap],
+    cancels: [ID.loadedShoulder, ID.slidingBet, ID.doubleTap, SP.luckyStep],
   }),
   // K — Loaded Shoulder. Steps in behind a raised forearm. 10 / 4 / 14.
   luckyMove({
     id: ID.loadedShoulder,
     startup: 10, active: 4, recovery: 14, damage: 56,
     level: 'mid', reach: 0.88, height: 1.18, lunge: 0.32,
-    cancels: [ID.fortuneHeel],
+    cancels: [ID.fortuneHeel, SP.loadedStrike],
   }),
   // I — Sliding Bet. Lead leg along the floor, torso back. 12 / 5 / 16.
   luckyMove({
@@ -47,7 +47,7 @@ export const LUCKY_FORWARD_NORMALS: readonly MoveFrameData[] = [
     id: ID.doubleTap,
     startup: 7, active: 4, recovery: 11, damage: 34,
     level: 'high', reach: 0.76, height: 1.48, lunge: 0.18, hits: 2,
-    cancels: [ID.loadedHook],
+    cancels: [ID.loadedHook, SP.loadedStrike],
   }),
   // Forward + K — Loaded Hook. Heavy advancing hand, high pushback.
   luckyMove({
@@ -136,7 +136,7 @@ export const LUCKY_CROUCHING_NORMALS: readonly MoveFrameData[] = [
     startup: 7, active: 3, recovery: 12, damage: 26,
     level: 'low', reach: 0.72, height: 0.24,
     lowProfile: LUCKY_LOW_PROFILE,
-    cancels: [ID.sweepTheTable],
+    cancels: [ID.sweepTheTable, SP.slidingFortune],
   }),
   // Down + L — Sweep the Table. Knockdown, punishable on block.
   luckyMove({

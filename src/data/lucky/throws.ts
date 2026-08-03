@@ -74,7 +74,7 @@ export const LUCKY_DUAL_TECHNIQUES: readonly MoveFrameData[] = [
    */
   luckyMove({
     id: ID.fortuneLegs,
-    startup: 11, active: 9, recovery: 26, damage: 70,
+    startup: 11, active: 9, recovery: 30, damage: 70,
     level: 'low', reach: 1.0, height: 0.5, hits: 2, launch: true,
     resourceGainOnHit: 6,
   }),

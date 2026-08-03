@@ -26,6 +26,7 @@ import {
 } from '../../data/lucky/supers.js';
 import {
   LUCKY_BUTTON_LIMB,
+  LUCKY_BUTTON_SLOT,
   type LuckyButton,
   type LuckyLimb,
 } from './buttons.js';
@@ -455,6 +456,22 @@ export const LUCKY_CATALOGUE: readonly LuckyCommandSpec[] = [
   standing(ID.fortuneHeel, 'Fortune Heel', L, 'leg',
     'L. 15/5/17. Anti-air launcher heel.'),
 ];
+
+/**
+ * Move id → the attack drawing to show, taken from the move's role button.
+ *
+ * Derived rather than hand-listed, so a J move can never be drawn kicking. The
+ * four sprites are the `lp`/`lk`/`hp`/`hk` panels, which are Lucky's J/K/I/L in
+ * the engine's slot names.
+ */
+export const LUCKY_POSE_FOR_MOVE: ReadonlyMap<string, string> = new Map(
+  LUCKY_CATALOGUE
+    .filter((spec) => spec.limb !== 'none')
+    .map((spec) => [
+      spec.moveId,
+      LUCKY_BUTTON_SLOT[spec.buttons[0] ?? 'J'],
+    ]),
+);
 
 function enhanced(
   moveId: string,

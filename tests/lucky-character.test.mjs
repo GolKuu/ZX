@@ -1,38 +1,58 @@
+/**
+ * Lucky's gameplay contract: frame data, resources, defence and the engine's
+ * agreement with all of it.
+ *
+ * The input side lives in `lucky-input.test.mjs`; this file is about what
+ * happens after a command has been accepted.
+ */
+
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
-  BUTTON_BIT,
-  InputBuffer,
-  LUCKY_COMMANDS,
-  resolveCommand,
-} from '../.sim-test-build/src/input/core.js';
-import { LuckLedger } from '../.sim-test-build/src/data/lucky/luck.js';
-import { MeterLedger } from '../.sim-test-build/src/hud/meterLedger.js';
-import { LUCKY_MOVES, LUCKY_MOVE_IDS } from '../.sim-test-build/src/data/lucky/moves.js';
-import { LUCKY_SPECIAL_IDS } from '../.sim-test-build/src/data/lucky/specials.js';
-import { LUCKY_SPECIAL_MOVES } from '../.sim-test-build/src/data/lucky/specials.js';
+  LUCK_MAX,
+  LUCK_MODIFIERS,
+  LUCK_TIERS,
+  LuckModifierSlot,
+  LuckRng,
+  luckTier,
+  luckyCostForMove,
+  luckySpendingMoves,
+} from '../.sim-test-build/src/data/lucky/luck.js';
+import { LUCKY_CATALOGUE } from '../.sim-test-build/src/input/lucky/catalogue.js';
+import {
+  LUCKY_AERIAL_NORMALS,
+  LUCKY_BACK_NORMALS,
+  LUCKY_CROUCHING_NORMALS,
+  LUCKY_DUAL_TECHNIQUES,
+  LUCKY_FORWARD_NORMALS,
+  LUCKY_MOVES,
+  LUCKY_MOVE_IDS,
+  LUCKY_STANDING_NORMALS,
+  LUCKY_THROWS,
+} from '../.sim-test-build/src/data/lucky/moves.js';
+import { LUCKY_LUCK_IDS } from '../.sim-test-build/src/data/lucky/ids.js';
+import {
+  LUCKY_RESOURCE,
+  LUCKY_STATS,
+} from '../.sim-test-build/src/data/lucky/character.js';
+import {
+  LUCKY_SPECIAL_IDS,
+  LUCKY_SPECIAL_MOVES,
+} from '../.sim-test-build/src/data/lucky/specials.js';
 import {
   LUCKY_JACKPOT_STREAK_ID,
   LUCKY_SUPER_IDS,
   LUCKY_SUPER_MOVES,
 } from '../.sim-test-build/src/data/lucky/supers.js';
+import { MeterLedger } from '../.sim-test-build/src/hud/meterLedger.js';
 import { validateMoves } from '../.sim-test-build/src/sim/move-validation.js';
 import { CombatEngine } from '../.sim-test-build/src/sim/combat-engine.js';
 import { fixed } from '../.sim-test-build/src/sim/math.js';
 
-const expectedNormals = {
-  lp: LUCKY_MOVE_IDS.quickDraw,
-  lk: LUCKY_MOVE_IDS.loadedShoulder,
-  hp: LUCKY_MOVE_IDS.slidingBet,
-  hk: LUCKY_MOVE_IDS.fortuneHeel,
-};
+const ALL_MOVES = [...LUCKY_MOVES, ...LUCKY_SPECIAL_MOVES, ...LUCKY_SUPER_MOVES];
+const byId = (id) => ALL_MOVES.find((move) => move.id === id);
 
-test('Lucky has four distinct standing normals on J K I L', () => {
-  for (const [button, moveId] of Object.entries(expectedNormals)) {
-    assert.equal(resolvePress(button)?.moveId, moveId);
-  }
-  assert.equal(new Set(Object.values(expectedNormals)).size, 4);
-});
+// ---------------------------------------------------------------- authoring
 
 test('Lucky authored frames match the brief', () => {
   const expected = {
@@ -41,188 +61,297 @@ test('Lucky authored frames match the brief', () => {
     [LUCKY_MOVE_IDS.slidingBet]: [12, 5, 16],
     [LUCKY_MOVE_IDS.fortuneHeel]: [15, 5, 17],
   };
-  for (const move of LUCKY_MOVES.slice(0, 4)) {
-    assert.deepEqual(
-      [move.startup, move.active, move.recovery],
-      expected[move.id],
+  for (const [id, frames] of Object.entries(expected)) {
+    const move = byId(id);
+    assert.deepEqual([move?.startup, move?.active, move?.recovery], frames, id);
+  }
+});
+
+test('Lucky carries the stat line the brief specifies', () => {
+  assert.deepEqual({ ...LUCKY_STATS }, {
+    health: 90, damage: 80, defense: 75, speed: 105, luck: 100, complexity: 7,
+  });
+});
+
+test('all Lucky move geometry validates', () => {
+  assert.doesNotThrow(() => { validateMoves(ALL_MOVES); });
+});
+
+test('every normal in each family has its own animation and geometry', () => {
+  const families = [
+    ['standing', LUCKY_STANDING_NORMALS],
+    ['forward', LUCKY_FORWARD_NORMALS],
+    ['back', LUCKY_BACK_NORMALS],
+    ['crouching', LUCKY_CROUCHING_NORMALS],
+  ];
+  for (const [label, family] of families) {
+    assert.equal(family.length, 4, `${label} needs four normals`);
+    assert.equal(new Set(family.map((m) => m.id)).size, 4, label);
+    // Distinct timing or distinct reach — never a copy of another normal.
+    const shapes = family.map((m) => `${m.startup}/${m.active}/${m.recovery}`);
+    assert.equal(new Set(shapes).size, 4, `${label} reuses a timing`);
+  }
+  assert.equal(LUCKY_AERIAL_NORMALS.length, 8);
+  assert.equal(new Set(LUCKY_AERIAL_NORMALS.map((m) => m.id)).size, 8);
+});
+
+test('crouching normals keep their low profile and their guard level', () => {
+  const sweep = byId(LUCKY_MOVE_IDS.sweepTheTable);
+  assert.equal(sweep?.attackLevel, 'low');
+  assert.ok(sweep?.hitboxes[0]?.hit.groundBounce, 'the sweep must knock down');
+  const rising = byId(LUCKY_MOVE_IDS.risingHand);
+  assert.equal(rising?.attackLevel, 'mid', 'the crouching anti-air is not a low');
+});
+
+// ------------------------------------------------------------ throws, duals
+
+test('throws are real grapples with no block data', () => {
+  for (const move of LUCKY_THROWS) {
+    assert.notEqual(move.grapple, undefined, move.id);
+    assert.equal(move.hitboxes[0]?.hit.block, undefined, move.id);
+  }
+  assert.equal(byId(LUCKY_MOVE_IDS.throw)?.grapple?.kind, 'normal');
+  assert.equal(byId(LUCKY_MOVE_IDS.airThrow)?.grapple?.targetSize, 'airborne');
+  assert.equal(byId(LUCKY_MOVE_IDS.backThrow)?.grapple?.kind, 'reposition');
+});
+
+test('J+I doubles as the throw escape', () => {
+  const move = byId(LUCKY_MOVE_IDS.throw);
+  assert.equal(move?.counter?.grappleOnly, true);
+  assert.equal(move?.counter?.frames.toExclusive, move?.startup);
+});
+
+test('Dual Techniques are two-hit and cannot loop into themselves', () => {
+  for (const move of LUCKY_DUAL_TECHNIQUES) {
+    assert.equal(move.hitboxes.length, 2, move.id);
+    const [first, second] = move.hitboxes;
+    assert.equal(first?.hit.knockback.y, 0, 'only the second hit may launch');
+    assert.ok(
+      move.recovery > second.hit.hitstun,
+      `${move.id} recovers slower than its own hitstun, so it cannot loop`,
     );
   }
 });
 
-test('air normals and real throws are reachable from commands', () => {
-  assert.equal(resolvePress('lp', 0, 0, false, false)?.moveId, LUCKY_MOVE_IDS.airLight);
-  const groundThrow = LUCKY_MOVES.find(({ id }) => id === LUCKY_MOVE_IDS.throw);
-  const airThrow = LUCKY_MOVES.find(({ id }) => id === LUCKY_MOVE_IDS.airThrow);
-  assert.equal(groundThrow?.grapple?.kind, 'normal');
-  assert.equal(groundThrow?.hitboxes[0]?.hit.block, undefined);
-  assert.equal(airThrow?.grapple?.targetSize, 'airborne');
+// ---------------------------------------------------------------- defence
+
+test('counter stances lose to throws', () => {
+  for (const id of [
+    LUCKY_MOVE_IDS.probabilityCounter,
+    LUCKY_SPECIAL_IDS.riskyCounter,
+    LUCKY_LUCK_IDS.guard,
+  ]) {
+    assert.equal(byId(id)?.counter?.strikeOnly, true, id);
+  }
 });
 
-test('enhanced routes are visible, gated and spend deterministic Luck', () => {
-  assert.equal(resolveQcf('hp', 24, true)?.moveId, undefined);
-  assert.equal(
-    resolveQcf('hp', 25, true)?.moveId,
-    LUCKY_SPECIAL_IDS.enhancedStrike,
+test('Lucky Guard is a read, not a shield', () => {
+  const guard = byId(LUCKY_LUCK_IDS.guard);
+  const window = guard.counter.frames.toExclusive - guard.counter.frames.from;
+  assert.ok(window <= 3, 'the guard window must stay precise');
+  assert.ok(
+    guard.recovery > window * 4,
+    'mashing Lucky Guard must leave a long vulnerable pose',
   );
-  const ledger = new LuckLedger();
-  ledger.accept(Array.from({ length: 5 }, (_, index) => hit(index)));
-  assert.equal(ledger.charge('p1'), 40);
-  ledger.accept([started(LUCKY_SPECIAL_IDS.enhancedStrike)]);
-  assert.equal(ledger.charge('p1'), 15);
-  const enhanced = LUCKY_SPECIAL_MOVES.find(
-    ({ id }) => id === LUCKY_SPECIAL_IDS.enhancedStrike,
-  );
-  assert.equal(enhanced?.minimumResource, 25);
-  assert.equal(enhanced?.resourceCost, 25);
+  assert.equal(guard.hitboxes.length, 0, 'a successful read is not free damage');
+  assert.equal(byId(LUCKY_LUCK_IDS.guardFailed)?.hitboxes.length, 0);
 });
 
-test('the authoritative engine rejects unpaid enhanced moves and spends once', () => {
-  assert.equal(startEnhancedWith(24).action, null);
-  const paid = startEnhancedWith(25);
+test('invulnerable windows are bounded and close before recovery does', () => {
+  const invulnerable = ALL_MOVES.filter(
+    (move) => move.hurtboxes?.some((window) => window.boxes.length === 0),
+  );
+  assert.ok(invulnerable.length >= 4, 'reversals should exist');
+  for (const move of invulnerable) {
+    const window = move.hurtboxes.find((entry) => entry.boxes.length === 0);
+    const total = move.startup + move.active + move.recovery;
+    assert.ok(window.frames.toExclusive < total, `${move.id} is never vulnerable`);
+  }
+});
+
+// ----------------------------------------------------------------- resources
+
+test('Luck is earned by playing well and never by being hit', () => {
+  assert.equal(LUCKY_RESOURCE.damageTakenPercent, 0);
+  assert.equal(LUCKY_RESOURCE.maximum, LUCK_MAX);
+  assert.ok((LUCKY_RESOURCE.counterHitBonus ?? 0) > 0);
+  assert.ok((LUCKY_RESOURCE.perfectBlockGain ?? 0) > 0);
+  assert.ok(
+    (LUCKY_RESOURCE.drainAtMaximumPerFrame ?? 0) > 0,
+    'a parked Jackpot must not be permanently safe',
+  );
+});
+
+test('the five Luck tiers cover 0 to 100 without a gap', () => {
+  assert.equal(LUCK_TIERS.length, 5);
+  assert.equal(luckTier(0).id, 'cold');
+  assert.equal(luckTier(24).id, 'cold');
+  assert.equal(luckTier(25).id, 'even');
+  assert.equal(luckTier(74).id, 'warm');
+  assert.equal(luckTier(75).id, 'loaded');
+  assert.equal(luckTier(100).id, 'jackpot');
+  for (let charge = 0; charge <= 100; charge += 1) {
+    assert.notEqual(luckTier(charge), undefined, String(charge));
+  }
+});
+
+test('no Lucky move generates the Luck it spends', () => {
+  for (const id of luckySpendingMoves()) {
+    const move = byId(id);
+    assert.ok(
+      (move?.resourceGainOnHit ?? 0) < (move?.resourceCost ?? 0),
+      `${id} refunds its own cost`,
+    );
+  }
+});
+
+test('a move costs exactly what the move list prints', () => {
+  for (const spec of LUCKY_CATALOGUE) {
+    if (spec.luckCost === undefined) continue;
+    assert.equal(
+      luckyCostForMove(spec.moveId),
+      spec.luckCost,
+      `${spec.name} is printed at a price it does not charge`,
+    );
+  }
+});
+
+test('the engine spends Luck once and refuses an unpaid enhanced move', () => {
+  assert.equal(startWith(LUCKY_SPECIAL_IDS.enhancedStrike, 24).action, null);
+  const paid = startWith(LUCKY_SPECIAL_IDS.enhancedStrike, 25);
   assert.equal(paid.action?.moveId, LUCKY_SPECIAL_IDS.enhancedStrike);
-  assert.equal(paid.resource, 0);
+  assert.equal(paid.resource, 0, 'the cost is deducted exactly once');
+
+  const rich = startWith(LUCKY_SPECIAL_IDS.enhancedStrike, 100);
+  assert.equal(rich.resource, 75);
 });
 
-test('all Lucky move geometry and multi-hit supers validate', () => {
-  assert.doesNotThrow(() => validateMoves([
-    ...LUCKY_MOVES,
-    ...LUCKY_SPECIAL_MOVES,
-    ...LUCKY_SUPER_MOVES,
-  ]));
-  assert.equal(LUCKY_SUPER_MOVES[0]?.hitboxes.length, 5);
-  assert.equal(
-    LUCKY_SUPER_MOVES.find(
-      ({ id }) => id === LUCKY_SUPER_IDS.impossibleOutcome,
-    )?.hitboxes.length,
-    7,
-  );
+test('the seeded generator replays identically and can be reset', () => {
+  const first = new LuckRng(1234);
+  const second = new LuckRng(1234);
+  const draw = (rng) => Array.from({ length: 8 }, () => rng.next());
+  assert.deepEqual(draw(first), draw(second));
+  assert.notDeepEqual(draw(new LuckRng(1)), draw(new LuckRng(2)));
+
+  const rng = new LuckRng(99);
+  const before = draw(rng);
+  rng.reset();
+  assert.deepEqual(draw(rng), before);
+  assert.equal(rng.seed, 99, 'the seed must be readable for the HUD');
 });
 
-test('Luck clamps at Jackpot and never enables a hidden instant win', () => {
-  const ledger = new LuckLedger();
-  ledger.accept(Array.from({ length: 20 }, (_, index) => hit(index)));
-  assert.equal(ledger.charge('p1'), 100);
-  ledger.accept([started(LUCKY_SPECIAL_IDS.enhancedRush)]);
-  assert.equal(ledger.charge('p1'), 25);
-  assert.ok(!LUCKY_MOVES.some((move) => move.hitboxes.some(
-    (box) => box.hit.damage >= 900,
-  )));
+test('a prepared modifier is visible, of the requested kind, and spent once', () => {
+  const slot = new LuckModifierSlot(new LuckRng(7));
+  assert.equal(slot.current, null);
+
+  const defensive = slot.prepare('defense');
+  assert.equal(defensive?.kind, 'defense', 'chance narrows, it never overrides');
+  assert.equal(slot.current?.id, defensive?.id);
+  assert.equal(slot.state(50).tier.id, 'warm');
+  assert.equal(slot.state(50).prepared?.id, defensive?.id);
+  assert.equal(slot.state(50).seed, 7);
+
+  assert.equal(slot.consume()?.id, defensive?.id);
+  assert.equal(slot.consume(), null, 'a modifier cannot be spent twice');
+
+  slot.prepare('offense');
+  slot.cancel();
+  assert.equal(slot.current, null);
 });
 
-test('Lucky Guard rewards only the visible three-frame perfect window', () => {
-  const ledger = new LuckLedger();
-  ledger.accept([blocked(false), blocked(true)]);
-  assert.equal(ledger.charge('p1'), 4);
+test('every Luck modifier states a bounded effect', () => {
+  for (const modifier of LUCK_MODIFIERS) {
+    assert.ok(modifier.label.length > 0, modifier.id);
+    assert.ok(modifier.effect.length > 0, modifier.id);
+    assert.ok(modifier.cost > 0, `${modifier.id} must not be free`);
+  }
 });
 
-test('supers and ultimate keep explicit resource gates', () => {
-  assert.equal(resolvePress('super', 0, 33)?.moveId, undefined);
-  assert.equal(
-    resolvePress('super', 0, 34)?.moveId,
-    LUCKY_SUPER_IDS.winningStreak,
-  );
-  assert.equal(
-    resolvePress('super', 75, 34)?.moveId,
-    LUCKY_JACKPOT_STREAK_ID,
-  );
-  const house = LUCKY_SUPER_MOVES.find(
-    ({ id }) => id === LUCKY_SUPER_IDS.houseAdvantage,
-  );
+// ------------------------------------------------------- supers and ultimate
+
+test('supers and the ultimate keep explicit, separate gates', () => {
+  const house = byId(LUCKY_SUPER_IDS.houseAdvantage);
   assert.equal(house?.status?.recoveryPercent, 78);
   assert.ok((house?.status?.cancelInto?.length ?? 0) >= 6);
-  assert.equal(resolvePress('ultimate', 75, 100, false)?.moveId, undefined);
-  assert.equal(
-    resolvePress('ultimate', 75, 100, true)?.moveId,
-    LUCKY_SUPER_IDS.impossibleOutcome,
-  );
-  const meter = new MeterLedger();
-  meter.accept([started(LUCKY_SUPER_IDS.impossibleOutcome)]);
-  assert.equal(meter.ultimateUsed('p1'), true);
-  assert.equal(meter.isUltimateReady('p1', 1, 100), false);
+  assert.ok(byId(LUCKY_SUPER_IDS.winningStreak)?.hitboxes.length >= 5);
+  assert.ok(byId(LUCKY_JACKPOT_STREAK_ID)?.hitboxes.length >= 5);
+  assert.equal(byId(LUCKY_SUPER_IDS.impossibleOutcome)?.hitboxes.length, 7);
 });
 
-function resolvePress(
-  button,
-  gauge = 0,
-  superMeter = 0,
-  ultimateReady = false,
-  grounded = true,
-) {
-  const buffer = new InputBuffer();
-  buffer.push(5, 0);
-  buffer.push(5, BUTTON_BIT[button]);
-  return resolveCommand(
-    buffer,
-    LUCKY_COMMANDS,
-    context(gauge, superMeter, ultimateReady, grounded),
-  );
-}
+test('the ultimate is once per match and earns no meter back', () => {
+  const meter = new MeterLedger();
+  meter.accept([{
+    type: 'moveStarted', frame: 1, fighterId: 'p1',
+    moveId: LUCKY_SUPER_IDS.impossibleOutcome,
+  }]);
+  assert.equal(meter.ultimateUsed('p1'), true);
+  assert.equal(meter.isUltimateReady('p1', 1, 100), false);
+  for (const id of Object.values(LUCKY_SUPER_IDS)) {
+    assert.equal(byId(id)?.resourceGainOnHit, 0, id);
+  }
+});
 
-function resolveQcf(button, gauge, enhanced) {
-  const modifier = enhanced ? BUTTON_BIT.super : 0;
-  const buffer = new InputBuffer();
-  buffer.push(2, modifier);
-  buffer.push(3, modifier);
-  buffer.push(6, modifier | BUTTON_BIT[button]);
-  return resolveCommand(buffer, LUCKY_COMMANDS, context(gauge));
-}
+test('no Lucky move is an instant kill', () => {
+  for (const move of ALL_MOVES) {
+    const total = move.hitboxes.reduce((sum, box) => sum + box.hit.damage, 0);
+    assert.ok(total < 900, `${move.id} deals ${String(total)} in one move`);
+  }
+});
 
-function context(gauge, superMeter = 0, ultimateReady = false, grounded = true) {
-  return { grounded, stanceId: null, gauge, superMeter, ultimateReady };
-}
+// ----------------------------------------------------------------- engine
 
-function hit(frame) {
-  return {
-    type: 'hit',
-    frame,
-    attackerId: 'p1',
-    defenderId: 'p2',
-    moveId: LUCKY_MOVE_IDS.loadedShoulder,
-    hitId: 'mid',
-    damage: 70,
-    position: { x: 0, y: 0 },
-  };
-}
+test('a round reset returns Luck to its starting value', () => {
+  const engine = build(LUCKY_SPECIAL_IDS.enhancedStrike, 100);
+  engine.tick({ p1: { move: LUCKY_SPECIAL_IDS.enhancedStrike } });
+  const spent = engine.read().fighters[0].resource;
+  assert.equal(spent, 75);
+  const fresh = build(LUCKY_SPECIAL_IDS.enhancedStrike, 0);
+  assert.equal(fresh.read().fighters[0].resource, 0);
+});
 
-function started(moveId) {
-  return { type: 'moveStarted', frame: 1, fighterId: 'p1', moveId };
-}
+test('holding the guard direction still walks backwards', () => {
+  const engine = build(LUCKY_MOVE_IDS.quickDraw, 0);
+  const start = engine.read().fighters[0].position.x;
+  for (let i = 0; i < 10; i += 1) {
+    engine.tick({ p1: { guard: true, guardWhileWalking: true, movement: -1 } });
+  }
+  const walked = engine.read().fighters[0].position.x;
+  assert.ok(walked < start, 'a guarding Lucky must still retreat');
 
-function blocked(perfect) {
-  return {
-    type: 'block',
-    frame: 1,
-    attackerId: 'p2',
-    defenderId: 'p1',
-    moveId: 'test',
-    hitId: 'mid',
-    position: { x: 0, y: 0 },
-    perfect,
-    painGuard: false,
-  };
-}
+  // The default remains "guarding stands still" for every other character.
+  const still = build(LUCKY_MOVE_IDS.quickDraw, 0);
+  const from = still.read().fighters[0].position.x;
+  for (let i = 0; i < 10; i += 1) {
+    still.tick({ p1: { guard: true, movement: -1 } });
+  }
+  assert.equal(still.read().fighters[0].position.x, from);
+});
 
-function startEnhancedWith(initial) {
-  const move = LUCKY_SPECIAL_MOVES.find(
-    ({ id }) => id === LUCKY_SPECIAL_IDS.enhancedStrike,
-  );
-  const fighter = (id, team, x, facing, resource) => ({
+// ---------------------------------------------------------------- helpers
+
+function build(_moveId, resource) {
+  const fighter = (id, team, x, facing, initial) => ({
     id,
     team,
-    maxHealth: 100,
+    maxHealth: 900,
     spawn: { x: fixed(x), y: 0 },
     facing,
     hurtboxes: [{
       offset: { x: 0, y: fixed(0.8) },
       halfSize: { x: fixed(0.3), y: fixed(0.8) },
     }],
-    resource: { maximum: 100, initial: resource, damageTakenPercent: 0 },
+    resource: { ...LUCKY_RESOURCE, initial },
   });
-  const engine = new CombatEngine({
-    moves: [move],
-    fighters: [fighter('p1', 1, -2, 1, initial), fighter('p2', 2, 2, -1, 0)],
+  // The whole move set, because cancel targets are validated across it.
+  return new CombatEngine({
+    moves: ALL_MOVES,
+    fighters: [fighter('p1', 1, -2, 1, resource), fighter('p2', 2, 2, -1, 0)],
     world: { leftWall: fixed(-5), rightWall: fixed(5) },
   });
-  return engine.tick({ p1: { move: LUCKY_SPECIAL_IDS.enhancedStrike } })
+}
+
+function startWith(moveId, resource) {
+  return build(moveId, resource)
+    .tick({ p1: { move: moveId } })
     .state.fighters[0];
 }

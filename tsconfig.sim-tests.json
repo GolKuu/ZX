@@ -28,6 +28,8 @@
     "src/input/command.ts",
     "src/input/core.ts",
     "src/input/profiles.ts",
+    "src/input/sampler.ts",
+    "src/input/training.ts",
     "src/input/lucky/**/*.ts",
     "src/input/sharedCommands.ts",
     "src/game/attackInputPolicy.ts",

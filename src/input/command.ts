@@ -187,7 +187,7 @@ export function resolveCommand(
     if (!allButtonsUp(buffer, row.forbiddenPressed, pressedAgo)) {
       continue;
     }
-    if (!matchesHeldDirection(buffer, row.holdDirection, pressedAgo)) {
+    if (!matchesHeldDirection(buffer, row, pressedAgo)) {
       continue;
     }
     if (row.available !== undefined && !row.available(context)) {
@@ -296,13 +296,31 @@ function allButtonsDown(
  */
 const DIRECTION_LEEWAY_FRAMES = 4;
 
+/**
+ * Pre-press grace for chord rows.
+ *
+ * Shorter than `DIRECTION_LEEWAY_FRAMES` because a chord row's press frame is
+ * already `settleFrames` in the past by the time it is matched. Reaching four
+ * further frames back let a direction from *before* the chord began qualify it
+ * — a neutral `J+I` throw would come out as the forward throw purely because
+ * the player had walked forward half a second earlier.
+ */
+const CHORD_DIRECTION_GRACE = 2;
+
 function matchesHeldDirection(
   buffer: InputBuffer,
-  hold: CommandRow['holdDirection'],
+  row: CommandRow,
   pressedAgo: number,
 ): boolean {
+  const hold = row.holdDirection;
   if (hold === undefined) return true;
-  for (let ago = pressedAgo; ago <= pressedAgo + DIRECTION_LEEWAY_FRAMES; ago += 1) {
+  // Chord rows also accept the direction held *while* the chord was assembled,
+  // which is the window between the press and now.
+  const chord = row.exactChord !== undefined;
+  const from = chord ? 0 : pressedAgo;
+  const to = pressedAgo
+    + (chord ? CHORD_DIRECTION_GRACE : DIRECTION_LEEWAY_FRAMES);
+  for (let ago = from; ago <= to; ago += 1) {
     if (directionMatches(buffer.at(ago).direction, hold)) return true;
   }
   return false;
