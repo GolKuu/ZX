@@ -6,7 +6,7 @@ export type PlayerSide = 'left' | 'right';
 export interface HudFighterIdentity {
   readonly id: string;
   readonly displayName: string;
-  readonly playerTag: 'P1' | 'P2' | 'CPU' | 'DUMMY';
+  readonly playerTag: 'P1' | 'P2' | 'CPU' | 'GEMINI' | 'DUMMY';
   readonly side: PlayerSide;
 }
 

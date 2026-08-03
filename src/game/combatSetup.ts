@@ -1,4 +1,4 @@
-import { CombatAiAgent, type AiDifficulty } from '@/src/ai';
+import { CombatAiAgent, type AiDifficulty, type AiStrategy } from '@/src/ai';
 import {
   DEFAULT_CHARACTER_SELECTION,
   getCharacterDefinition,
@@ -88,6 +88,7 @@ export function createCombatEngine(
 export function createCombatAi(
   characterId: CharacterId = 'mim',
   difficulty: AiDifficulty = 'normal',
+  strategy?: AiStrategy,
 ): CombatAiAgent {
   return new CombatAiAgent({
     fighterId: 'p2',
@@ -103,6 +104,7 @@ export function createCombatAi(
       : characterId === 'glitch'
           ? glitchAiLoadout(difficulty)
           : MIM_AI_LOADOUT,
+    strategy,
     seed: 29,
   });
 }
@@ -111,7 +113,7 @@ export function createCombatHud(): HudBridge {
   const { fighterSelection, mode } = useHudStore.getState();
   const opponentTag = mode === 'training'
     ? 'DUMMY'
-    : mode === 'ai' || mode === 'story' ? 'CPU' : 'P2';
+    : mode === 'ai' ? 'GEMINI' : mode === 'story' ? 'CPU' : 'P2';
   return new HudBridge(
     [
       {

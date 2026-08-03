@@ -138,7 +138,7 @@ const initialSnapshot = (
         : getCharacterDefinition(selection[1]).displayName,
       playerTag: mode === 'training'
         ? 'DUMMY'
-        : mode === 'ai' || mode === 'story' ? 'CPU' : 'P2',
+        : mode === 'ai' ? 'GEMINI' : mode === 'story' ? 'CPU' : 'P2',
       side: 'right',
       health: 1000,
       maxHealth: 1000,

@@ -49,6 +49,12 @@ export interface AiDifficultyProfile {
   readonly threatMargin: number;
 }
 
+/** A coarse battle plan supplied by Gemini before the deterministic match starts. */
+export interface AiStrategy {
+  readonly style: 'aggressive' | 'balanced' | 'defensive';
+  readonly range: 'close' | 'mid' | 'long';
+}
+
 export interface AiTelegraph {
   readonly moveId: string;
   readonly intent: 'attack' | 'combo' | 'whiffPunish';

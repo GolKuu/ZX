@@ -76,7 +76,7 @@ export function DifficultyMenu() {
     >
       <header className={styles.brand}>
         <span>CC//ULTIMATE</span>
-        <small>ИИ · РЕЖИМ</small>
+        <small>GEMINI · ИИ · РЕЖИМ</small>
       </header>
 
       <div className={styles.layout}>
@@ -99,7 +99,7 @@ export function DifficultyMenu() {
                 <strong>{difficulty.label}</strong>
                 <small>{difficulty.detail}</small>
               </span>
-              <b>AI</b>
+              <b>GEMINI</b>
             </button>
           ))}
         </nav>

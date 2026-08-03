@@ -13,9 +13,12 @@ import { DeterministicRandom } from './rng.js';
 import type {
   AiDecision,
   AiDifficulty,
+  AiDifficultyProfile,
   AiLoadout,
+  AiStrategy,
 } from './types.js';
 import { validateAiLoadout } from './validation.js';
+import { applyAiStrategy } from './strategy.js';
 
 export interface CombatAiOptions {
   readonly fighterId: string;
@@ -23,6 +26,7 @@ export interface CombatAiOptions {
   readonly difficulty: AiDifficulty;
   readonly moves: readonly MoveFrameData[];
   readonly loadout: AiLoadout;
+  readonly strategy?: AiStrategy;
   readonly seed?: number;
 }
 
@@ -32,6 +36,7 @@ export class CombatAiAgent {
   private readonly defense = new DefensePlanner();
   private readonly neutral = new NeutralPlanner();
   private readonly history: ReactionHistory;
+  private readonly profile: AiDifficultyProfile;
   private readonly initialSeed: number;
   private random: DeterministicRandom;
   private lastWorldFrame = -1;
@@ -42,8 +47,11 @@ export class CombatAiAgent {
     }
     this.moves = new Map(options.moves.map((move) => [move.id, move]));
     validateAiLoadout(options.loadout, this.moves);
-    const profile = AI_DIFFICULTY_PROFILES[options.difficulty];
-    this.history = new ReactionHistory(profile.reactionFrames);
+    this.profile = applyAiStrategy(
+      AI_DIFFICULTY_PROFILES[options.difficulty],
+      options.strategy,
+    );
+    this.history = new ReactionHistory(this.profile.reactionFrames);
     this.actions = new ActionController(this.moves, options.loadout);
     this.initialSeed =
       options.seed ?? createAiSeed(options.fighterId, options.difficulty);
@@ -62,7 +70,7 @@ export class CombatAiAgent {
 
     const self = findFighter(world, this.options.fighterId);
     const opponent = resolveOpponent(world, self, this.options.opponentId);
-    const profile = AI_DIFFICULTY_PROFILES[this.options.difficulty];
+    const profile = this.profile;
     const signals = this.actions.processCombatEvents(
       world.frame,
       self,

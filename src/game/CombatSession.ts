@@ -34,6 +34,8 @@ import {
 import { MeterController } from './MeterController';
 import { XrayController } from './XrayController';
 import { isPracticeMode, ROUNDS_TO_WIN } from './matchRules';
+import { loadGeminiOpponentStrategy } from '@/src/lib/geminiOpponent';
+import type { AiStrategy } from '@/src/ai';
 
 const ROUND_FRAMES = 99 * 60;
 const ROUND_RESTART_DELAY_FRAMES = 90;
@@ -73,6 +75,7 @@ export class CombatSession {
   private readonly xray = new XrayController();
   private readonly meters: MeterController;
   private readonly attackInput = new AttackInputPolicy(ALL_COMBAT_MOVES);
+  private geminiStrategy: AiStrategy | undefined;
 
   public constructor(
     private readonly playerOne: FighterInputSource,
@@ -84,12 +87,30 @@ export class CombatSession {
     this.ai = createCombatAi(
       this.fighterSelection[1],
       storyAwareDifficulty(),
+      this.geminiStrategy,
     );
+    this.loadGeminiStrategy();
     this.fighterVoice = new FighterVoiceController(this.fighterSelection);
     this.titanSound = new TitanSoundController(this.fighterSelection);
     this.luckySound = new LuckySoundController(this.fighterSelection);
     this.glitchSound = new GlitchSoundController(this.fighterSelection);
     this.publishInitialState();
+  }
+
+  private loadGeminiStrategy(): void {
+    const hud = useHudStore.getState();
+    if (hud.mode !== 'ai') return;
+    const difficulty = hud.aiDifficulty;
+    void loadGeminiOpponentStrategy(
+      this.fighterSelection[0],
+      this.fighterSelection[1],
+      difficulty,
+    ).then((strategy) => {
+      if (strategy !== null && !this.ended) {
+        this.geminiStrategy = strategy;
+        this.ai = createCombatAi(this.fighterSelection[1], difficulty, strategy);
+      }
+    });
   }
 
   public advance(elapsedMilliseconds: number): void {
@@ -102,6 +123,7 @@ export class CombatSession {
     this.ai = createCombatAi(
       this.fighterSelection[1],
       storyAwareDifficulty(),
+      this.geminiStrategy,
     );
     this.hud = createCombatHud();
     this.runner.reset();
@@ -283,6 +305,7 @@ export class CombatSession {
     this.ai = createCombatAi(
       this.fighterSelection[1],
       storyAwareDifficulty(),
+      this.geminiStrategy,
     );
     this.hud = createCombatHud();
     this.runner.reset();
