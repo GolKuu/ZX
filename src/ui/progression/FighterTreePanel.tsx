@@ -21,7 +21,7 @@ export function FighterTreePanel() {
       <aside className={styles.preview}>{selectedNode ? <><small>TIER {selectedNode.tier}{selectedNode.capstone?' · CAPSTONE':''}</small><h2>{selectedNode.name}</h2><p>{selectedNode.description}</p>
         <dl><div><dt>Before</dt><dd>{selectedNode.effect.before}</dd></div><div><dt>After</dt><dd>{selectedNode.effect.after}</dd></div><div><dt>Modes</dt><dd>Story · PvE · Training preview</dd></div><div><dt>Ranked</dt><dd>Standardized; ignored</dd></div></dl>
         <button type="button" disabled={owned.includes(selectedNode.id)} onClick={()=>purchase(selectedNode.id)}>{owned.includes(selectedNode.id)?'PURCHASED':`CONFIRM · ${selectedNode.cost} TOKEN`}</button></>:<p>Select a node to inspect exact limits, prerequisites, affected moves, and restrictions.</p>}
-        <button className={styles.respec} type="button" disabled={owned.length===0} onClick={()=>confirm('Refund every purchased node for this fighter?')&&reset(fighter)}>FULL RESPEC · {owned.length} NODES</button></aside>
+        <button className={styles.respec} type="button" disabled={owned.length===0} onClick={()=>confirm('Free full refund outside combat. Refund every purchased node?')&&reset(fighter)}>FREE FULL RESPEC · {owned.length} NODES</button></aside>
     </div>
   </section>;
 }

@@ -1,5 +1,6 @@
 import type { CharacterId } from '../data/characterRoster.js';
 import type { ProgressionProfile, TokenTransaction, TransactionType } from './types.js';
+import { nodeById } from './treeData.js';
 
 const FIGHTERS: readonly CharacterId[] = ['mim', 'glitch', 'lucky', 'titan', 'vorgh'];
 const emptyLists = (): Record<CharacterId, readonly string[]> => ({ mim: [], glitch: [], lucky: [], titan: [], vorgh: [] });
@@ -18,8 +19,9 @@ export function createProfile(profileId = 'offline-player', now = new Date()): P
 export function migrateProfile(value: unknown, now = new Date()): ProgressionProfile {
   const base = createProfile('offline-player', now);
   if (!record(value)) return base;
-  const transactionList = Array.isArray(value.transactions) ? value.transactions.filter(validTransaction) : [];
+  let transactionList = Array.isArray(value.transactions) ? value.transactions.filter(validTransaction) : [];
   const balance = Math.max(0, integer(value.tokenBalance));
+  if(transactionList.length===0&&balance>0) transactionList=[{id:`${stringValue(value.profileId,'offline-player')}:migration`,profileId:stringValue(value.profileId,'offline-player'),timestamp:now.toISOString(),type:'MigrationAdjustment',amount:balance,balanceBefore:0,balanceAfter:balance,sourceId:'legacy-save',idempotencyKey:'migration:legacy-balance',version:1}];
   const purchased = record(value.purchasedNodes) ? value.purchasedNodes : {};
   const loadouts = record(value.loadouts) ? value.loadouts : {};
   const flags = record(value.freeRespecUsed) ? value.freeRespecUsed : {};
@@ -64,6 +66,12 @@ export function validateProfile(profile: ProgressionProfile): readonly string[] 
   if (new Set(profile.transactions.map((entry) => entry.idempotencyKey)).size !== profile.transactions.length) errors.push('DUPLICATE_IDEMPOTENCY_KEY');
   const ledger = profile.transactions.reduce((total, entry) => total + entry.amount, 0);
   if (ledger !== profile.tokenBalance) errors.push('LEDGER_MISMATCH');
+  if(profile.lifetimeEarned-profile.lifetimeSpent!==profile.tokenBalance)errors.push('LIFETIME_TOTAL_MISMATCH');
+  let running=0;for(const entry of profile.transactions){if(entry.balanceBefore!==running||entry.balanceAfter!==running+entry.amount)errors.push('BROKEN_LEDGER_CHAIN');running=entry.balanceAfter;}
+  for(const fighter of FIGHTERS){const owned=profile.purchasedNodes[fighter];if(owned.some((id)=>nodeById(id)?.fighterId!==fighter))errors.push('ILLEGAL_NODE');
+    if(owned.some((id)=>nodeById(id)?.prerequisites.some((required)=>!owned.includes(required))))errors.push('BROKEN_PREREQUISITE');
+    const loadout=profile.loadouts[fighter];if(loadout.some((id)=>!owned.includes(id)))errors.push('UNOWNED_LOADOUT_NODE');
+    if(loadout.filter((id)=>nodeById(id)?.capstone).length>1)errors.push('CAPSTONE_LIMIT');}
   return errors;
 }
 

@@ -3,6 +3,7 @@ import type { ProgressionProfile } from './types.js';
 
 export const PROFILE_KEY = 'yzx.progression.v3';
 const BACKUP_KEY = `${PROFILE_KEY}.checkpoint`;
+const ERROR_KEY = `${PROFILE_KEY}.recovery-report`;
 interface Envelope { readonly payload: ProgressionProfile; readonly checksum: string; }
 
 const checksum = (text: string): string => {
@@ -28,8 +29,11 @@ export function decodeProfile(raw: string | null): ProgressionProfile | null {
 
 export function loadProfile(): ProgressionProfile {
   if (typeof window === 'undefined') return migrateProfile(null);
-  return decodeProfile(window.localStorage.getItem(PROFILE_KEY))
-    ?? decodeProfile(window.localStorage.getItem(BACKUP_KEY)) ?? migrateProfile(null);
+  const current=decodeProfile(window.localStorage.getItem(PROFILE_KEY));if(current!==null)return current;
+  const backup=decodeProfile(window.localStorage.getItem(BACKUP_KEY));if(backup!==null){window.localStorage.setItem(ERROR_KEY,JSON.stringify({at:new Date().toISOString(),reason:'PRIMARY_INVALID_BACKUP_RESTORED'}));return backup;}
+  for(const key of ['yzx.progression.v2','yzx.progression.v1']){const raw=window.localStorage.getItem(key);if(raw===null)continue;try{const migrated=migrateProfile(JSON.parse(raw) as unknown);if(validateProfile(migrated).length===0)return migrated;}catch{/* continue to a non-destructive fresh profile */}}
+  if(window.localStorage.getItem(PROFILE_KEY)!==null)window.localStorage.setItem(ERROR_KEY,JSON.stringify({at:new Date().toISOString(),reason:'NO_VALID_CHECKPOINT'}));
+  return migrateProfile(null);
 }
 
 export function saveProfile(profile: ProgressionProfile): void {
