@@ -4,6 +4,11 @@ import { AdditiveBlending } from 'three';
 
 const VERTICAL_LINES = Array.from({ length: 25 }, (_, index) => -12 + index);
 const HORIZON_LINES = [-0.2, -0.65, -1.2, -1.9, -2.8, -4, -5.5, -7.3, -9.5, -12];
+const FLOOR_PIXELS = Array.from({ length: 52 }, (_, index) => ({
+  x: -11.5 + ((index * 17) % 46) * 0.5,
+  z: -0.4 - ((index * 29) % 48) * 0.25,
+  size: index % 5 === 0 ? 0.16 : 0.1,
+}));
 
 export function RetroGridFloor() {
   return (
@@ -39,6 +44,23 @@ export function RetroGridFloor() {
             color={index % 3 === 0 ? '#ff3eb5' : '#7a49ff'}
             depthWrite={false}
             opacity={0.52}
+            toneMapped={false}
+            transparent
+          />
+        </mesh>
+      ))}
+
+      {FLOOR_PIXELS.map((pixel, index) => (
+        <mesh
+          key={`${pixel.x}-${pixel.z}`}
+          position={[pixel.x, 0.018, pixel.z]}
+          rotation-x={-Math.PI / 2}
+        >
+          <planeGeometry args={[pixel.size, pixel.size]} />
+          <meshBasicMaterial
+            color={index % 3 === 0 ? '#ff3eb5' : '#23d7ff'}
+            depthWrite={false}
+            opacity={index % 4 === 0 ? 0.72 : 0.42}
             toneMapped={false}
             transparent
           />

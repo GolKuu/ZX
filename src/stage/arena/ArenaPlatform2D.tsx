@@ -23,8 +23,8 @@ export function ArenaPlatform2D() {
 
         {FACE_PANELS.map((x, index) => (
           <group key={x} position={[x, -0.52, 0.02]}>
-            <mesh rotation-z={Math.PI / 4}>
-              <planeGeometry args={[0.32, 0.32]} />
+            <mesh>
+              <planeGeometry args={[0.42, 0.22]} />
               <meshBasicMaterial
                 color={index % 2 === 0 ? '#25144b' : '#11103b'}
                 fog={false}
@@ -56,8 +56,8 @@ function ArenaBoundaryPost({ x }: { readonly x: number }) {
         <planeGeometry args={[0.12, 1.45]} />
         <meshBasicMaterial color="#151035" fog={false} />
       </mesh>
-      <mesh position={[0, 0.76, 0.01]} rotation-z={Math.PI / 4}>
-        <planeGeometry args={[0.28, 0.28]} />
+      <mesh position={[0, 0.76, 0.01]}>
+        <planeGeometry args={[0.32, 0.2]} />
         <meshBasicMaterial color="#ff3eb5" fog={false} toneMapped={false} />
       </mesh>
       <mesh position={[0, -0.77, 0.01]}>

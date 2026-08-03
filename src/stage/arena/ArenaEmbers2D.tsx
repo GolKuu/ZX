@@ -42,7 +42,7 @@ export function ArenaEmbers2D() {
     <group ref={groupRef} position-z={-8} renderOrder={-5}>
       {embers.map((ember, index) => (
         <mesh key={`${ember.x}-${index}`} position={[ember.x, ember.y, 0]}>
-          <circleGeometry args={[ember.size, 8]} />
+          <planeGeometry args={[ember.size * 1.6, ember.size * 1.6]} />
           <meshBasicMaterial
             color={index % 3 === 0 ? '#ffd49a' : '#d57b75'}
             depthWrite={false}
