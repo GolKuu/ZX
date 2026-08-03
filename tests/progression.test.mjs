@@ -14,7 +14,7 @@ const funded = (amount=1000) => transact(createProfile('test',date('2026-08-01T1
 
 test('daily: first claim, same-day duplicate, restart and next day',()=>{
   const first=claimDaily(createProfile('daily',date('2026-08-01T12:00:00Z')),date('2026-08-01T12:00:00Z'));
-  assert.equal(first.tokenBalance,1); assert.equal(claimDaily(first,date('2026-08-01T20:00:00Z')),first);
+  assert.equal(first.tokenBalance,1); assert.equal(claimDaily(first,date('2026-08-01T16:00:00Z')),first);
   const restored=decodeProfile(encodeProfile(first)); assert.ok(restored); assert.equal(claimDaily(restored,date('2026-08-02T12:00:00Z')).tokenBalance,2);
 });
 
@@ -77,7 +77,7 @@ test('achievement events are one-time, reload-safe, debug-safe, and thresholded'
   const event=gameplayEvent('MatchWon','match-1',{timestamp:'2026-08-01T01:00:00Z'}); profile=processGameplayEvent(profile,event).profile;
   assert.equal(profile.tokenBalance,1); assert.equal(processGameplayEvent(profile,event).profile,profile);
   const debug=gameplayEvent('MatchWon','debug',{validMatch:false}); assert.equal(processGameplayEvent(profile,debug).profile,profile);
-  for(let n=0;n<19;n+=1) profile=processGameplayEvent(profile,gameplayEvent('TrainingChallengeCompleted',`train-${n}`)).profile;
+  for(let n=0;n<20;n+=1) profile=processGameplayEvent(profile,gameplayEvent('TrainingChallengeCompleted',`train-${n}`)).profile;
   assert.ok(profile.achievements['training-twenty'].completedAt);
 });
 

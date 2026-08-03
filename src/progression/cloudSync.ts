@@ -1,12 +1,14 @@
-import { supabase } from '../lib/supabase.js';
+import { getSupabaseClient } from '../lib/supabase.js';
 import type { ProgressionProfile } from './types.js';
 
 export async function trustedServerTime(): Promise<Date | null> {
+  const supabase = await getSupabaseClient(); if (supabase === null) return null;
   const { data, error } = await supabase.rpc('yzx_server_time');
   return error === null && typeof data === 'string' ? new Date(data) : null;
 }
 
 export async function syncProgression(profile: ProgressionProfile): Promise<boolean> {
+  const supabase = await getSupabaseClient(); if (supabase === null) return false;
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id; if (userId === undefined) return false;
   const profileResult = await supabase.from('yzx_progression_profiles').upsert({

@@ -12,6 +12,7 @@ export default tseslint.config(
       'dist/**',
       'tmp/**',
       '.tools/**',
+      '.sim-test-build/**',
       'node_modules/**',
       'next-env.d.ts',
     ],

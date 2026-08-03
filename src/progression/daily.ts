@@ -27,7 +27,8 @@ export function dailyStatus(profile: ProgressionProfile, localNow: Date, trusted
 
 export function claimDaily(profile: ProgressionProfile, localNow: Date, trustedNow?: Date): ProgressionProfile {
   const status = dailyStatus(profile, localNow, trustedNow);
-  if (!status.available) return { ...profile, daily: { ...profile.daily, suspiciousClock: status.suspiciousClock } };
+  if (!status.available) return status.suspiciousClock === profile.daily.suspiciousClock
+    ? profile : { ...profile, daily: { ...profile.daily, suspiciousClock: status.suspiciousClock } };
   const now = trustedNow ?? localNow;
   const priorDay = new Date(now.getTime() - 86_400_000);
   const priorPeriod = dailyPeriod(priorDay, profile.daily.utcOffsetMinutes).id;
