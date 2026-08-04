@@ -46,9 +46,9 @@ test('J K I L use four different basic attack animations for every fighter', () 
     );
     assert.ok(
       ['kick', 'sweep'].includes(kinds[2]),
-      `${fighter}: I must use the right leg`,
+      `${fighter}: I must use the lead leg`,
     );
-    assert.equal(kinds[3], 'highKick', `${fighter}: L must use the left leg`);
+    assert.equal(kinds[3], 'highKick', `${fighter}: L must use the rear leg`);
     assert.equal(new Set(kinds).size, 4, `${fighter}: an animation was reused`);
   }
 });
@@ -59,6 +59,18 @@ test('K visibly coils and drives from the rear shoulder', () => {
   const recovery = photoAttackMotion('glitch.rift-elbow', 1);
   assert.ok(windup.x < 0 && windup.rotation > 0, 'rear shoulder must coil first');
   assert.ok(contact.x > 0 && contact.rotation < 0, 'rear hand must cross through');
+  assert.deepEqual(recovery, {
+    x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1,
+  });
+});
+
+test('L visibly chambers and strikes with the rear leg', () => {
+  const windup = photoAttackMotion('glitch.breakpoint-axe', 0.25);
+  const contact = photoAttackMotion('glitch.breakpoint-axe', 0.52);
+  const recovery = photoAttackMotion('glitch.breakpoint-axe', 1);
+  assert.ok(windup.x < 0 && windup.rotation > 0, 'rear hip must coil first');
+  assert.ok(contact.x > 0 && contact.y > 0, 'rear leg must cross forward and rise');
+  assert.ok(contact.rotation < 0, 'rear hip must turn through the strike');
   assert.deepEqual(recovery, {
     x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1,
   });

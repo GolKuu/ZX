@@ -97,18 +97,18 @@ export function photoAttackMotion(
 ): PhotoAttackMotion {
   const kind = photoAttackKind(moveId);
   if (kind === 'heavy') return rearHandMotion(progress);
-  if (kind !== 'kick' && kind !== 'highKick' && kind !== 'sweep') {
+  if (kind === 'highKick') return rearLegMotion(progress);
+  if (kind !== 'kick' && kind !== 'sweep') {
     return neutralMotion();
   }
   const { chamber, contact } = kickEnvelope(progress);
-  const high = kind === 'highKick';
   const low = kind === 'sweep';
   return {
     x: -chamber * 0.055 + contact * (low ? 0.13 : 0.09),
-    y: chamber * (low ? -0.1 : -0.045) + contact * (high ? 0.11 : low ? -0.07 : 0.035),
-    rotation: chamber * (low ? 0.055 : 0.035) - contact * (high ? 0.075 : 0.045),
+    y: chamber * (low ? -0.1 : -0.045) + contact * (low ? -0.07 : 0.035),
+    rotation: chamber * (low ? 0.055 : 0.035) - contact * 0.045,
     scaleX: 1 + contact * 0.035,
-    scaleY: 1 - chamber * 0.035 + contact * (high ? 0.025 : -0.015),
+    scaleY: 1 - chamber * 0.035 - contact * 0.015,
   };
 }
 
@@ -125,6 +125,22 @@ function rearHandMotion(progress: number): PhotoAttackMotion {
     rotation: chamber * 0.09 - contact * 0.18,
     scaleX: 1 + contact * 0.045,
     scaleY: 1 - chamber * 0.02 + contact * 0.01,
+  };
+}
+
+/**
+ * L lifts the rear knee from behind the stance, turns the hip over and sends
+ * that leg past the lead side. Its deeper coil and higher contact travel keep
+ * it visibly separate from I's lead-leg kick.
+ */
+function rearLegMotion(progress: number): PhotoAttackMotion {
+  const { chamber, contact } = kickEnvelope(progress);
+  return {
+    x: -chamber * 0.09 + contact * 0.12,
+    y: -chamber * 0.06 + contact * 0.15,
+    rotation: chamber * 0.12 - contact * 0.16,
+    scaleX: 1 + contact * 0.045,
+    scaleY: 1 - chamber * 0.025 + contact * 0.035,
   };
 }
 
