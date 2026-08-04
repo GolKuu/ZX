@@ -18,6 +18,7 @@ export interface CharacterDefinition {
   readonly health: number;
   readonly speed: number;
   readonly damage: number;
+  readonly impactArmour: number;
   readonly mechanic: string;
 }
 
@@ -34,6 +35,7 @@ export const CHARACTER_ROSTER = [
     health: 72,
     speed: 88,
     damage: 68,
+    impactArmour: 118,
     mechanic: 'Сценические ловушки',
   },
   {
@@ -48,6 +50,7 @@ export const CHARACTER_ROSTER = [
     health: 62,
     speed: 96,
     damage: 71,
+    impactArmour: 108,
     mechanic: 'Spatial Shift',
   },
   {
@@ -62,6 +65,7 @@ export const CHARACTER_ROSTER = [
     health: 70,
     speed: 90,
     damage: 76,
+    impactArmour: 112,
     mechanic: 'Управление Удачей',
   },
   {
@@ -76,6 +80,7 @@ export const CHARACTER_ROSTER = [
     health: 86,
     speed: 74,
     damage: 88,
+    impactArmour: 128,
     mechanic: 'Pain-to-Power Rage',
   },
   {
@@ -90,6 +95,7 @@ export const CHARACTER_ROSTER = [
     health: 100,
     speed: 48,
     damage: 96,
+    impactArmour: 150,
     mechanic: 'Броня и захваты',
   },
 ] as const satisfies readonly CharacterDefinition[];

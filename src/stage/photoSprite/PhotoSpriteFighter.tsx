@@ -125,13 +125,20 @@ export function PhotoSpriteFighter({
         fighter.action.moveId,
         combatAnimationProgress(fighter.action.moveId, fighter.action.frame),
       );
-    drawing.position.set(motion.x, CENTER_Y + motion.y, 0);
+    const knockedDown = fighter.knockdownFrames > 0;
+    drawing.position.set(
+      motion.x,
+      CENTER_Y + motion.y - (knockedDown ? DISPLAY_HEIGHT * 0.36 : 0),
+      0,
+    );
     drawing.scale.set(
       motion.scaleX * (1 + impact),
       motion.scaleY * (1 - impact),
       1,
     );
-    drawing.rotation.z = fighter.hitstun > 0
+    drawing.rotation.z = knockedDown
+      ? -fighter.facing * 1.18
+      : fighter.hitstun > 0
       ? Math.sin(clock.elapsedTime * 42) * 0.035
       : motion.rotation;
   });

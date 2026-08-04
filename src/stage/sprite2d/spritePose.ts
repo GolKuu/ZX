@@ -706,7 +706,7 @@ export function spritePoseFor(
   hurtZone: HurtZone = 'body',
   attackTransition: SpriteAttackTransition = 'windup',
 ): SpritePose {
-  if (fighter.health <= 0) {
+  if (fighter.health <= 0 || fighter.knockdownFrames > 0) {
     return withinLimits(knockout());
   }
 

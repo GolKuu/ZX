@@ -9,6 +9,9 @@ export function photoFrameFor(
   fighter: FighterSnapshot,
   elapsedTime: number,
 ): number {
+  if (fighter.knockdownFrames > 0) {
+    return frame(2, 3);
+  }
   if (fighter.hitstun > 0) {
     return frame(1, 3);
   }

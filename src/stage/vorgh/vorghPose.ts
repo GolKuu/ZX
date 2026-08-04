@@ -30,7 +30,9 @@ export function vorghPose(
   transition: number,
   playback?: VorghPlayback,
 ): VorghPose {
-  if (fighter.health === 0) return pose({ lean: -1.35, rootY: 0.1, scaleY: 0.72 });
+  if (fighter.health === 0 || fighter.knockdownFrames > 0) {
+    return pose({ lean: -1.35, rootY: 0.1, scaleY: 0.72 });
+  }
   if (fighter.hitstun > 0) {
     return reactionPose(playback?.clipId, fighter.hitstun);
   }

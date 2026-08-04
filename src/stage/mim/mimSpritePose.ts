@@ -66,7 +66,7 @@ export function mimSpritePoseFor(
   time: number,
   beat: MimAnimationBeat | null,
 ): MimSpritePose {
-  if (fighter.health <= 0) {
+  if (fighter.health <= 0 || fighter.knockdownFrames > 0) {
     return KO_POSE;
   }
 

@@ -8,7 +8,9 @@ export function applyLuckyCombatAnimation(
   fighter: FighterSnapshot,
   time: number,
 ): void {
-  if (fighter.health <= 0) return knockdown(rig, fighter.facing);
+  if (fighter.health <= 0 || fighter.knockdownFrames > 0) {
+    return knockdown(rig, fighter.facing);
+  }
   if (fighter.action !== null) {
     return attack(
       rig,

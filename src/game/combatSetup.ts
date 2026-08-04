@@ -160,10 +160,12 @@ function fighterDefinition(
       ? LUCKY_MAX_HEALTH : characterId === 'glitch' ? GLITCH_MAX_HEALTH : MIM_MAX_HEALTH;
   const baseMovement=characterId==='vorgh'?VORGH_MOVEMENT:characterId==='titan'?TITAN_MOVEMENT:characterId==='lucky'?LUCKY_MOVEMENT:characterId==='glitch'?GLITCH_MOVEMENT:MIM_MOVEMENT;
   const modifier=compileFighterModifier(characterId,progressionNodes,baseMovement,maxHealth);
+  const character = getCharacterDefinition(characterId);
   return {
     id,
     team,
     maxHealth: modifier.maxHealth,
+    impactArmour: character.impactArmour,
     spawn: { x: fixed(x), y: 0 },
     facing,
     hurtboxes: characterId === 'vorgh'

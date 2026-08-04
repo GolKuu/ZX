@@ -126,7 +126,7 @@ function poseByState(
   time: number,
   choreography?: Readonly<Record<string, AttackPose>>,
 ): void {
-  if (fighter.health <= 0) {
+  if (fighter.health <= 0 || fighter.knockdownFrames > 0) {
     poseKnockout(joints, rest, fighter);
     return;
   }

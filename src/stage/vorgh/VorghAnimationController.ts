@@ -78,6 +78,7 @@ function chooseClip(
   tier: VorghAnimationState['tier'],
 ): string {
   if (fighter.health === 0) return 'defeat';
+  if (fighter.knockdownFrames > 0) return 'knockdown';
   if (fighter.hitstun > 0) {
     if (fighter.resourceLockFrames > 0) return 'guard-break';
     if (state.wasGuarding && fighter.guardHealth <= 25) return 'guard-crush';

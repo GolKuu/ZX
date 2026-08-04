@@ -111,7 +111,6 @@ export function resolveHit(
   }
 
   const armour = activeArmour(candidate);
-  const knockedDown = canKnockDown(defender, hit);
   const airScaling = readAirScaling(candidate);
   const isCounterHit = defender.action !== null;
   const baseDamage = armour === null
@@ -132,6 +131,7 @@ export function resolveHit(
     ),
   );
   defender.health = Math.max(0, defender.health - damage);
+  const knockedDown = canKnockDown(defender, hit);
   const lowHealthMultiplier =
     defender.health * 100 <= defender.maxHealth * 30 ? 125 : 100;
   addResource(
