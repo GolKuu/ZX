@@ -102,12 +102,14 @@ test('an airborne fighter is never pushed below its standing centre', () => {
 test('the landing squashes the body and rebounds before settling', () => {
   const landing = photoFallPose(down(0), 0);
   const squash = photoFallPose(down(2), 0);
-  const rebound = photoFallPose(down(6), 0);
+  const deepest = photoFallPose(down(6), 0);
+  const rebound = photoFallPose(down(9), 0);
   const settled = photoFallPose(down(20), 0);
 
   assert.ok(squash.scaleY < landing.scaleY, 'the impact must compress the body');
   assert.ok(squash.scaleX > landing.scaleX, 'a compressed body must spread');
-  assert.ok(rebound.drop < squash.drop, 'the body must rebound off the floor');
+  assert.ok(deepest.drop > landing.drop, 'the body must reach the floor');
+  assert.ok(rebound.drop < deepest.drop, 'the body must rebound off the floor');
   assert.ok(settled.drop > rebound.drop, 'the body must then settle flat');
   assert.ok(
     Math.abs(settled.scaleY - 1) < 0.02,
