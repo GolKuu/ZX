@@ -141,6 +141,7 @@ export function PhotoSpriteFighter({
       : fighter.hitstun > 0
       ? Math.sin(clock.elapsedTime * 42) * 0.035
       : motion.rotation;
+    drawing.rotation.y = knockedDown ? 0 : motion.turnY;
   });
 
   const width = DISPLAY_HEIGHT;

@@ -65,6 +65,16 @@ test('the four attack buttons have separate full animation cycles', () => {
   assert.equal(new Set(motions).size, 4, 'a body-motion cycle was reused');
 });
 
+test('K and L turn their back to the player while J and I stay front-readable', () => {
+  const [, k, i, l] = BASIC_ATTACKS.glitch.map((moveId) =>
+    photoAttackMotion(moveId, 0.52));
+  const j = photoAttackMotion(BASIC_ATTACKS.glitch[0], 0.52);
+  assert.ok(j.turnY < Math.PI * 0.1, 'J must remain a direct front-readable jab');
+  assert.ok((i?.turnY ?? 0) < Math.PI * 0.1, 'I must remain a direct low kick');
+  assert.ok((k?.turnY ?? 0) > Math.PI * 0.85, 'K must show the fighter\'s back');
+  assert.ok((l?.turnY ?? 0) > Math.PI * 0.85, 'L must show the fighter\'s back');
+});
+
 test('K visibly coils and drives from the rear shoulder', () => {
   const windup = photoAttackMotion('glitch.rift-elbow', 0.25);
   const contact = photoAttackMotion('glitch.rift-elbow', 0.52);
@@ -72,7 +82,7 @@ test('K visibly coils and drives from the rear shoulder', () => {
   assert.ok(windup.x < 0 && windup.rotation > 0, 'rear shoulder must coil first');
   assert.ok(contact.x > 0 && contact.rotation < 0, 'rear hand must cross through');
   assert.deepEqual(recovery, {
-    x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1,
+    x: 0, y: 0, rotation: 0, turnY: 0, scaleX: 1, scaleY: 1,
   });
 });
 
@@ -84,7 +94,7 @@ test('L visibly chambers and strikes with the rear leg', () => {
   assert.ok(contact.x > 0 && contact.y > 0, 'rear leg must cross forward and rise');
   assert.ok(contact.rotation < 0, 'rear hip must turn through the strike');
   assert.deepEqual(recovery, {
-    x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1,
+    x: 0, y: 0, rotation: 0, turnY: 0, scaleX: 1, scaleY: 1,
   });
 });
 
@@ -116,6 +126,6 @@ test('kick animation has anticipation, contact travel and a neutral return', () 
   assert.ok(windup.x < 0, 'the fighter must coil before the kick');
   assert.ok(contact.x > 0 && contact.y > 0, 'the heel must drive forward and rise');
   assert.deepEqual(recovery, {
-    x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1,
+    x: 0, y: 0, rotation: 0, turnY: 0, scaleX: 1, scaleY: 1,
   });
 });

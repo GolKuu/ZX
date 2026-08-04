@@ -10,6 +10,8 @@ export interface PhotoAttackMotion {
   readonly x: number;
   readonly y: number;
   readonly rotation: number;
+  /** Turn around the vertical axis; PI presents the fighter's back. */
+  readonly turnY: number;
   readonly scaleX: number;
   readonly scaleY: number;
 }
@@ -108,6 +110,7 @@ export function photoAttackMotion(
     x: -chamber * 0.055 + contact * (low ? 0.13 : 0.09),
     y: chamber * (low ? -0.1 : -0.045) + contact * (low ? -0.07 : 0.035),
     rotation: chamber * (low ? 0.055 : 0.035) - contact * 0.045,
+    turnY: low ? contact * 0.12 : 0,
     scaleX: 1 + contact * 0.035,
     scaleY: 1 - chamber * 0.035 - contact * 0.015,
   };
@@ -120,6 +123,7 @@ function leadHandMotion(progress: number): PhotoAttackMotion {
     x: -chamber * 0.015 + contact * 0.08,
     y: contact * 0.015,
     rotation: -contact * 0.035,
+    turnY: 0,
     scaleX: 1 + contact * 0.025,
     scaleY: 1 - contact * 0.01,
   };
@@ -136,6 +140,10 @@ function rearHandMotion(progress: number): PhotoAttackMotion {
     x: -chamber * 0.07 + contact * 0.16,
     y: -chamber * 0.02 + contact * 0.03,
     rotation: chamber * 0.09 - contact * 0.18,
+    turnY: Math.PI * Math.max(
+      chamber * 0.72,
+      Math.min(1, contact * 1.18),
+    ),
     scaleX: 1 + contact * 0.045,
     scaleY: 1 - chamber * 0.02 + contact * 0.01,
   };
@@ -152,6 +160,10 @@ function rearLegMotion(progress: number): PhotoAttackMotion {
     x: -chamber * 0.09 + contact * 0.12,
     y: -chamber * 0.06 + contact * 0.15,
     rotation: chamber * 0.12 - contact * 0.16,
+    turnY: Math.PI * Math.max(
+      chamber * 0.9,
+      Math.min(1, contact * 1.15),
+    ),
     scaleX: 1 + contact * 0.045,
     scaleY: 1 - chamber * 0.025 + contact * 0.035,
   };
@@ -170,7 +182,7 @@ function kickEnvelope(progress: number): { chamber: number; contact: number } {
 }
 
 function neutralMotion(): PhotoAttackMotion {
-  return { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 };
+  return { x: 0, y: 0, rotation: 0, turnY: 0, scaleX: 1, scaleY: 1 };
 }
 
 function clamp01(value: number): number {
