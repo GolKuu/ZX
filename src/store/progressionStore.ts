@@ -66,13 +66,11 @@ export const useProgressionStore = create<ProgressionState>((set, get) => ({
     const award = awardGloryWin(get().profile, { xp, matchId });
     if (award.profile === get().profile) return;
     const standing = gloryStanding(award.profile);
-    const language = get().language;
     set((state) => ({
       profile: persist(award.profile),
       lastGlory: { matchId, xpGained: award.xpGained, totalXp: standing.xp, level: standing.level, unlocked: award.unlocked },
-      notices: [...state.notices, notice(language === 'ru' ? 'ПУТЬ К СЛАВЕ' : 'GLORY ROAD', `+${award.xpGained} XP`),
-        ...award.unlocked.map((tier) => notice(language === 'ru' ? 'НАГРАДА ОТКРЫТА' : 'REWARD UNLOCKED',
-          `${language === 'ru' ? tier.titleRu : tier.title} · +${tier.tokens}`))],
+      notices: [...state.notices, notice('ПУТЬ К СЛАВЕ', `+${award.xpGained} XP`),
+        ...award.unlocked.map((tier) => notice('НАГРАДА ОТКРЫТА', `${tier.title} · +${tier.tokens}`))],
     }));
   },
 }));

@@ -1,0 +1,362 @@
+/*
+ * The camera, the set pieces and the lens.
+ *
+ * Three layers, in this order:
+ *   .camera   framing + move, wrapped around the authored staging
+ *   .frame    anything that has to restart on a cut (flash, wash, jolt)
+ *   .film     lens dirt that never restarts (grain, vignette, aberration)
+ *
+ * `--shot-seconds` is the shot's authored running time and drives every move, so
+ * a camera move always lands exactly on the cut. `--shot-progress` is written by
+ * the director on the scene root each frame; effects that have to stay locked to
+ * playback (the count) read it instead of running a keyframe of their own.
+ */
+
+.film {
+  --cyan: #6af4e8;
+  --magenta: #e54fff;
+  --violet: #b07cff;
+  position: absolute;
+  z-index: 1;
+  container-type: size;
+  inset: 0;
+  overflow: hidden;
+  background: #02040a;
+  pointer-events: none;
+}
+
+.frame,
+.camera {
+  position: absolute;
+  inset: 0;
+}
+
+/* ---------------------------------------------------------------- camera */
+
+.camera {
+  --zoom: 1;
+  --tilt: 0deg;
+  --origin-x: 50%;
+  --origin-y: 46%;
+  transform-origin: var(--origin-x) var(--origin-y);
+  animation-duration: var(--shot-seconds);
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.33, 0.02, 0.16, 1);
+  will-change: transform;
+}
+
+.film[data-framing="void"] .camera { --zoom: 0.88; filter: blur(0.16cqw) brightness(0.66) saturate(0.75); }
+.film[data-framing="wide"] .camera { --zoom: 1; }
+.film[data-framing="medium"] .camera { --zoom: 1.45; }
+.film[data-framing="close"] .camera { --zoom: 2.1; }
+.film[data-framing="macro"] .camera { --zoom: 3.4; filter: contrast(1.1) saturate(1.2); }
+.film[data-framing="low"] .camera { --zoom: 1.62; --tilt: 6deg; }
+
+/* The zoom pivots on whoever the shot is about. */
+.film[data-subject="space"] .camera { --origin-x: 50%; --origin-y: 42%; }
+.film[data-subject="glitch"] .camera { --origin-x: 21%; --origin-y: 56%; }
+.film[data-subject="opposite"] .camera { --origin-x: 50%; --origin-y: 54%; }
+.film[data-subject="both"] .camera { --origin-x: 35%; --origin-y: 55%; }
+
+.film[data-move="hold"] .camera { animation-name: move-hold; }
+.film[data-move="push"] .camera { animation-name: move-push; }
+.film[data-move="pull"] .camera { animation-name: move-pull; }
+.film[data-move="pan-left"] .camera { animation-name: move-pan-left; }
+.film[data-move="pan-right"] .camera { animation-name: move-pan-right; }
+.film[data-move="crane"] .camera { animation-name: move-crane; }
+.film[data-move="handheld"] .camera { animation-name: move-hold; }
+.film[data-move="snap"] .camera { animation-name: move-snap; animation-timing-function: cubic-bezier(0.16, 1.02, 0.24, 1); }
+
+/* Handheld shakes the whole frame, the way an operator would, not the subject. */
+.film[data-move="handheld"] .frame { animation: frame-handheld 3.1s ease-in-out infinite; }
+
+@keyframes move-hold {
+  from { transform: perspective(120cqw) rotateX(var(--tilt)) scale(var(--zoom)) translate(0, 0); }
+  to { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.035)) translate(-0.4cqw, 0); }
+}
+
+@keyframes move-push {
+  from { transform: perspective(120cqw) rotateX(var(--tilt)) scale(var(--zoom)); }
+  to { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.17)); }
+}
+
+@keyframes move-pull {
+  from { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.2)); }
+  to { transform: perspective(120cqw) rotateX(var(--tilt)) scale(var(--zoom)); }
+}
+
+@keyframes move-pan-left {
+  from { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.06)) translateX(3.2cqw); }
+  to { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.06)) translateX(-3.2cqw); }
+}
+
+@keyframes move-pan-right {
+  from { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.06)) translateX(-3.2cqw); }
+  to { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.06)) translateX(3.2cqw); }
+}
+
+@keyframes move-crane {
+  from { transform: perspective(120cqw) rotateX(calc(var(--tilt) + 9deg)) scale(calc(var(--zoom) * 1.1)) translateY(-5cqh); }
+  to { transform: perspective(120cqw) rotateX(var(--tilt)) scale(var(--zoom)) translateY(0); }
+}
+
+/* A cut that lands hard: overshoot, then settle inside the first fifth. */
+@keyframes move-snap {
+  0% { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.32)) translateX(1.6cqw); opacity: 0.35; }
+  16% { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 0.99)) translateX(-0.3cqw); opacity: 1; }
+  100% { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.04)); opacity: 1; }
+}
+
+@keyframes frame-handheld {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(0.35cqw, -0.25cqh) rotate(0.16deg); }
+  50% { transform: translate(-0.3cqw, 0.3cqh) rotate(-0.14deg); }
+  75% { transform: translate(0.2cqw, 0.2cqh) rotate(0.1deg); }
+}
+
+/* ------------------------------------------------------------ the count */
+
+/*
+ * Twelve numerals on a ring. Their reveal is driven by `--shot-progress` rather
+ * than by a keyframe, so the count finishes exactly when the shot does — pause
+ * the film and the counting stops with it.
+ */
+.marks {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.film[data-effect="count"] .marks { opacity: 1; }
+
+.marks span {
+  position: absolute;
+  top: 44%;
+  left: 22%;
+  color: #dffcff;
+  font: 700 1.5cqw/1 ui-monospace, monospace;
+  text-shadow: 0 0 1.2cqw var(--cyan);
+  opacity: clamp(0, calc(var(--shot-progress, 0) * 15 - var(--mark)), 1);
+  transform:
+    rotate(calc(var(--mark) * 30deg))
+    translateX(13cqw)
+    rotate(calc(var(--mark) * -30deg));
+}
+
+/* Four corners are the room's. The other eight are only his. */
+.marks span:nth-child(n + 5) {
+  color: #ffd9ff;
+  text-shadow: 0 0 1.4cqw var(--magenta), 0 0 3cqw var(--magenta);
+}
+
+/* ------------------------------------------------------------- the rift */
+
+.rift {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.rift::before {
+  position: absolute;
+  top: 6%;
+  left: 46%;
+  width: 14cqw;
+  height: 88%;
+  background: linear-gradient(90deg, transparent, var(--magenta) 40% 60%, transparent);
+  clip-path: polygon(
+    48% 0%, 63% 11%, 44% 24%, 67% 39%, 43% 55%,
+    61% 70%, 46% 85%, 57% 100%, 41% 100%, 33% 83%,
+    52% 67%, 30% 51%, 55% 35%, 32% 21%, 40% 9%
+  );
+  filter: blur(0.14cqw) drop-shadow(0 0 2.2cqw var(--magenta));
+  content: "";
+  transform: translateX(-50%) rotate(5deg);
+}
+
+.film[data-effect="tear"] .rift {
+  animation: rift-open var(--shot-seconds) cubic-bezier(0.2, 0.85, 0.2, 1) both;
+}
+
+@keyframes rift-open {
+  0% { opacity: 0; transform: scaleY(0.05) scaleX(0.4); }
+  35% { opacity: 1; transform: scaleY(1) scaleX(1.15); }
+  100% { opacity: 0.75; transform: scaleY(1) scaleX(0.85); }
+}
+
+/* -------------------------------------------------------- the afterimages */
+
+.echoes span {
+  position: absolute;
+  bottom: 33cqh;
+  left: 13cqw;
+  width: 15cqw;
+  height: 40cqh;
+  border: 0.12cqw solid rgb(106 244 232 / 55%);
+  border-radius: 28% 28% 14% 14%;
+  box-shadow: inset 0 0 2cqw rgb(106 244 232 / 12%);
+  opacity: 0;
+}
+
+.echoes span:nth-child(even) { border-color: rgb(229 79 255 / 55%); }
+
+.film[data-effect="echo-storm"] .echoes span {
+  animation: echo-fly 2.3s calc(var(--echo) * 0.19s) ease-out infinite;
+}
+
+@keyframes echo-fly {
+  0% { opacity: 0; transform: translate(0, 0) scale(1); }
+  18% { opacity: 0.6; }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--dx) * 1cqw), calc(var(--dy) * 1cqh)) scale(1.12);
+  }
+}
+
+/* ----------------------------------------------------------- the shatter */
+
+.cracks span {
+  position: absolute;
+  top: 22%;
+  left: 24%;
+  width: 0.2cqw;
+  height: 58cqh;
+  background: linear-gradient(#eaffff, rgb(106 244 232 / 0%));
+  box-shadow: 0 0 1.1cqw var(--cyan);
+  opacity: 0;
+  transform: rotate(var(--rot)) scaleY(0);
+  transform-origin: 50% 0;
+}
+
+.film[data-effect="shatter"] .cracks span {
+  animation: crack-run 1.9s calc(var(--crack) * 0.08s) cubic-bezier(0.1, 0.9, 0.2, 1) infinite;
+}
+
+.film[data-effect="shatter"] .frame { animation: frame-jolt 0.42s cubic-bezier(0.3, 1.6, 0.4, 1) both; }
+
+@keyframes crack-run {
+  0% { opacity: 0; transform: rotate(var(--rot)) scaleY(0); }
+  12% { opacity: 0.9; transform: rotate(var(--rot)) scaleY(1); }
+  70% { opacity: 0.25; }
+  100% { opacity: 0; transform: rotate(var(--rot)) scaleY(1); }
+}
+
+@keyframes frame-jolt {
+  0% { transform: translate(1.4cqw, -0.8cqh) rotate(0.5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* ------------------------------------------------- washes, flash, lens */
+
+/* One overlay, coloured by whichever effect claimed the shot. */
+.wash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+
+.film[data-effect="possession"] .wash {
+  background:
+    radial-gradient(circle at 52% 48%, rgb(229 79 255 / 55%), transparent 58%),
+    linear-gradient(rgb(60 8 90 / 45%), rgb(12 2 22 / 55%));
+  animation: wash-possess 2.4s ease-in-out infinite;
+}
+
+.film[data-effect="bloom"] .wash {
+  background: radial-gradient(circle at 24% 50%, rgb(255 255 255 / 70%), rgb(106 244 232 / 18%) 34%, transparent 62%);
+  animation: wash-bloom var(--shot-seconds) cubic-bezier(0.3, 0.1, 0.2, 1) both;
+}
+
+.flash {
+  position: absolute;
+  inset: 0;
+  background: #f4feff;
+  opacity: 0;
+}
+
+.film[data-effect="flash"] .flash { animation: flash-cut var(--shot-seconds) cubic-bezier(0.1, 0.9, 0.2, 1) both; }
+
+@keyframes wash-possess {
+  0%, 100% { opacity: 0.28; }
+  50% { opacity: 0.62; }
+}
+
+@keyframes wash-bloom {
+  0% { opacity: 0; }
+  55% { opacity: 0.85; }
+  100% { opacity: 0.5; }
+}
+
+@keyframes flash-cut {
+  0% { opacity: 0.95; }
+  22% { opacity: 0.28; }
+  100% { opacity: 0; }
+}
+
+/* A split down the red and cyan edges: the cheap read of a lens under strain. */
+.aberration {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(255 42 96 / 22%), transparent 14%, transparent 86%, rgb(64 204 255 / 22%));
+  opacity: 0.35;
+  mix-blend-mode: screen;
+}
+
+.film[data-effect="possession"] .aberration,
+.film[data-effect="shatter"] .aberration { opacity: 1; }
+
+/*
+ * Film grain, as one inline turbulence tile stepped around the frame. Nothing to
+ * download, one composited layer, and it is the single change that stops the
+ * whole scene reading as flat CSS.
+ */
+.grain {
+  position: absolute;
+  inset: -50%;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='0.55'/></svg>");
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  animation: grain-shift 0.7s steps(6) infinite;
+}
+
+@keyframes grain-shift {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -2%); }
+  80% { transform: translate(3%, 1%); }
+  100% { transform: translate(0, 0); }
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 42% 46%, transparent 34%, rgb(2 4 10 / 72%) 96%),
+    linear-gradient(rgb(2 4 10 / 45%), transparent 22% 74%, rgb(2 4 10 / 55%));
+}
+
+/* -------------------------------------------------------------- reduced */
+
+/*
+ * Reduced motion keeps the cut, drops the movement: every shot still gets its
+ * own framing, colour and set piece, they just arrive instead of travelling.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .film[data-move] .camera,
+  .film[data-move="handheld"] .frame,
+  .film[data-effect="shatter"] .frame,
+  .film[data-effect] .cracks span,
+  .film[data-effect] .echoes span,
+  .film[data-effect] .wash,
+  .film[data-effect] .rift,
+  .film[data-effect] .flash {
+    animation-duration: 0.4s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .grain { animation: none; }
+}

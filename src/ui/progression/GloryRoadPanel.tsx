@@ -41,13 +41,10 @@ function TierRow({ language, tier, unlocked }: {
     <li data-unlocked={unlocked}>
       <i aria-hidden="true">{unlocked ? '★' : '☆'}</i>
       <div>
-        <b>{language === 'ru' ? tier.titleRu : tier.title}</b>
+        <b>{tier.title}</b>
         <small>{tier.xp} XP</small>
       </div>
-      <span>
-        +{tokenLabel(tier.tokens, language)}
-        {tier.cosmetics.map((cosmetic) => <em key={cosmetic}>{cosmetic}</em>)}
-      </span>
+      <span>+{tokenLabel(tier.tokens, language)}</span>
     </li>
   );
 }

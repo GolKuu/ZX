@@ -15,7 +15,7 @@ export function GloryResultStrip() {
       <strong>+{award.xpGained} XP СЛАВЫ</strong>
       <span>Уровень {award.level} · всего {award.totalXp} XP</span>
       {award.unlocked.map((tier) => (
-        <em key={tier.id}>НАГРАДА: {tier.titleRu} · +{tier.tokens} токенов</em>
+        <em key={tier.id}>НАГРАДА: {tier.title} · +{tier.tokens} токенов</em>
       ))}
     </section>
   );
