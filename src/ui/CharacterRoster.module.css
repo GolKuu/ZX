@@ -53,47 +53,40 @@
   text-align: left;
   background: rgb(17 24 34 / 72%);
   border: 1px solid var(--select-line);
-  grid-template-columns: 3.4cqw minmax(0, 1fr);
+  grid-template-columns: 4.2cqw minmax(0, 1fr);
+  overflow: hidden;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
 }
 
-.characterList button > i {
-  display: grid;
-  height: 3.4cqw;
-  place-items: center;
+.thumb {
+  position: relative;
+  display: block;
+  width: 4.2cqw;
+  height: 4.2cqw;
+  overflow: hidden;
   color: #9bdcff;
-  background: linear-gradient(145deg, #263e52, #101820);
-  font-size: 1.65cqw;
+  background-color: #101820;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: 400% 400%;
   font-style: normal;
   font-weight: 950;
+  image-rendering: pixelated;
 }
 
-.characterList button[data-character="glitch"] > i {
-  color: #16e6ff;
-  background: linear-gradient(145deg, #ff2bd6, #080a10 58%);
-  text-shadow: 0.12cqw 0 #ff2bd6;
+.thumb span {
+  position: absolute;
+  right: 0.15cqw;
+  bottom: -0.25cqw;
+  color: rgb(255 255 255 / 14%);
+  font-size: 2.4cqw;
 }
 
-.characterList button[data-character="mim"] > i {
-  color: #ffd52a;
-  background: linear-gradient(145deg, #6f35cf, #28104f);
-}
-
-.characterList button[data-character="lucky"] > i {
-  color: #e2b94d;
-  background:
-    radial-gradient(circle at 52% 42%, #174d38 0 28%, transparent 30%),
-    linear-gradient(145deg, #111813, #5d1425);
-}
-
-.characterList button[data-character="vorgh"] > i {
-  color: #ff6a1a;
-  text-shadow: 0 0 1rem #8d1717;
-}
-
-.characterList button[data-character="titan"] > i {
-  border-color: #778188;
-  background: linear-gradient(135deg, #4b555b, #171d20 58%, #ff7417 60% 66%, #171d20 68%);
-}
+.characterList button[data-character="mim"] .thumb { background-image: url('/sprites/reference-fighters/mim-atlas.webp'); }
+.characterList button[data-character="glitch"] .thumb { background-image: url('/sprites/reference-fighters/glitch-atlas.webp'); }
+.characterList button[data-character="lucky"] .thumb { background-image: url('/sprites/reference-fighters/lucky-atlas.webp'); }
+.characterList button[data-character="vorgh"] .thumb { background-image: url('/sprites/reference-fighters/vorgh-atlas.webp'); }
+.characterList button[data-character="titan"] .thumb { background-image: url('/sprites/reference-fighters/titan-atlas.webp'); }
 
 .characterList button > span {
   display: grid;

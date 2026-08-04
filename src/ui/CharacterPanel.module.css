@@ -222,8 +222,8 @@
   }
 }
 
-.panel .portrait i {
-  width: 24cqw;
+.panel[data-character] .portrait i {
+  width: 34cqw;
   height: 34cqw;
   background-color: transparent;
   background-position: left top;

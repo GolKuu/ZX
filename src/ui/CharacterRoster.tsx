@@ -1,9 +1,5 @@
 import { useEffect, useRef } from 'react';
-import {
-  CHARACTER_ROSTER,
-  type CharacterDefinition,
-  type CharacterId,
-} from '@/src/data/characterRoster';
+import { CHARACTER_ROSTER, type CharacterDefinition, type CharacterId } from '@/src/data/characterRoster';
 import styles from './CharacterRoster.module.css';
 
 interface CharacterRosterProps {
@@ -15,19 +11,9 @@ interface CharacterRosterProps {
   readonly onFocus: (index: number) => void;
 }
 
-export function CharacterRoster({
-  activeSlot,
-  focus,
-  focusedCharacter,
-  opponentTag,
-  onChoose,
-  onFocus,
-}: CharacterRosterProps) {
+export function CharacterRoster({ activeSlot, focus, focusedCharacter, opponentTag, onChoose, onFocus }: CharacterRosterProps) {
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
-
-  useEffect(() => {
-    buttonRefs.current[focus]?.focus();
-  }, [focus]);
+  useEffect(() => { buttonRefs.current[focus]?.focus(); }, [focus]);
 
   return (
     <section className={styles.roster}>
@@ -39,9 +25,7 @@ export function CharacterRoster({
         {CHARACTER_ROSTER.map((character, index) => (
           <button
             key={character.id}
-            ref={(element) => {
-              buttonRefs.current[index] = element;
-            }}
+            ref={(element) => { buttonRefs.current[index] = element; }}
             type="button"
             data-character={character.id}
             data-focused={index === focus}
@@ -50,12 +34,9 @@ export function CharacterRoster({
             onFocus={() => onFocus(index)}
             onPointerEnter={() => onFocus(index)}
           >
-            <i aria-hidden="true">{character.mark}</i>
+            <i aria-hidden="true" className={styles.thumb}><span>{character.mark}</span></i>
             <span>
-              <strong>
-                {character.displayName}
-                {character.isNew === true && <em>NEW</em>}
-              </strong>
+              <strong>{character.displayName}{character.isNew === true && <em>NEW</em>}</strong>
               <small>{character.archetype}</small>
             </span>
           </button>
