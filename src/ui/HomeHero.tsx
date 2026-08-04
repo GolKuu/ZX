@@ -8,28 +8,19 @@ export function HomeHero() {
     <section className={styles.hero}>
       <div className={styles.copy}>
         <p className={styles.eyebrow}>
-          <span>3D-ФАЙТИНГ В БРАУЗЕРЕ</span>
+          <span>БРАУЗЕРНЫЙ ФАЙТИНГ // 1 НА 1</span>
           <b>СЕЗОН 01</b>
         </p>
-        <h1>
-          Выбери бойца.
-          <span>Забери раунд.</span>
-        </h1>
+        <h1>Твой стиль.<span>Твои правила.</span></h1>
         <p className={styles.description}>
-          Быстрые матчи один на один, выразительные бойцы и удары,
-          которые ощущаются с первого попадания.
+          Пять непохожих бойцов, быстрые локальные матчи и умный соперник.
+          Выбери характер — и забери арену.
         </p>
         <div className={styles.actions}>
-          <Link className={styles.primaryCta} href="/play">
-            Начать бой
-            <span aria-hidden="true">→</span>
-          </Link>
+          <Link className={styles.primaryCta} href="/play">Играть сейчас<span aria-hidden="true">→</span></Link>
           <HomeSettingsButton variant="secondary" />
         </div>
-        <p className={styles.inputNote}>
-          <span aria-hidden="true">●</span>
-          Играй сразу · без загрузки и установки
-        </p>
+        <p className={styles.inputNote}><span aria-hidden="true">●</span>Без установки · клавиатура, геймпад и сенсорное управление</p>
       </div>
       <HomeArtwork />
     </section>

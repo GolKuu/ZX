@@ -1,21 +1,30 @@
-import Image from 'next/image';
+import Link from 'next/link';
+import { CHARACTER_ROSTER } from '@/src/data/characterRoster';
 import styles from './HomeArtwork.module.css';
 
 export function HomeArtwork() {
   return (
-    <div className={styles.artwork}>
-      <Image
-        alt="VORGH сражается с GLITCH на арене Null Circle"
-        className={styles.image}
-        fill
-        priority
-        sizes="(max-width: 760px) 100vw, 62vw"
-        src="/assets/home/current-fighters.webp"
-      />
-      <div className={styles.caption}>
-        <span>NULL CIRCLE · ARENA 01</span>
-        <strong>VORGH VS GLITCH</strong>
+    <section className={styles.artwork} aria-label="Доступные бойцы">
+      <header className={styles.topline}>
+        <span>РОСТЕР // СЕЗОН 01</span>
+        <b>5 БОЙЦОВ В СТРОЮ</b>
+      </header>
+      <div className={styles.fighters}>
+        {CHARACTER_ROSTER.map((fighter, index) => (
+          <Link className={styles.fighter} data-character={fighter.id} data-featured={index === 2} href="/play" key={fighter.id}>
+            <span className={styles.index}>0{index + 1}</span>
+            <i className={styles.sprite} aria-hidden="true" />
+            <span className={styles.name}>
+              <strong>{fighter.displayName}</strong>
+              <small>{fighter.mechanic}</small>
+            </span>
+          </Link>
+        ))}
       </div>
-    </div>
+      <footer className={styles.caption}>
+        <span>У КАЖДОГО — СВОЙ ТЕМП, МЕХАНИКА И СУПЕРПРИЁМ</span>
+        <strong>ВЫБРАТЬ БОЙЦА →</strong>
+      </footer>
+    </section>
   );
 }

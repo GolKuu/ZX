@@ -7,15 +7,10 @@ export function HomeHeader() {
   return (
     <header className={styles.header}>
       <Link className={styles.brand} href="/" aria-label="Circle Clash Ultimate">
-        <span>CC</span>
-        <b>CIRCLE CLASH</b>
-        <small>ULTIMATE</small>
+        <span>CC</span><b>CIRCLE CLASH</b><small>ULTIMATE</small>
       </Link>
       <div className={styles.actions}>
-        <span className={styles.status}>
-          <i aria-hidden="true" />
-          ИГРОВАЯ СБОРКА
-        </span>
+        <span className={styles.status}><i aria-hidden="true" />ИГРОВАЯ СБОРКА</span>
         <HomeSettingsButton variant="compact" />
         <AccountLinkButton />
       </div>
