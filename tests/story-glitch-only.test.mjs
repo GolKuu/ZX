@@ -5,8 +5,15 @@ import test from 'node:test';
 import {
   STORY_CHAPTERS,
   STORY_PLAYER_CHARACTER_ID,
+  storyChapterHasBattle,
   storySelection,
 } from '../.sim-test-build/src/story/campaign.js';
+import {
+  STORY_CINEMATIC_BEAT_NAMES,
+  storyCinematic,
+  storyLineFocus,
+  storyLineIntensity,
+} from '../.sim-test-build/src/story/cinematics.js';
 import {
   completeStoryBattle,
   migrateStorySave,
@@ -69,6 +76,85 @@ test('campaign integrates bilingual subtitles and the required Glitch cinematic 
   assert.equal(GLITCH_CINEMATIC_ASSETS.internalCoordinateSequences.length, 2);
   assert.equal(GLITCH_CINEMATIC_ASSETS.corruptedTransformation.length, 1);
   assert.equal(GLITCH_CINEMATIC_ASSETS.finalResonance.length, 1);
+});
+
+test('no chapter ever stages Glitch against Glitch', () => {
+  for (const [index, chapter] of STORY_CHAPTERS.entries()) {
+    assert.notEqual(
+      chapter.combatOpponentId,
+      STORY_PLAYER_CHARACTER_ID,
+      `${chapter.id} would put Glitch on both sides of the stage`,
+    );
+    // The seeded snapshot has to be a real matchup even where no fight happens.
+    assert.notEqual(storySelection(index)[1], STORY_PLAYER_CHARACTER_ID);
+  }
+});
+
+test('the four self-confrontations are cinematic and the rivals still fight', () => {
+  const cinematic = STORY_CHAPTERS
+    .filter((_, index) => !storyChapterHasBattle(index))
+    .map((chapter) => chapter.id);
+  assert.deepEqual(cinematic, ['prologue', 'the-vessel', 'the-fifth', 'zero-form']);
+  for (const [index, chapter] of STORY_CHAPTERS.entries()) {
+    assert.equal(
+      storyChapterHasBattle(index),
+      chapter.combatOpponentId !== null,
+      `${chapter.id} disagrees with its own opponent`,
+    );
+  }
+});
+
+test('a cutscene-only chapter still carries its unlocks into the save', () => {
+  // The Vessel is the chapter that hands back Spatial Shift. Losing its battle
+  // must not lose the two techniques the rest of the campaign is balanced for.
+  let save = newStorySave();
+  for (let step = 0; step < STORY_CHAPTERS.length; step += 1) {
+    save = completeStoryBattle(save);
+  }
+  assert.ok(save.unlockedTechniques.includes('glitch.super-2'));
+  assert.ok(save.unlockedTechniques.includes('glitch.spatial-cancel'));
+  assert.ok(save.unlockedTechniques.includes('glitch.ultimate'));
+  assert.ok(save.completedBattles.includes('the-vessel'));
+});
+
+test('every chapter maps to an authored cinematic beat', () => {
+  const seen = new Set();
+  for (let index = 0; index < STORY_CHAPTERS.length; index += 1) {
+    const cinematic = storyCinematic(index);
+    assert.ok(
+      STORY_CINEMATIC_BEAT_NAMES.includes(cinematic.beat),
+      `${cinematic.beat} is not in GLITCH_CINEMATIC_ASSETS`,
+    );
+    assert.ok(cinematic.durationSeconds >= 4 && cinematic.durationSeconds <= 8);
+    assert.ok(['rival', 'fifth', 'construct', 'chorus'].includes(cinematic.side));
+    seen.add(cinematic.beat);
+  }
+  // A campaign where every chapter looked the same is what this replaced.
+  assert.ok(seen.size >= 8, `only ${seen.size} distinct beats across 11 chapters`);
+  assert.deepEqual(storyCinematic(-5), storyCinematic(0));
+  assert.deepEqual(storyCinematic(99), storyCinematic(STORY_CHAPTERS.length - 1));
+});
+
+test('the cutscene stage frames whoever is speaking, at the line intensity', () => {
+  for (const lines of STORY_DIALOGUE) {
+    for (const line of lines) {
+      const intensity = storyLineIntensity(line);
+      assert.ok(
+        intensity > 0 && intensity <= 1,
+        `${line.expression} has no usable intensity`,
+      );
+      assert.equal(
+        storyLineFocus(line),
+        line.speaker === 'GLITCH' ? 'glitch' : 'opposite',
+        `${line.speaker} is framed on the wrong side`,
+      );
+    }
+  }
+  // Possession is the loudest state the rig has, a settled line the quietest.
+  const at = (expression) => storyLineIntensity({ ...STORY_DIALOGUE[0][0], expression });
+  assert.ok(at('influenced') > at('angry'));
+  assert.ok(at('angry') > at('determined'));
+  assert.ok(at('determined') > at('normal'));
 });
 
 test('Story entry exposes only Start and Continue, and cannot route to Character Select', async () => {

@@ -70,6 +70,7 @@
     "src/stage/sprite2d/spritePose.ts",
     "src/data/combat-ai.ts",
     "src/story/**/*.ts",
+    "src/data/characterRoster.ts",
     "src/tutorial/trainingLessons.ts",
     "src/progression/**/*.ts"
   ],

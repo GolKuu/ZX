@@ -10,6 +10,7 @@ import { DEFAULT_ARENA, type ArenaId } from '@/src/data/arenas';
 import {
   STORY_PLAYER_CHARACTER_ID,
   storyChapter,
+  storyChapterHasBattle,
   storySelection,
 } from '@/src/story/campaign';
 import {
@@ -329,6 +330,10 @@ export const useHudStore = create<HudState>((set) => ({
   setStoryLine: (storyLine) => set({ storyLine: Math.max(0, storyLine) }),
   startStoryBattle: () => set((state) => {
     const chapterIndex = state.storySave?.chapterIndex ?? 0;
+    // The guard is the invariant, not a caller's good behaviour: a chapter whose
+    // antagonist is Glitch has no arena to route to, and routing there anyway is
+    // exactly the mirror match this campaign no longer stages.
+    if (!storyChapterHasBattle(chapterIndex)) return { screen: 'story-scene' };
     const fighterSelection = storySelection(chapterIndex);
     return {
       mode: 'story',
@@ -340,9 +345,14 @@ export const useHudStore = create<HudState>((set) => ({
     };
   }),
   completeStoryChapter: () => set((state) => {
-    const completedId = state.storySave === null ? 'prologue' : storyChapter(state.storySave.chapterIndex).id;
+    const completedIndex = state.storySave?.chapterIndex ?? 0;
+    const completedId = storyChapter(completedIndex).id;
     useProgressionStore.getState().dispatch(gameplayEvent('StoryChapterCompleted', `story:${completedId}`, { metadata: { chapterId: completedId } }));
-    useProgressionStore.getState().dispatch(gameplayEvent('StoryBattleCompleted', `story-battle:${completedId}`));
+    // A cutscene-only chapter is completed, not won. Claiming a battle here
+    // would credit challenges and achievements for a fight never played.
+    if (storyChapterHasBattle(completedIndex)) {
+      useProgressionStore.getState().dispatch(gameplayEvent('StoryBattleCompleted', `story-battle:${completedId}`));
+    }
     const storyAchievementEvent: Readonly<Record<string, string>> = {
       prologue:'StoryPrologueCompleted','silent-wall':'StoryMimDefeated','winning-version':'StoryLuckyDefeated',
       'last-order':'StoryTitanDefeated','all-the-pain':'StoryVorghDefeated','the-fifth':'StoryFifthDefeated','zero-form':'StoryZeroDefeated',
