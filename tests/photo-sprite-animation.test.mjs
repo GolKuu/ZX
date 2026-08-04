@@ -42,7 +42,7 @@ test('J K I L use four different basic attack animations for every fighter', () 
     assert.deepEqual(
       kinds.slice(0, 2),
       ['jab', 'heavy'],
-      `${fighter}: J must use the right hand and K the left hand`,
+      `${fighter}: J must use the lead hand and K the rear hand`,
     );
     assert.ok(
       ['kick', 'sweep'].includes(kinds[2]),
@@ -51,6 +51,17 @@ test('J K I L use four different basic attack animations for every fighter', () 
     assert.equal(kinds[3], 'highKick', `${fighter}: L must use the left leg`);
     assert.equal(new Set(kinds).size, 4, `${fighter}: an animation was reused`);
   }
+});
+
+test('K visibly coils and drives from the rear shoulder', () => {
+  const windup = photoAttackMotion('glitch.rift-elbow', 0.25);
+  const contact = photoAttackMotion('glitch.rift-elbow', 0.52);
+  const recovery = photoAttackMotion('glitch.rift-elbow', 1);
+  assert.ok(windup.x < 0 && windup.rotation > 0, 'rear shoulder must coil first');
+  assert.ok(contact.x > 0 && contact.rotation < 0, 'rear hand must cross through');
+  assert.deepEqual(recovery, {
+    x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1,
+  });
 });
 
 test('Lucky attacks expose all nine readable animation beats', () => {

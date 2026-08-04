@@ -47,10 +47,13 @@ function frame(row: number, column: number): number {
 
 const IDLE = frame(0, 0);
 const WALK_FRAMES = [frame(0, 2), frame(0, 3), frame(0, 2), IDLE];
+const HAND_WINDUP = frame(2, 0);
+const LEAD_HAND_CONTACT = frame(2, 1);
+const REAR_HAND_CONTACT = frame(2, 2);
 
 const ATTACK_SEQUENCES = {
-  jab: [IDLE, frame(2, 0), frame(2, 0), frame(2, 1), frame(2, 1), frame(2, 1), frame(2, 0), frame(2, 0), IDLE],
-  heavy: [IDLE, frame(2, 0), frame(2, 0), frame(2, 2), frame(2, 2), frame(2, 2), frame(2, 0), frame(2, 0), IDLE],
+  jab: [IDLE, HAND_WINDUP, HAND_WINDUP, LEAD_HAND_CONTACT, LEAD_HAND_CONTACT, LEAD_HAND_CONTACT, HAND_WINDUP, HAND_WINDUP, IDLE],
+  heavy: [IDLE, HAND_WINDUP, HAND_WINDUP, REAR_HAND_CONTACT, REAR_HAND_CONTACT, REAR_HAND_CONTACT, HAND_WINDUP, HAND_WINDUP, IDLE],
   kick: [IDLE, frame(1, 0), frame(1, 2), frame(3, 0), frame(3, 0), frame(3, 0), frame(1, 2), frame(1, 0), IDLE],
   highKick: [IDLE, frame(1, 0), frame(1, 2), frame(3, 1), frame(3, 1), frame(3, 1), frame(1, 2), frame(1, 0), IDLE],
   sweep: [IDLE, frame(1, 1), frame(2, 3), frame(2, 3), frame(2, 3), frame(2, 3), frame(1, 1), frame(1, 1), IDLE],

@@ -33,8 +33,8 @@ export const PHOTO_KICK_NORMAL_IDS = [
  *
  * Do not infer these normals from words such as "elbow" or "ram": that used
  * to collapse MIM and Glitch's K attack into the same jab drawing as J. The
- * table is deliberately explicit so J/K/I/L remain right hand, left hand,
- * right leg and left leg for every selectable fighter.
+ * table is deliberately explicit so J/K/I/L remain lead hand, rear hand,
+ * lead leg and rear leg for every selectable fighter.
  */
 export const PHOTO_NORMAL_ATTACK_KINDS: Readonly<Record<string, PhotoAttackKind>> = {
   'mim.jab': 'jab',
@@ -96,6 +96,7 @@ export function photoAttackMotion(
   progress: number,
 ): PhotoAttackMotion {
   const kind = photoAttackKind(moveId);
+  if (kind === 'heavy') return rearHandMotion(progress);
   if (kind !== 'kick' && kind !== 'highKick' && kind !== 'sweep') {
     return neutralMotion();
   }
@@ -108,6 +109,22 @@ export function photoAttackMotion(
     rotation: chamber * (low ? 0.055 : 0.035) - contact * (high ? 0.075 : 0.045),
     scaleX: 1 + contact * 0.035,
     scaleY: 1 - chamber * 0.035 + contact * (high ? 0.025 : -0.015),
+  };
+}
+
+/**
+ * K comes from the rear shoulder: coil away, turn the hips through the target,
+ * then recover. The atlas supplies the rear-hand contact silhouette while this
+ * motion makes the weight transfer readable instead of looking like a second J.
+ */
+function rearHandMotion(progress: number): PhotoAttackMotion {
+  const { chamber, contact } = kickEnvelope(progress);
+  return {
+    x: -chamber * 0.07 + contact * 0.16,
+    y: -chamber * 0.02 + contact * 0.03,
+    rotation: chamber * 0.09 - contact * 0.18,
+    scaleX: 1 + contact * 0.045,
+    scaleY: 1 - chamber * 0.02 + contact * 0.01,
   };
 }
 
