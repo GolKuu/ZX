@@ -1,20 +1,31 @@
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import type { CharacterSelection } from '@/src/data/characterRoster';
-import type { HudSnapshot } from '@/src/hud/types';
-import type { FighterInput, WorldSnapshot } from '@/src/sim';
-import type { MatchResult } from '@/src/store/hudStore';
 import { getSupabaseClient } from '@/src/lib/supabase';
 import { createRoomCode, normalizeRoomCode } from './roomCode';
+import { startMatchmaking, stopMatchmaking } from './matchmaking';
 import {
   EMPTY_LOBBY,
-  type FramePacket,
-  type InputPacket,
   type OnlineLobby,
   type OnlineRole,
   type OnlineSnapshot,
 } from './types';
+import {
+  configureOnlineCombat,
+  receiveOnlineFrame,
+  receiveOnlineInput,
+  receiveOnlineResult,
+  resetOnlineCombat,
+} from './onlineCombat';
 
 export { normalizeRoomCode } from './roomCode';
+export {
+  broadcastOnlineFrame,
+  broadcastOnlineResult,
+  readRemoteInput,
+  sendOnlineInput,
+  takeRemoteFrame,
+  takeRemoteResult,
+} from './onlineCombat';
 export type { OnlineLobby, OnlineRole, OnlineSnapshot } from './types';
 
 let snapshot: OnlineSnapshot = {
@@ -22,10 +33,6 @@ let snapshot: OnlineSnapshot = {
   lobby: EMPTY_LOBBY, error: null,
 };
 let channel: RealtimeChannel | null = null;
-let remoteInput: InputPacket = { sequence: 0, input: {} };
-let remoteFrame: FramePacket | null = null;
-let remoteResult: MatchResult | null = null;
-let inputSequence = 0;
 const listeners = new Set<() => void>();
 
 export function getOnlineSnapshot(): OnlineSnapshot { return snapshot; }
@@ -34,6 +41,21 @@ export function subscribeOnline(listener: () => void): () => void {
 }
 
 export async function createOnlineRoom(): Promise<void> { await connect(createRoomCode(), 'host'); }
+
+export async function findOnlineMatch(): Promise<void> {
+  await leaveOnlineRoom();
+  const client = await getSupabaseClient();
+  if (client === null) {
+    update({ status: 'error', error: 'Online service is not configured for this build.' });
+    return;
+  }
+  update({ status: 'matching', error: null });
+  await startMatchmaking(
+    client,
+    (code, role) => { void connect(code, role); },
+    () => update({ status: 'error', error: 'Matchmaking is unavailable. Try again.' }),
+  );
+}
 
 export async function joinOnlineRoom(code: string): Promise<void> {
   const normalized = normalizeRoomCode(code);
@@ -46,11 +68,10 @@ export async function joinOnlineRoom(code: string): Promise<void> {
 
 export async function leaveOnlineRoom(): Promise<void> {
   const client = await getSupabaseClient();
+  await stopMatchmaking(client);
   if (channel !== null && client !== null) await client.removeChannel(channel);
   channel = null;
-  remoteFrame = null;
-  remoteResult = null;
-  remoteInput = { sequence: 0, input: {} };
+  resetOnlineCombat();
   snapshot = { ...snapshot, status: 'idle', code: '', role: null, peerConnected: false, error: null };
   emit();
 }
@@ -74,22 +95,6 @@ export function selectionFromLobby(lobby = snapshot.lobby): CharacterSelection {
   return [lobby.hostFighter, lobby.guestFighter];
 }
 
-export function sendOnlineInput(input: FighterInput): void {
-  inputSequence += 1; void send('input', { sequence: inputSequence, input });
-}
-
-export function readRemoteInput(): InputPacket { return remoteInput; }
-export function broadcastOnlineFrame(world: WorldSnapshot, hud: HudSnapshot): void {
-  void send('frame', { world, hud });
-}
-export function takeRemoteFrame(): FramePacket | null {
-  const packet = remoteFrame; remoteFrame = null; return packet;
-}
-export function broadcastOnlineResult(result: MatchResult): void { void send('result', result); }
-export function takeRemoteResult(): MatchResult | null {
-  const result = remoteResult; remoteResult = null; return result;
-}
-
 async function connect(code: string, role: OnlineRole): Promise<void> {
   await leaveOnlineRoom();
   const client = await getSupabaseClient();
@@ -103,6 +108,7 @@ async function connect(code: string, role: OnlineRole): Promise<void> {
   channel = client.channel(`circle-clash:${code}`, {
     config: { broadcast: { self: false }, presence: { key: peerId } },
   });
+  configureOnlineCombat((event, payload) => { void send(event, payload); });
   channel
     .on('presence', { event: 'sync' }, () => {
       const peers = Object.values(channel?.presenceState() ?? {}).flat();
@@ -115,9 +121,9 @@ async function connect(code: string, role: OnlineRole): Promise<void> {
     })
     .on('broadcast', { event: 'lobby' }, ({ payload }) => receiveLobby(payload))
     .on('broadcast', { event: 'guest-patch' }, ({ payload }) => receiveGuestPatch(payload))
-    .on('broadcast', { event: 'input' }, ({ payload }) => { remoteInput = payload as InputPacket; })
-    .on('broadcast', { event: 'frame' }, ({ payload }) => { remoteFrame = payload as FramePacket; })
-    .on('broadcast', { event: 'result' }, ({ payload }) => { remoteResult = payload as MatchResult; })
+    .on('broadcast', { event: 'input' }, ({ payload }) => receiveOnlineInput(payload))
+    .on('broadcast', { event: 'frame' }, ({ payload }) => receiveOnlineFrame(payload))
+    .on('broadcast', { event: 'result' }, ({ payload }) => receiveOnlineResult(payload))
     .subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
         await channel?.track({ role, joinedAt: Date.now() });

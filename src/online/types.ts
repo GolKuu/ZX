@@ -4,7 +4,7 @@ import type { HudSnapshot } from '@/src/hud/types';
 import type { FighterInput, WorldSnapshot } from '@/src/sim';
 
 export type OnlineRole = 'host' | 'guest';
-export type OnlineStatus = 'idle' | 'connecting' | 'lobby' | 'fight' | 'error';
+export type OnlineStatus = 'idle' | 'matching' | 'connecting' | 'lobby' | 'fight' | 'error';
 
 export interface OnlineLobby {
   readonly hostFighter: CharacterId;

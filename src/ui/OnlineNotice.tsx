@@ -4,24 +4,21 @@ import { useCallback, useEffect, useState } from 'react';
 import { ARENAS } from '@/src/data/arenas';
 import { CHARACTER_ROSTER, type CharacterId } from '@/src/data/characterRoster';
 import {
-  createOnlineRoom,
   getOnlineSnapshot,
-  joinOnlineRoom,
   leaveOnlineRoom,
-  normalizeRoomCode,
   selectionFromLobby,
   subscribeOnline,
   updateOnlineLobby,
   type OnlineSnapshot,
 } from '@/src/online/onlineSession';
 import { useHudStore } from '@/src/store/hudStore';
+import { MatchmakingSearch, OnlineEntry } from './OnlineEntry';
 import styles from './OnlineNotice.module.css';
 
 export function OnlineNotice() {
   const openModeMenu = useHudStore((state) => state.openModeMenu);
   const startOnlineMatch = useHudStore((state) => state.startOnlineMatch);
   const [online, setOnline] = useState<OnlineSnapshot>(getOnlineSnapshot);
-  const [joinCode, setJoinCode] = useState('');
 
   useEffect(() => subscribeOnline(() => setOnline(getOnlineSnapshot())), []);
   useEffect(() => {
@@ -45,46 +42,32 @@ export function OnlineNotice() {
 
   if (online.status === 'idle' || online.status === 'error') {
     return (
-      <OnlineShell back={back} title="Online battle">
-        <p className={styles.lead}>Create a private room or enter a friend&apos;s six-character code.</p>
-        <div className={styles.entryGrid}>
-          <button className={styles.primaryAction} type="button" onClick={() => void createOnlineRoom()}>
-            <strong>Create room</strong><span>Become Player 1 and invite a friend</span>
-          </button>
-          <form onSubmit={(event) => { event.preventDefault(); void joinOnlineRoom(joinCode); }}>
-            <label htmlFor="room-code">Room code</label>
-            <div className={styles.codeEntry}>
-              <input
-                id="room-code"
-                aria-label="Six-character room code"
-                autoComplete="off"
-                inputMode="text"
-                maxLength={6}
-                placeholder="ABC234"
-                value={joinCode}
-                onChange={(event) => setJoinCode(normalizeRoomCode(event.target.value))}
-              />
-              <button disabled={joinCode.length !== 6} type="submit">Join</button>
-            </div>
-          </form>
-        </div>
-        {online.error !== null && <p className={styles.error} role="alert">{online.error}</p>}
+      <OnlineShell back={back} title="Онлайн-бой">
+        <OnlineEntry error={online.error} />
+      </OnlineShell>
+    );
+  }
+
+  if (online.status === 'matching') {
+    return (
+      <OnlineShell back={back} title="Ищем соперника">
+        <MatchmakingSearch />
       </OnlineShell>
     );
   }
 
   return (
-    <OnlineShell back={back} title={online.status === 'connecting' ? 'Connecting…' : 'Private room'}>
+    <OnlineShell back={back} title={online.status === 'connecting' ? 'Подключение…' : 'Комната боя'}>
       <RoomCode code={online.code} />
       <div className={styles.connection} data-connected={online.peerConnected}>
-        <i />{online.peerConnected ? 'Opponent connected' : 'Waiting for opponent…'}
+        <i />{online.peerConnected ? 'Соперник подключён' : 'Ожидаем соперника…'}
       </div>
       <div className={styles.loadoutGrid}>
         <PlayerLoadout online={online} role="host" />
         <PlayerLoadout online={online} role="guest" />
       </div>
       <label className={styles.arenaSelect}>
-        <span>Arena</span>
+        <span>Арена</span>
         <select
           disabled={online.role !== 'host'}
           value={online.lobby.arenaId}
@@ -92,7 +75,7 @@ export function OnlineNotice() {
         >
           {ARENAS.map((arena) => <option key={arena.id} value={arena.id}>{arena.name}</option>)}
         </select>
-        {online.role !== 'host' && <small>Chosen by the host</small>}
+        {online.role !== 'host' && <small>Выбирает создатель комнаты</small>}
       </label>
       {online.role === 'host' && (
         <button
@@ -100,7 +83,7 @@ export function OnlineNotice() {
           disabled={!online.peerConnected || !online.lobby.hostReady || !online.lobby.guestReady}
           type="button"
           onClick={() => updateOnlineLobby({ phase: 'fight' })}
-        >Start online fight</button>
+        >Начать онлайн-бой</button>
       )}
     </OnlineShell>
   );
@@ -119,7 +102,7 @@ function PlayerLoadout({ online, role }: { readonly online: OnlineSnapshot; read
         {CHARACTER_ROSTER.map((character) => <option key={character.id} value={character.id}>{character.displayName}</option>)}
       </select>
       <button disabled={!isLocal || (role === 'guest' && !online.peerConnected)} type="button" onClick={patchReady}>
-        {ready ? 'Ready ✓' : 'Mark ready'}
+        {ready ? 'Готов ✓' : 'Я готов'}
       </button>
     </section>
   );
@@ -131,20 +114,20 @@ function RoomCode({ code }: { readonly code: string }) {
     <button className={styles.roomCode} type="button" onClick={() => {
       void navigator.clipboard.writeText(code).then(() => setCopied(true));
     }}>
-      <span>Room code</span><strong>{code}</strong><small>{copied ? 'Copied!' : 'Click to copy'}</small>
+      <span>Код комнаты</span><strong>{code}</strong><small>{copied ? 'Скопировано!' : 'Нажмите, чтобы скопировать'}</small>
     </button>
   );
 }
 
 function OnlineShell({ back, children, title }: { readonly back: () => void; readonly children: React.ReactNode; readonly title: string }) {
   return (
-    <div aria-label="Online battle" aria-modal="true" className={styles.scrim} role="dialog">
+    <div aria-label="Онлайн-бой" aria-modal="true" className={styles.scrim} role="dialog">
       <div className={styles.radar} aria-hidden="true"><i /><i /><i /></div>
       <main className={styles.panel}>
-        <header><span>NETWORK MODE</span><h1>{title}</h1></header>
+        <header><span>СЕТЕВОЙ РЕЖИМ</span><h1>{title}</h1></header>
         {children}
       </main>
-      <footer><button type="button" onClick={back}><kbd>Esc</kbd> Back to modes</button></footer>
+      <footer><button type="button" onClick={back}><kbd>Esc</kbd> Назад к режимам</button></footer>
     </div>
   );
 }
