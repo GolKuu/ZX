@@ -8,6 +8,8 @@ import {
   leaveOnlineRoom,
   normalizeRoomCode,
 } from '@/src/online/onlineSession';
+import { GLORY_XP_PER_WIN } from '@/src/progression/glory';
+import { GloryBadge } from './GloryBadge';
 import styles from './OnlineNotice.module.css';
 
 export function OnlineEntry({ error }: { readonly error: string | null }) {
@@ -15,9 +17,11 @@ export function OnlineEntry({ error }: { readonly error: string | null }) {
   return (
     <>
       <p className={styles.lead}>Найдите случайного соперника или пригласите друга по коду комнаты.</p>
+      <GloryBadge />
       <div className={styles.entryGrid}>
         <button className={styles.primaryAction} type="button" onClick={() => void findOnlineMatch()}>
-          <strong>Быстрый подбор</strong><span>Автоматически найти свободного игрока</span>
+          <strong>Быстрый подбор</strong>
+          <span>Победа даёт от {GLORY_XP_PER_WIN} XP пути к славе</span>
         </button>
         <button className={styles.primaryAction} type="button" onClick={() => void createOnlineRoom()}>
           <strong>Создать комнату</strong><span>Стать игроком 1 и пригласить друга</span>

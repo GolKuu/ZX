@@ -22,6 +22,10 @@
 .codeEntry button,.playerCard button,.startButton { padding:0 1.2cqw; color:#061018; cursor:pointer; background:#9fd8ff; border:0; font-family:inherit; font-size:max(.72rem,.75cqw); font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
 .codeEntry button:disabled,.playerCard button:disabled,.startButton:disabled { color:#6d7780; cursor:not-allowed; background:#26313a; }
 .error { margin:0; color:#ff8793; font-weight:750; text-align:center; }
+.gloryBadge { display:grid; justify-items:center; gap:.3cqw; margin:0 auto .4cqw; padding:.9cqw 1.6cqw; background:rgb(232 180 85 / 9%); border:1px solid rgb(232 180 85 / 45%); }
+.gloryBadge b { color:#ffd980; font-size:clamp(.9rem,1.1cqw,1.2rem); letter-spacing:.08em; text-transform:uppercase; }
+.gloryBadge span { color:#9aa8b8; font-size:max(.68rem,.72cqw); letter-spacing:.1em; }
+.gloryBadge progress { width:min(22cqw,320px); height:.5cqw; min-height:6px; accent-color:#ffd980; }
 .searching { display:grid; min-width:min(34rem,90cqw); justify-items:center; gap:1rem; margin:1rem auto; padding:2.4rem; text-align:center; background:rgb(12 20 30 / 88%); border:1px solid rgb(159 216 255 / 28%); }
 .searching > i { width:3rem; aspect-ratio:1; border:3px solid rgb(159 216 255 / 18%); border-top-color:#9fd8ff; border-radius:50%; animation:searchSpin .9s linear infinite; }
 .searching strong { font-size:1.25rem; text-transform:uppercase; }

@@ -12,7 +12,8 @@ export function createProfile(profileId = 'offline-player', now = new Date()): P
     transactions: [], completedRewardIds: [], daily: {
       sequence: 0, utcOffsetMinutes: -now.getTimezoneOffset(), suspiciousClock: false, streak: 0, unverifiedClaims: 0,
     }, achievements: {}, purchasedNodes: emptyLists(), loadouts: emptyLists(),
-    freeRespecUsed: emptyFlags(), challenges: {}, cosmetics: [], updatedAt: now.toISOString(),
+    freeRespecUsed: emptyFlags(), challenges: {}, glory: { xp: 0, wins: 0 },
+    cosmetics: [], updatedAt: now.toISOString(),
   };
 }
 
@@ -33,8 +34,8 @@ export function migrateProfile(value: unknown, now = new Date()): ProgressionPro
     daily: migrateDaily(value.daily, base), achievements: record(value.achievements) ? value.achievements : {},
     purchasedNodes: fighterRecord(purchased), loadouts: fighterRecord(loadouts),
     freeRespecUsed: Object.fromEntries(FIGHTERS.map((id) => [id, flags[id] === true])) as Record<CharacterId, boolean>,
-    challenges: record(value.challenges) ? value.challenges : {}, cosmetics: strings(value.cosmetics),
-    updatedAt: stringValue(value.updatedAt, now.toISOString()),
+    challenges: record(value.challenges) ? value.challenges : {}, glory: migrateGlory(value.glory),
+    cosmetics: strings(value.cosmetics), updatedAt: stringValue(value.updatedAt, now.toISOString()),
   } as ProgressionProfile;
 }
 
@@ -62,6 +63,7 @@ export function transact(profile: ProgressionProfile, input: {
 export function validateProfile(profile: ProgressionProfile): readonly string[] {
   const errors: string[] = [];
   if (profile.tokenBalance < 0) errors.push('NEGATIVE_BALANCE');
+  if (profile.glory.xp < 0 || profile.glory.wins < 0) errors.push('NEGATIVE_GLORY');
   if (new Set(profile.transactions.map((entry) => entry.id)).size !== profile.transactions.length) errors.push('DUPLICATE_TRANSACTION_ID');
   if (new Set(profile.transactions.map((entry) => entry.idempotencyKey)).size !== profile.transactions.length) errors.push('DUPLICATE_IDEMPOTENCY_KEY');
   const ledger = profile.transactions.reduce((total, entry) => total + entry.amount, 0);
@@ -81,6 +83,9 @@ const stringValue = (value: unknown, fallback: string): string => typeof value =
 const strings = (value: unknown): readonly string[] => Array.isArray(value) ? [...new Set(value.filter((item): item is string => typeof item === 'string'))] : [];
 const validTransaction = (value: unknown): value is TokenTransaction => record(value) && typeof value.id === 'string' && typeof value.idempotencyKey === 'string' && typeof value.amount === 'number';
 const fighterRecord = (raw: Record<string, unknown>): Record<CharacterId, readonly string[]> => Object.fromEntries(FIGHTERS.map((id) => [id, strings(raw[id])])) as Record<CharacterId, readonly string[]>;
+const migrateGlory = (value: unknown): ProgressionProfile['glory'] => record(value)
+  ? { xp: Math.max(0, integer(value.xp)), wins: Math.max(0, integer(value.wins)) }
+  : { xp: 0, wins: 0 };
 const migrateDaily = (value: unknown, base: ProgressionProfile): ProgressionProfile['daily'] => {
   if (!record(value)) return base.daily;
   return { lastClaimUtc: typeof value.lastClaimUtc === 'string' ? value.lastClaimUtc : undefined,

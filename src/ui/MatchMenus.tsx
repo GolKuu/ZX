@@ -14,6 +14,7 @@ import { StageSelectMenu } from './StageSelectMenu';
 import { FeatureHub } from './FeatureHub';
 import { StoryModeScreen } from './StoryModeScreen';
 import { StoryCutscene } from './StoryCutscene';
+import { GloryResultStrip } from './GloryResultStrip';
 import { leaveOnlineRoom } from '@/src/online/onlineSession';
 import styles from './CombatHud.module.css';
 
@@ -212,6 +213,7 @@ function ResultHeader({
           </div>
         ))}
       </div>
+      <GloryResultStrip />
     </section>
   );
 }

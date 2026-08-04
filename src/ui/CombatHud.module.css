@@ -986,6 +986,39 @@
   text-transform: uppercase;
 }
 
+.gloryStrip {
+  display: grid;
+  justify-items: center;
+  gap: 0.3cqw;
+  margin-top: 1.4cqw;
+  padding: 0.9cqw 2cqw;
+  background: rgb(232 180 85 / 10%);
+  border: 1px solid rgb(232 180 85 / 55%);
+}
+
+.gloryStrip strong {
+  color: #ffd980;
+  font-size: 1.8cqw;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+}
+
+.gloryStrip span {
+  color: var(--hud-stone);
+  font-size: 0.85cqw;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.gloryStrip em {
+  color: #ffd980;
+  font-size: 0.85cqw;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
 .resultButtons {
   position: absolute;
   bottom: 7cqw;

@@ -6,6 +6,7 @@ import { startMatchmaking, stopMatchmaking } from './matchmaking';
 import {
   EMPTY_LOBBY,
   type OnlineLobby,
+  type OnlineOrigin,
   type OnlineRole,
   type OnlineSnapshot,
 } from './types';
@@ -26,11 +27,11 @@ export {
   takeRemoteFrame,
   takeRemoteResult,
 } from './onlineCombat';
-export type { OnlineLobby, OnlineRole, OnlineSnapshot } from './types';
+export type { OnlineLobby, OnlineOrigin, OnlineRole, OnlineSnapshot } from './types';
 
 let snapshot: OnlineSnapshot = {
   status: 'idle', code: '', role: null, peerConnected: false,
-  lobby: EMPTY_LOBBY, error: null,
+  lobby: EMPTY_LOBBY, error: null, origin: null, matchId: null,
 };
 let channel: RealtimeChannel | null = null;
 const listeners = new Set<() => void>();
@@ -40,7 +41,7 @@ export function subscribeOnline(listener: () => void): () => void {
   listeners.add(listener); return () => listeners.delete(listener);
 }
 
-export async function createOnlineRoom(): Promise<void> { await connect(createRoomCode(), 'host'); }
+export async function createOnlineRoom(): Promise<void> { await connect(createRoomCode(), 'host', 'room'); }
 
 export async function findOnlineMatch(): Promise<void> {
   await leaveOnlineRoom();
@@ -49,10 +50,10 @@ export async function findOnlineMatch(): Promise<void> {
     update({ status: 'error', error: 'Online service is not configured for this build.' });
     return;
   }
-  update({ status: 'matching', error: null });
+  update({ status: 'matching', error: null, origin: 'quick' });
   await startMatchmaking(
     client,
-    (code, role) => { void connect(code, role); },
+    (code, role) => { void connect(code, role, 'quick'); },
     () => update({ status: 'error', error: 'Matchmaking is unavailable. Try again.' }),
   );
 }
@@ -63,7 +64,7 @@ export async function joinOnlineRoom(code: string): Promise<void> {
     update({ status: 'error', error: 'Room codes contain six characters.' });
     return;
   }
-  await connect(normalized, 'guest');
+  await connect(normalized, 'guest', 'room');
 }
 
 export async function leaveOnlineRoom(): Promise<void> {
@@ -72,16 +73,19 @@ export async function leaveOnlineRoom(): Promise<void> {
   if (channel !== null && client !== null) await client.removeChannel(channel);
   channel = null;
   resetOnlineCombat();
-  snapshot = { ...snapshot, status: 'idle', code: '', role: null, peerConnected: false, error: null };
+  snapshot = { ...snapshot, status: 'idle', code: '', role: null, peerConnected: false,
+    error: null, origin: null, matchId: null };
   emit();
 }
 
 export function updateOnlineLobby(patch: Partial<OnlineLobby>): void {
   if (snapshot.role === null || channel === null || snapshot.status === 'error') return;
   if (snapshot.role === 'host') {
+    const status = patch.phase === 'fight' ? 'fight' : snapshot.status;
     snapshot = {
       ...snapshot,
-      status: patch.phase === 'fight' ? 'fight' : snapshot.status,
+      status,
+      matchId: startedMatchId(status),
       lobby: { ...snapshot.lobby, ...patch },
     };
     emit();
@@ -95,14 +99,15 @@ export function selectionFromLobby(lobby = snapshot.lobby): CharacterSelection {
   return [lobby.hostFighter, lobby.guestFighter];
 }
 
-async function connect(code: string, role: OnlineRole): Promise<void> {
+async function connect(code: string, role: OnlineRole, origin: OnlineOrigin): Promise<void> {
   await leaveOnlineRoom();
   const client = await getSupabaseClient();
   if (client === null) {
-    update({ status: 'error', error: 'Online service is not configured for this build.' });
+    update({ status: 'error', error: 'Online service is not configured for this build.', origin });
     return;
   }
-  snapshot = { ...snapshot, status: 'connecting', code, role, lobby: EMPTY_LOBBY, error: null };
+  snapshot = { ...snapshot, status: 'connecting', code, role, lobby: EMPTY_LOBBY,
+    error: null, origin, matchId: null };
   emit();
   const peerId = crypto.randomUUID();
   channel = client.channel(`circle-clash:${code}`, {
@@ -138,8 +143,16 @@ async function connect(code: string, role: OnlineRole): Promise<void> {
 function receiveLobby(payload: unknown): void {
   if (snapshot.role !== 'guest' || typeof payload !== 'object' || payload === null) return;
   const lobby = payload as OnlineLobby;
-  snapshot = { ...snapshot, lobby, peerConnected: true, status: lobby.phase === 'fight' ? 'fight' : 'lobby' };
+  const status = lobby.phase === 'fight' ? 'fight' : 'lobby';
+  snapshot = { ...snapshot, lobby, peerConnected: true, status, matchId: startedMatchId(status) };
   emit();
+}
+
+/** A fresh id the moment a lobby turns into a fight; the same id for the whole fight. */
+function startedMatchId(status: OnlineSnapshot['status']): string | null {
+  if (status !== 'fight') return snapshot.matchId;
+  if (snapshot.status === 'fight' && snapshot.matchId !== null) return snapshot.matchId;
+  return `${snapshot.code}:${crypto.randomUUID()}`;
 }
 
 function receiveGuestPatch(payload: unknown): void {

@@ -31,6 +31,7 @@ import {
   takeRemoteFrame,
   takeRemoteResult,
 } from '@/src/online/onlineSession';
+import { reportOnlineMatchResult } from '@/src/online/onlineGlory';
 
 interface InputSource {
   sample(
@@ -152,8 +153,9 @@ export function CombatGameLoop({
         playerOne.releaseAll();
         playerTwoAI.releaseAll();
       }
-      if (onlineRole === 'host' && state.screen === 'result' && previous.screen !== 'result') {
-        broadcastOnlineResult(state.result);
+      if (state.screen === 'result' && previous.screen !== 'result' && state.mode === 'online') {
+        if (onlineRole === 'host') broadcastOnlineResult(state.result);
+        reportOnlineMatchResult(state.result);
       }
     });
     return () => {

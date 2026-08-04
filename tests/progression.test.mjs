@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { claimDaily, dailyPeriod, dailyStatus } from '../.sim-test-build/src/progression/daily.js';
 import { processGameplayEvent, gameplayEvent } from '../.sim-test-build/src/progression/eventEngine.js';
-import { createProfile, transact, validateProfile } from '../.sim-test-build/src/progression/profile.js';
+import { createProfile, migrateProfile, transact, validateProfile } from '../.sim-test-build/src/progression/profile.js';
 import { effectiveLoadout, purchaseNode, respec, setLoadout } from '../.sim-test-build/src/progression/purchases.js';
 import { fighterNodes, PROGRESSION_NODES } from '../.sim-test-build/src/progression/treeData.js';
 import { resolveModeProgression } from '../.sim-test-build/src/progression/modeRules.js';
@@ -12,6 +12,12 @@ import {
   processChallenges,
 } from '../.sim-test-build/src/progression/challenges.js';
 import { compileProgressionMoves } from '../.sim-test-build/src/progression/runtimeModifiers.js';
+import {
+  awardGloryWin,
+  gloryStanding,
+  gloryXpForWin,
+  GLORY_TIERS,
+} from '../.sim-test-build/src/progression/glory.js';
 import { validateMoves } from '../.sim-test-build/src/sim/move-validation.js';
 import { ROSTER_MOVES } from './roster-moves.mjs';
 
@@ -102,6 +108,47 @@ test('challenge rewards are period-bound and idempotent',()=>{
   const balance=profile.tokenBalance;
   assert.equal(balance,challenge.reward);
   assert.equal(processChallenges(profile,lastEvent).tokenBalance,balance);
+});
+
+test('an online win pays glory XP once per match and unlocks tiers in order',()=>{
+  const now=date('2026-08-01T10:00:00Z');
+  const first=GLORY_TIERS[0];
+  let profile=createProfile('glory',now);
+  const xp=gloryXpForWin({loserRounds:0,maxCombo:10});
+  assert.equal(xp,190); // 100 base + 40 flawless + 50 capped combo bonus
+  const award=awardGloryWin(profile,{xp,matchId:'room-1',now});
+  profile=award.profile;
+  assert.equal(profile.glory.xp,190);
+  assert.equal(profile.glory.wins,1);
+  assert.deepEqual(award.unlocked.map((tier)=>tier.id),[first.id]);
+  assert.equal(profile.tokenBalance,first.tokens);
+  // The same fight reported twice (result screen remount, repeated broadcast) pays nothing.
+  const replay=awardGloryWin(profile,{xp,matchId:'room-1',now});
+  assert.equal(replay.profile,profile);
+  assert.equal(replay.xpGained,0);
+  assert.deepEqual(validateProfile(profile),[]);
+});
+
+test('glory standing reports level, next tier and bounded progress',()=>{
+  const now=date('2026-08-01T10:00:00Z');
+  const fresh=gloryStanding(createProfile('standing',now));
+  assert.equal(fresh.level,0);
+  assert.equal(fresh.nextTier?.id,GLORY_TIERS[0].id);
+  assert.equal(fresh.progress,0);
+  const maxed=gloryStanding(awardGloryWin(createProfile('maxed',now),
+    {xp:GLORY_TIERS.at(-1).xp,matchId:'max',now}).profile);
+  assert.equal(maxed.level,GLORY_TIERS.length);
+  assert.equal(maxed.nextTier,null);
+  assert.equal(maxed.progress,1);
+});
+
+test('a legacy save with no glory track migrates to a zero track',()=>{
+  const now=date('2026-08-01T10:00:00Z');
+  const legacy={...createProfile('legacy',now)};
+  delete legacy.glory;
+  const migrated=migrateProfile(legacy,now);
+  assert.deepEqual(migrated.glory,{xp:0,wins:0});
+  assert.deepEqual(validateProfile(migrated),[]);
 });
 
 test('tampered save checksum is rejected and legitimate save survives',()=>{

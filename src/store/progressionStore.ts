@@ -9,22 +9,33 @@ import { purchaseNode, respec, setLoadout } from '@/src/progression/purchases';
 import { loadProfile, saveProfile } from '@/src/progression/storage';
 import type { GameplayEvent, ProgressionProfile } from '@/src/progression/types';
 import { processChallenges } from '@/src/progression/challenges';
+import { awardGloryWin, gloryStanding, type GloryTier } from '@/src/progression/glory';
 
 export interface ProgressionNotice { readonly id: string; readonly title: string; readonly detail: string; }
+export interface GloryAwardSummary {
+  readonly matchId: string; readonly xpGained: number; readonly totalXp: number;
+  readonly level: number; readonly unlocked: readonly GloryTier[];
+}
 interface ProgressionState {
   profile: ProgressionProfile; hydrated: boolean; daily: DailyStatus | null;
-  notices: readonly ProgressionNotice[]; language: 'en' | 'ru';
+  notices: readonly ProgressionNotice[]; language: 'en' | 'ru'; lastGlory: GloryAwardSummary | null;
   hydrate: () => void; claimDaily: () => void; purchase: (id: string) => string | undefined;
   respec: (id: CharacterId) => void; equip: (fighter: CharacterId, ids: readonly string[]) => string | undefined;
   dispatch: (event: GameplayEvent) => void; dismissNotice: (id: string) => void;
   setLanguage: (language: 'en' | 'ru') => void;
+  awardGlory: (input: { readonly xp: number; readonly matchId: string }) => void;
 }
 
 const persist = (profile: ProgressionProfile): ProgressionProfile => { saveProfile(profile); return profile; };
-const notice = (title: string, detail: string): ProgressionNotice => ({ id: `${Date.now()}:${title}`, title, detail });
+let noticeSequence = 0;
+// The sequence keeps two notices raised in the same millisecond from sharing a key.
+const notice = (title: string, detail: string): ProgressionNotice => {
+  noticeSequence += 1;
+  return { id: `${Date.now()}:${noticeSequence}:${title}`, title, detail };
+};
 
 export const useProgressionStore = create<ProgressionState>((set, get) => ({
-  profile: createProfile(), hydrated: false, daily: null, notices: [], language: 'en',
+  profile: createProfile(), hydrated: false, daily: null, notices: [], language: 'en', lastGlory: null,
   hydrate: () => {
     const profile = loadProfile();
     const daily = dailyStatus(profile, new Date());
@@ -51,4 +62,17 @@ export const useProgressionStore = create<ProgressionState>((set, get) => ({
   dispatch: (event) => { const challenged=processChallenges(get().profile,event); const result=processGameplayEvent(challenged,event); set((state) => ({ profile: persist(result.profile), notices: [...state.notices, ...result.completed.map((id) => notice('ACHIEVEMENT COMPLETE', id))] })); },
   dismissNotice: (id) => set((state) => ({ notices: state.notices.filter((entry) => entry.id !== id) })),
   setLanguage: (language) => set({ language }),
+  awardGlory: ({ xp, matchId }) => {
+    const award = awardGloryWin(get().profile, { xp, matchId });
+    if (award.profile === get().profile) return;
+    const standing = gloryStanding(award.profile);
+    const language = get().language;
+    set((state) => ({
+      profile: persist(award.profile),
+      lastGlory: { matchId, xpGained: award.xpGained, totalXp: standing.xp, level: standing.level, unlocked: award.unlocked },
+      notices: [...state.notices, notice(language === 'ru' ? 'ПУТЬ К СЛАВЕ' : 'GLORY ROAD', `+${award.xpGained} XP`),
+        ...award.unlocked.map((tier) => notice(language === 'ru' ? 'НАГРАДА ОТКРЫТА' : 'REWARD UNLOCKED',
+          `${language === 'ru' ? tier.titleRu : tier.title} · +${tier.tokens}`))],
+    }));
+  },
 }));

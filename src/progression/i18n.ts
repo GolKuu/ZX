@@ -5,6 +5,9 @@ const EN = {
   locked:'LOCKED', completed:'COMPLETED', inProgress:'IN PROGRESS', rewardClaimed:'REWARD CLAIMED', back:'BACK',
   respec:'FULL RESPEC', ranked:'Ranked uses standardized loadouts and ignores permanent Token progression.',
   training:'Training can preview base, purchased, all-node, or custom builds without changing saved Tokens.',
+  glory:'GLORY ROAD', gloryLevel:'GLORY LEVEL', gloryXp:'GLORY XP', gloryWins:'ONLINE WINS',
+  gloryNext:'TO NEXT REWARD', gloryMax:'EVERY REWARD UNLOCKED',
+  gloryRule:'Quick match only: every online win pays XP, and each milestone pays Tokens once.',
 };
 const RU: Record<ProgressionTextKey, string> = {
   hub:'ЦЕНТР ПРОГРЕССА', daily:'ЕЖЕДНЕВНЫЙ ТОКЕН', claim:'ПОЛУЧИТЬ', next:'СЛЕДУЮЩАЯ НАГРАДА', achievements:'ДОСТИЖЕНИЯ',
@@ -12,6 +15,9 @@ const RU: Record<ProgressionTextKey, string> = {
   locked:'ЗАКРЫТО', completed:'ВЫПОЛНЕНО', inProgress:'В ПРОЦЕССЕ', rewardClaimed:'НАГРАДА ПОЛУЧЕНА', back:'НАЗАД',
   respec:'ПОЛНЫЙ СБРОС', ranked:'В рейтинге используются стандартные наборы без постоянных улучшений.',
   training:'В тренировке доступны базовый, купленный, полный или тестовый наборы без изменения токенов.',
+  glory:'ПУТЬ К СЛАВЕ', gloryLevel:'УРОВЕНЬ СЛАВЫ', gloryXp:'ОЧКИ СЛАВЫ', gloryWins:'ПОБЕД ОНЛАЙН',
+  gloryNext:'ДО СЛЕДУЮЩЕЙ НАГРАДЫ', gloryMax:'ВСЕ НАГРАДЫ ОТКРЫТЫ',
+  gloryRule:'Только быстрый подбор: каждая победа даёт XP, а каждая веха один раз выдаёт токены.',
 };
 export const progressionText = (language: 'en' | 'ru', key: ProgressionTextKey): string => (language === 'ru' ? RU : EN)[key];
 export function tokenLabel(value: number, language: 'en' | 'ru'): string {

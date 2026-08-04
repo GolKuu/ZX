@@ -13,7 +13,18 @@ const other = (speaker: string, speakerRu: string, en: string, ru: string): Stor
 const fifth = (en: string, ru: string): StoryLine => ({ speaker: 'THE FIFTH', speakerRu: 'ПЯТЫЙ', en, ru, expression: 'fifth' });
 
 export const STORY_DIALOGUE: readonly (readonly StoryLine[])[] = [
-  [glitch('This room has four corners. I can see twelve.', 'У этой комнаты четыре угла. Я вижу двенадцать.', 'unstable'), fifth('Every time you move, another coordinate remembers you.', 'Каждый раз, когда ты движешься, другая координата вспоминает тебя.'), glitch('Then I will find the one that created me.', 'Тогда я найду того, кто меня создал.', 'determined')],
+  // The prologue is the campaign's opening cinema, so it is written as a scene
+  // rather than as a caption: seven lines that escalate from a miscount to a
+  // decision. Every other chapter opens on two or three.
+  [
+    glitch('This room has four corners. I can see twelve.', 'У этой комнаты четыре угла. Я вижу двенадцать.', 'unstable'),
+    fifth('Every time you move, another coordinate remembers you.', 'Каждый раз, когда ты движешься, другая координата вспоминает тебя.'),
+    glitch('Whose memory is this? I have never stood in this room.', 'Чья это память? Я никогда не стоял в этой комнате.', 'frightened'),
+    fifth('You have stood here eleven times. You survived one of them.', 'Ты стоял здесь одиннадцать раз. Ты пережил только один.'),
+    glitch('Then the other ten are still inside me, counting.', 'Значит, остальные десять всё ещё во мне и продолжают считать.', 'injured'),
+    fifth('Hold still and the fracture closes. Hold still and the world keeps you.', 'Замри — и разлом закроется. Замри — и мир оставит тебя себе.'),
+    glitch('Then I will find the one that created me.', 'Тогда я найду того, кто меня создал.', 'determined'),
+  ],
   [other('MIM', 'МИМ', 'You are not the fracture. But something inside you is.', 'Ты не являешься разломом. Но нечто внутри тебя — является.'), glitch('If Geometry needs invisible prisons, it deserves to be questioned.', 'Если Геометрии нужны невидимые тюрьмы, её следует поставить под сомнение.', 'angry')],
   [other('LUCKY', 'ЛАКИ', 'I saw you win. The world did not survive it.', 'Я видел твою победу. Мир её не пережил.'), glitch('Show me the versions you refuse to count.', 'Покажи мне версии, которые ты отказываешься считать.', 'determined')],
   [other('TITAN', 'ТИТАН', 'The reactor preserves order.', 'Реактор сохраняет порядок.'), glitch('Those voices are memories, Titan. Your order is burning people.', 'Эти голоса — воспоминания, Титан. Твой порядок сжигает людей.', 'injured')],

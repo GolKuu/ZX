@@ -2,7 +2,7 @@ import type { CharacterId } from '../data/characterRoster.js';
 
 export type ProgressionMode = 'story' | 'ai' | 'training' | 'ranked' | 'casual';
 export type TransactionType = 'DailyReward' | 'AchievementReward' | 'StoryReward' |
-  'ChallengeReward' | 'NodePurchase' | 'RespecRefund' | 'MigrationAdjustment' | 'AdminDebug';
+  'ChallengeReward' | 'GloryReward' | 'NodePurchase' | 'RespecRefund' | 'MigrationAdjustment' | 'AdminDebug';
 export type AchievementCategory = 'general' | 'combat' | 'story' | 'tutorial' |
   'training' | 'mastery' | 'collection' | 'challenge' | 'secret' | 'longTerm';
 
@@ -41,6 +41,9 @@ export interface AchievementState {
 
 export interface ChallengeState { readonly progress: number; readonly claimed: boolean; }
 
+/** Online quick-match standing: earned XP and the wins that produced it. */
+export interface GloryState { readonly xp: number; readonly wins: number; }
+
 export interface ProgressionProfile {
   readonly schemaVersion: 3; readonly profileId: string; readonly tokenBalance: number;
   readonly lifetimeEarned: number; readonly lifetimeSpent: number;
@@ -53,6 +56,7 @@ export interface ProgressionProfile {
   readonly loadouts: Readonly<Record<CharacterId, readonly string[]>>;
   readonly freeRespecUsed: Readonly<Record<CharacterId, boolean>>;
   readonly challenges: Readonly<Record<string, ChallengeState>>;
+  readonly glory: GloryState;
   readonly cosmetics: readonly string[]; readonly updatedAt: string;
 }
 
