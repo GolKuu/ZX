@@ -17,7 +17,13 @@ export function HomeHero() {
           Выбери характер — и забери арену.
         </p>
         <div className={styles.actions}>
-          <Link className={styles.primaryCta} href="/play">Играть сейчас<span aria-hidden="true">→</span></Link>
+          <Link className={styles.primaryCta} href="/play">
+            <span className={styles.ctaCopy}>
+              <strong>Начать бой</strong>
+              <small>Выбрать режим</small>
+            </span>
+            <span className={styles.ctaArrow} aria-hidden="true">→</span>
+          </Link>
           <HomeSettingsButton variant="secondary" />
         </div>
         <p className={styles.inputNote}><span aria-hidden="true">●</span>Без установки · клавиатура, геймпад и сенсорное управление</p>

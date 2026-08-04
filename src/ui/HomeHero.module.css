@@ -79,37 +79,80 @@
 }
 
 .primaryCta {
+  position: relative;
   display: inline-flex;
-  min-width: 190px;
-  min-height: 50px;
+  min-width: 236px;
+  min-height: 64px;
   align-items: center;
   justify-content: space-between;
-  gap: 26px;
-  padding: 0 24px;
-  color: #080b0d;
-  background: var(--color-link-dark);
-  border: 1px solid rgb(255 255 255 / 55%);
-  border-radius: 0;
-  box-shadow: 5px 5px 0 rgb(215 174 85 / 65%);
+  gap: 30px;
+  overflow: hidden;
+  padding: 0 18px 0 22px;
+  color: #071015;
+  background:
+    linear-gradient(105deg, transparent 0 58%, rgb(255 255 255 / 20%) 58.5% 60%, transparent 60.5%),
+    var(--color-link-dark);
+  border: 1px solid #eafcff;
+  box-shadow: 6px 6px 0 rgb(215 174 85 / 72%);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.94rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
   text-transform: uppercase;
   transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.primaryCta::before {
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgb(7 16 21 / 20%);
+  clip-path: inherit;
+  content: "";
+  pointer-events: none;
+}
+
+.ctaCopy {
+  display: grid;
+  gap: 4px;
+  text-align: left;
+}
+
+.ctaCopy strong {
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.ctaCopy small {
+  color: rgb(7 16 21 / 62%);
+  font-size: 0.59rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.ctaArrow {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  color: var(--color-link-dark);
+  background: #091117;
+  font-size: 1.15rem;
+  place-items: center;
+  transition: transform 160ms ease;
 }
 
 .primaryCta:hover,
 .primaryCta:focus-visible {
   color: #080b0d;
   background: var(--color-primary);
-  box-shadow: 2px 2px 0 var(--color-link-dark);
+  box-shadow: 3px 3px 0 var(--color-link-dark);
   outline: none;
-  transform: scale(1.02);
+  transform: translate(2px, 2px);
 }
 
-.primaryCta span {
-  font-size: 1.15rem;
+.primaryCta:hover .ctaArrow,
+.primaryCta:focus-visible .ctaArrow {
+  transform: translateX(3px);
 }
 
 .inputNote {
