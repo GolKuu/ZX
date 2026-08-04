@@ -64,6 +64,8 @@
     "src/stage/mim/mimSpritePose.ts",
     "src/stage/mim/mimSpriteTimeline.ts",
     "src/stage/photoSprite/photoKickAnimation.ts",
+    "src/stage/photoSprite/photoAttackSequences.ts",
+    "src/stage/photoSprite/photoSpriteAnimation.ts",
     "src/stage/sprite2d/spriteAttackTimeline.ts",
     "src/stage/sprite2d/spritePose.ts",
     "src/data/combat-ai.ts",

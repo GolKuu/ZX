@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { spriteAttackFrame } from '../.sim-test-build/src/stage/sprite2d/spriteAttackTimeline.js';
-import { photoAttackSequence } from '../.sim-test-build/src/stage/photoSprite/photoSpriteAnimation.js';
+import { photoAttackSequence } from '../.sim-test-build/src/stage/photoSprite/photoAttackSequences.js';
 import {
   PHOTO_KICK_NORMAL_IDS,
   PHOTO_NORMAL_ATTACK_KINDS,
