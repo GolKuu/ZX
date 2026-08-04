@@ -79,7 +79,7 @@ export class TelegraphController {
       return { committed: null, events: [] };
     }
     const reason =
-      self.hitstun > 0 || self.health === 0
+      self.hitstun > 0 || self.knockdownFrames > 0 || self.health === 0
         ? 'hit'
         : request.intent === 'combo' && opponent.hitstun === 0
           ? 'targetRecovered'

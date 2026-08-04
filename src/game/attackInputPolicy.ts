@@ -44,7 +44,12 @@ export function isAttackInputLocked(
   moves: readonly MoveFrameData[],
   contactedActionSerial: number | undefined,
 ): boolean {
-  if (fighter.health === 0 || fighter.hitstop > 0 || fighter.hitstun > 0) {
+  if (
+    fighter.health === 0
+    || fighter.hitstop > 0
+    || fighter.hitstun > 0
+    || fighter.knockdownFrames > 0
+  ) {
     return true;
   }
 

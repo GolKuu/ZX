@@ -87,7 +87,12 @@ export class CombatAiAgent {
       signals.events,
     );
     if (pending !== null) return pending;
-    if (self.health === 0 || self.hitstop > 0 || self.hitstun > 0) {
+    if (
+      self.health === 0
+      || self.hitstop > 0
+      || self.hitstun > 0
+      || self.knockdownFrames > 0
+    ) {
       return createDecision({}, 'idle', null, signals.events);
     }
 
