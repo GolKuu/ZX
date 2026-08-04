@@ -14,6 +14,7 @@ import { StageSelectMenu } from './StageSelectMenu';
 import { FeatureHub } from './FeatureHub';
 import { StoryModeScreen } from './StoryModeScreen';
 import { StoryCutscene } from './StoryCutscene';
+import { leaveOnlineRoom } from '@/src/online/onlineSession';
 import styles from './CombatHud.module.css';
 
 interface MenuItem {
@@ -76,8 +77,14 @@ function InMatchMenus() {
     { label: 'Сменить режим', action: openModeMenu },
     { label: 'Главное меню', action: () => router.push('/') },
   ];
+  const exitOnline = () => {
+    void leaveOnlineRoom();
+    openModeMenu();
+  };
   const storyWon = result.winner.startsWith('P1');
-  const resultItems: readonly MenuItem[] = mode === 'story'
+  const resultItems: readonly MenuItem[] = mode === 'online'
+    ? [{ label: 'LEAVE ONLINE ROOM', action: exitOnline }]
+    : mode === 'story'
     ? [
       storyWon
         ? { label: 'CONTINUE STORY', detail: 'Save checkpoint and continue as Glitch', action: completeStoryChapter }
@@ -87,7 +94,12 @@ function InMatchMenus() {
       { label: 'MAIN MENU', action: () => router.push('/') },
     ]
     : standardResultItems;
-  const items = screen === 'result' ? resultItems : pauseItems;
+  const onlinePauseItems = mode === 'online'
+    ? commonPauseItems
+      .filter((item) => item.action !== openCharacterSelect && item.action !== requestCombatReset)
+      .map((item) => item.action === openModeMenu ? { ...item, action: exitOnline } : item)
+    : pauseItems;
+  const items = screen === 'result' ? resultItems : onlinePauseItems;
 
   useEffect(() => {
     if (screen === 'pause' || screen === 'result') {

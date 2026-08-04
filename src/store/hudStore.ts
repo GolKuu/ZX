@@ -84,6 +84,7 @@ type HudState = {
   selectAiDifficulty: (difficulty: AiDifficulty) => void;
   toggleMobileMode: () => void;
   startMatch: (selection: CharacterSelection) => void;
+  startOnlineMatch: (selection: CharacterSelection, arenaId: ArenaId) => void;
   selectArena: (arenaId: ArenaId) => void;
   openStageSelect: () => void;
   enterFight: () => void;
@@ -281,6 +282,14 @@ export const useHudStore = create<HudState>((set) => ({
       ),
       menuFocus: 0,
     })),
+  startOnlineMatch: (fighterSelection, arenaId) => set({
+    mode: 'online',
+    fighterSelection: [...fighterSelection],
+    arenaId,
+    snapshot: initialSnapshot('online', fighterSelection),
+    screen: 'fight',
+    menuFocus: 0,
+  }),
   selectArena: (arenaId) => set({ arenaId, screen: 'versus', menuFocus: 0 }),
   openStageSelect: () => set((state) => state.mode === 'story'
     ? { screen: 'story-scene', menuFocus: 0 }

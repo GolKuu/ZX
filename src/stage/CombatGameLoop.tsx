@@ -1,10 +1,12 @@
 'use client';
 
 import { useFrame } from '@react-three/fiber';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { CombatSession } from '@/src/game/CombatSession';
 import {
   readCombatResetVersion,
+  combatRenderFrame,
+  publishCombatFrame,
 } from '@/src/game/combatRuntime';
 import {
   DEFAULT_CONTEXT,
@@ -19,6 +21,16 @@ import { useHudStore } from '@/src/store/hudStore';
 import { readMobileControls, resetMobileInput } from '@/src/ui/MobileControls';
 import type { CharacterSelection } from '@/src/data/characterRoster';
 import type { FighterInput } from '@/src/sim/state';
+import {
+  broadcastOnlineFrame,
+  broadcastOnlineResult,
+  getOnlineSnapshot,
+  readRemoteInput,
+  sendOnlineInput,
+  subscribeOnline,
+  takeRemoteFrame,
+  takeRemoteResult,
+} from '@/src/online/onlineSession';
 
 interface InputSource {
   sample(
@@ -64,26 +76,59 @@ class MobileAwareInputSource implements InputSource {
   }
 }
 
+class OnlineRemoteInputSource implements InputSource {
+  private lastSequence = -1;
+
+  public sample(): FighterInput {
+    const packet = readRemoteInput();
+    if (packet.sequence !== this.lastSequence) {
+      this.lastSequence = packet.sequence;
+      return packet.input;
+    }
+    const input = packet.input;
+    return {
+      movement: input.movement,
+      guard: input.guard,
+      guardWhileWalking: input.guardWhileWalking,
+      guardMode: input.guardMode,
+      crouching: input.crouching,
+      jump: input.jump,
+      wallClimb: input.wallClimb,
+    };
+  }
+
+  public attach(): void {}
+  public detach(): void {}
+  public updateBindings(): void {}
+  public releaseAll(): void { this.lastSequence = -1; }
+}
+
 export function CombatGameLoop({
   fighterSelection,
 }: {
   readonly fighterSelection: CharacterSelection;
 }) {
+  const onlineRole = useSyncExternalStore(
+    subscribeOnline,
+    getOnlineSnapshot,
+    getOnlineSnapshot,
+  ).role;
+  const localFighterIndex = onlineRole === 'guest' ? 1 : 0;
   const playerOne = useMemo(
     () => new MobileAwareInputSource(new KeyboardInputSource({
       bindings: useControlStore.getState().bindings,
-      commands: commandsFor(fighterSelection[0]),
-      profile: profileFor(fighterSelection[0]),
+      commands: commandsFor(fighterSelection[localFighterIndex]),
+      profile: profileFor(fighterSelection[localFighterIndex]),
     })),
-    [fighterSelection],
+    [fighterSelection, localFighterIndex],
   );
   const playerTwoAI = useMemo(
-    () => new KeyboardInputSource({
+    () => onlineRole === 'host' ? new OnlineRemoteInputSource() : new KeyboardInputSource({
       bindings: PLAYER_TWO_BINDINGS,
       commands: commandsFor(fighterSelection[1]),
       profile: profileFor(fighterSelection[1]),
     }),
-    [fighterSelection],
+    [fighterSelection, onlineRole],
   );
   const session = useMemo(
     () => new CombatSession(playerOne, playerTwoAI, fighterSelection),
@@ -107,6 +152,9 @@ export function CombatGameLoop({
         playerOne.releaseAll();
         playerTwoAI.releaseAll();
       }
+      if (onlineRole === 'host' && state.screen === 'result' && previous.screen !== 'result') {
+        broadcastOnlineResult(state.result);
+      }
     });
     return () => {
       unsubscribe();
@@ -115,7 +163,7 @@ export function CombatGameLoop({
       playerTwoAI.detach(window);
       resetMobileInput();
     };
-  }, [playerOne, playerTwoAI]);
+  }, [onlineRole, playerOne, playerTwoAI]);
 
   useFrame((_, delta) => {
     const resetVersion = readCombatResetVersion();
@@ -131,7 +179,23 @@ export function CombatGameLoop({
       if (hud.mode !== null && hud.mode !== 'online') session.reset();
     }
     if (hud.screen === 'fight') {
-      session.advance(Math.min(delta, 0.1) * 1_000);
+      if (hud.mode !== 'online' || onlineRole === 'host') {
+        session.advance(Math.min(delta, 0.1) * 1_000);
+        const world = combatRenderFrame.world;
+        if (hud.mode === 'online' && world !== null && world.frame % 2 === 0) {
+          broadcastOnlineFrame(world, useHudStore.getState().snapshot);
+        }
+      } else if (onlineRole === 'guest') {
+        const fighter = combatRenderFrame.world?.fighters.find(({ id }) => id === 'p2');
+        sendOnlineInput(playerOne.sample(fighter?.facing ?? -1));
+        const packet = takeRemoteFrame();
+        if (packet !== null) {
+          publishCombatFrame(packet.world, 0);
+          useHudStore.getState().publishSnapshot(packet.hud);
+        }
+        const result = takeRemoteResult();
+        if (result !== null) useHudStore.getState().openResult(result);
+      }
     }
   }, -100);
 

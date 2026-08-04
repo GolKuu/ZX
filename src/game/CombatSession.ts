@@ -178,7 +178,7 @@ export class CombatSession {
     const mode = useHudStore.getState().mode;
     const opponentInput = isPracticeMode(mode)
       ? {}
-      : mode === 'local'
+      : mode === 'local' || mode === 'online'
       ? this.playerTwo.sample(
           opponent.facing,
           this.attackInput.isLocked(opponent),
