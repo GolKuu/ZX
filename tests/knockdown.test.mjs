@@ -29,11 +29,32 @@ test('impact force above armour knocks a fighter down and locks controls', () =>
   assert.equal(fall?.impactForce, 110);
   assert.equal(fall?.armour, 109);
   assert.equal(readFighter(impact.state, 'p2').knockdownFrames, 90);
+  assert.equal(readFighter(impact.state, 'p2').knockdownPhase, 'falling');
+  assert.equal(readFighter(impact.state, 'p2').grounded, false);
+  assert.ok(readFighter(impact.state, 'p2').velocity.y >= 170);
 
   engine.tick({ p2: { movement: 1, move: 'strike' } });
   assert.equal(readFighter(engine.read(), 'p2').action, null);
 
-  for (let frame = 0; frame < 89; frame += 1) engine.tick();
+  while (readFighter(engine.read(), 'p2').knockdownPhase === 'falling') {
+    engine.tick();
+  }
+  assert.equal(readFighter(engine.read(), 'p2').knockdownPhase, 'down');
+  assert.equal(
+    engine.readDebugFrames().find((entry) => entry.fighterId === 'p2')?.hurtboxes.length,
+    0,
+  );
+
+  while (readFighter(engine.read(), 'p2').knockdownPhase === 'down') {
+    engine.tick();
+  }
+  assert.equal(readFighter(engine.read(), 'p2').knockdownPhase, 'rising');
+  assert.equal(
+    engine.tick({ p2: { move: 'strike' } }).state.fighters
+      .find((fighter) => fighter.id === 'p2')?.action,
+    null,
+  );
+  while (readFighter(engine.read(), 'p2').knockdownFrames > 0) engine.tick();
   const recovered = engine.tick({ p2: { move: 'strike' } });
   assert.equal(readFighter(recovered.state, 'p2').action?.moveId, 'strike');
 });

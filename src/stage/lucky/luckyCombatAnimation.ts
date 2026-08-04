@@ -1,5 +1,5 @@
 import { LUCKY_MOVE_IDS } from '@/src/data/lucky/moves';
-import type { FighterSnapshot } from '@/src/sim';
+import { knockdownPoseAmount, type FighterSnapshot } from '@/src/sim';
 import { combatAnimationProgress } from '../combatAnimationProgress';
 import { pulse, setPosition, setRotation, type FighterRig } from '../fighterRig';
 
@@ -9,7 +9,11 @@ export function applyLuckyCombatAnimation(
   time: number,
 ): void {
   if (fighter.health <= 0 || fighter.knockdownFrames > 0) {
-    return knockdown(rig, fighter.facing);
+    return knockdown(
+      rig,
+      fighter.facing,
+      fighter.health <= 0 ? 1 : knockdownPoseAmount(fighter),
+    );
   }
   if (fighter.action !== null) {
     return attack(
@@ -116,9 +120,9 @@ function hurt(rig: FighterRig, facing: -1 | 1, frames: number): void {
   rig.leftArm.rotation.z -= facing * recoil * 0.55;
 }
 
-function knockdown(rig: FighterRig, facing: -1 | 1): void {
-  rig.root.position.y -= 0.7;
-  rig.root.rotation.z = -facing * 1.22;
-  rig.leftLeg.rotation.z = facing * 0.72;
-  rig.rightLeg.rotation.z = -facing * 0.58;
+function knockdown(rig: FighterRig, facing: -1 | 1, amount: number): void {
+  rig.root.position.y -= 0.7 * amount;
+  rig.root.rotation.z = -facing * 1.22 * amount;
+  rig.leftLeg.rotation.z = facing * 0.72 * amount;
+  rig.rightLeg.rotation.z = -facing * 0.58 * amount;
 }

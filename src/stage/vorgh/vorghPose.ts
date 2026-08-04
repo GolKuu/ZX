@@ -1,3 +1,4 @@
+import { knockdownPoseAmount } from '../../sim/knockdown.js';
 import type { FighterSnapshot } from '../../sim/state.js';
 import type { VorghRageTier } from '../../data/vorgh/types.js';
 import type { VorghPlayback } from './VorghAnimationController.js';
@@ -30,8 +31,15 @@ export function vorghPose(
   transition: number,
   playback?: VorghPlayback,
 ): VorghPose {
-  if (fighter.health === 0 || fighter.knockdownFrames > 0) {
+  if (fighter.health === 0) {
     return pose({ lean: -1.35, rootY: 0.1, scaleY: 0.72 });
+  }
+  if (fighter.knockdownFrames > 0) {
+    return blendVorghPose(
+      pose({}),
+      pose({ lean: -1.35, rootY: 0.1, scaleY: 0.72 }),
+      knockdownPoseAmount(fighter),
+    );
   }
   if (fighter.hitstun > 0) {
     return reactionPose(playback?.clipId, fighter.hitstun);
@@ -312,5 +320,22 @@ function pose(overrides: Partial<VorghPose>): VorghPose {
     rootX: 0, rootY: 0, lean: -0.18, head: 0, frontArm: -0.75,
     backArm: 0.62, frontForearm: -0.55, backForearm: 0.65,
     frontLeg: -0.2, backLeg: 0.25, scaleX: 1, scaleY: 1, ...overrides,
+  };
+}
+
+function blendVorghPose(
+  from: VorghPose,
+  to: VorghPose,
+  amount: number,
+): VorghPose {
+  const mix = (first: number, second: number) => first + (second - first) * amount;
+  return {
+    rootX: mix(from.rootX, to.rootX), rootY: mix(from.rootY, to.rootY),
+    lean: mix(from.lean, to.lean), head: mix(from.head, to.head),
+    frontArm: mix(from.frontArm, to.frontArm), backArm: mix(from.backArm, to.backArm),
+    frontForearm: mix(from.frontForearm, to.frontForearm),
+    backForearm: mix(from.backForearm, to.backForearm),
+    frontLeg: mix(from.frontLeg, to.frontLeg), backLeg: mix(from.backLeg, to.backLeg),
+    scaleX: mix(from.scaleX, to.scaleX), scaleY: mix(from.scaleY, to.scaleY),
   };
 }

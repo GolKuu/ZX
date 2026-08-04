@@ -50,8 +50,11 @@ export {
 export {
   DEFAULT_IMPACT_ARMOUR,
   KNOCKDOWN_COOLDOWN_FRAMES,
+  KNOCKDOWN_DOWN_FRAMES,
   KNOCKDOWN_FRAMES,
+  KNOCKDOWN_GETUP_FRAMES,
   calculateImpactForce,
+  knockdownPoseAmount,
 } from './knockdown.js';
 export {
   FIXED_SCALE,

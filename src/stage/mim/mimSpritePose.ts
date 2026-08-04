@@ -1,5 +1,5 @@
 import type { FighterSnapshot } from '../../sim/index.js';
-import { dashPhase, FIXED_SCALE } from '../../sim/index.js';
+import { dashPhase, FIXED_SCALE, knockdownPoseAmount } from '../../sim/index.js';
 import type { MimActionKind, MimAnimationBeat } from './mimSpriteTimeline.js';
 
 export interface MimSpritePose {
@@ -66,8 +66,15 @@ export function mimSpritePoseFor(
   time: number,
   beat: MimAnimationBeat | null,
 ): MimSpritePose {
-  if (fighter.health <= 0 || fighter.knockdownFrames > 0) {
+  if (fighter.health <= 0) {
     return KO_POSE;
+  }
+  if (fighter.knockdownFrames > 0) {
+    return blended(
+      fightingStance(0),
+      KO_POSE,
+      knockdownPoseAmount(fighter),
+    );
   }
 
   if (!fighter.grounded) {

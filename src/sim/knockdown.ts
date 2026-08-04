@@ -86,7 +86,7 @@ export function advanceKnockdown(
 export function knockdownPoseAmount(
   fighter: Pick<MutableFighterState, 'knockdownFrames' | 'knockdownPhase'>,
 ): number {
-  if (fighter.knockdownPhase === 'none') return 0;
+  if (!fighter.knockdownFrames || fighter.knockdownPhase === 'none') return 0;
   if (fighter.knockdownPhase !== 'rising') return 1;
   return Math.min(1, fighter.knockdownFrames / KNOCKDOWN_GETUP_FRAMES);
 }

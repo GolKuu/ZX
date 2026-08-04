@@ -10,7 +10,7 @@ export function photoFrameFor(
   elapsedTime: number,
 ): number {
   if (fighter.knockdownFrames > 0) {
-    return frame(2, 3);
+    return fighter.knockdownPhase === 'rising' ? frame(1, 1) : frame(2, 3);
   }
   if (fighter.hitstun > 0) {
     return frame(1, 3);

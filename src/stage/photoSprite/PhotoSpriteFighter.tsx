@@ -12,7 +12,7 @@ import {
   TextureLoader,
 } from 'three';
 import { combatRenderFrame, readCombatFighter } from '@/src/game/combatRuntime';
-import { FIXED_SCALE } from '@/src/sim';
+import { FIXED_SCALE, knockdownPoseAmount } from '@/src/sim';
 import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
 import { MimAttackEffects } from '../mim/MimAttackEffects';
 import { MimSpecialEffects } from '../mim/MimSpecialEffects';
@@ -125,10 +125,11 @@ export function PhotoSpriteFighter({
         fighter.action.moveId,
         combatAnimationProgress(fighter.action.moveId, fighter.action.frame),
       );
-    const knockedDown = fighter.knockdownFrames > 0;
+    const knockdownAmount = knockdownPoseAmount(fighter);
+    const knockedDown = knockdownAmount > 0;
     drawing.position.set(
       motion.x,
-      CENTER_Y + motion.y - (knockedDown ? DISPLAY_HEIGHT * 0.36 : 0),
+      CENTER_Y + motion.y - DISPLAY_HEIGHT * 0.36 * knockdownAmount,
       0,
     );
     drawing.scale.set(
@@ -137,7 +138,7 @@ export function PhotoSpriteFighter({
       1,
     );
     drawing.rotation.z = knockedDown
-      ? -fighter.facing * 1.18
+      ? -fighter.facing * 1.18 * knockdownAmount
       : fighter.hitstun > 0
       ? Math.sin(clock.elapsedTime * 42) * 0.035
       : motion.rotation;

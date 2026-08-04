@@ -37,7 +37,7 @@
 // standing up a renderer. The path alias does not survive that emit.
 import { moveKindFor, type MoveKind } from '../../data/move-kind.js';
 import type { FighterSnapshot } from '../../sim/index.js';
-import { dashPhase, FIXED_SCALE } from '../../sim/index.js';
+import { dashPhase, FIXED_SCALE, knockdownPoseAmount } from '../../sim/index.js';
 
 export interface SpritePose {
   torso: number;
@@ -706,8 +706,15 @@ export function spritePoseFor(
   hurtZone: HurtZone = 'body',
   attackTransition: SpriteAttackTransition = 'windup',
 ): SpritePose {
-  if (fighter.health <= 0 || fighter.knockdownFrames > 0) {
+  if (fighter.health <= 0) {
     return withinLimits(knockout());
+  }
+  if (fighter.knockdownFrames > 0) {
+    return withinLimits(blendPose(
+      stance(0),
+      knockout(),
+      knockdownPoseAmount(fighter),
+    ));
   }
 
   if (!fighter.grounded) {
