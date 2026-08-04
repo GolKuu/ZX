@@ -10,11 +10,27 @@ export interface PhotoAttackMotion {
   readonly x: number;
   readonly y: number;
   readonly rotation: number;
-  /** Turn around the vertical axis; PI presents the fighter's back. */
+  /**
+   * Hip turn around the vertical axis, always inside `MAX_HIP_TURN`.
+   *
+   * A value approaching PI would present the fighter's back. K and L used to do
+   * exactly that so their rear-side drawings arrived from behind, which hid the
+   * strike and read as turning away from the opponent mid-combo.
+   */
   readonly turnY: number;
   readonly scaleX: number;
   readonly scaleY: number;
 }
+
+/**
+ * The widest hip turn any attack may use, in radians.
+ *
+ * Rear-hand and rear-leg silhouettes come from their own atlas frames, so the
+ * yaw only has to suggest the weight transfer behind them. Keeping it under a
+ * seventh of a turn means every attack stays square to the camera — the player
+ * must always read the fighter's front, never its back.
+ */
+export const MAX_HIP_TURN = 0.26;
 
 /** The physical I/L standing normals for every fighter in the roster. */
 export const PHOTO_KICK_NORMAL_IDS = [
@@ -133,6 +149,10 @@ function leadHandMotion(progress: number): PhotoAttackMotion {
  * K comes from the rear shoulder: coil away, turn the hips through the target,
  * then recover. The atlas supplies the rear-hand contact silhouette while this
  * motion makes the weight transfer readable instead of looking like a second J.
+ *
+ * The chamber closes the lead shoulder a few degrees and the contact swings the
+ * chest back open past square. That is the whole hip rotation — enough to feel
+ * the rear side driving through, with the fighter still facing its opponent.
  */
 function rearHandMotion(progress: number): PhotoAttackMotion {
   const { chamber, contact } = kickEnvelope(progress);
@@ -140,10 +160,7 @@ function rearHandMotion(progress: number): PhotoAttackMotion {
     x: -chamber * 0.07 + contact * 0.16,
     y: -chamber * 0.02 + contact * 0.03,
     rotation: chamber * 0.09 - contact * 0.18,
-    turnY: Math.PI * Math.max(
-      chamber * 0.72,
-      Math.min(1, contact * 1.18),
-    ),
+    turnY: MAX_HIP_TURN * (chamber * 0.5 - contact * 1),
     scaleX: 1 + contact * 0.045,
     scaleY: 1 - chamber * 0.02 + contact * 0.01,
   };
@@ -153,6 +170,9 @@ function rearHandMotion(progress: number): PhotoAttackMotion {
  * L lifts the rear knee from behind the stance, turns the hip over and sends
  * that leg past the lead side. Its deeper coil and higher contact travel keep
  * it visibly separate from I's lead-leg kick.
+ *
+ * The hip turn runs deeper than K's, because a rear leg has further to travel,
+ * and still resolves square to the opponent rather than spinning away.
  */
 function rearLegMotion(progress: number): PhotoAttackMotion {
   const { chamber, contact } = kickEnvelope(progress);
@@ -160,10 +180,7 @@ function rearLegMotion(progress: number): PhotoAttackMotion {
     x: -chamber * 0.09 + contact * 0.12,
     y: -chamber * 0.06 + contact * 0.15,
     rotation: chamber * 0.12 - contact * 0.16,
-    turnY: Math.PI * Math.max(
-      chamber * 0.9,
-      Math.min(1, contact * 1.15),
-    ),
+    turnY: MAX_HIP_TURN * (chamber * 0.72 - contact * 1.2),
     scaleX: 1 + contact * 0.045,
     scaleY: 1 - chamber * 0.025 + contact * 0.035,
   };

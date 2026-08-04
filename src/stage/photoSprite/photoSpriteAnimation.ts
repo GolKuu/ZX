@@ -1,6 +1,7 @@
 import type { FighterSnapshot } from '../../sim/index.js';
 import { spriteAnimationFrame } from '../combatAnimationProgress.js';
 import { photoAttackSequence } from './photoAttackSequences.js';
+import { photoFallFrame } from './photoFallAnimation.js';
 
 export const PHOTO_COLUMNS = 4;
 export const PHOTO_ROWS = 4;
@@ -8,10 +9,10 @@ export const PHOTO_ROWS = 4;
 export function photoFrameFor(
   fighter: FighterSnapshot,
   elapsedTime: number,
+  defeatFrames = 0,
 ): number {
-  if (fighter.knockdownFrames > 0) {
-    return fighter.knockdownPhase === 'rising' ? frame(1, 1) : frame(2, 3);
-  }
+  const falling = photoFallFrame(fighter, defeatFrames);
+  if (falling !== null) return falling;
   if (fighter.hitstun > 0) {
     return frame(1, 3);
   }

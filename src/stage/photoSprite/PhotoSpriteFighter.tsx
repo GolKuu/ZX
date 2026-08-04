@@ -12,7 +12,7 @@ import {
   TextureLoader,
 } from 'three';
 import { combatRenderFrame, readCombatFighter } from '@/src/game/combatRuntime';
-import { FIXED_SCALE, knockdownPoseAmount } from '@/src/sim';
+import { FIXED_SCALE } from '@/src/sim';
 import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
 import { MimAttackEffects } from '../mim/MimAttackEffects';
 import { MimSpecialEffects } from '../mim/MimSpecialEffects';
@@ -22,6 +22,7 @@ import { VorghAudioPlayer } from '../vorgh/VorghAudioPlayer';
 import { VorghEffects } from '../vorgh/VorghEffects';
 import { spriteFacingScale, withOpponentFacing } from '../fighterPresentation';
 import { combatAnimationProgress } from '../combatAnimationProgress';
+import { isFalling, photoFallPose } from './photoFallAnimation';
 import { photoAttackMotion } from './photoKickAnimation';
 import { PHOTO_COLUMNS, PHOTO_ROWS, photoFrameFor } from './photoSpriteAnimation';
 
@@ -29,6 +30,7 @@ const DISPLAY_HEIGHT = 3.05;
 const GROUND = 0.91;
 const CENTER_Y = (GROUND - 0.5) * DISPLAY_HEIGHT;
 const FRAME_BLEND_SECONDS = 0.065;
+const SIMULATION_HZ = 60;
 
 interface PhotoTextures {
   readonly current: Texture;
@@ -48,6 +50,9 @@ export function PhotoSpriteFighter({
   const previousMaterial = useRef<MeshBasicMaterial>(null);
   const lastFrame = useRef<number | null>(null);
   const transitionAt = useRef(-1);
+  // A killing blow leaves no knockdown timer behind, so the defeat collapse
+  // needs its own clock. Wall time keeps it identical at any refresh rate.
+  const defeatAt = useRef<number | null>(null);
   const [textures, setTextures] = useState<PhotoTextures | null>(null);
   const opponentId = fighterId === 'p1' ? 'p2' : 'p1';
 
@@ -95,7 +100,13 @@ export function PhotoSpriteFighter({
     const presentation = withOpponentFacing(fighter, readCombatFighter(opponentId));
     root.scale.x = spriteFacingScale(true, presentation.facing);
 
-    const frame = photoFrameFor(fighter, clock.elapsedTime);
+    if (fighter.health > 0) defeatAt.current = null;
+    else if (defeatAt.current === null) defeatAt.current = clock.elapsedTime;
+    const defeatFrames = defeatAt.current === null
+      ? 0
+      : (clock.elapsedTime - defeatAt.current) * SIMULATION_HZ;
+
+    const frame = photoFrameFor(fighter, clock.elapsedTime, defeatFrames);
     if (textures !== null) {
       const previousFrame = lastFrame.current;
       if (previousFrame === null) {
@@ -119,30 +130,30 @@ export function PhotoSpriteFighter({
       }
     }
     const impact = fighter.hitstop > 0 ? 0.06 : 0;
-    const motion = fighter.action === null
+    const falling = isFalling(fighter);
+    const motion = falling || fighter.action === null
       ? photoAttackMotion('', 0)
       : photoAttackMotion(
         fighter.action.moveId,
         combatAnimationProgress(fighter.action.moveId, fighter.action.frame),
       );
-    const knockdownAmount = knockdownPoseAmount(fighter);
-    const knockedDown = knockdownAmount > 0;
+    const fall = photoFallPose(fighter, clock.elapsedTime, defeatFrames);
     drawing.position.set(
-      motion.x,
-      CENTER_Y + motion.y - DISPLAY_HEIGHT * 0.36 * knockdownAmount,
+      motion.x + fall.slide * DISPLAY_HEIGHT,
+      CENTER_Y + motion.y - fall.drop * DISPLAY_HEIGHT,
       0,
     );
     drawing.scale.set(
-      motion.scaleX * (1 + impact),
-      motion.scaleY * (1 - impact),
+      motion.scaleX * fall.scaleX * (1 + impact),
+      motion.scaleY * fall.scaleY * (1 - impact),
       1,
     );
-    drawing.rotation.z = knockedDown
-      ? -fighter.facing * 1.18 * knockdownAmount
+    drawing.rotation.z = falling
+      ? fall.rotation
       : fighter.hitstun > 0
       ? Math.sin(clock.elapsedTime * 42) * 0.035
       : motion.rotation;
-    drawing.rotation.y = knockedDown ? 0 : motion.turnY;
+    drawing.rotation.y = falling ? 0 : motion.turnY;
   });
 
   const width = DISPLAY_HEIGHT;

@@ -3,6 +3,7 @@ import test from 'node:test';
 import { spriteAttackFrame } from '../.sim-test-build/src/stage/sprite2d/spriteAttackTimeline.js';
 import { photoAttackSequence } from '../.sim-test-build/src/stage/photoSprite/photoAttackSequences.js';
 import {
+  MAX_HIP_TURN,
   PHOTO_KICK_NORMAL_IDS,
   PHOTO_NORMAL_ATTACK_KINDS,
   photoAttackKind,
@@ -65,14 +66,28 @@ test('the four attack buttons have separate full animation cycles', () => {
   assert.equal(new Set(motions).size, 4, 'a body-motion cycle was reused');
 });
 
-test('K and L turn their back to the player while J and I stay front-readable', () => {
-  const [, k, i, l] = BASIC_ATTACKS.glitch.map((moveId) =>
-    photoAttackMotion(moveId, 0.52));
-  const j = photoAttackMotion(BASIC_ATTACKS.glitch[0], 0.52);
-  assert.ok(j.turnY < Math.PI * 0.1, 'J must remain a direct front-readable jab');
-  assert.ok((i?.turnY ?? 0) < Math.PI * 0.1, 'I must remain a direct low kick');
-  assert.ok((k?.turnY ?? 0) > Math.PI * 0.85, 'K must show the fighter\'s back');
-  assert.ok((l?.turnY ?? 0) > Math.PI * 0.85, 'L must show the fighter\'s back');
+test('no attack on any fighter ever turns its back to the opponent', () => {
+  for (const moves of Object.values(BASIC_ATTACKS)) {
+    for (const moveId of moves) {
+      for (let step = 0; step <= 40; step += 1) {
+        const { turnY } = photoAttackMotion(moveId, step / 40);
+        assert.ok(
+          Math.abs(turnY) <= MAX_HIP_TURN,
+          `${moveId} yaws ${turnY} at ${step / 40}, past a readable hip turn`,
+        );
+      }
+    }
+  }
+});
+
+test('K and L turn the hips through the strike and finish square', () => {
+  for (const moveId of ['glitch.rift-elbow', 'glitch.breakpoint-axe']) {
+    const coil = photoAttackMotion(moveId, 0.25).turnY;
+    const contact = photoAttackMotion(moveId, 0.52).turnY;
+    assert.ok(coil > 0, `${moveId} must close the lead shoulder first`);
+    assert.ok(contact < 0, `${moveId} must swing back open through contact`);
+    assert.equal(photoAttackMotion(moveId, 1).turnY, 0);
+  }
 });
 
 test('K visibly coils and drives from the rear shoulder', () => {
