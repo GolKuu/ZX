@@ -2,6 +2,7 @@ import { DEFAULT_WORLD_CONFIG, type CombatWorldConfig } from './config.js';
 import type { MoveFrameData } from './frame-data.js';
 import type { FixedBox } from './math.js';
 import type { FighterDefinition, MutableFighterState } from './state.js';
+import { DEFAULT_IMPACT_ARMOUR } from './knockdown.js';
 
 export function copyWorldConfig(
   overrides: Partial<CombatWorldConfig> | undefined,
@@ -139,6 +140,9 @@ export function createFighterState(
     guardHealth: 100,
     hitstop: 0,
     hitstun: 0,
+    impactArmour: definition.impactArmour ?? DEFAULT_IMPACT_ARMOUR,
+    knockdownFrames: 0,
+    knockdownCooldownFrames: 0,
     recoveryPercent: 100,
     resource: definition.resource?.initial ?? 0,
     resourceMaximum: definition.resource?.maximum ?? 0,

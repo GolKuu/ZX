@@ -48,6 +48,12 @@ export {
   type FixedStepResult,
 } from './fixed-step.js';
 export {
+  DEFAULT_IMPACT_ARMOUR,
+  KNOCKDOWN_COOLDOWN_FRAMES,
+  KNOCKDOWN_FRAMES,
+  calculateImpactForce,
+} from './knockdown.js';
+export {
   FIXED_SCALE,
   fixed,
   type FixedBox,

@@ -50,7 +50,7 @@ export function applyNeutralInput(
   fighter: MutableFighterState,
   input: FighterInput | undefined,
 ): void {
-  if (fighter.health === 0 || fighter.hitstun > 0) {
+  if (fighter.health === 0 || fighter.hitstun > 0 || fighter.knockdownFrames > 0) {
     fighter.guarding = false;
     endDash(fighter);
     endLunge(fighter);
@@ -107,6 +107,7 @@ export function tryStartMove(
     input?.move === undefined
     || fighter.health === 0
     || fighter.hitstun > 0
+    || fighter.knockdownFrames > 0
     || fighter.guarding
     || (fighter.moveCooldowns[input.move] ?? 0) > 0
     || (moves.get(input.move)?.minimumResource ?? 0) > fighter.resource

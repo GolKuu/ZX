@@ -8,6 +8,8 @@ export interface FighterDefinition {
   readonly spawn: FixedVector;
   readonly facing: -1 | 1;
   readonly hurtboxes: readonly FixedBox[];
+  /** Force a clean hit must exceed to knock this fighter down. */
+  readonly impactArmour?: number;
   readonly movement?: FighterMovementData;
   readonly resource?: FighterResourceData;
 }
@@ -129,6 +131,9 @@ export interface MutableFighterState {
   guardHealth: number;
   hitstop: number;
   hitstun: number;
+  readonly impactArmour: number;
+  knockdownFrames: number;
+  knockdownCooldownFrames: number;
   /**
    * Recovery-length modifier as an integer percentage; 100 is unmodified.
    * Driven by character passives (Frame Inertia). Integer so the simulation
@@ -187,6 +192,8 @@ export interface FighterSnapshot {
   readonly dashFrames: number;
   readonly hitstop: number;
   readonly hitstun: number;
+  readonly impactArmour: number;
+  readonly knockdownFrames: number;
   readonly action: Readonly<Omit<ActiveMoveState, 'hitLedger'>> | null;
   /** Animation reads this to pick a wall clip instead of a jump clip. */
   readonly wallRun: Readonly<WallRunState>;

@@ -41,6 +41,10 @@ export function validateFighters(
     if (fighter.maxHealth <= 0) {
       throw new Error(`${fighter.id}.maxHealth must be positive`);
     }
+    assertNonNegativeInteger(
+      fighter.impactArmour ?? 160,
+      `${fighter.id}.impactArmour`,
+    );
     assertInteger(fighter.spawn.x, `${fighter.id}.spawn.x`);
     assertInteger(fighter.spawn.y, `${fighter.id}.spawn.y`);
     if (fighter.spawn.x < config.leftWall || fighter.spawn.x > config.rightWall) {

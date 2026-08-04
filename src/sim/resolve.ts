@@ -2,6 +2,7 @@ import type { HitCandidate } from './collision.js';
 import type { CombatEvent } from './events.js';
 import { clampInteger } from './math.js';
 import { comboDamagePercent } from './combo-scaling.js';
+import { applyKnockdown, canKnockDown, calculateImpactForce } from './knockdown.js';
 
 export interface ResolveContext {
   /** Serial to give a counter or follow-up action, when one starts. */
@@ -110,6 +111,7 @@ export function resolveHit(
   }
 
   const armour = activeArmour(candidate);
+  const knockedDown = canKnockDown(defender, hit);
   const airScaling = readAirScaling(candidate);
   const isCounterHit = defender.action !== null;
   const baseDamage = armour === null
@@ -152,7 +154,7 @@ export function resolveHit(
       ? authoredGain * 2
       : authoredGain,
   );
-  if (armour !== null && defender.action !== null) {
+  if (armour !== null && defender.action !== null && !knockedDown) {
     if (armour.status) defender.statusArmourHitsUsed += 1;
     else defender.action.armourHitsUsed += 1;
     defender.hitstop = Math.max(defender.hitstop, hit.hitstop.defender);
@@ -174,6 +176,7 @@ export function resolveHit(
     defender.hitstun,
     Math.max(4, hit.hitstun - airScaling.hitstunDecay),
   );
+  if (knockedDown) applyKnockdown(defender);
   defender.hitstop = Math.max(defender.hitstop, hit.hitstop.defender);
   attacker.hitstop = Math.max(attacker.hitstop, hit.hitstop.attacker);
 
@@ -236,6 +239,17 @@ export function resolveHit(
     damage,
     position: candidate.impact,
   });
+  if (knockedDown) {
+    events.push({
+      type: 'knockdown',
+      frame,
+      attackerId: attacker.id,
+      defenderId: defender.id,
+      moveId: candidate.moveId,
+      impactForce: calculateImpactForce(hit),
+      armour: defender.impactArmour,
+    });
+  }
 
   // Hit confirm: a cinematic follow-up starts here or not at all.
   const followUp = candidate.attackerMove?.onHitFollowUp;

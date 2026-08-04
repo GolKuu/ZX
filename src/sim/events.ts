@@ -63,6 +63,15 @@ export interface GrappleEvent extends CombatEventBase {
   readonly pairedFrames: number;
 }
 
+export interface KnockdownEvent extends CombatEventBase {
+  readonly type: 'knockdown';
+  readonly attackerId: string;
+  readonly defenderId: string;
+  readonly moveId: string;
+  readonly impactForce: number;
+  readonly armour: number;
+}
+
 export interface BounceEvent extends CombatEventBase {
   readonly type: 'wallBounce' | 'groundBounce';
   readonly fighterId: string;
@@ -117,6 +126,7 @@ export type CombatEvent =
   | GuardBreakEvent
   | ArmourAbsorbedEvent
   | GrappleEvent
+  | KnockdownEvent
   | BounceEvent
   | WallSpawnedEvent
   | WallContactEvent

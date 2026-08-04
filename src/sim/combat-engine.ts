@@ -81,6 +81,9 @@ export class CombatEngine {
     faceAttackingFightersTowardOpponents(this.fighters, inputs);
     for (const fighter of this.fighters) {
       advanceMoveCooldowns(fighter);
+      if (fighter.knockdownCooldownFrames > 0) {
+        fighter.knockdownCooldownFrames -= 1;
+      }
       fighter.previousPosition.x = fighter.position.x;
       fighter.previousPosition.y = fighter.position.y;
       if (fighter.hitstop > 0) {
@@ -232,6 +235,9 @@ export class CombatEngine {
       ) {
         fighter.hitstun -= 1;
         if (fighter.hitstun === 0) fighter.comboHitsTaken = 0;
+      }
+      if (fighter.knockdownFrames > 0 && !hitThisFrame.has(fighter.id)) {
+        fighter.knockdownFrames -= 1;
       }
       const action = fighter.action;
       if (action === null || fighter.hitstop > 0) {
