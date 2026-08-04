@@ -66,6 +66,7 @@ export type {
   FighterInput,
   FighterMovementData,
   FighterSnapshot,
+  KnockdownPhase,
   WallRunPhase,
   WallRunState,
   WorldSnapshot,

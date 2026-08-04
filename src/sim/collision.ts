@@ -42,6 +42,11 @@ export function activeHurtboxes(
   fighter: MutableFighterState,
   move: MoveFrameData | undefined,
 ): readonly FixedBox[] {
+  // Like Mortal Kombat, a grounded fighter cannot be hit during the brief
+  // prone/get-up sequence. Airborne knockdowns remain juggleable.
+  if (fighter.knockdownPhase === 'down' || fighter.knockdownPhase === 'rising') {
+    return [];
+  }
   const frame = fighter.action?.frame;
   if (frame === undefined || move?.hurtboxes === undefined) {
     return fighter.defaultHurtboxes;

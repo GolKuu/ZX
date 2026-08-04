@@ -142,6 +142,7 @@ export function createFighterState(
     hitstun: 0,
     impactArmour: definition.impactArmour ?? DEFAULT_IMPACT_ARMOUR,
     knockdownFrames: 0,
+    knockdownPhase: 'none',
     knockdownCooldownFrames: 0,
     recoveryPercent: 100,
     resource: definition.resource?.initial ?? 0,

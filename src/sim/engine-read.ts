@@ -75,6 +75,7 @@ function snapshotFighter(fighter: MutableFighterState): FighterSnapshot {
     hitstun: fighter.hitstun,
     impactArmour: fighter.impactArmour,
     knockdownFrames: fighter.knockdownFrames,
+    knockdownPhase: fighter.knockdownPhase,
     action:
       fighter.action === null
         ? null

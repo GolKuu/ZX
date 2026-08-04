@@ -19,6 +19,7 @@ import { effectiveMoveFrames, type MoveFrameData } from './frame-data.js';
 import { integrateFighter } from './physics.js';
 import { resolveMoveObstacles } from './move-obstacles.js';
 import { resolveHit } from './resolve.js';
+import { advanceKnockdown } from './knockdown.js';
 import {
   applyMovingWallHits,
   applyWallAttackContacts,
@@ -236,9 +237,7 @@ export class CombatEngine {
         fighter.hitstun -= 1;
         if (fighter.hitstun === 0) fighter.comboHitsTaken = 0;
       }
-      if (fighter.knockdownFrames > 0 && !hitThisFrame.has(fighter.id)) {
-        fighter.knockdownFrames -= 1;
-      }
+      advanceKnockdown(fighter, hitThisFrame.has(fighter.id));
       const action = fighter.action;
       if (action === null || fighter.hitstop > 0) {
         continue;

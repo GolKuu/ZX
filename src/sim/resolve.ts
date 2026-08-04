@@ -2,7 +2,12 @@ import type { HitCandidate } from './collision.js';
 import type { CombatEvent } from './events.js';
 import { clampInteger } from './math.js';
 import { comboDamagePercent } from './combo-scaling.js';
-import { applyKnockdown, canKnockDown, calculateImpactForce } from './knockdown.js';
+import {
+  applyKnockdown,
+  applyKnockdownLaunch,
+  canKnockDown,
+  calculateImpactForce,
+} from './knockdown.js';
 
 export interface ResolveContext {
   /** Serial to give a counter or follow-up action, when one starts. */
@@ -196,6 +201,9 @@ export function resolveHit(
   );
   if (defender.velocity.y !== 0) {
     defender.grounded = false;
+  }
+  if (knockedDown) {
+    applyKnockdownLaunch(defender, attacker.facing, calculateImpactForce(hit));
   }
 
   const groundBounce = hit.groundBounce?.counterHitOnly === true && !isCounterHit

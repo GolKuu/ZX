@@ -133,6 +133,7 @@ export interface MutableFighterState {
   hitstun: number;
   readonly impactArmour: number;
   knockdownFrames: number;
+  knockdownPhase: KnockdownPhase;
   knockdownCooldownFrames: number;
   /**
    * Recovery-length modifier as an integer percentage; 100 is unmodified.
@@ -194,10 +195,13 @@ export interface FighterSnapshot {
   readonly hitstun: number;
   readonly impactArmour: number;
   readonly knockdownFrames: number;
+  readonly knockdownPhase: KnockdownPhase;
   readonly action: Readonly<Omit<ActiveMoveState, 'hitLedger'>> | null;
   /** Animation reads this to pick a wall clip instead of a jump clip. */
   readonly wallRun: Readonly<WallRunState>;
 }
+
+export type KnockdownPhase = 'none' | 'falling' | 'down' | 'rising';
 
 export type GuardMode = 'normal' | 'pain';
 
