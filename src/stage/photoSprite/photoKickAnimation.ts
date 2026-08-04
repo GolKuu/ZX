@@ -105,6 +105,214 @@ export function photoAttackKind(moveId: string): PhotoAttackKind {
 }
 
 /**
+ * One attack's whole-body travel, as signed coefficients on the two envelope
+ * terms. Every field multiplies `chamber` or `contact`, and both decay to zero
+ * by the end of recovery — so an attack always lands back on exact neutral
+ * without a separate settle pass, and a table cannot leave the fighter drifted.
+ */
+interface MotionCurve {
+  readonly chamberX: number;
+  readonly contactX: number;
+  readonly chamberY: number;
+  readonly contactY: number;
+  /** Roll about Z. Positive tips the torso back, away from the opponent. */
+  readonly chamberRoll: number;
+  readonly contactRoll: number;
+  /** Hip yaw, as a fraction of `MAX_HIP_TURN`. */
+  readonly chamberTurn: number;
+  readonly contactTurn: number;
+  readonly chamberWide: number;
+  readonly contactWide: number;
+  readonly chamberTall: number;
+  readonly contactTall: number;
+}
+
+function curve(overrides: Partial<MotionCurve> = {}): MotionCurve {
+  return {
+    chamberX: 0,
+    contactX: 0,
+    chamberY: 0,
+    contactY: 0,
+    chamberRoll: 0,
+    contactRoll: 0,
+    chamberTurn: 0,
+    contactTurn: 0,
+    chamberWide: 0,
+    contactWide: 0,
+    chamberTall: 0,
+    contactTall: 0,
+    ...overrides,
+  };
+}
+
+function motionFrom(shape: MotionCurve, progress: number): PhotoAttackMotion {
+  const { chamber, contact } = kickEnvelope(progress);
+  return {
+    x: chamber * shape.chamberX + contact * shape.contactX,
+    y: chamber * shape.chamberY + contact * shape.contactY,
+    rotation: chamber * shape.chamberRoll + contact * shape.contactRoll,
+    turnY: MAX_HIP_TURN * (
+      chamber * shape.chamberTurn + contact * shape.contactTurn
+    ),
+    scaleX: 1 + chamber * shape.chamberWide + contact * shape.contactWide,
+    scaleY: 1 + chamber * shape.chamberTall + contact * shape.contactTall,
+  };
+}
+
+/**
+ * ## Why the standing normals move so much more than everything else
+ *
+ * The atlas gives each fighter one drawing per limb action, and the two hand
+ * drawings were photographed from the same side: measured as silhouettes, the
+ * lead-hand and rear-hand contact cells overlap by 64–74% for all four
+ * fighters, and the two leg cells by up to 57%. The artwork alone therefore
+ * cannot tell the player which hand or which leg just moved — J and K arrive
+ * as the same picture with a bigger spark on it.
+ *
+ * So the separation has to come from the body, and the numbers below are the
+ * only thing on screen that can carry it. They are roughly twice the size of
+ * the generic curves further down, and — more importantly — each one has a
+ * signature the other three do not share:
+ *
+ * - **J, lead hand** — short flat snap. Square hips, no lift, no yaw.
+ * - **K, rear hand** — the longest travel of the four, hips turning over and
+ *   the shoulder rolling down through the target.
+ * - **I, lead leg** — the fighter *sinks*: hips drop, body squashes, and the
+ *   torso counter-leans back while the hips stay square.
+ * - **L, rear leg** — the fighter *rises*, on the deepest hip turn of the four.
+ *
+ * Lead limbs never yaw and rear limbs always do; hands stay level while legs
+ * move the fighter up or down. Those two rules alone are enough to read the
+ * limb off a drawing that cannot show it.
+ */
+const STANDING_NORMAL_MOTION: Readonly<Record<PhotoAttackKind, MotionCurve>> = {
+  jab: curve({
+    chamberX: -0.03,
+    contactX: 0.16,
+    contactY: 0.02,
+    contactRoll: -0.05,
+    contactWide: 0.05,
+    contactTall: -0.02,
+  }),
+  heavy: curve({
+    chamberX: -0.12,
+    contactX: 0.34,
+    chamberY: -0.04,
+    contactY: 0.02,
+    chamberRoll: 0.1,
+    contactRoll: -0.2,
+    chamberTurn: 0.55,
+    contactTurn: -1,
+    contactWide: 0.09,
+    chamberTall: -0.03,
+    contactTall: 0.01,
+  }),
+  kick: curve({
+    chamberX: -0.06,
+    contactX: 0.22,
+    chamberY: -0.1,
+    contactY: -0.06,
+    chamberRoll: 0.04,
+    contactRoll: 0.06,
+    contactWide: 0.07,
+    chamberTall: -0.04,
+    contactTall: -0.03,
+  }),
+  sweep: curve({
+    chamberX: -0.06,
+    contactX: 0.26,
+    chamberY: -0.12,
+    contactY: -0.04,
+    chamberRoll: 0.05,
+    contactRoll: 0.07,
+    contactWide: 0.06,
+    chamberTall: -0.05,
+    contactTall: -0.02,
+  }),
+  highKick: curve({
+    chamberX: -0.12,
+    contactX: 0.18,
+    chamberY: -0.05,
+    contactY: 0.24,
+    chamberRoll: 0.14,
+    contactRoll: -0.22,
+    chamberTurn: 0.8,
+    contactTurn: -1.35,
+    contactWide: 0.05,
+    chamberTall: -0.04,
+    contactTall: 0.07,
+  }),
+  uppercut: curve(),
+};
+
+/**
+ * Everything that is not one of the twenty standing normals: specials, supers,
+ * throws, air and crouching buttons, and any id the keyword rules above had to
+ * guess at. These keep the smaller, safer travel — a command grab that lunged a
+ * tenth of the fighter's height would leave its own hitbox behind.
+ */
+const GENERIC_MOTION: Readonly<Record<PhotoAttackKind, MotionCurve>> = {
+  jab: curve({
+    chamberX: -0.015,
+    contactX: 0.08,
+    contactY: 0.015,
+    contactRoll: -0.035,
+    contactWide: 0.025,
+    contactTall: -0.01,
+  }),
+  heavy: curve({
+    chamberX: -0.07,
+    contactX: 0.16,
+    chamberY: -0.02,
+    contactY: 0.03,
+    chamberRoll: 0.09,
+    contactRoll: -0.18,
+    chamberTurn: 0.5,
+    contactTurn: -1,
+    contactWide: 0.045,
+    chamberTall: -0.02,
+    contactTall: 0.01,
+  }),
+  kick: curve({
+    chamberX: -0.055,
+    contactX: 0.09,
+    chamberY: -0.045,
+    contactY: 0.035,
+    chamberRoll: 0.035,
+    contactRoll: -0.045,
+    contactWide: 0.035,
+    chamberTall: -0.035,
+    contactTall: -0.015,
+  }),
+  sweep: curve({
+    chamberX: -0.055,
+    contactX: 0.13,
+    chamberY: -0.1,
+    contactY: -0.07,
+    chamberRoll: 0.055,
+    contactRoll: -0.045,
+    contactTurn: 0.46,
+    contactWide: 0.035,
+    chamberTall: -0.035,
+    contactTall: -0.015,
+  }),
+  highKick: curve({
+    chamberX: -0.09,
+    contactX: 0.12,
+    chamberY: -0.06,
+    contactY: 0.15,
+    chamberRoll: 0.12,
+    contactRoll: -0.16,
+    chamberTurn: 0.72,
+    contactTurn: -1.2,
+    contactWide: 0.045,
+    chamberTall: -0.025,
+    contactTall: 0.035,
+  }),
+  uppercut: curve(),
+};
+
+/**
  * Continuous whole-body motion layered under the authored photo frames.
  * The atlas supplies the silhouette; this supplies anticipation, drive and a
  * visible return so switching drawings never reads as a teleport.
@@ -113,77 +321,11 @@ export function photoAttackMotion(
   moveId: string,
   progress: number,
 ): PhotoAttackMotion {
-  const kind = photoAttackKind(moveId);
-  if (kind === 'jab') return leadHandMotion(progress);
-  if (kind === 'heavy') return rearHandMotion(progress);
-  if (kind === 'highKick') return rearLegMotion(progress);
-  if (kind !== 'kick' && kind !== 'sweep') {
-    return neutralMotion();
+  const standingNormal = PHOTO_NORMAL_ATTACK_KINDS[moveId.toLowerCase()];
+  if (standingNormal !== undefined) {
+    return motionFrom(STANDING_NORMAL_MOTION[standingNormal], progress);
   }
-  const { chamber, contact } = kickEnvelope(progress);
-  const low = kind === 'sweep';
-  return {
-    x: -chamber * 0.055 + contact * (low ? 0.13 : 0.09),
-    y: chamber * (low ? -0.1 : -0.045) + contact * (low ? -0.07 : 0.035),
-    rotation: chamber * (low ? 0.055 : 0.035) - contact * 0.045,
-    turnY: low ? contact * 0.12 : 0,
-    scaleX: 1 + contact * 0.035,
-    scaleY: 1 - chamber * 0.035 - contact * 0.015,
-  };
-}
-
-/** J snaps the lead hand out with almost no body coil. */
-function leadHandMotion(progress: number): PhotoAttackMotion {
-  const { chamber, contact } = kickEnvelope(progress);
-  return {
-    x: -chamber * 0.015 + contact * 0.08,
-    y: contact * 0.015,
-    rotation: -contact * 0.035,
-    turnY: 0,
-    scaleX: 1 + contact * 0.025,
-    scaleY: 1 - contact * 0.01,
-  };
-}
-
-/**
- * K comes from the rear shoulder: coil away, turn the hips through the target,
- * then recover. The atlas supplies the rear-hand contact silhouette while this
- * motion makes the weight transfer readable instead of looking like a second J.
- *
- * The chamber closes the lead shoulder a few degrees and the contact swings the
- * chest back open past square. That is the whole hip rotation — enough to feel
- * the rear side driving through, with the fighter still facing its opponent.
- */
-function rearHandMotion(progress: number): PhotoAttackMotion {
-  const { chamber, contact } = kickEnvelope(progress);
-  return {
-    x: -chamber * 0.07 + contact * 0.16,
-    y: -chamber * 0.02 + contact * 0.03,
-    rotation: chamber * 0.09 - contact * 0.18,
-    turnY: MAX_HIP_TURN * (chamber * 0.5 - contact * 1),
-    scaleX: 1 + contact * 0.045,
-    scaleY: 1 - chamber * 0.02 + contact * 0.01,
-  };
-}
-
-/**
- * L lifts the rear knee from behind the stance, turns the hip over and sends
- * that leg past the lead side. Its deeper coil and higher contact travel keep
- * it visibly separate from I's lead-leg kick.
- *
- * The hip turn runs deeper than K's, because a rear leg has further to travel,
- * and still resolves square to the opponent rather than spinning away.
- */
-function rearLegMotion(progress: number): PhotoAttackMotion {
-  const { chamber, contact } = kickEnvelope(progress);
-  return {
-    x: -chamber * 0.09 + contact * 0.12,
-    y: -chamber * 0.06 + contact * 0.15,
-    rotation: chamber * 0.12 - contact * 0.16,
-    turnY: MAX_HIP_TURN * (chamber * 0.72 - contact * 1.2),
-    scaleX: 1 + contact * 0.045,
-    scaleY: 1 - chamber * 0.025 + contact * 0.035,
-  };
+  return motionFrom(GENERIC_MOTION[photoAttackKind(moveId)], progress);
 }
 
 function kickEnvelope(progress: number): { chamber: number; contact: number } {
@@ -196,10 +338,6 @@ function kickEnvelope(progress: number): { chamber: number; contact: number } {
   }
   const returnAmount = 1 - smooth((p - 0.58) / 0.42);
   return { chamber: returnAmount, contact: returnAmount };
-}
-
-function neutralMotion(): PhotoAttackMotion {
-  return { x: 0, y: 0, rotation: 0, turnY: 0, scaleX: 1, scaleY: 1 };
 }
 
 function clamp01(value: number): number {

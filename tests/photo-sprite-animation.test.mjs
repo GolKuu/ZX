@@ -56,14 +56,109 @@ test('J K I L use four different basic attack animations for every fighter', () 
 });
 
 test('the four attack buttons have separate full animation cycles', () => {
-  const moves = BASIC_ATTACKS.glitch;
-  const sequences = moves.map((moveId) => photoAttackSequence(moveId).join(','));
-  const motions = moves.map((moveId) => JSON.stringify([
-    photoAttackMotion(moveId, 0.25),
-    photoAttackMotion(moveId, 0.52),
-  ]));
-  assert.equal(new Set(sequences).size, 4, 'a complete frame cycle was reused');
-  assert.equal(new Set(motions).size, 4, 'a body-motion cycle was reused');
+  for (const [fighter, moves] of Object.entries(BASIC_ATTACKS)) {
+    const sequences = moves.map((moveId) => photoAttackSequence(moveId).join(','));
+    const motions = moves.map((moveId) => JSON.stringify([
+      photoAttackMotion(moveId, 0.25),
+      photoAttackMotion(moveId, 0.52),
+    ]));
+    assert.equal(
+      new Set(sequences).size,
+      4,
+      `${fighter}: a complete frame cycle was reused`,
+    );
+    assert.equal(
+      new Set(motions).size,
+      4,
+      `${fighter}: a body-motion cycle was reused`,
+    );
+  }
+});
+
+const IDLE = 0;
+
+/**
+ * The atlas draws both punches from the same side — the lead-hand and
+ * rear-hand contact cells overlap by two thirds as silhouettes. So J and K may
+ * not *also* wind up and recover through the same drawings, or the whole
+ * nine-frame cycle is one picture played twice. Same for the two legs.
+ */
+test('J and K, and I and L, share no drawing but the idle they start from', () => {
+  for (const [fighter, moves] of Object.entries(BASIC_ATTACKS)) {
+    for (const [first, second] of [[0, 1], [2, 3]]) {
+      const shared = photoAttackSequence(moves[first])
+        .filter((drawing) => photoAttackSequence(moves[second]).includes(drawing));
+      assert.deepEqual(
+        [...new Set(shared)],
+        [IDLE],
+        `${fighter}: ${moves[first]} and ${moves[second]} reuse a drawing`,
+      );
+    }
+  }
+});
+
+/**
+ * Because the drawings cannot say which limb moved, the body has to. Each
+ * button therefore owns a travel signature no other button shares: lead limbs
+ * keep the hips square while rear limbs turn them, and hands stay level while
+ * legs carry the fighter down or up.
+ */
+test('every fighter reads its four buttons off the body, not the drawing', () => {
+  for (const [fighter, moves] of Object.entries(BASIC_ATTACKS)) {
+    const [jab, rearHand, leadLeg, rearLeg] = moves.map(
+      (moveId) => photoAttackMotion(moveId, 0.52),
+    );
+
+    assert.equal(jab.turnY, 0, `${fighter}: J must keep the hips square`);
+    assert.equal(leadLeg.turnY, 0, `${fighter}: I must keep the hips square`);
+    assert.ok(rearHand.turnY < 0, `${fighter}: K must turn the hips through`);
+    assert.ok(rearLeg.turnY < 0, `${fighter}: L must turn the hips through`);
+
+    assert.ok(
+      rearHand.x > jab.x * 1.5,
+      `${fighter}: K must commit visibly further than J, not ${rearHand.x}`,
+    );
+    assert.ok(
+      Math.abs(jab.y) < 0.05 && Math.abs(rearHand.y) < 0.05,
+      `${fighter}: a punch must stay at shoulder height`,
+    );
+    assert.ok(
+      leadLeg.y < -0.08,
+      `${fighter}: I must drop the hips into the lead leg, not ${leadLeg.y}`,
+    );
+    assert.ok(
+      rearLeg.y > 0.08,
+      `${fighter}: L must rise onto the rear leg, not ${rearLeg.y}`,
+    );
+  }
+});
+
+test('the standing normals move far enough to be seen', () => {
+  // A drawing is 3.05 engine units tall, so travel under about 0.05 is under
+  // two percent of the fighter and reads as no motion at all.
+  for (const [fighter, moves] of Object.entries(BASIC_ATTACKS)) {
+    for (const moveId of moves) {
+      // The ends of the swing: the last frame of the chamber and the last
+      // frame the strike is out, rather than two points somewhere inside it.
+      const coil = photoAttackMotion(moveId, 0.33);
+      const contact = photoAttackMotion(moveId, 0.57);
+      const travel = Math.hypot(contact.x - coil.x, contact.y - coil.y);
+      assert.ok(
+        travel > 0.15,
+        `${fighter}: ${moveId} travels ${travel.toFixed(3)}, too little to read`,
+      );
+    }
+  }
+});
+
+test('specials and grabs keep the smaller generic travel', () => {
+  for (const moveId of ['titan.grab.command', 'vorgh.special.rage-slash']) {
+    const contact = photoAttackMotion(moveId, 0.52);
+    assert.ok(
+      Math.abs(contact.x) < 0.12,
+      `${moveId} lunges ${contact.x}, further than its own hitbox`,
+    );
+  }
 });
 
 test('no attack on any fighter ever turns its back to the opponent', () => {

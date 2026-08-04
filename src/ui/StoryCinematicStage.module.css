@@ -80,12 +80,17 @@
 
 /* --------------------------------------------------------------- glitch */
 
+/*
+ * Both figures stand in the band between the chapter title and the subtitle box.
+ * At the bottom of the frame their legs were behind the subtitle, so the shot had
+ * two half-figures in it.
+ */
 .glitch {
   position: absolute;
-  bottom: 21cqh;
+  bottom: 33cqh;
   left: 13cqw;
   width: 15cqw;
-  height: 46cqh;
+  height: 40cqh;
   filter: drop-shadow(0 1.2cqw 1.6cqw rgb(0 0 0 / 75%));
   transform-origin: 50% 100%;
   animation: figure-enter 0.9s cubic-bezier(0.18, 0.9, 0.28, 1) both,
@@ -214,10 +219,10 @@
  */
 .opposite {
   position: absolute;
-  bottom: 21cqh;
+  bottom: 33cqh;
   left: 42cqw;
   width: 14cqw;
-  height: 43cqh;
+  height: 38cqh;
   filter: drop-shadow(0 1cqw 1.5cqw rgb(0 0 0 / 70%));
   transform-origin: 50% 100%;
   animation: opposite-enter 1.1s 0.25s cubic-bezier(0.2, 0.85, 0.3, 1) both;
@@ -685,22 +690,22 @@
 
 @container (max-width: 700px) {
   .glitch {
-    bottom: 30cqh;
+    bottom: 42cqh;
     left: 6cqw;
     width: 24cqw;
-    height: 34cqh;
+    height: 30cqh;
   }
 
   .opposite {
-    right: 6cqw;
-    bottom: 30cqh;
+    bottom: 42cqh;
+    left: 52cqw;
     width: 22cqw;
-    height: 32cqh;
+    height: 28cqh;
   }
 
   .stage[data-side="chorus"] .opposite {
-    right: 4cqw;
-    width: 44cqw;
+    left: 40cqw;
+    width: 38cqw;
   }
 
   .coordinates span {
