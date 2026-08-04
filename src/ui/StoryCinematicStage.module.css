@@ -1,0 +1,713 @@
+/*
+ * Story cutscene staging.
+ *
+ * One authored figure, one antagonist and a coordinate space, all in CSS boxes
+ * and keyframes so a chapter opens with nothing to download. `--intensity` is
+ * set per line by the component: every amplitude below is multiplied by it, so
+ * a calm line and a possession use the same rig at different volumes.
+ */
+
+.stage {
+  --cyan: #6af4e8;
+  --violet: #b07cff;
+  --magenta: #e54fff;
+  --amber: #ffb36b;
+  --swing: calc(var(--intensity) * 1cqw);
+  position: absolute;
+  z-index: 1;
+  container-type: size;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- depth */
+
+.depth {
+  position: absolute;
+  inset: 0;
+}
+
+.depth span {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat;
+  opacity: 0;
+}
+
+.planeFar {
+  background-image:
+    linear-gradient(rgb(106 244 232 / 9%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(106 244 232 / 9%) 1px, transparent 1px);
+  background-size: 4cqw 4cqw;
+  animation: plane-drift 19s linear infinite, layer-in 1.1s both;
+}
+
+.planeMid {
+  background-image:
+    linear-gradient(rgb(176 124 255 / 11%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(176 124 255 / 11%) 1px, transparent 1px);
+  background-size: 8cqw 8cqw;
+  animation: plane-drift 12s linear infinite reverse, layer-in 1.1s 0.1s both;
+}
+
+.planeNear {
+  background-image:
+    linear-gradient(rgb(229 79 255 / 8%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(229 79 255 / 8%) 1px, transparent 1px);
+  background-size: 16cqw 16cqw;
+  filter: blur(0.1cqw);
+  animation: plane-drift 7s linear infinite, layer-in 1.1s 0.2s both;
+}
+
+.floor {
+  position: absolute;
+  right: -20%;
+  bottom: -42%;
+  left: -20%;
+  height: 92%;
+  background-image:
+    linear-gradient(rgb(106 244 232 / 26%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(106 244 232 / 20%) 1px, transparent 1px);
+  background-size: 6cqw 6cqw;
+  filter: drop-shadow(0 0 0.6cqw rgb(106 244 232 / 30%));
+  -webkit-mask-image: linear-gradient(transparent 4%, black 62%);
+  mask-image: linear-gradient(transparent 4%, black 62%);
+  transform: perspective(38cqw) rotateX(64deg);
+  transform-origin: 50% 100%;
+  animation: floor-drive 9s linear infinite, layer-in 1.3s both;
+}
+
+/* --------------------------------------------------------------- glitch */
+
+.glitch {
+  position: absolute;
+  bottom: 21cqh;
+  left: 13cqw;
+  width: 15cqw;
+  height: 46cqh;
+  filter: drop-shadow(0 1.2cqw 1.6cqw rgb(0 0 0 / 75%));
+  transform-origin: 50% 100%;
+  animation: figure-enter 0.9s cubic-bezier(0.18, 0.9, 0.28, 1) both,
+    figure-breathe 3.4s 0.9s ease-in-out infinite;
+}
+
+.glitch span {
+  position: absolute;
+  display: block;
+}
+
+.torso {
+  top: 19%;
+  left: 24%;
+  width: 52%;
+  height: 44%;
+  background: linear-gradient(150deg, #4a5ea8, #1b2445 60%, #0a0f20);
+  border: 0.1cqw solid rgb(106 244 232 / 45%);
+  border-radius: 34% 34% 18% 18%;
+  box-shadow: inset -0.9cqw -0.6cqw 1.2cqw rgb(4 8 18 / 60%);
+}
+
+.head {
+  top: 1%;
+  left: 32%;
+  width: 36%;
+  aspect-ratio: 0.86;
+  background: linear-gradient(140deg, #3d5480, #131c33 65%);
+  border: 0.1cqw solid rgb(106 244 232 / 50%);
+  border-radius: 42% 42% 38% 38%;
+  transform-origin: 50% 100%;
+  animation: head-tilt 4.1s ease-in-out infinite;
+}
+
+.visor {
+  position: absolute;
+  top: 42%;
+  right: 14%;
+  left: 14%;
+  height: 15%;
+  background: var(--cyan);
+  border-radius: 40%;
+  box-shadow: 0 0 1.1cqw var(--cyan), 0 0 3cqw rgb(106 244 232 / 55%);
+  transform: skewX(-14deg);
+  animation: visor-pulse 2.2s ease-in-out infinite;
+}
+
+.armLead,
+.armRear {
+  top: 23%;
+  width: 13%;
+  height: 34%;
+  background: linear-gradient(#3a4c86, #16203c);
+  border-radius: 40%;
+  transform-origin: 50% 8%;
+}
+
+.armLead {
+  left: 12%;
+  animation: arm-lead 3.4s ease-in-out infinite;
+}
+
+.armRear {
+  right: 12%;
+  animation: arm-rear 3.4s ease-in-out infinite;
+}
+
+.legLead,
+.legRear {
+  bottom: 0;
+  width: 15%;
+  height: 40%;
+  background: linear-gradient(#26325c, #0c1226);
+  border-radius: 22% 22% 34% 34%;
+  transform-origin: 50% 0;
+}
+
+.legLead {
+  left: 26%;
+}
+
+.legRear {
+  right: 26%;
+}
+
+/*
+ * The afterimages are the whole character in one idea: a fighter who is in more
+ * coordinates than one. They are the layer `--intensity` drives hardest.
+ */
+.echoLeft,
+.echoRight {
+  inset: 0;
+  border: 0.12cqw solid;
+  border-radius: 28%;
+  opacity: 0;
+}
+
+.echoLeft {
+  border-color: rgb(229 79 255 / 55%);
+  animation: echo-left 1.8s ease-out infinite;
+}
+
+.echoRight {
+  border-color: rgb(106 244 232 / 55%);
+  animation: echo-right 1.8s 0.24s ease-out infinite;
+}
+
+.fracture {
+  top: 8%;
+  left: 49%;
+  width: 0.28cqw;
+  height: 62%;
+  background: var(--magenta);
+  box-shadow: 0 0 0.9cqw var(--magenta);
+  opacity: 0;
+  transform: rotate(13deg);
+  animation: fracture-run 2.6s ease-in-out infinite;
+}
+
+/* ------------------------------------------------------------- opposite */
+
+.opposite {
+  position: absolute;
+  right: 14cqw;
+  bottom: 21cqh;
+  width: 14cqw;
+  height: 43cqh;
+  filter: drop-shadow(0 1cqw 1.5cqw rgb(0 0 0 / 70%));
+  transform-origin: 50% 100%;
+  animation: opposite-enter 1.1s 0.25s cubic-bezier(0.2, 0.85, 0.3, 1) both;
+}
+
+.oppositeBody {
+  position: absolute;
+  bottom: 0;
+  left: 16%;
+  width: 68%;
+  height: 78%;
+  background: linear-gradient(#5b6478, #1b2130);
+  border-radius: 32% 32% 14% 14%;
+}
+
+.oppositeHead {
+  position: absolute;
+  top: 0;
+  left: 29%;
+  width: 42%;
+  aspect-ratio: 1;
+  background: #6f7889;
+  border-radius: 46%;
+}
+
+.oppositeAura {
+  position: absolute;
+  inset: -14% -22%;
+  border-radius: 46%;
+  opacity: 0;
+  animation: aura-breathe 3.2s ease-in-out infinite;
+}
+
+/* A rival is a person. Everything else on this side is not. */
+.stage[data-side="rival"] .oppositeAura {
+  background: radial-gradient(circle, rgb(255 179 107 / 22%), transparent 66%);
+}
+
+.stage[data-side="construct"] .oppositeBody,
+.stage[data-side="construct"] .oppositeHead {
+  background: linear-gradient(#1d3a44, #08161c);
+  border: 0.12cqw solid rgb(106 244 232 / 55%);
+  border-radius: 8%;
+}
+
+.stage[data-side="construct"] .oppositeAura {
+  background: radial-gradient(circle, rgb(106 244 232 / 20%), transparent 64%);
+}
+
+.stage[data-side="fifth"] .opposite {
+  filter: blur(0.2cqw) drop-shadow(0 0 2.4cqw var(--magenta));
+}
+
+.stage[data-side="fifth"] .oppositeBody,
+.stage[data-side="fifth"] .oppositeHead {
+  background: linear-gradient(#3b1150, #12031c);
+  border: 0.1cqw solid rgb(229 79 255 / 60%);
+}
+
+.stage[data-side="fifth"] .oppositeAura {
+  background: radial-gradient(circle, rgb(229 79 255 / 30%), transparent 62%);
+}
+
+/* Four voices at once: the silhouette repeats across the frame. */
+.stage[data-side="chorus"] .opposite {
+  right: 8cqw;
+  width: 30cqw;
+}
+
+.stage[data-side="chorus"] .oppositeBody {
+  left: 4%;
+  width: 22%;
+  box-shadow:
+    9cqw 0 0 rgb(176 124 255 / 70%),
+    18cqw 0 0 rgb(106 244 232 / 60%),
+    27cqw 0 0 rgb(229 79 255 / 50%);
+}
+
+.stage[data-side="chorus"] .oppositeHead {
+  left: 8%;
+  width: 14%;
+  box-shadow:
+    9cqw 0 0 rgb(176 124 255 / 70%),
+    18cqw 0 0 rgb(106 244 232 / 60%),
+    27cqw 0 0 rgb(229 79 255 / 50%);
+}
+
+/* --------------------------------------------------------- coordinates */
+
+.coordinates {
+  position: absolute;
+  inset: 0;
+}
+
+/*
+ * Twelve marks on a circle the figure stands at the centre of. `--mark` is the
+ * index, so one rule places all twelve and the delay staggers their pulse.
+ */
+.coordinates span {
+  position: absolute;
+  top: 44%;
+  left: 27%;
+  width: 0.55cqw;
+  aspect-ratio: 1;
+  background: var(--cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 1cqw var(--cyan);
+  opacity: 0;
+  transform:
+    rotate(calc(var(--mark) * 30deg))
+    translateX(calc(9cqw + var(--intensity) * 4cqw));
+  animation: mark-pulse 2.4s calc(var(--mark) * 0.12s) ease-in-out infinite;
+}
+
+.flare {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 27% 46%, var(--cyan), transparent 44%);
+  opacity: 0;
+  mix-blend-mode: screen;
+  animation: flare-hit 1.5s both;
+}
+
+/* The rift the campaign is named after: a hard slash across the coordinates. */
+.tear {
+  position: absolute;
+  top: -12%;
+  left: 46%;
+  width: 0.5cqw;
+  height: 124%;
+  background: linear-gradient(transparent, var(--magenta) 22% 78%, transparent);
+  box-shadow: 0 0 2cqw var(--magenta);
+  opacity: 0;
+  transform: rotate(11deg) scaleY(0);
+  animation: tear-open 2.8s both;
+}
+
+/* -------------------------------------------------------------- framing */
+
+/*
+ * Who is speaking owns the frame. The listener does not vanish — it drops back
+ * in depth and brightness, which is what makes the pair read as one shot.
+ */
+.stage[data-focus="opposite"] .glitch {
+  filter: brightness(0.62) drop-shadow(0 1.2cqw 1.6cqw rgb(0 0 0 / 75%));
+  transform: translateX(-2cqw) scale(0.94);
+}
+
+.stage[data-focus="opposite"] .opposite {
+  animation:
+    opposite-enter 1.1s 0.25s cubic-bezier(0.2, 0.85, 0.3, 1) both,
+    opposite-speak 2.6s 1.2s ease-in-out infinite;
+}
+
+.stage[data-focus="glitch"] .opposite {
+  filter: brightness(0.6) drop-shadow(0 1cqw 1.5cqw rgb(0 0 0 / 70%));
+}
+
+/* ---------------------------------------------------------------- beats */
+
+.stage[data-beat="awakening"] .glitch {
+  animation:
+    awakening-rise 1.6s cubic-bezier(0.16, 1, 0.3, 1) both,
+    figure-breathe 3.4s 1.6s ease-in-out infinite;
+}
+
+.stage[data-beat="awakening"] .coordinates span {
+  animation-duration: 1.7s;
+}
+
+/* Chapter 01 opens on the shift that gets Glitch out of the lab. */
+.stage[data-beat="lab-escape"] .glitch {
+  animation:
+    lab-escape 2.4s cubic-bezier(0.3, 0.9, 0.2, 1) both,
+    figure-breathe 3.4s 2.4s ease-in-out infinite;
+}
+
+.stage[data-beat="challenge"] .glitch {
+  animation:
+    challenge-step 1.5s cubic-bezier(0.2, 1.4, 0.3, 1) both,
+    figure-breathe 3.4s 1.5s ease-in-out infinite;
+}
+
+.stage[data-beat="falling"] .glitch {
+  animation:
+    falling-brace 2.1s cubic-bezier(0.3, 0.7, 0.2, 1) both,
+    figure-breathe 3.9s 2.1s ease-in-out infinite;
+}
+
+.stage[data-beat="guardian"] .opposite {
+  animation:
+    guardian-loom 1.9s cubic-bezier(0.2, 0.9, 0.3, 1) both,
+    opposite-speak 3.4s 1.9s ease-in-out infinite;
+}
+
+.stage[data-beat="air-shift"] .glitch {
+  animation:
+    air-shift 2.6s cubic-bezier(0.25, 0.9, 0.25, 1) both,
+    figure-breathe 3.4s 2.6s ease-in-out infinite;
+}
+
+.stage[data-beat="resonance"] .flare,
+.stage[data-beat="living-geometry"] .flare {
+  animation: flare-swell var(--beat-duration) ease-in-out infinite;
+}
+
+/* The vessel chapter falls inward: the whole stage descends past the figure. */
+.stage[data-beat="vessel-descent"] .depth span {
+  animation:
+    plane-descend 3.4s linear infinite,
+    layer-in 1.1s both;
+}
+
+.stage[data-beat="vessel-descent"] .glitch {
+  animation:
+    vessel-descent 2.8s cubic-bezier(0.4, 0, 0.3, 1) both,
+    figure-breathe 4.6s 2.8s ease-in-out infinite;
+}
+
+.stage[data-beat="identity-reclaim"] .echoLeft,
+.stage[data-beat="identity-reclaim"] .echoRight {
+  animation-duration: 1.1s;
+}
+
+/* Possession: the Fifth's colour bleeds through Glitch's own layers. */
+.stage[data-beat="coordinate-possession"] .torso,
+.stage[data-beat="coordinate-possession"] .head {
+  animation: possession-bleed 1.9s ease-in-out infinite;
+}
+
+.stage[data-beat="coordinate-possession"] .visor {
+  background: var(--magenta);
+  box-shadow: 0 0 1.2cqw var(--magenta), 0 0 3.4cqw rgb(229 79 255 / 60%);
+}
+
+.stage[data-beat="coordinate-possession"] .tear {
+  animation: tear-open 1.9s both, tear-hold 2.4s 1.9s ease-in-out infinite;
+}
+
+.stage[data-beat="final-breach"] .tear {
+  animation: tear-open 1.3s both, tear-hold 1.8s 1.3s ease-in-out infinite;
+}
+
+/* The ending the campaign is aiming at: the space stops fighting the figure. */
+.stage[data-beat="living-geometry"] .glitch {
+  animation:
+    living-geometry 3.2s cubic-bezier(0.16, 1, 0.3, 1) both,
+    figure-breathe 4.2s 3.2s ease-in-out infinite;
+}
+
+.stage[data-beat="living-geometry"] .visor {
+  background: #fff;
+  box-shadow: 0 0 1.6cqw #fff, 0 0 5cqw var(--cyan);
+}
+
+.stage[data-beat="living-geometry"] .floor {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 30%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(176 124 255 / 30%) 1px, transparent 1px);
+}
+
+/* ----------------------------------------------------------- keyframes */
+
+@keyframes layer-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes plane-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 4cqw -3cqw, -4cqw 3cqw; }
+}
+
+@keyframes plane-descend {
+  from { background-position: 0 0, 0 0; opacity: 1; }
+  to { background-position: 0 22cqh, 0 22cqh; opacity: 0.4; }
+}
+
+@keyframes floor-drive {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 0 6cqw, 0 0; }
+}
+
+@keyframes figure-enter {
+  from { opacity: 0; transform: translateX(-5cqw) scale(0.97); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes figure-breathe {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-0.3cqw) scaleY(1.012); }
+}
+
+@keyframes head-tilt {
+  0%, 100% { transform: rotate(-1.5deg); }
+  50% { transform: rotate(2deg); }
+}
+
+@keyframes visor-pulse {
+  0%, 100% { opacity: 0.82; }
+  50% { opacity: 1; }
+}
+
+@keyframes arm-lead {
+  0%, 100% { transform: rotate(4deg); }
+  50% { transform: rotate(-6deg); }
+}
+
+@keyframes arm-rear {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+@keyframes echo-left {
+  0% { opacity: 0; transform: translateX(0) scale(1); }
+  22% { opacity: calc(var(--intensity) * 0.75); }
+  100% {
+    opacity: 0;
+    transform: translateX(calc(var(--swing) * -3.4)) scale(1.06);
+  }
+}
+
+@keyframes echo-right {
+  0% { opacity: 0; transform: translateX(0) scale(1); }
+  22% { opacity: calc(var(--intensity) * 0.6); }
+  100% {
+    opacity: 0;
+    transform: translateX(calc(var(--swing) * 3)) scale(1.05);
+  }
+}
+
+@keyframes fracture-run {
+  0%, 100% { opacity: 0; transform: rotate(13deg) scaleY(0.2); }
+  35% { opacity: calc(var(--intensity) * 0.9); transform: rotate(13deg) scaleY(1); }
+  70% { opacity: calc(var(--intensity) * 0.3); transform: rotate(16deg) scaleY(0.85); }
+}
+
+@keyframes opposite-enter {
+  from { opacity: 0; transform: translateX(6cqw) scale(0.96); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes opposite-speak {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-0.45cqw) scale(1.018); }
+}
+
+@keyframes aura-breathe {
+  0%, 100% { opacity: 0.35; transform: scale(0.94); }
+  50% { opacity: 0.8; transform: scale(1.06); }
+}
+
+@keyframes mark-pulse {
+  0%, 100% { opacity: 0.16; }
+  50% { opacity: calc(0.3 + var(--intensity) * 0.7); }
+}
+
+@keyframes flare-hit {
+  0% { opacity: 0; }
+  18% { opacity: calc(var(--intensity) * 0.45); }
+  100% { opacity: 0; }
+}
+
+@keyframes flare-swell {
+  0%, 100% { opacity: calc(var(--intensity) * 0.1); }
+  50% { opacity: calc(var(--intensity) * 0.4); }
+}
+
+@keyframes tear-open {
+  0% { opacity: 0; transform: rotate(11deg) scaleY(0); }
+  40% { opacity: calc(var(--intensity) * 0.9); transform: rotate(11deg) scaleY(1); }
+  100% { opacity: calc(var(--intensity) * 0.35); transform: rotate(11deg) scaleY(1); }
+}
+
+@keyframes tear-hold {
+  0%, 100% { opacity: calc(var(--intensity) * 0.3); transform: rotate(11deg) scaleX(1); }
+  50% { opacity: calc(var(--intensity) * 0.75); transform: rotate(9deg) scaleX(2.2); }
+}
+
+@keyframes awakening-rise {
+  0% { opacity: 0; transform: translateY(9cqh) rotate(-9deg) scale(0.9); }
+  55% { opacity: 1; transform: translateY(1cqh) rotate(2deg) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
+}
+
+@keyframes lab-escape {
+  0% { opacity: 0; transform: translateX(-14cqw) skewX(14deg) scaleX(1.4); }
+  30% { opacity: 0.35; transform: translateX(-3cqw) skewX(6deg) scaleX(1.1); }
+  44% { opacity: 0; transform: translateX(4cqw) skewX(-10deg) scaleX(0.5); }
+  58% { opacity: 1; transform: translateX(0) skewX(0) scaleX(1); }
+  72% { transform: translateX(-0.7cqw) scaleX(1.03); }
+  100% { transform: translateX(0) scaleX(1); }
+}
+
+@keyframes challenge-step {
+  0% { opacity: 0; transform: translateX(-4cqw) rotate(-4deg); }
+  62% { opacity: 1; transform: translateX(1.1cqw) rotate(3deg) scale(1.03); }
+  100% { transform: translateX(0) rotate(0) scale(1); }
+}
+
+@keyframes falling-brace {
+  0% { opacity: 0; transform: translateY(-7cqh) rotate(7deg); }
+  46% { opacity: 1; transform: translateY(0.6cqh) rotate(-3deg) scaleY(0.9); }
+  66% { transform: translateY(0) rotate(1deg) scaleY(1.03); }
+  100% { transform: translateY(0) rotate(0) scaleY(1); }
+}
+
+@keyframes guardian-loom {
+  0% { opacity: 0; transform: translateY(5cqh) scale(1.28); }
+  60% { opacity: 1; transform: translateY(0) scale(1.16); }
+  100% { opacity: 1; transform: translateY(0) scale(1.1); }
+}
+
+@keyframes air-shift {
+  0% { opacity: 0; transform: translate(-8cqw, -6cqh) rotate(-12deg); }
+  34% { opacity: 1; transform: translate(-2cqw, -3cqh) rotate(-5deg); }
+  52% { opacity: 0.2; transform: translate(3cqw, 2cqh) rotate(8deg) scale(0.86); }
+  70% { opacity: 1; transform: translate(0, 0) rotate(0) scale(1); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes vessel-descent {
+  0% { opacity: 0; transform: translateY(-11cqh) scale(1.1); }
+  48% { opacity: 1; transform: translateY(-2cqh) scale(1.02) rotate(-3deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+}
+
+/*
+ * A hue rotation rather than two interpolated gradients: it drives every layer
+ * of the figure through the Fifth's magenta from one declaration, and it is the
+ * cheap compositor path where swapping gradient stops is not.
+ */
+@keyframes possession-bleed {
+  0%, 100% { filter: hue-rotate(0deg) saturate(1); }
+  50% {
+    filter:
+      hue-rotate(calc(var(--intensity) * 118deg))
+      saturate(calc(1 + var(--intensity) * 0.8));
+  }
+}
+
+@keyframes living-geometry {
+  0% { opacity: 0; transform: translateY(4cqh) scale(0.94); filter: brightness(0.7); }
+  50% { opacity: 1; transform: translateY(0) scale(1.02); filter: brightness(1.5); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1.2); }
+}
+
+/* -------------------------------------------------------------- responsive */
+
+@container (max-width: 700px) {
+  .glitch {
+    bottom: 30cqh;
+    left: 6cqw;
+    width: 24cqw;
+    height: 34cqh;
+  }
+
+  .opposite {
+    right: 6cqw;
+    bottom: 30cqh;
+    width: 22cqw;
+    height: 32cqh;
+  }
+
+  .stage[data-side="chorus"] .opposite {
+    right: 4cqw;
+    width: 44cqw;
+  }
+
+  .coordinates span {
+    left: 18%;
+  }
+}
+
+/*
+ * Reduced motion keeps the staging and drops the movement: the figure, the
+ * antagonist and the coordinate space still compose the shot, they just do not
+ * loop or lurch. Entrances are shortened rather than removed so a line change
+ * is still visible.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .stage *,
+  .stage[data-beat] .glitch,
+  .stage[data-beat] .opposite,
+  .stage[data-beat] .depth span,
+  .stage[data-focus="opposite"] .opposite {
+    animation-duration: 0.45s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .depth span,
+  .coordinates span,
+  .oppositeAura {
+    animation: layer-in 0.3s both !important;
+    opacity: 0.6;
+  }
+}
