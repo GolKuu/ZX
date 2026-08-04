@@ -96,6 +96,7 @@ export function photoAttackMotion(
   progress: number,
 ): PhotoAttackMotion {
   const kind = photoAttackKind(moveId);
+  if (kind === 'jab') return leadHandMotion(progress);
   if (kind === 'heavy') return rearHandMotion(progress);
   if (kind === 'highKick') return rearLegMotion(progress);
   if (kind !== 'kick' && kind !== 'sweep') {
@@ -109,6 +110,18 @@ export function photoAttackMotion(
     rotation: chamber * (low ? 0.055 : 0.035) - contact * 0.045,
     scaleX: 1 + contact * 0.035,
     scaleY: 1 - chamber * 0.035 - contact * 0.015,
+  };
+}
+
+/** J snaps the lead hand out with almost no body coil. */
+function leadHandMotion(progress: number): PhotoAttackMotion {
+  const { chamber, contact } = kickEnvelope(progress);
+  return {
+    x: -chamber * 0.015 + contact * 0.08,
+    y: contact * 0.015,
+    rotation: -contact * 0.035,
+    scaleX: 1 + contact * 0.025,
+    scaleY: 1 - contact * 0.01,
   };
 }
 

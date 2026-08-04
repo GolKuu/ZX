@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { spriteAttackFrame } from '../.sim-test-build/src/stage/sprite2d/spriteAttackTimeline.js';
+import { photoAttackSequence } from '../.sim-test-build/src/stage/photoSprite/photoSpriteAnimation.js';
 import {
   PHOTO_KICK_NORMAL_IDS,
   PHOTO_NORMAL_ATTACK_KINDS,
@@ -51,6 +52,17 @@ test('J K I L use four different basic attack animations for every fighter', () 
     assert.equal(kinds[3], 'highKick', `${fighter}: L must use the rear leg`);
     assert.equal(new Set(kinds).size, 4, `${fighter}: an animation was reused`);
   }
+});
+
+test('the four attack buttons have separate full animation cycles', () => {
+  const moves = BASIC_ATTACKS.glitch;
+  const sequences = moves.map((moveId) => photoAttackSequence(moveId).join(','));
+  const motions = moves.map((moveId) => JSON.stringify([
+    photoAttackMotion(moveId, 0.25),
+    photoAttackMotion(moveId, 0.52),
+  ]));
+  assert.equal(new Set(sequences).size, 4, 'a complete frame cycle was reused');
+  assert.equal(new Set(motions).size, 4, 'a body-motion cycle was reused');
 });
 
 test('K visibly coils and drives from the rear shoulder', () => {
