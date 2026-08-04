@@ -35,6 +35,7 @@ export {
   type AuthoredHurtbox,
   type BlockData,
   type CancelWindow,
+  type FrameRange,
   type GroundBounceData,
   type HitData,
   type MoveFrameData,

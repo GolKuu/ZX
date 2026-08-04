@@ -11,8 +11,12 @@ import {
   activeChallenges,
   processChallenges,
 } from '../.sim-test-build/src/progression/challenges.js';
+import { compileProgressionMoves } from '../.sim-test-build/src/progression/runtimeModifiers.js';
+import { validateMoves } from '../.sim-test-build/src/sim/move-validation.js';
+import { ROSTER_MOVES } from './roster-moves.mjs';
 
 const date = (iso) => new Date(iso);
+const FIGHTERS = ['mim', 'glitch', 'lucky', 'titan', 'vorgh'];
 const funded = (amount=1000) => transact(createProfile('test',date('2026-08-01T10:00:00Z')),{type:'MigrationAdjustment',amount,sourceId:'test',idempotencyKey:'seed',now:date('2026-08-01T10:00:00Z')});
 
 test('daily: first claim, same-day duplicate, restart and next day',()=>{
@@ -103,4 +107,55 @@ test('challenge rewards are period-bound and idempotent',()=>{
 test('tampered save checksum is rejected and legitimate save survives',()=>{
   const raw=encodeProfile(funded(5)); assert.equal(decodeProfile(raw.replace('"tokenBalance":5','"tokenBalance":500')),null);
   assert.equal(decodeProfile(raw)?.tokenBalance,5);
+});
+
+test('every roster fighter appears in the flat move table',()=>{
+  for(const id of FIGHTERS){
+    assert.ok(ROSTER_MOVES.some((move)=>move.id.startsWith(`${id}.`)),
+      `${id} has no moves here — add its list to tests/roster-moves.mjs`);
+  }
+});
+
+// Recovery cuts used to leave hurtbox and cancel windows pointing past the end
+// of the move they belong to. `validateMoves` runs inside the `CombatEngine`
+// constructor, so the invalid data threw before a single frame was simulated and
+// dropped the canvas onto the error boundary.
+test('recovery cuts leave every roster move engine-valid at every tier',()=>{
+  for(const id of FIGHTERS){
+    const nodes=fighterNodes(id).map((node)=>node.id);
+    for(const count of [0,6,12,18,24]){
+      validateMoves(compileProgressionMoves(ROSTER_MOVES,id,nodes.slice(0,count)));
+    }
+  }
+});
+
+test('the training loadout grants every node and still builds valid moves',()=>{
+  const profile=createProfile('training',date('2026-08-01T10:00:00Z'));
+  for(const id of FIGHTERS){
+    // Exactly what createCombatEngine does for mode 'training'.
+    const nodes=effectiveLoadout(profile,id,'training','all');
+    assert.ok(nodes.length>=18,`${id} training loadout is too small to shorten recovery`);
+    validateMoves(compileProgressionMoves(ROSTER_MOVES,id,nodes));
+  }
+});
+
+test('a shortened move clips its windows and drops those left with no frames',()=>{
+  const probe={id:'mim.probe',startup:4,active:2,recovery:20,hitboxes:[],
+    hurtboxes:[{frames:{from:0,toExclusive:26},boxes:[]},
+      {frames:{from:24,toExclusive:26},boxes:[]}],
+    cancels:[{frames:{from:2,toExclusive:26},into:['mim.probe']}]};
+  const nodes=fighterNodes('mim').map((node)=>node.id);
+  const [shortened]=compileProgressionMoves([probe],'mim',nodes);
+  // 24 nodes cuts the full three frames: 4 + 2 + 17 leaves 23 frames.
+  assert.equal(shortened.recovery,17);
+  assert.deepEqual(shortened.hurtboxes,[{frames:{from:0,toExclusive:23},boxes:[]}]);
+  assert.deepEqual(shortened.cancels,[{frames:{from:2,toExclusive:23},into:['mim.probe']}]);
+  validateMoves([shortened]);
+});
+
+test('a move progression cannot shorten is passed through untouched',()=>{
+  const short={id:'mim.floor',startup:4,active:2,recovery:12,hitboxes:[],
+    hurtboxes:[{frames:{from:0,toExclusive:18},boxes:[]}]};
+  const nodes=fighterNodes('mim').map((node)=>node.id);
+  assert.equal(compileProgressionMoves([short],'mim',nodes)[0],short);
 });
