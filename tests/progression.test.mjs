@@ -7,7 +7,10 @@ import { effectiveLoadout, purchaseNode, respec, setLoadout } from '../.sim-test
 import { fighterNodes, PROGRESSION_NODES } from '../.sim-test-build/src/progression/treeData.js';
 import { resolveModeProgression } from '../.sim-test-build/src/progression/modeRules.js';
 import { decodeProfile, encodeProfile } from '../.sim-test-build/src/progression/storage.js';
-import { processChallenges } from '../.sim-test-build/src/progression/challenges.js';
+import {
+  activeChallenges,
+  processChallenges,
+} from '../.sim-test-build/src/progression/challenges.js';
 
 const date = (iso) => new Date(iso);
 const funded = (amount=1000) => transact(createProfile('test',date('2026-08-01T10:00:00Z')),{type:'MigrationAdjustment',amount,sourceId:'test',idempotencyKey:'seed',now:date('2026-08-01T10:00:00Z')});
@@ -82,10 +85,19 @@ test('achievement events are one-time, reload-safe, debug-safe, and thresholded'
 });
 
 test('challenge rewards are period-bound and idempotent',()=>{
-  let profile=createProfile('challenge',date('2026-08-01T00:00:00Z'));
-  const first=gameplayEvent('MatchWon','c1',{timestamp:'2026-08-01T01:00:00Z'}); const second=gameplayEvent('MatchWon','c2',{timestamp:'2026-08-01T02:00:00Z'});
-  profile=processChallenges(profile,first); profile=processChallenges(profile,second); const balance=profile.tokenBalance;
-  assert.equal(balance,1); assert.equal(processChallenges(profile,second).tokenBalance,balance);
+  const now=date('2026-08-01T01:00:00Z');
+  const challenge=activeChallenges(now).find(({cadence})=>cadence==='daily');
+  assert.ok(challenge);
+  let profile=createProfile('challenge',now); let lastEvent;
+  for(let progress=0;progress<challenge.target;progress+=1){
+    lastEvent=gameplayEvent(challenge.event,`c${progress}`,{
+      timestamp:new Date(now.getTime()+progress*60_000).toISOString(),
+    });
+    profile=processChallenges(profile,lastEvent);
+  }
+  const balance=profile.tokenBalance;
+  assert.equal(balance,challenge.reward);
+  assert.equal(processChallenges(profile,lastEvent).tokenBalance,balance);
 });
 
 test('tampered save checksum is rejected and legitimate save survives',()=>{
