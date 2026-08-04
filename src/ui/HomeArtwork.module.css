@@ -1,98 +1,142 @@
 .artwork {
   position: relative;
-  min-height: clamp(430px, 62vh, 690px);
+  min-height: clamp(470px, 66vh, 720px);
+  padding: 22px 22px 18px;
   overflow: hidden;
-  background: var(--color-surface-raised);
-  border: 2px solid var(--color-link-dark);
-  border-radius: 0;
-  box-shadow: 12px 12px 0 rgb(255 47 179 / 55%), 0 0 50px rgb(57 245 255 / 16%);
-  clip-path: polygon(0 0, 93% 0, 100% 8%, 100% 100%, 7% 100%, 0 92%);
+  background: linear-gradient(180deg, rgb(255 255 255 / 4%), transparent 24%), radial-gradient(circle at 50% 38%, rgb(98 202 224 / 14%), transparent 42%), #0b1015;
+  border: 1px solid rgb(191 211 219 / 20%);
+  box-shadow: 0 28px 80px rgb(0 0 0 / 45%);
+  clip-path: polygon(0 0, calc(100% - 38px) 0, 100% 38px, 100% 100%, 38px 100%, 0 calc(100% - 38px));
+  isolation: isolate;
 }
 
 .artwork::before {
   position: absolute;
-  z-index: 2;
-  top: 18px;
-  right: 18px;
-  width: 58px;
-  height: 9px;
-  background: repeating-linear-gradient(90deg, var(--color-primary) 0 8px, transparent 8px 12px);
+  z-index: -1;
+  inset: 12% -12% 17%;
+  background: linear-gradient(rgb(136 179 192 / 12%) 1px, transparent 1px), linear-gradient(90deg, rgb(136 179 192 / 12%) 1px, transparent 1px);
+  background-size: 48px 48px;
   content: "";
-  pointer-events: none;
+  mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 72%, transparent);
+  transform: perspective(480px) rotateX(62deg);
 }
 
-.artwork::after {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(135deg, rgb(57 245 255 / 16%), transparent 34%),
-    linear-gradient(0deg, rgb(5 0 25 / 86%), transparent 36%);
-  content: "";
-  pointer-events: none;
-}
-
-.image {
-  filter: saturate(1.25) contrast(1.08) hue-rotate(8deg);
-  object-fit: cover;
-  object-position: center;
-  transition: filter 220ms ease, transform 220ms ease;
-}
-
-.artwork:hover .image {
-  filter: saturate(1.45) contrast(1.12);
-  transform: scale(1.015);
-}
-
+.topline,
 .caption {
-  position: absolute;
-  z-index: 1;
-  right: 24px;
-  bottom: 22px;
-  left: 24px;
+  position: relative;
+  z-index: 4;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  color: var(--color-link-dark);
-  font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
+  gap: 18px;
+  font: 700 0.66rem/1.2 "Courier New", monospace;
+  letter-spacing: 0.13em;
 }
 
-.caption strong {
-  padding: 7px 10px;
-  color: #050019;
-  background: var(--color-primary);
-  font-size: 0.86rem;
-  letter-spacing: 0.02em;
+.topline { color: var(--color-text-subtle); }
+.topline b { color: var(--color-primary); }
+
+.fighters {
+  position: absolute;
+  inset: 54px 8px 54px;
+  display: grid;
+  align-items: end;
+  grid-template-columns: repeat(5, 1fr);
 }
 
-@media (max-width: 980px) {
-  .artwork {
-    min-height: 480px;
-  }
+.fighter {
+  --fighter-accent: #81b9c7;
+  position: relative;
+  height: 84%;
+  min-width: 0;
+  overflow: hidden;
+  border-right: 1px solid rgb(255 255 255 / 7%);
+  filter: saturate(0.72) brightness(0.76);
+  transition: filter 180ms ease, transform 180ms ease;
 }
+
+.fighter:nth-child(odd) { height: 77%; }
+.fighter[data-featured="true"] { height: 96%; }
+.fighter[data-character="glitch"] { --fighter-accent: #e555b3; }
+.fighter[data-character="lucky"] { --fighter-accent: #d4ae55; }
+.fighter[data-character="vorgh"] { --fighter-accent: #d8673f; }
+.fighter[data-character="titan"] { --fighter-accent: #df7b45; }
+
+.fighter::after {
+  position: absolute;
+  right: 12%;
+  bottom: 58px;
+  left: 12%;
+  height: 2px;
+  background: var(--fighter-accent);
+  box-shadow: 0 0 22px var(--fighter-accent);
+  content: "";
+}
+
+.fighter:hover,
+.fighter:focus-visible {
+  z-index: 3;
+  filter: saturate(1.08) brightness(1.08);
+  outline: none;
+  transform: translateY(-8px) scale(1.035);
+}
+
+.sprite {
+  position: absolute;
+  inset: 2% -54% 49px;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: 400% 400%;
+  filter: drop-shadow(0 18px 16px rgb(0 0 0 / 70%));
+  image-rendering: pixelated;
+}
+
+.fighter[data-character="mim"] .sprite { background-image: url('/sprites/reference-fighters/mim-atlas.webp'); }
+.fighter[data-character="glitch"] .sprite { background-image: url('/sprites/reference-fighters/glitch-atlas.webp'); }
+.fighter[data-character="lucky"] .sprite { background-image: url('/sprites/reference-fighters/lucky-atlas.webp'); }
+.fighter[data-character="vorgh"] .sprite { background-image: url('/sprites/reference-fighters/vorgh-atlas.webp'); }
+.fighter[data-character="titan"] .sprite { background-image: url('/sprites/reference-fighters/titan-atlas.webp'); }
+
+.index {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  left: 12px;
+  color: rgb(255 255 255 / 28%);
+  font: 800 0.65rem "Courier New", monospace;
+}
+
+.name {
+  position: absolute;
+  z-index: 3;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
+  display: grid;
+  gap: 3px;
+  text-align: center;
+}
+
+.name strong { color: #f7f4eb; font: italic 900 clamp(1rem, 1.55vw, 1.55rem)/1 Impact, sans-serif; letter-spacing: 0.04em; }
+.name small { overflow: hidden; color: var(--fighter-accent); font: 700 0.52rem "Courier New", monospace; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+
+.caption {
+  position: absolute;
+  right: 22px;
+  bottom: 17px;
+  left: 22px;
+  color: var(--color-text-subtle);
+}
+
+.caption strong { color: #f7f4eb; }
 
 @media (max-width: 760px) {
-  .artwork {
-    min-height: clamp(280px, 62vw, 430px);
-  }
+  .artwork { min-height: 430px; }
+  .fighters { right: 0; left: 0; }
+  .fighter { height: 78%; }
+  .fighter:nth-child(odd) { height: 72%; }
+  .sprite { right: -78%; left: -78%; }
+  .name small, .caption span { display: none; }
 }
 
-@media (max-width: 460px) {
-  .caption {
-    right: 16px;
-    bottom: 16px;
-    left: 16px;
-  }
-
-  .caption span {
-    display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .image {
-    transition: none;
-  }
-}
+@media (prefers-reduced-motion: reduce) { .fighter { transition: none; } }

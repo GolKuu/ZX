@@ -7,8 +7,8 @@
   padding: 0 clamp(20px, 4vw, 64px);
   isolation: isolate;
   background:
-    radial-gradient(circle at 78% 28%, rgb(255 47 179 / 18%), transparent 28%),
-    linear-gradient(180deg, #07001c 0%, var(--color-canvas) 76%);
+    radial-gradient(circle at 76% 26%, rgb(134 197 211 / 9%), transparent 28%),
+    linear-gradient(180deg, #0b1115 0%, var(--color-canvas) 76%);
 }
 
 .page::before {
@@ -17,8 +17,8 @@
   inset: 47% -20% -32%;
   width: auto;
   background:
-    linear-gradient(rgb(57 245 255 / 25%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(57 245 255 / 25%) 1px, transparent 1px);
+    linear-gradient(rgb(134 197 211 / 14%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(134 197 211 / 14%) 1px, transparent 1px);
   background-size: 56px 36px;
   content: "";
   opacity: 0.55;
@@ -34,9 +34,9 @@
   right: -7vw;
   width: clamp(260px, 35vw, 560px);
   aspect-ratio: 1;
-  border: 1px solid rgb(255 47 179 / 28%);
+  border: 1px solid rgb(215 174 85 / 20%);
   border-radius: 50%;
-  box-shadow: 0 0 0 2.5vw rgb(255 47 179 / 5%), 0 0 80px rgb(255 47 179 / 18%);
+  box-shadow: 0 0 0 2.5vw rgb(215 174 85 / 3%), 0 0 80px rgb(134 197 211 / 9%);
   content: "";
 }
 

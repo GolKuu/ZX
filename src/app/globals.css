@@ -1,14 +1,14 @@
 :root {
-  --color-canvas: #050019;
-  --color-surface: #11072c;
-  --color-surface-raised: #180b39;
-  --color-primary: #ff2fb3;
-  --color-primary-pressed: #d91491;
-  --color-link-dark: #39f5ff;
-  --color-text: #fff8eb;
-  --color-text-muted: rgb(219 226 255 / 76%);
-  --color-text-subtle: rgb(177 194 224 / 62%);
-  --color-hairline: rgb(57 245 255 / 34%);
+  --color-canvas: #070a0d;
+  --color-surface: #0e1419;
+  --color-surface-raised: #131b21;
+  --color-primary: #d7ae55;
+  --color-primary-pressed: #b78d39;
+  --color-link-dark: #86c5d3;
+  --color-text: #f4f1e8;
+  --color-text-muted: rgb(218 226 226 / 74%);
+  --color-text-subtle: rgb(174 190 194 / 60%);
+  --color-hairline: rgb(134 197 211 / 22%);
   --radius-card: 2px;
   --radius-dialog: 4px;
   --radius-pill: 2px;
