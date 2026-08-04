@@ -8,7 +8,8 @@ const TOTAL_CLIENT_BUDGET = {
   // Six full combatants now ship character-specific frame data, animation,
   // VFX and AI. Keep a hard ceiling, with modest headroom for the roster.
   raw: 2.4 * 1024 * 1024,
-  gzip: 730 * 1024,
+  // Victory cinematics add one compact UI sequence shared by all fighters.
+  gzip: 740 * 1024,
 };
 
 async function loadJson(filename) {

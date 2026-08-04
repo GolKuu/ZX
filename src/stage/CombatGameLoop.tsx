@@ -153,8 +153,10 @@ export function CombatGameLoop({
         playerOne.releaseAll();
         playerTwoAI.releaseAll();
       }
-      if (state.screen === 'result' && previous.screen !== 'result' && state.mode === 'online') {
+      if (state.screen === 'victory' && previous.screen !== 'victory' && state.mode === 'online') {
         if (onlineRole === 'host') broadcastOnlineResult(state.result);
+      }
+      if (state.screen === 'result' && previous.screen !== 'result' && state.mode === 'online') {
         reportOnlineMatchResult(state.result);
       }
     });
@@ -196,7 +198,7 @@ export function CombatGameLoop({
           useHudStore.getState().publishSnapshot(packet.hud);
         }
         const result = takeRemoteResult();
-        if (result !== null) useHudStore.getState().openResult(result);
+        if (result !== null) useHudStore.getState().openVictory(result);
       }
     }
   }, -100);

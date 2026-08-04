@@ -45,6 +45,7 @@ export type HudScreen =
   | 'fight'
   | 'pause'
   | 'controls'
+  | 'victory'
   | 'result'
   | 'online';
 
@@ -75,6 +76,7 @@ type HudState = {
   openPause: () => void;
   resume: () => void;
   openControls: () => void;
+  openVictory: (result: MatchResult) => void;
   openResult: (result: MatchResult) => void;
   openModeMenu: () => void;
   openCharacterSelect: () => void;
@@ -193,6 +195,7 @@ export const useHudStore = create<HudState>((set) => ({
   openPause: () => set({ screen: 'pause', menuFocus: 0 }),
   resume: () => set({ screen: 'fight', menuFocus: 0 }),
   openControls: () => set({ screen: 'controls', menuFocus: 0 }),
+  openVictory: (result) => set({ screen: 'victory', menuFocus: 0, result }),
   openResult: (result) => set({ screen: 'result', menuFocus: 0, result }),
   openModeMenu: () => set({ screen: 'mode', menuFocus: 0 }),
   openCharacterSelect: () => set((state) => {

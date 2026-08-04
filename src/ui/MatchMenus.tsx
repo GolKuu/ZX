@@ -14,6 +14,7 @@ import { StageSelectMenu } from './StageSelectMenu';
 import { FeatureHub } from './FeatureHub';
 import { StoryModeScreen } from './StoryModeScreen';
 import { StoryCutscene } from './StoryCutscene';
+import { VictoryCutscene } from './VictoryCutscene';
 import { GloryResultStrip } from './GloryResultStrip';
 import { leaveOnlineRoom } from '@/src/online/onlineSession';
 import styles from './CombatHud.module.css';
@@ -31,6 +32,7 @@ export function MatchMenus() {
   if (screen === 'stage') return <StageSelectMenu />;
   if (screen === 'story') return <StoryModeScreen />;
   if (screen === 'story-scene') return <StoryCutscene />;
+  if (screen === 'victory') return <VictoryCutscene />;
   if (screen === 'tutorial' || screen === 'progression') {
     return <FeatureHub screen={screen} />;
   }

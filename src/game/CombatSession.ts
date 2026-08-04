@@ -299,7 +299,7 @@ export class CombatSession {
     const winnerCharacter = getCharacterDefinition(
       useHudStore.getState().fighterSelection[winnerIndex],
     );
-    useHudStore.getState().openResult({
+    useHudStore.getState().openVictory({
       winner: `${winner} - ${winnerCharacter.displayName}`,
       rounds: `${this.roundWins.p1}-${this.roundWins.p2}`,
       maxCombo: this.maxCombo,

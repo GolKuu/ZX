@@ -1,0 +1,229 @@
+.cutscene {
+  --victory-accent: #67f5e8;
+  --victory-soft: #1d817b;
+  position: absolute;
+  z-index: 50;
+  inset: 0;
+  overflow: hidden;
+  color: #fff;
+  background:
+    radial-gradient(circle at 72% 48%, color-mix(in srgb, var(--victory-soft) 46%, transparent), transparent 38%),
+    linear-gradient(112deg, #020307 12%, #080c13 50%, #020307 100%);
+  pointer-events: auto;
+  isolation: isolate;
+}
+
+.cutscene::before,
+.cutscene::after {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+}
+
+.cutscene::before {
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgb(255 255 255 / 4%) 4px);
+  mix-blend-mode: overlay;
+}
+
+.cutscene::after {
+  background: radial-gradient(ellipse, transparent 38%, rgb(0 0 0 / 76%) 100%);
+}
+
+.flash {
+  position: absolute;
+  z-index: 12;
+  inset: 0;
+  background: #fff;
+  pointer-events: none;
+  animation: victory-flash 850ms ease-out both;
+}
+
+.speedField {
+  position: absolute;
+  z-index: 1;
+  inset: -40%;
+  background: repeating-conic-gradient(from 262deg at 74% 50%, transparent 0deg 4deg, color-mix(in srgb, var(--victory-accent) 22%, transparent) 4.2deg 4.7deg);
+  opacity: 0;
+  animation: speed-field 2.8s 300ms cubic-bezier(.16,.8,.24,1) both;
+}
+
+.emblem {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  right: 4vw;
+  color: transparent;
+  font: 1000 min(72vw, 88vh)/.7 Impact, sans-serif;
+  -webkit-text-stroke: 2px color-mix(in srgb, var(--victory-accent) 16%, transparent);
+  transform: translateY(-50%) skewX(-8deg);
+  animation: emblem-enter 1.2s 180ms cubic-bezier(.12,.8,.2,1) both;
+}
+
+.fighterFrame {
+  position: absolute;
+  z-index: 3;
+  top: 4vh;
+  right: 3vw;
+  width: min(58vw, 72vh);
+  aspect-ratio: 1;
+  filter: drop-shadow(0 2.4rem 1.4rem rgb(0 0 0 / 72%));
+  transform-origin: 50% 80%;
+  animation: fighter-enter 1.15s 180ms cubic-bezier(.1,.82,.18,1) both;
+}
+
+.fighter,
+.afterimage {
+  position: absolute;
+  inset: 0;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-size: 400% 400%;
+}
+
+.fighter {
+  z-index: 2;
+  filter: contrast(1.08) saturate(1.08) drop-shadow(0 0 1.8rem color-mix(in srgb, var(--victory-accent) 35%, transparent));
+}
+
+.afterimage {
+  z-index: 1;
+  background: var(--victory-accent);
+  clip-path: polygon(34% 7%, 63% 7%, 75% 22%, 74% 83%, 59% 98%, 34% 94%, 24% 70%, 26% 22%);
+  filter: blur(18px);
+  opacity: .2;
+  transform: translateX(2.2rem) scale(.96);
+}
+
+.copy {
+  position: absolute;
+  z-index: 8;
+  top: 50%;
+  left: clamp(1.4rem, 7vw, 8rem);
+  width: min(56rem, 58vw);
+  transform: translateY(-42%);
+}
+
+.eyebrow,
+.subtitle {
+  display: block;
+  color: var(--victory-accent);
+  font: 800 clamp(.62rem, .9vw, .82rem)/1.2 ui-monospace, Consolas, monospace;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+}
+
+.eyebrow { animation: copy-enter 600ms 650ms ease-out both; }
+
+.name {
+  margin: .8rem 0 .15rem;
+  color: #cad1dc;
+  font: 900 clamp(1.1rem, 2.1vw, 2rem)/1 sans-serif;
+  letter-spacing: .42em;
+  text-transform: uppercase;
+  animation: copy-enter 650ms 770ms ease-out both;
+}
+
+.copy h1 {
+  max-width: 11ch;
+  margin: 0;
+  color: #fff;
+  font: 1000 clamp(3.5rem, 9.5vw, 9rem)/.78 Impact, Haettenschweiler, sans-serif;
+  letter-spacing: -.035em;
+  text-shadow: .07em .07em 0 color-mix(in srgb, var(--victory-soft) 80%, #000), 0 0 2rem rgb(0 0 0 / 80%);
+  transform: skewX(-5deg);
+  animation: title-slam 700ms 850ms cubic-bezier(.1,.82,.16,1.18) both;
+}
+
+.subtitle {
+  width: fit-content;
+  margin-top: 1.15rem;
+  padding: .55rem .8rem;
+  color: #071014;
+  background: var(--victory-accent);
+  animation: copy-enter 650ms 1.15s ease-out both;
+}
+
+.copy blockquote {
+  max-width: 35rem;
+  margin: 1.4rem 0 0;
+  color: #d8dde5;
+  font: italic 650 clamp(.9rem, 1.35vw, 1.25rem)/1.5 sans-serif;
+  animation: copy-enter 650ms 1.45s ease-out both;
+}
+
+.verdict {
+  position: absolute;
+  z-index: 7;
+  right: 4vw;
+  bottom: 7vh;
+  color: var(--victory-accent);
+  font: 1000 clamp(1.4rem, 3.3vw, 3.4rem)/1 Impact, sans-serif;
+  letter-spacing: .42em;
+  text-shadow: 0 0 1.5rem var(--victory-accent);
+  animation: verdict-enter 650ms 1.8s ease-out both;
+}
+
+.skip {
+  position: absolute;
+  z-index: 20;
+  right: max(1rem, env(safe-area-inset-right));
+  top: max(1rem, env(safe-area-inset-top));
+  padding: .65rem .9rem;
+  color: #aeb8c5;
+  cursor: pointer;
+  background: rgb(4 7 11 / 72%);
+  border: 1px solid rgb(255 255 255 / 18%);
+  font: 800 .64rem/1 ui-monospace, Consolas, monospace;
+  letter-spacing: .12em;
+  opacity: 0;
+  animation: reveal-skip 300ms 2s ease-out forwards;
+}
+
+.skip:hover,
+.skip:focus-visible { color: #071014; background: var(--victory-accent); outline: none; }
+.skip kbd { margin-left: .4rem; font: inherit; }
+
+.letterboxTop,
+.letterboxBottom {
+  position: absolute;
+  z-index: 15;
+  right: 0;
+  left: 0;
+  height: 4vh;
+  background: #000;
+  animation: letterbox 700ms ease-out both;
+}
+.letterboxTop { top: 0; transform-origin: top; }
+.letterboxBottom { bottom: 0; transform-origin: bottom; }
+
+.cutscene[data-character='glitch'] .fighter { animation: glitch-jolt 1.4s 1.5s steps(2, jump-none) 2; }
+.cutscene[data-character='glitch']::before { opacity: .55; background: repeating-linear-gradient(0deg, transparent 0 5px, rgb(255 35 105 / 14%) 6px); }
+.cutscene[data-character='lucky'] .emblem { transform: translateY(-50%) rotate(12deg); }
+.cutscene[data-character='vorgh'] .speedField { filter: contrast(1.8); transform: rotate(-8deg); }
+.cutscene[data-character='titan'] .fighterFrame { filter: drop-shadow(1.2rem 1.6rem 0 rgb(0 0 0 / 48%)); }
+.cutscene[data-character='mim'] .copy h1 { text-shadow: .07em .07em 0 #5b244d, 0 0 2rem rgb(103 245 232 / 25%); }
+
+@keyframes victory-flash { 0% { opacity: 1; } 28% { opacity: .85; } 100% { opacity: 0; } }
+@keyframes speed-field { 0% { opacity: 0; transform: scale(.72) rotate(-4deg); } 24% { opacity: .75; } 100% { opacity: .12; transform: scale(1.3) rotate(1deg); } }
+@keyframes emblem-enter { from { opacity: 0; translate: 20vw 0; } to { opacity: 1; translate: 0; } }
+@keyframes fighter-enter { from { opacity: 0; transform: translate(24vw, 8vh) scale(1.34) rotate(6deg); } to { opacity: 1; transform: none; } }
+@keyframes copy-enter { from { opacity: 0; translate: -5rem 0; } to { opacity: 1; translate: 0; } }
+@keyframes title-slam { from { opacity: 0; transform: translateX(-16vw) scaleX(1.5) skewX(-12deg); } to { opacity: 1; transform: skewX(-5deg); } }
+@keyframes verdict-enter { from { opacity: 0; letter-spacing: .9em; } to { opacity: 1; letter-spacing: .42em; } }
+@keyframes reveal-skip { to { opacity: 1; } }
+@keyframes letterbox { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes glitch-jolt { 0%, 100% { translate: 0; filter: none; } 35% { translate: -8px 3px; filter: hue-rotate(65deg); } 65% { translate: 10px -2px; filter: saturate(2); } }
+
+@media (max-width: 720px) {
+  .fighterFrame { top: 10vh; right: -12vw; width: min(90vw, 66vh); opacity: .72; }
+  .copy { top: 55%; left: 7vw; width: 86vw; }
+  .copy h1 { font-size: clamp(3.2rem, 17vw, 6.5rem); }
+  .copy blockquote { max-width: 76vw; }
+  .verdict { right: 5vw; bottom: 6vh; font-size: 1.1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cutscene *, .cutscene::before, .cutscene::after { animation-duration: 1ms !important; animation-delay: 0ms !important; }
+}
