@@ -1,6 +1,6 @@
-import type { FighterSnapshot } from '@/src/sim';
-import { spriteAnimationFrame } from '../combatAnimationProgress';
-import { photoAttackSequence } from './photoAttackSequences';
+import type { FighterSnapshot } from '../../sim/index.js';
+import { spriteAnimationFrame } from '../combatAnimationProgress.js';
+import { photoAttackSequence } from './photoAttackSequences.js';
 
 export const PHOTO_COLUMNS = 4;
 export const PHOTO_ROWS = 4;
