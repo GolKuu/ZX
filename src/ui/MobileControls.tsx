@@ -18,10 +18,10 @@ interface ControlButton {
 }
 
 const movementControls: readonly ControlButton[] = [
-  { control: 'up', label: '↑', ariaLabel: 'Прыжок' },
-  { control: 'left', label: '←', ariaLabel: 'Движение влево' },
-  { control: 'down', label: '↓', ariaLabel: 'Присесть' },
-  { control: 'right', label: '→', ariaLabel: 'Движение вправо' },
+  { control: 'up', label: 'W', ariaLabel: 'Прыжок' },
+  { control: 'left', label: 'A', ariaLabel: 'Движение влево' },
+  { control: 'down', label: 'S', ariaLabel: 'Присесть' },
+  { control: 'right', label: 'D', ariaLabel: 'Движение вправо' },
 ];
 
 const combatControls: readonly ControlButton[] = [
