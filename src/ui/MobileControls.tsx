@@ -67,10 +67,11 @@ export function MobileControls({ visible }: { readonly visible: boolean }) {
       className={styles.mobileControls}
       data-visible={visible}
     >
-      <div className={styles.movementPad}>
+      <div className={styles.movementPad} aria-label="Крестовина движения">
         {movementControls.map((button) => (
           <MobileButton key={button.control} {...button} />
         ))}
+        <span className={styles.movementPadCenter} aria-hidden="true" />
       </div>
       <div className={styles.combatPad}>
         {isMim && (

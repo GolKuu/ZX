@@ -515,11 +515,59 @@
 }
 
 .movementPad {
-  grid-template: repeat(2, var(--touch-size)) / repeat(3, var(--touch-size));
+  position: relative;
+  grid-template: repeat(3, var(--touch-size)) / repeat(3, var(--touch-size));
+  gap: 0;
+  filter: drop-shadow(0 0.7cqw 1.8cqw rgb(0 0 0 / 48%));
 }
 
-.movementPad > :first-child {
-  grid-column: 2;
+.movementPad .mobileButton {
+  z-index: 1;
+  background: rgb(8 16 25 / 88%);
+  border-color: rgb(159 216 255 / 48%);
+  border-radius: 0.9rem;
+  box-shadow: inset 0 0 0 0.45cqw rgb(255 255 255 / 4%);
+  font-size: clamp(1rem, 2cqw, 1.45rem);
+}
+
+.movementPad .mobileButton[data-control="up"] {
+  grid-area: 1 / 2;
+  border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.movementPad .mobileButton[data-control="left"] {
+  grid-area: 2 / 1;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.movementPad .mobileButton[data-control="right"] {
+  grid-area: 2 / 3;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.movementPad .mobileButton[data-control="down"] {
+  grid-area: 3 / 2;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
+
+.movementPadCenter {
+  position: relative;
+  grid-area: 2 / 2;
+  background: rgb(8 16 25 / 92%);
+  border: 0.18cqw solid rgb(159 216 255 / 34%);
+  box-shadow: inset 0 0 1.1cqw rgb(113 220 255 / 8%);
+}
+
+.movementPadCenter::after {
+  position: absolute;
+  inset: 28%;
+  content: '';
+  border: 1px solid rgb(159 216 255 / 24%);
+  border-radius: 50%;
 }
 
 .combatPad {
