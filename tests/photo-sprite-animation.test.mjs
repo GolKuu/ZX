@@ -3,9 +3,55 @@ import test from 'node:test';
 import { spriteAttackFrame } from '../.sim-test-build/src/stage/sprite2d/spriteAttackTimeline.js';
 import {
   PHOTO_KICK_NORMAL_IDS,
+  PHOTO_NORMAL_ATTACK_KINDS,
   photoAttackKind,
   photoAttackMotion,
 } from '../.sim-test-build/src/stage/photoSprite/photoKickAnimation.js';
+
+const BASIC_ATTACKS = {
+  mim: ['mim.jab', 'mim.elbow', 'mim.capoeira', 'mim.spin'],
+  glitch: [
+    'glitch.phase-jab',
+    'glitch.rift-elbow',
+    'glitch.low-vector-sweep',
+    'glitch.breakpoint-axe',
+  ],
+  lucky: [
+    'lucky.quick-draw',
+    'lucky.loaded-shoulder',
+    'lucky.sliding-bet',
+    'lucky.fortune-heel',
+  ],
+  titan: [
+    'titan.normal.piston-hammer',
+    'titan.normal.bulkhead-backfist',
+    'titan.normal.seismic-stomp',
+    'titan.normal.siege-ram',
+  ],
+  vorgh: [
+    'vorgh.normal.predator-rake',
+    'vorgh.normal.skull-ram',
+    'vorgh.normal.hunting-sweep',
+    'vorgh.normal.rising-maul',
+  ],
+};
+
+test('J K I L use four different basic attack animations for every fighter', () => {
+  for (const [fighter, moves] of Object.entries(BASIC_ATTACKS)) {
+    const kinds = moves.map((moveId) => PHOTO_NORMAL_ATTACK_KINDS[moveId]);
+    assert.deepEqual(
+      kinds.slice(0, 2),
+      ['jab', 'heavy'],
+      `${fighter}: J must use the right hand and K the left hand`,
+    );
+    assert.ok(
+      ['kick', 'sweep'].includes(kinds[2]),
+      `${fighter}: I must use the right leg`,
+    );
+    assert.equal(kinds[3], 'highKick', `${fighter}: L must use the left leg`);
+    assert.equal(new Set(kinds).size, 4, `${fighter}: an animation was reused`);
+  }
+});
 
 test('Lucky attacks expose all nine readable animation beats', () => {
   const move = { startup: 10, active: 4, recovery: 14 };

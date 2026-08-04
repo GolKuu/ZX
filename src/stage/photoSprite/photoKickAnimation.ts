@@ -28,18 +28,40 @@ export const PHOTO_KICK_NORMAL_IDS = [
   'vorgh.normal.rising-maul',
 ] as const;
 
-const EXPLICIT_KICKS: Readonly<Record<string, PhotoAttackKind>> = {
+/**
+ * The four physical attack keys must always keep their own silhouette.
+ *
+ * Do not infer these normals from words such as "elbow" or "ram": that used
+ * to collapse MIM and Glitch's K attack into the same jab drawing as J. The
+ * table is deliberately explicit so J/K/I/L remain right hand, left hand,
+ * right leg and left leg for every selectable fighter.
+ */
+export const PHOTO_NORMAL_ATTACK_KINDS: Readonly<Record<string, PhotoAttackKind>> = {
+  'mim.jab': 'jab',
+  'mim.elbow': 'heavy',
   'mim.capoeira': 'kick',
   'mim.spin': 'highKick',
+  'glitch.phase-jab': 'jab',
+  'glitch.rift-elbow': 'heavy',
   'glitch.low-vector-sweep': 'sweep',
   'glitch.breakpoint-axe': 'highKick',
+  'lucky.quick-draw': 'jab',
+  'lucky.loaded-shoulder': 'heavy',
   'lucky.sliding-bet': 'sweep',
   'lucky.fortune-heel': 'highKick',
+  'titan.normal.piston-hammer': 'jab',
+  'titan.normal.bulkhead-backfist': 'heavy',
   'titan.normal.seismic-stomp': 'kick',
   'titan.normal.siege-ram': 'highKick',
-  'titan.normal-anti-air': 'highKick',
+  'vorgh.normal.predator-rake': 'jab',
+  'vorgh.normal.skull-ram': 'heavy',
   'vorgh.normal.hunting-sweep': 'sweep',
   'vorgh.normal.rising-maul': 'highKick',
+};
+
+const EXPLICIT_KICKS: Readonly<Record<string, PhotoAttackKind>> = {
+  ...PHOTO_NORMAL_ATTACK_KINDS,
+  'titan.normal-anti-air': 'highKick',
 };
 
 export function photoAttackKind(moveId: string): PhotoAttackKind {
