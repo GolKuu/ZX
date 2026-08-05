@@ -25,10 +25,10 @@ const movementControls: readonly ControlButton[] = [
 ];
 
 const combatControls: readonly ControlButton[] = [
-  { control: 'lp', label: 'LP', ariaLabel: 'Лёгкий удар рукой' },
-  { control: 'hp', label: 'HP', ariaLabel: 'Сильный удар рукой' },
-  { control: 'lk', label: 'LK', ariaLabel: 'Лёгкий удар ногой' },
-  { control: 'hk', label: 'HK', ariaLabel: 'Сильный удар ногой' },
+  { control: 'lp', label: 'ПР', ariaLabel: 'Удар передней рукой' },
+  { control: 'lk', label: 'ЗР', ariaLabel: 'Удар задней рукой' },
+  { control: 'hp', label: 'ПН', ariaLabel: 'Удар передней ногой' },
+  { control: 'hk', label: 'ЗН', ariaLabel: 'Удар задней ногой' },
   { control: 'block', label: 'БЛК', ariaLabel: 'Блок', tone: 'utility' },
   { control: 'dash', label: 'РЫВ', ariaLabel: 'Рывок', tone: 'utility' },
   { control: 'taunt', label: 'Т', ariaLabel: 'Насмешка', tone: 'utility' },
