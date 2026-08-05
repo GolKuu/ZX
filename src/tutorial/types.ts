@@ -94,7 +94,6 @@ export interface TutorialStep {
   readonly titleKey: TextKey;
   readonly instructionKey: TextKey;
   readonly detailKey?: TextKey;
-  readonly voiceLineId?: string;
   readonly demonstration?: TutorialDemonstration;
   /** Omitted means "everything is allowed". */
   readonly allowedInputs?: readonly InputChannel[];

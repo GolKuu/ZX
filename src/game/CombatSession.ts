@@ -2,7 +2,6 @@ import type {
   CommandContext,
   KeyboardInputSource,
 } from '@/src/input';
-import { FighterVoiceController } from '@/src/audio/FighterVoiceController';
 import { TitanSoundController } from '@/src/audio/TitanSoundController';
 import { LuckySoundController } from '@/src/audio/LuckySoundController';
 import { GlitchSoundController } from '@/src/audio/GlitchSoundController';
@@ -71,7 +70,6 @@ export class CombatSession {
   };
   private roundRestartInFrames = 0;
   private championAtRoundEnd: ChampionSide = null;
-  private readonly fighterVoice: FighterVoiceController;
   private readonly titanSound: TitanSoundController;
   private readonly luckySound: LuckySoundController;
   private readonly glitchSound: GlitchSoundController;
@@ -94,7 +92,6 @@ export class CombatSession {
       this.geminiStrategy,
     );
     this.loadGeminiStrategy();
-    this.fighterVoice = new FighterVoiceController(this.fighterSelection);
     this.titanSound = new TitanSoundController(this.fighterSelection);
     this.luckySound = new LuckySoundController(this.fighterSelection);
     this.glitchSound = new GlitchSoundController(this.fighterSelection);
@@ -142,7 +139,6 @@ export class CombatSession {
     this.ended = false;
     this.comboHits = 0;
     this.maxCombo = 0;
-    this.fighterVoice.reset();
     this.xray.reset();
     this.meters.reset();
     this.attackInput.reset();
@@ -205,7 +201,6 @@ export class CombatSession {
     this.xray.accept(result.events);
     publishCombatFrame(result.state, 0);
     publishCombatHits(result.state, result.events);
-    this.fighterVoice.accept(result.state, result.events);
     this.titanSound.accept(result.events);
     this.publishHud(result.state, result.events);
     this.handleImpact(result.events);
@@ -275,7 +270,6 @@ export class CombatSession {
     const winnerSide = this.determineRoundWinner(world);
     if (winnerSide !== null) {
       this.roundWins[winnerSide] += 1;
-      this.fighterVoice.celebrate(winnerSide === 'p1' ? 'p1' : 'p2');
     }
     const isTie = winnerSide === null;
     const reachedMatchWin = winnerSide !== null

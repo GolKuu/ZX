@@ -18,7 +18,6 @@ import {
   type VorghJoints,
 } from './vorgh/VorghBody';
 import { VorghEffects } from './vorgh/VorghEffects';
-import { VorghAudioPlayer } from './vorgh/VorghAudioPlayer';
 import { visualTier, vorghPose } from './vorgh/vorghPose';
 import {
   advanceVorghAnimation,
@@ -88,7 +87,6 @@ export function VorghFighter({ fighterId }: {
 
   return (
     <>
-      <VorghAudioPlayer fighterId={fighterId} />
       <VorghEffects fighterId={fighterId} />
       <group ref={outer}>
         <VorghBody setJoint={setJoint} />

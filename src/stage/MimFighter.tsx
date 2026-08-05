@@ -15,7 +15,6 @@ import {
 import { MimAttackSprites } from './mim/MimAttackSprites';
 import { MimAttackEffects } from './mim/MimAttackEffects';
 import { MimSpecialEffects } from './mim/MimSpecialEffects';
-import { MimVoiceCallouts } from './mim/MimVoiceCallouts';
 import {
   MimSpriteBody,
   type MimSpriteJointName,
@@ -114,7 +113,6 @@ export function MimFighter({
 
   return (
     <>
-      <MimVoiceCallouts fighterId={fighterId} />
       <MimSpecialEffects fighterId={fighterId} />
       <group ref={outer}>
         <MimAttackEffects fighterId={fighterId} />

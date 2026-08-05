@@ -16,9 +16,7 @@ import { FIXED_SCALE } from '@/src/sim';
 import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
 import { MimAttackEffects } from '../mim/MimAttackEffects';
 import { MimSpecialEffects } from '../mim/MimSpecialEffects';
-import { MimVoiceCallouts } from '../mim/MimVoiceCallouts';
 import { LuckySpriteEffects } from '../lucky/LuckySpriteEffects';
-import { VorghAudioPlayer } from '../vorgh/VorghAudioPlayer';
 import { VorghEffects } from '../vorgh/VorghEffects';
 import { spriteFacingScale, withOpponentFacing } from '../fighterPresentation';
 import { combatAnimationProgress } from '../combatAnimationProgress';
@@ -159,10 +157,8 @@ export function PhotoSpriteFighter({
   const width = DISPLAY_HEIGHT;
   return (
     <>
-      {kind === 'mim' ? <MimVoiceCallouts fighterId={fighterId} /> : null}
       {kind === 'mim' ? <MimSpecialEffects fighterId={fighterId} /> : null}
       {kind === 'lucky' ? <LuckySpriteEffects fighterId={fighterId} /> : null}
-      {kind === 'vorgh' ? <VorghAudioPlayer fighterId={fighterId} /> : null}
       {kind === 'vorgh' ? <VorghEffects fighterId={fighterId} /> : null}
       <group ref={outer}>
         {kind === 'mim' ? <MimAttackEffects fighterId={fighterId} /> : null}

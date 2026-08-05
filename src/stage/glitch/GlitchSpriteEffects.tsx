@@ -20,7 +20,6 @@ import {
   GlitchScreenTear,
   LagSpikeField,
 } from './GlitchSpriteVfxMeshes';
-import { speakGlitchMove } from './glitchVoiceLines';
 import { playGlitchMoveSound } from './glitchSoundEvents';
 import { GlitchEnergyScarf } from './GlitchEnergyScarf';
 import {
@@ -33,7 +32,6 @@ import {
   showLagSpike,
 } from './glitchSpriteEffectMotion';
 
-const SPECIALS = new Set<string>(Object.values(GLITCH_SPECIAL_IDS));
 const NORMALS = new Set<string>([
   ...Object.values(GLITCH_NORMAL_IDS),
   ...Object.values(GLITCH_AIR_IDS),
@@ -91,12 +89,6 @@ export function GlitchSpriteEffects({
     );
 
     if (moveId !== lastMove.current) {
-      if (
-        moveId !== null
-        && SPECIALS.has(moveId)
-      ) {
-        speakGlitchMove(moveId);
-      }
       if (moveId !== null) playGlitchMoveSound(moveId);
       lastMove.current = moveId;
     }

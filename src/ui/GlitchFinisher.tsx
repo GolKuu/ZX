@@ -1,14 +1,7 @@
 'use client';
 
-import { useEffect, type CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 import type { GlitchSuperKind } from '@/src/data/glitch-super-moves';
-import {
-  GLITCH_SUPER_MOVE_IDS,
-} from '@/src/data/glitch-super-moves';
-import {
-  speakGlitchFinalLine,
-  speakGlitchMove,
-} from '@/src/stage/glitch/glitchVoiceLines';
 import styles from './GlitchFinisher.module.css';
 import motion from './GlitchFinisherMotion.module.css';
 import stage from './GlitchSuperStages.module.css';
@@ -44,16 +37,6 @@ export function GlitchFinisher({
   readonly kind: GlitchSuperKind;
   readonly version: number;
 }) {
-  useEffect(() => {
-    speakGlitchMove(GLITCH_SUPER_MOVE_IDS[kind]);
-    if (kind !== 'patchNotes') return undefined;
-    const finalLine = window.setTimeout(
-      () => speakGlitchFinalLine(version),
-      2_650,
-    );
-    return () => window.clearTimeout(finalLine);
-  }, [kind, version]);
-
   return (
     <section
       key={version}
