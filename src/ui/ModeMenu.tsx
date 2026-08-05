@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useHudStore, type MatchMode } from '@/src/store/hudStore';
 import { useMenuNavigation } from './useMenuNavigation';
+import { ModeFightPreview } from './ModeFightPreview';
 import styles from './ModeMenu.module.css';
 
 const MODES = [
@@ -147,6 +148,7 @@ export function ModeMenu() {
           />
         </div>
       ))}
+      <ModeFightPreview />
 
       <header className={styles.brand}>
         <span>CC//ULTIMATE</span>
