@@ -39,7 +39,7 @@ export function RenderScene({
       <fog attach="fog" args={[arena.fog, 14, 34]} />
       <StageLighting />
 
-      <Arena />
+      <Arena arenaId={arenaId} />
       <CombatGameLoop fighterSelection={fighterSelection} />
       <SelectedFighter
         auraColor="#5cd8ff"
