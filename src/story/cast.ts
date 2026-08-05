@@ -105,4 +105,12 @@ export function castMember(id: StoryCastId): StoryCastMember {
   return CAST[id];
 }
 
+export function isRosterCastMember(member: StoryCastMember): member is StoryCastMember & { readonly id: CharacterId } {
+  return member.id === 'mim'
+    || member.id === 'glitch'
+    || member.id === 'lucky'
+    || member.id === 'titan'
+    || member.id === 'vorgh';
+}
+
 export const STORY_CAST_IDS: readonly StoryCastId[] = Object.keys(CAST) as StoryCastId[];

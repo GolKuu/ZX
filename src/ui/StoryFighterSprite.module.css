@@ -1,0 +1,133 @@
+.actor {
+  --actor-accent: #6af4e8;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  isolation: isolate;
+  transform-origin: 50% 100%;
+}
+
+.sprite,
+.echo {
+  position: absolute;
+  z-index: 2;
+  inset: -12% -18% -4%;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-size: 400% 400%;
+  filter: drop-shadow(0 1.2cqw 0.8cqw rgb(0 0 0 / 88%));
+  image-rendering: auto;
+  transform: scaleX(1);
+  transform-origin: 50% 100%;
+  animation: actor-breathe 3.2s ease-in-out infinite;
+}
+
+.actor[data-facing="left"] .sprite,
+.actor[data-facing="left"] .echo {
+  transform: scaleX(-1);
+}
+
+.actor[data-character="mim"] { --actor-accent: #c6b4ff; }
+.actor[data-character="lucky"] { --actor-accent: #e5bc4e; }
+.actor[data-character="titan"] { --actor-accent: #ff7a18; }
+.actor[data-character="vorgh"] { --actor-accent: #ff5728; }
+
+.actor[data-character="glitch"] .sprite,
+.actor[data-character="glitch"] .echo { background-image: url('/sprites/reference-fighters/glitch-atlas.webp'); }
+.actor[data-character="mim"] .sprite,
+.actor[data-character="mim"] .echo { background-image: url('/sprites/reference-fighters/mim-atlas.webp'); }
+.actor[data-character="lucky"] .sprite,
+.actor[data-character="lucky"] .echo { background-image: url('/sprites/reference-fighters/lucky-atlas.webp'); }
+.actor[data-character="titan"] .sprite,
+.actor[data-character="titan"] .echo { background-image: url('/sprites/reference-fighters/titan-atlas.webp'); }
+.actor[data-character="vorgh"] .sprite,
+.actor[data-character="vorgh"] .echo { background-image: url('/sprites/reference-fighters/vorgh-atlas.webp'); }
+
+.actor[data-speaking="true"] .sprite {
+  filter:
+    drop-shadow(0 1.2cqw 0.8cqw rgb(0 0 0 / 88%))
+    drop-shadow(0 0 0.55cqw color-mix(in srgb, var(--actor-accent) 72%, transparent));
+  animation: actor-speak 1.7s ease-in-out infinite;
+}
+
+.echo {
+  z-index: 1;
+  filter: sepia(1) saturate(5) hue-rotate(120deg) blur(0.16cqw);
+  opacity: 0.2;
+  animation: echo-slip 2.1s ease-out infinite;
+}
+
+.aura {
+  position: absolute;
+  z-index: 0;
+  inset: 1% -18% -8%;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--actor-accent) 30%, transparent), transparent 68%);
+  filter: blur(0.8cqw);
+  animation: aura-pulse 2.8s ease-in-out infinite;
+}
+
+.rim {
+  position: absolute;
+  z-index: 3;
+  inset: 8% 12% 5%;
+  border-right: 0.12cqw solid color-mix(in srgb, var(--actor-accent) 45%, transparent);
+  border-radius: 50%;
+  filter: blur(0.08cqw);
+  mix-blend-mode: screen;
+}
+
+.contact {
+  position: absolute;
+  z-index: 0;
+  right: 4%;
+  bottom: -3%;
+  left: 4%;
+  height: 9%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--actor-accent) 40%, transparent), transparent 74%);
+  border-radius: 50%;
+}
+
+.actor[data-corrupted="true"] .sprite {
+  filter: hue-rotate(72deg) saturate(1.6) drop-shadow(0 0 0.8cqw #e54fff);
+  animation: corrupted-jolt 1.4s steps(2, end) infinite;
+}
+
+.actor[data-corrupted="true"] .echo {
+  filter: hue-rotate(78deg) saturate(2.4) blur(0.12cqw);
+  opacity: 0.46;
+}
+
+@keyframes actor-breathe {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -0.35cqh; }
+}
+
+@keyframes actor-speak {
+  0%, 100% { translate: 0 0; }
+  42% { translate: 0 -0.55cqh; }
+  56% { translate: 0 -0.25cqh; }
+}
+
+@keyframes echo-slip {
+  0%, 28% { opacity: 0; translate: 0 0; }
+  44% { opacity: 0.28; }
+  100% { opacity: 0; translate: -1.2cqw -0.3cqh; }
+}
+
+@keyframes aura-pulse {
+  0%, 100% { opacity: 0.42; transform: scale(0.94); }
+  50% { opacity: 0.86; transform: scale(1.06); }
+}
+
+@keyframes corrupted-jolt {
+  0%, 84%, 100% { translate: 0 0; }
+  88% { translate: -0.35cqw 0; }
+  94% { translate: 0.28cqw -0.2cqh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sprite,
+  .echo,
+  .aura { animation: none !important; }
+}

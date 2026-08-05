@@ -1,6 +1,6 @@
 'use client';
 
-import { storyCast } from '@/src/story/cast';
+import { isRosterCastMember, storyCast } from '@/src/story/cast';
 import type { StoryLine } from '@/src/story/dialogue';
 import {
   storyCinematic,
@@ -8,6 +8,7 @@ import {
   storyLineIntensity,
 } from '@/src/story/cinematics';
 import { StoryCastFigure } from './StoryCastFigure';
+import { StoryFighterSprite } from './StoryFighterSprite';
 import styles from './StoryCinematicStage.module.css';
 
 /**
@@ -34,13 +35,14 @@ export function StoryCinematicStage({
 }) {
   const cinematic = storyCinematic(chapterIndex);
   const cast = storyCast(chapterIndex);
+  const focus = storyLineFocus(line);
   return (
     <div
       key={lineKey}
       aria-hidden="true"
       className={styles.stage}
       data-beat={cinematic.beat}
-      data-focus={storyLineFocus(line)}
+      data-focus={focus}
       data-side={cinematic.side}
       style={{
         '--intensity': storyLineIntensity(line),
@@ -55,21 +57,25 @@ export function StoryCinematicStage({
       <div className={styles.floor} />
 
       <div className={styles.glitch}>
-        <span className={styles.echoLeft} />
-        <span className={styles.echoRight} />
-        <span className={styles.torso} />
-        <span className={styles.head}>
-          <i className={styles.visor} />
-        </span>
-        <span className={styles.armLead} />
-        <span className={styles.armRear} />
-        <span className={styles.legLead} />
-        <span className={styles.legRear} />
-        <span className={styles.fracture} />
+        <StoryFighterSprite
+          characterId="glitch"
+          expression={focus === 'glitch' ? line.expression : 'normal'}
+          facing="right"
+          speaking={focus === 'glitch'}
+        />
       </div>
 
       <div className={styles.opposite} data-count={cast.members.length}>
-        {cast.members.map((member) => (
+        {cast.members.map((member) => isRosterCastMember(member) ? (
+          <StoryFighterSprite
+            key={member.id}
+            characterId={member.id}
+            corrupted={cast.corrupted}
+            expression={focus === 'opposite' ? line.expression : 'normal'}
+            facing="left"
+            speaking={focus === 'opposite'}
+          />
+        ) : (
           <StoryCastFigure key={member.id} corrupted={cast.corrupted} member={member} />
         ))}
       </div>
