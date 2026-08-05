@@ -15,7 +15,6 @@ import { FrameProfiler } from './FrameProfiler';
 import { HitBlood } from './HitBlood';
 import { HitSparkBurst } from './HitSparkBurst';
 import { GuardImpact } from './GuardImpact';
-import { ImpactPulse } from './ImpactPulse';
 import { LazyPostEffects } from './LazyPostEffects';
 import { PhotoSpriteFighter } from './photoSprite/PhotoSpriteFighter';
 import { SpeedLines } from './SpeedLines';
@@ -61,7 +60,6 @@ export function RenderScene({
       <HitBlood />
       <HitSparkBurst />
       <GuardImpact />
-      <ImpactPulse />
       <CameraRig />
       <LazyPostEffects />
       <FrameProfiler />
