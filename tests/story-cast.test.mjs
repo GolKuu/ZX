@@ -4,6 +4,7 @@ import { CHARACTER_ROSTER } from '../.sim-test-build/src/data/characterRoster.js
 import { STORY_CHAPTERS } from '../.sim-test-build/src/story/campaign.js';
 import { storyCinematic } from '../.sim-test-build/src/story/cinematics.js';
 import { STORY_CAST_IDS, castMember, storyCast } from '../.sim-test-build/src/story/cast.js';
+import { STORY_GOD_MODELS, storyGodModel } from '../.sim-test-build/src/story/godModels.js';
 
 const BUILDS = ['fighter', 'colossus', 'construct', 'god', 'void'];
 const HEX = /^#[0-9a-f]{6}$/;
@@ -62,6 +63,13 @@ test('the four laws stand as four gods, not as one silhouette repeated', () => {
   // Every god carries a different emblem, or the row reads as one god four times.
   assert.equal(new Set(cast.members.map((member) => member.signature)).size, 4);
   assert.equal(new Set(cast.members.map((member) => member.accent)).size, 4);
+  assert.equal(STORY_GOD_MODELS.length, 4);
+  assert.equal(new Set(STORY_GOD_MODELS.map((model) => model.motion)).size, 4);
+  assert.equal(new Set(STORY_GOD_MODELS.map((model) => model.silhouette)).size, 4);
+  for (const member of cast.members) {
+    const model = storyGodModel(member.id);
+    assert.equal(model.id, member.id);
+  }
 });
 
 test('the alliance and the ending are the same four rivals, one possessed and one free', () => {

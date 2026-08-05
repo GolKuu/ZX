@@ -1,6 +1,7 @@
 'use client';
 
 import type { StoryCastMember } from '@/src/story/cast';
+import { StoryGodModel } from './StoryGodModel';
 import styles from './StoryCastFigure.module.css';
 
 /**
@@ -21,6 +22,7 @@ export function StoryCastFigure({
   readonly corrupted: boolean;
   readonly member: StoryCastMember;
 }) {
+  if (member.build === 'god') return <StoryGodModel member={member} />;
   return (
     <div
       className={styles.figure}

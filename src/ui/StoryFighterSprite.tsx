@@ -31,9 +31,12 @@ export function StoryFighterSprite({
       data-speaking={speaking}
     >
       <span className={styles.aura} />
+      <span className={styles.backlight} />
       <span className={styles.echo} style={{ backgroundPosition: position }} />
       <span className={styles.sprite} style={{ backgroundPosition: position }} />
+      <span className={styles.detail} />
       <span className={styles.rim} />
+      <span className={styles.groundFx} />
       <span className={styles.contact} />
     </div>
   );
