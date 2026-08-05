@@ -30,21 +30,53 @@ export interface CombatHit {
   readonly away: number;
 }
 
+export interface CombatBlock {
+  readonly serial: number;
+  readonly attackerId: string;
+  readonly defenderId: string;
+  readonly moveId: string;
+  readonly x: number;
+  readonly y: number;
+  readonly away: number;
+  readonly perfect: boolean;
+  readonly painGuard: boolean;
+}
+
 const hitsByDefender = new Map<string, CombatHit>();
+const blocksByDefender = new Map<string, CombatBlock>();
 let hitSerial = 0;
+let blockSerial = 0;
 
 export function publishCombatHits(
   world: WorldSnapshot,
   events: readonly CombatEvent[],
 ): void {
   for (const event of events) {
-    if (event.type !== 'hit') continue;
+    if (event.type !== 'hit' && event.type !== 'block') continue;
     const attacker = world.fighters.find(
       (fighter) => fighter.id === event.attackerId,
     );
     const defender = world.fighters.find(
       (fighter) => fighter.id === event.defenderId,
     );
+    const away = attacker === undefined || defender === undefined
+      ? 1
+      : Math.sign(defender.position.x - attacker.position.x) || 1;
+    if (event.type === 'block') {
+      blockSerial += 1;
+      blocksByDefender.set(event.defenderId, {
+        serial: blockSerial,
+        attackerId: event.attackerId,
+        defenderId: event.defenderId,
+        moveId: event.moveId,
+        x: event.position.x / FIXED_SCALE,
+        y: event.position.y / FIXED_SCALE,
+        away,
+        perfect: event.perfect,
+        painGuard: event.painGuard,
+      });
+      continue;
+    }
     hitSerial += 1;
     hitsByDefender.set(event.defenderId, {
       serial: hitSerial,
@@ -54,10 +86,7 @@ export function publishCombatHits(
       damage: event.damage,
       x: event.position.x / FIXED_SCALE,
       y: event.position.y / FIXED_SCALE,
-      away:
-        attacker === undefined || defender === undefined
-          ? 1
-          : Math.sign(defender.position.x - attacker.position.x) || 1,
+      away,
     });
   }
 }
@@ -66,8 +95,13 @@ export function readLatestHit(defenderId: string): CombatHit | null {
   return hitsByDefender.get(defenderId) ?? null;
 }
 
+export function readLatestBlock(defenderId: string): CombatBlock | null {
+  return blocksByDefender.get(defenderId) ?? null;
+}
+
 export function clearCombatHits(): void {
   hitsByDefender.clear();
+  blocksByDefender.clear();
 }
 
 export const combatRenderFrame: CombatRenderFrame = {

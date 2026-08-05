@@ -11,7 +11,7 @@ import {
   Texture,
   TextureLoader,
 } from 'three';
-import { combatRenderFrame, readCombatFighter } from '@/src/game/combatRuntime';
+import { combatRenderFrame, readCombatFighter, readLatestHit } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
 import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
 import { MimAttackEffects } from '../mim/MimAttackEffects';
@@ -22,6 +22,7 @@ import { spriteFacingScale, withOpponentFacing } from '../fighterPresentation';
 import { combatAnimationProgress } from '../combatAnimationProgress';
 import { isFalling, photoFallPose } from './photoFallAnimation';
 import { photoAttackMotion } from './photoKickAnimation';
+import { photoDashEchoOpacity, photoImpactPose } from './photoCombatMotion';
 import { PHOTO_COLUMNS, PHOTO_ROWS, photoFrameFor } from './photoSpriteAnimation';
 
 const DISPLAY_HEIGHT = 3.05;
@@ -46,11 +47,15 @@ export function PhotoSpriteFighter({
   const body = useRef<Group>(null);
   const currentMaterial = useRef<MeshBasicMaterial>(null);
   const previousMaterial = useRef<MeshBasicMaterial>(null);
+  const dashMaterials = useRef<Array<MeshBasicMaterial | null>>([]);
   const lastFrame = useRef<number | null>(null);
   const transitionAt = useRef(-1);
   // A killing blow leaves no knockdown timer behind, so the defeat collapse
   // needs its own clock. Wall time keeps it identical at any refresh rate.
   const defeatAt = useRef<number | null>(null);
+  const seenHit = useRef(0);
+  const impactAt = useRef(-1);
+  const impactDamage = useRef(0);
   const [textures, setTextures] = useState<PhotoTextures | null>(null);
   const opponentId = fighterId === 'p1' ? 'p2' : 'p1';
 
@@ -98,6 +103,13 @@ export function PhotoSpriteFighter({
     const presentation = withOpponentFacing(fighter, readCombatFighter(opponentId));
     root.scale.x = spriteFacingScale(true, presentation.facing);
 
+    const latestHit = readLatestHit(fighterId);
+    if (latestHit !== null && latestHit.serial !== seenHit.current) {
+      seenHit.current = latestHit.serial;
+      impactAt.current = clock.elapsedTime;
+      impactDamage.current = latestHit.damage;
+    }
+
     if (fighter.health > 0) defeatAt.current = null;
     else if (defeatAt.current === null) defeatAt.current = clock.elapsedTime;
     const defeatFrames = defeatAt.current === null
@@ -136,22 +148,31 @@ export function PhotoSpriteFighter({
         combatAnimationProgress(fighter.action.moveId, fighter.action.frame),
       );
     const fall = photoFallPose(fighter, clock.elapsedTime, defeatFrames);
+    const reaction = falling
+      ? photoImpactPose(-1, 0)
+      : photoImpactPose(clock.elapsedTime - impactAt.current, impactDamage.current);
     drawing.position.set(
-      motion.x + fall.slide * DISPLAY_HEIGHT,
-      CENTER_Y + motion.y - fall.drop * DISPLAY_HEIGHT,
+      motion.x + reaction.x + fall.slide * DISPLAY_HEIGHT,
+      CENTER_Y + motion.y + reaction.y - fall.drop * DISPLAY_HEIGHT,
       0,
     );
     drawing.scale.set(
-      motion.scaleX * fall.scaleX * (1 + impact),
-      motion.scaleY * fall.scaleY * (1 - impact),
+      motion.scaleX * reaction.scaleX * fall.scaleX * (1 + impact),
+      motion.scaleY * reaction.scaleY * fall.scaleY * (1 - impact),
       1,
     );
     drawing.rotation.z = falling
       ? fall.rotation
       : fighter.hitstun > 0
       ? Math.sin(clock.elapsedTime * 42) * 0.035
-      : motion.rotation;
+      : motion.rotation + reaction.rotation;
     drawing.rotation.y = falling ? 0 : motion.turnY;
+    for (let index = 0; index < dashMaterials.current.length; index += 1) {
+      const material = dashMaterials.current[index];
+      if (material !== null && material !== undefined) {
+        material.opacity = photoDashEchoOpacity(fighter.dashFrames, index);
+      }
+    }
   });
 
   const width = DISPLAY_HEIGHT;
@@ -165,6 +186,18 @@ export function PhotoSpriteFighter({
         <group ref={body} position-y={CENTER_Y}>
           {textures === null ? null : (
             <>
+              {[0, 1, 2].map((index) => (
+                <PhotoPlane
+                  key={`dash:${String(index)}`}
+                  materialRef={(material) => { dashMaterials.current[index] = material; }}
+                  opacity={0}
+                  positionX={-0.2 - index * 0.2}
+                  positionZ={-0.014 - index * 0.004}
+                  texture={textures.current}
+                  tint={index % 2 === 0 ? '#65e8ff' : '#c26cff'}
+                  width={width}
+                />
+              ))}
               <PhotoPlane
                 materialRef={previousMaterial}
                 positionZ={-0.002}
@@ -190,19 +223,23 @@ export function PhotoSpriteFighter({
 
 function PhotoPlane({
   materialRef,
+  opacity = 1,
+  positionX = 0,
   positionZ,
   texture,
   tint,
   width,
 }: {
-  readonly materialRef: RefObject<MeshBasicMaterial | null>;
+  readonly materialRef: RefObject<MeshBasicMaterial | null> | ((material: MeshBasicMaterial | null) => void);
+  readonly opacity?: number;
+  readonly positionX?: number;
   readonly positionZ: number;
   readonly texture: Texture;
   readonly tint: string;
   readonly width: number;
 }) {
   return (
-    <mesh position-z={positionZ}>
+    <mesh position-x={positionX} position-z={positionZ}>
       <planeGeometry args={[width, DISPLAY_HEIGHT]} />
       <meshBasicMaterial
         ref={materialRef}
@@ -210,6 +247,7 @@ function PhotoPlane({
         color={tint}
         depthWrite={false}
         map={texture}
+        opacity={opacity}
         transparent
         side={DoubleSide}
         toneMapped
