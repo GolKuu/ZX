@@ -10,21 +10,16 @@ const WIDTH = 256;
 const HEIGHT = 144;
 type Rgb = readonly [number, number, number];
 
-const SKY: readonly Rgb[] = [
-  [6, 6, 28], [12, 8, 40], [24, 10, 57], [52, 14, 76], [111, 25, 92],
-];
-const DEEP_SKY: Rgb = [6, 6, 28];
-const SUN_GAP: Rgb = [24, 10, 57];
-
 export function createPixelArenaTexture(): DataTexture {
   const pixels = new Uint8Array(WIDTH * HEIGHT * 4);
   paintSky(pixels);
-  paintStars(pixels);
   paintSun(pixels);
-  paintMountains(pixels);
-  paintCity(pixels);
-  fillRect(pixels, 0, 123, WIDTH, 2, [30, 217, 255]);
-  fillRect(pixels, 0, 125, WIDTH, 1, [255, 54, 174]);
+  paintClouds(pixels);
+  paintDistantCliffs(pixels);
+  paintWaterfalls(pixels);
+  paintRuins(pixels);
+  paintCanopy(pixels);
+  paintAtmosphere(pixels);
 
   const texture = new DataTexture(
     pixels,
@@ -43,66 +38,117 @@ export function createPixelArenaTexture(): DataTexture {
 }
 
 function paintSky(pixels: Uint8Array): void {
-  for (let y = 0; y < HEIGHT; y += 1) {
-    const band = Math.min(SKY.length - 1, Math.floor(y / 25));
-    fillRect(pixels, 0, y, WIDTH, 1, SKY[band] ?? DEEP_SKY);
-  }
-  for (let y = 18; y < 102; y += 12) {
-    fillRect(pixels, 0, y, WIDTH, 1, [20 + y, 12, 70 + Math.floor(y / 2)]);
-  }
-}
-
-function paintStars(pixels: Uint8Array): void {
-  let seed = 4927;
-  for (let index = 0; index < 54; index += 1) {
-    seed = (seed * 1664525 + 1013904223) >>> 0;
-    const x = seed % WIDTH;
-    seed = (seed * 1664525 + 1013904223) >>> 0;
-    const y = 5 + (seed % 66);
-    const size = index % 11 === 0 ? 2 : 1;
-    fillRect(pixels, x, y, size, size, index % 4 === 0 ? [108, 232, 255] : [255, 222, 177]);
+  const bands: readonly Rgb[] = [
+    [67, 166, 194], [82, 181, 199], [105, 195, 198],
+    [143, 207, 190], [184, 218, 183], [218, 226, 186],
+  ];
+  for (let y = 0; y < 104; y += 1) {
+    const band = Math.min(bands.length - 1, Math.floor(y / 18));
+    fillRect(pixels, 0, y, WIDTH, 1, bands[band] ?? bands[0]!);
   }
 }
 
 function paintSun(pixels: Uint8Array): void {
-  const centerX = 193;
-  const centerY = 46;
-  const radius = 21;
+  const centerX = 192;
+  const centerY = 24;
+  for (let radius = 22; radius > 0; radius -= 1) {
+    const warmth = Math.floor((22 - radius) * 1.4);
+    fillCircle(pixels, centerX, centerY, radius, [255, 225 + warmth, 164 + warmth]);
+  }
+  for (let streak = 0; streak < 6; streak += 1) {
+    fillRect(pixels, 163 + streak * 6, 47 + streak * 3, 48 - streak * 4, 1, [229, 235, 194]);
+  }
+}
+
+function paintClouds(pixels: Uint8Array): void {
+  const clouds = [[18, 20, 27], [67, 33, 22], [112, 14, 29], [211, 38, 25]] as const;
+  clouds.forEach(([x, y, width], index) => {
+    const shadow: Rgb = index % 2 === 0 ? [151, 197, 187] : [168, 205, 190];
+    fillRect(pixels, x, y + 6, width, 4, shadow);
+    fillRect(pixels, x + 4, y + 2, width - 8, 7, [226, 232, 210]);
+    fillRect(pixels, x + 10, y, Math.max(5, width - 18), 4, [240, 238, 211]);
+  });
+}
+
+function paintDistantCliffs(pixels: Uint8Array): void {
+  const cliffs = [
+    [-20, 112, 20, 49], [12, 112, 55, 58], [43, 112, 86, 44],
+    [76, 112, 119, 62], [107, 112, 151, 48], [142, 112, 183, 57],
+    [174, 112, 218, 45], [207, 112, 275, 64],
+  ] as const;
+  cliffs.forEach(([left, base, peakX, peakY], index) => {
+    const nextLeft = cliffs[index + 1]?.[0] ?? WIDTH + 18;
+    fillTriangle(pixels, left, base, peakX, peakY, nextLeft, base, index % 2 === 0 ? [71, 117, 105] : [82, 130, 111]);
+    fillTriangle(pixels, peakX, peakY, peakX + 8, peakY + 8, peakX + 18, base, [113, 151, 124]);
+    fillRect(pixels, peakX - 3, peakY + 13, 5, Math.max(4, base - peakY - 23), [63, 108, 96]);
+  });
+}
+
+function paintWaterfalls(pixels: Uint8Array): void {
+  const falls = [[39, 63, 14, 56], [121, 69, 10, 48], [205, 62, 16, 58]] as const;
+  falls.forEach(([x, y, width, height], index) => {
+    fillRect(pixels, x - 3, y, width + 6, height, [63, 110, 108]);
+    fillRect(pixels, x, y, width, height, [116, 207, 205]);
+    fillRect(pixels, x + 3, y, 2, height, [218, 244, 224]);
+    fillRect(pixels, x + width - 4, y + 4, 2, height - 5, [82, 178, 184]);
+    for (let streak = 0; streak < height; streak += 9) {
+      fillRect(pixels, x + ((streak + index) % Math.max(1, width - 3)), y + streak, 3, 2, [184, 235, 220]);
+    }
+    fillRect(pixels, x - 5, y + height - 2, width + 10, 4, [192, 235, 216]);
+  });
+}
+
+function paintRuins(pixels: Uint8Array): void {
+  const stone: Rgb = [174, 173, 137];
+  const shade: Rgb = [96, 126, 105];
+  const light: Rgb = [218, 208, 157];
+  fillRect(pixels, 77, 58, 102, 8, shade);
+  fillRect(pixels, 82, 54, 92, 7, stone);
+  fillRect(pixels, 94, 43, 68, 12, stone);
+  fillRect(pixels, 100, 39, 56, 5, light);
+  for (const x of [88, 111, 142, 165]) {
+    fillRect(pixels, x, 61, 9, 49, shade);
+    fillRect(pixels, x + 2, 59, 7, 49, stone);
+    fillRect(pixels, x - 2, 58, 13, 4, light);
+  }
+  fillRect(pixels, 76, 105, 104, 7, [102, 126, 103]);
+  fillRect(pixels, 70, 111, 116, 5, [157, 158, 123]);
+  for (let x = 72; x < 184; x += 15) {
+    fillRect(pixels, x, 112, 11, 2, x % 30 === 0 ? [91, 117, 99] : [201, 190, 143]);
+  }
+  fillRect(pixels, 126, 43, 5, 18, [88, 116, 99]);
+  fillRect(pixels, 128, 45, 16, 4, [95, 128, 102]);
+}
+
+function paintCanopy(pixels: Uint8Array): void {
+  for (let index = 0; index < 34; index += 1) {
+    const leftSide = index < 17;
+    const x = leftSide ? (index * 13) % 72 : WIDTH - ((index * 17) % 76);
+    const y = 52 + ((index * 19) % 65);
+    const radius = 3 + (index % 5);
+    fillCircle(pixels, x, y, radius + 2, [36, 83, 70]);
+    fillCircle(pixels, x + (leftSide ? 2 : -2), y - 2, radius, index % 3 === 0 ? [78, 132, 79] : [58, 112, 75]);
+    if (index % 4 === 0) fillRect(pixels, x - 1, y, 2, 16, [75, 88, 65]);
+  }
+  fillRect(pixels, 0, 119, WIDTH, 8, [45, 93, 73]);
+  for (let x = 0; x < WIDTH; x += 9) {
+    fillRect(pixels, x, 116 - (x % 4), 7, 7 + (x % 5), x % 3 === 0 ? [70, 125, 75] : [48, 105, 72]);
+  }
+}
+
+function paintAtmosphere(pixels: Uint8Array): void {
+  for (let index = 0; index < 38; index += 1) {
+    const x = (index * 47 + 13) % WIDTH;
+    const y = 12 + ((index * 31) % 108);
+    fillRect(pixels, x, y, index % 7 === 0 ? 2 : 1, 1, index % 4 === 0 ? [255, 231, 155] : [221, 241, 207]);
+  }
+}
+
+function fillCircle(pixels: Uint8Array, centerX: number, centerY: number, radius: number, color: Rgb): void {
   for (let y = -radius; y <= radius; y += 1) {
     const half = Math.floor(Math.sqrt(radius * radius - y * y));
-    const color: Rgb = y < -5 ? [255, 210, 103] : y < 9 ? [255, 126, 80] : [255, 68, 157];
     fillRect(pixels, centerX - half, centerY + y, half * 2 + 1, 1, color);
   }
-  for (let y = 48; y < 67; y += 5) {
-    fillRect(pixels, centerX - radius, y, radius * 2 + 1, 2, SUN_GAP);
-  }
-}
-
-function paintMountains(pixels: Uint8Array): void {
-  const peaks = [
-    [-22, 118, 40, 72], [28, 118, 76, 61], [72, 118, 117, 76],
-    [104, 118, 151, 67], [142, 118, 195, 74], [181, 118, 231, 59], [219, 118, 278, 75],
-  ] as const;
-  peaks.forEach(([left, base, peakX, peakY], index) => {
-    fillTriangle(pixels, left, base, peakX, peakY, peaks[index + 1]?.[0] ?? WIDTH + 12, base, index % 2 === 0 ? [34, 18, 64] : [47, 22, 75]);
-    fillTriangle(pixels, peakX, peakY, peakX + 7, peakY + 10, peakX + 15, base, [73, 29, 91]);
-  });
-}
-
-function paintCity(pixels: Uint8Array): void {
-  const buildings = [18, 31, 23, 40, 28, 47, 25, 36, 30, 45, 27, 38, 22, 43, 29, 34];
-  const width = 16;
-  buildings.forEach((height, index) => {
-    const x = index * width;
-    const top = 123 - height;
-    fillRect(pixels, x, top, width - 2, height, index % 3 === 0 ? [8, 8, 31] : [11, 9, 38]);
-    fillRect(pixels, x + 3, top - (index % 3) * 3, width - 8, (index % 3) * 3, [8, 8, 31]);
-    for (let windowY = top + 6; windowY < 119; windowY += 8) {
-      const lit = (windowY + index) % 3 !== 0;
-      fillRect(pixels, x + 3, windowY, 2, 3, lit ? [42, 214, 255] : [28, 29, 68]);
-      fillRect(pixels, x + 9, windowY, 2, 3, lit ? [255, 62, 177] : [28, 29, 68]);
-    }
-  });
 }
 
 function fillTriangle(

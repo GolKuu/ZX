@@ -54,23 +54,19 @@ export function VictoryCutscene() {
       } as React.CSSProperties}
     >
       <div className={styles.flash} aria-hidden="true" />
-      <div className={styles.speedField} aria-hidden="true" />
-      <div className={styles.emblem} aria-hidden="true">{character.mark}</div>
+      <div className={styles.backdrop} aria-hidden="true" />
       <div className={styles.fighterFrame} aria-hidden="true">
+        <div className={styles.floorShadow} />
         <div
           className={styles.fighter}
           style={{ backgroundImage: `url('/sprites/reference-fighters/${characterId}-atlas.webp')` }}
         />
-        <div className={styles.afterimage} />
       </div>
       <div className={styles.copy}>
-        <span className={styles.eyebrow}>MATCH COMPLETE // {winnerIndex === 0 ? 'PLAYER 1' : 'PLAYER 2'}</span>
-        <p className={styles.name}>{character.displayName}</p>
-        <h1>{cinematic.title}</h1>
-        <span className={styles.subtitle}>{cinematic.subtitle}</span>
-        <blockquote>{cinematic.quote}</blockquote>
+        <span className={styles.eyebrow}>{winnerIndex === 0 ? 'PLAYER 1' : 'PLAYER 2'} // WINNER</span>
+        <h1>{character.displayName}</h1>
+        <p>{cinematic.title}</p>
       </div>
-      <div className={styles.verdict} aria-hidden="true">VICTORY</div>
       <button className={styles.skip} type="button" onClick={finish}>
         ПРОПУСТИТЬ <kbd>Enter</kbd>
       </button>

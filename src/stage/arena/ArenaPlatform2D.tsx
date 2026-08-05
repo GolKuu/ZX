@@ -10,7 +10,7 @@ export function ArenaPlatform2D() {
       <group position-z={-0.42}>
         <mesh position={[0, -0.48, 0]}>
           <planeGeometry args={[20, 0.96]} />
-          <meshBasicMaterial color="#09091c" fog={false} />
+          <meshBasicMaterial color="#4b625a" fog={false} />
         </mesh>
         <mesh position={[0, -0.04, 0.02]}>
           <planeGeometry args={[20, 0.12]} />
