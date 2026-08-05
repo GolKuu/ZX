@@ -27,10 +27,28 @@ const SIGNATURE_FRAME: Readonly<Record<CharacterId, number>> = {
   vorgh: 14,
 };
 
+const ANTICIPATION_FRAME: Readonly<Record<CharacterId, number>> = {
+  glitch: 8,
+  mim: 4,
+  lucky: 5,
+  titan: 8,
+  vorgh: 10,
+};
+
+const SETTLE_FRAME: Readonly<Record<CharacterId, number>> = {
+  glitch: 4,
+  mim: 8,
+  lucky: 4,
+  titan: 4,
+  vorgh: 7,
+};
+
 export interface StorySpritePerformance {
   readonly frame: number;
   readonly column: number;
   readonly row: number;
+  /** Four authored drawings: hold, anticipation, action, follow-through. */
+  readonly sequence: readonly [number, number, number, number];
 }
 
 export function storySpritePerformance(
@@ -41,5 +59,13 @@ export function storySpritePerformance(
   const frame = speaking && (expression === 'angry' || expression === 'liberated')
     ? SIGNATURE_FRAME[characterId]
     : EXPRESSION_FRAME[expression];
-  return { frame, column: frame % 4, row: Math.floor(frame / 4) };
+  const sequence: StorySpritePerformance['sequence'] = speaking
+    ? [frame, ANTICIPATION_FRAME[characterId], SIGNATURE_FRAME[characterId], SETTLE_FRAME[characterId]]
+    : [frame, frame, SETTLE_FRAME[characterId], frame];
+  return {
+    frame,
+    column: frame % 4,
+    row: Math.floor(frame / 4),
+    sequence,
+  };
 }

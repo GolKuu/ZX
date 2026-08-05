@@ -33,11 +33,28 @@ export function StoryFighterSprite({
       <span className={styles.aura} />
       <span className={styles.backlight} />
       <span className={styles.echo} style={{ backgroundPosition: position }} />
-      <span className={styles.sprite} style={{ backgroundPosition: position }} />
+      <span className={styles.performance}>
+        {performance.sequence.map((frame, index) => (
+          <i
+            className={styles.pose}
+            key={`${String(frame)}:${String(index)}`}
+            style={{
+              '--pose': index,
+              backgroundPosition: framePosition(frame),
+            } as React.CSSProperties}
+          />
+        ))}
+      </span>
       <span className={styles.detail} />
       <span className={styles.rim} />
       <span className={styles.groundFx} />
       <span className={styles.contact} />
     </div>
   );
+}
+
+function framePosition(frame: number): string {
+  const column = frame % 4;
+  const row = Math.floor(frame / 4);
+  return `${String(column * 100 / 3)}% ${String(row * 100 / 3)}%`;
 }

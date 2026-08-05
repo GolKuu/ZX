@@ -5,6 +5,7 @@ import { STORY_DIALOGUE } from '../.sim-test-build/src/story/dialogue.js';
 import { filmSeconds, filmShot } from '../.sim-test-build/src/story/film.js';
 import { storyFilm } from '../.sim-test-build/src/story/filmScript.js';
 import { PROLOGUE_FILM } from '../.sim-test-build/src/story/prologueFilm.js';
+import { STORY_SET_COUNT, storySetDesign } from '../.sim-test-build/src/story/setDesign.js';
 import {
   STORY_FRAME_MS,
   STORY_FRAME_RATE,
@@ -18,6 +19,14 @@ const EFFECTS = ['none', 'count', 'tear', 'echo-storm', 'possession', 'flash', '
 const CUES = ['hush', 'drone', 'tick', 'swell', 'impact'];
 
 const everyFilm = () => STORY_CHAPTERS.map((chapter, index) => [chapter, storyFilm(index), index]);
+
+test('every chapter has an authored cartoon environment', () => {
+  assert.equal(STORY_SET_COUNT, STORY_CHAPTERS.length);
+  const sets = STORY_CHAPTERS.map((_, index) => storySetDesign(index));
+  assert.ok(new Set(sets).size >= 9);
+  assert.equal(storySetDesign(-4), sets[0]);
+  assert.equal(storySetDesign(99), sets.at(-1));
+});
 
 test('the story director redraws one deterministic picture at 24 FPS', () => {
   assert.equal(STORY_FRAME_RATE, 24);

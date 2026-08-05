@@ -1,0 +1,139 @@
+.set {
+  --sky-top: #07111c;
+  --sky-bottom: #182744;
+  --sun: #72f3ff;
+  --set-accent: #6af4e8;
+  position: absolute;
+  z-index: -3;
+  inset: 0;
+  overflow: hidden;
+  background: var(--sky-bottom);
+}
+
+.set div,
+.set i { position: absolute; display: block; box-sizing: border-box; }
+
+.sky {
+  inset: 0;
+  background:
+    radial-gradient(circle at 72% 24%, color-mix(in srgb, var(--sun) 68%, white) 0 2%, color-mix(in srgb, var(--sun) 32%, transparent) 3% 12%, transparent 26%),
+    linear-gradient(165deg, var(--sky-top), var(--sky-bottom) 68%, color-mix(in srgb, var(--set-accent) 28%, #080b13));
+}
+
+.sky::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(108deg, transparent 0 46%, rgb(255 255 255 / 9%) 46.5% 47%, transparent 48%),
+    repeating-radial-gradient(circle at 55% 30%, transparent 0 4cqw, color-mix(in srgb, var(--set-accent) 7%, transparent) 4.1cqw 4.2cqw);
+  content: "";
+  mix-blend-mode: screen;
+}
+
+.celClouds { inset: 0; filter: blur(.08cqw); }
+.celClouds i {
+  width: 58%; height: 20%;
+  background: color-mix(in srgb, var(--sky-bottom) 72%, #d9efff);
+  clip-path: polygon(0 64%, 13% 35%, 27% 48%, 42% 14%, 61% 42%, 76% 22%, 100% 58%, 100% 100%, 0 100%);
+  opacity: .22;
+  animation: set-clouds 18s linear infinite alternate;
+}
+.celClouds i:nth-child(1) { top: 11%; left: -12%; }
+.celClouds i:nth-child(2) { top: 27%; right: -18%; transform: scaleX(-1); animation-duration: 25s; }
+.celClouds i:nth-child(3) { top: 43%; left: 18%; opacity: .12; animation-duration: 31s; }
+
+.orbits { inset: 0; }
+.orbits i {
+  top: 7%; right: 11%; width: 24cqw; aspect-ratio: 1;
+  border: .1cqw solid color-mix(in srgb, var(--set-accent) 30%, transparent);
+  border-radius: 50%;
+  transform: rotateX(68deg) rotateZ(14deg);
+  animation: set-orbit 13s linear infinite;
+}
+.orbits i:nth-child(2) { inset: 13% auto auto 7%; width: 12cqw; animation-direction: reverse; animation-duration: 9s; }
+
+.skyline { right: -3%; bottom: 21%; left: -3%; height: 42%; }
+.skyline i {
+  bottom: 0;
+  left: calc(var(--tower) * 15% - 2%);
+  width: calc(11% + var(--tower) * .7%);
+  height: calc(34% + var(--tower) * 8%);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 21%, color-mix(in srgb, var(--set-accent) 25%, transparent) 22% 26%, transparent 27% 46%),
+    linear-gradient(145deg, color-mix(in srgb, var(--sky-bottom) 72%, white), var(--sky-top) 64%);
+  border-top: .12cqw solid color-mix(in srgb, var(--set-accent) 34%, transparent);
+  clip-path: polygon(18% 12%, 38% 12%, 50% 0, 62% 12%, 82% 12%, 100% 100%, 0 100%);
+  filter: saturate(.72);
+  opacity: calc(.42 + var(--tower) * .045);
+}
+
+.architecture { inset: 0; }
+.architecture i {
+  top: calc(8% + var(--panel) * 12%);
+  left: calc(-7% + var(--panel) * 24%);
+  width: 28%; height: 17%;
+  border: .11cqw solid color-mix(in srgb, var(--set-accent) 20%, transparent);
+  clip-path: polygon(7% 0, 93% 0, 100% 34%, 86% 100%, 14% 100%, 0 34%);
+  opacity: .2;
+  transform: perspective(40cqw) rotateY(calc((var(--panel) - 2) * 7deg));
+}
+
+.horizon {
+  right: -10%; bottom: 20%; left: -10%; height: 18%;
+  background: linear-gradient(transparent, color-mix(in srgb, var(--sun) 24%, transparent), transparent 74%);
+  filter: blur(1.1cqw);
+  animation: set-horizon 5s ease-in-out infinite;
+}
+
+.foreground { z-index: 5; inset: 0; pointer-events: none; }
+.foreground i {
+  bottom: -9%; width: 25%; height: 54%;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--sky-top) 88%, black), #010205);
+  filter: drop-shadow(0 0 1.2cqw rgb(0 0 0 / 70%));
+  opacity: .82;
+}
+.foreground i:first-child { left: -12%; clip-path: polygon(0 0, 52% 12%, 78% 48%, 100% 100%, 0 100%); }
+.foreground i:last-child { right: -12%; clip-path: polygon(48% 8%, 100% 0, 100% 100%, 0 100%, 24% 42%); }
+
+/* Per-chapter colour scripts and graphic silhouettes. */
+.set[data-set="black-lab"] { --sky-top:#02060b; --sky-bottom:#102537; --sun:#77f9ff; --set-accent:#65e8ff; }
+.set[data-set="black-lab"] .skyline i { clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%); }
+.set[data-set="black-lab"] .architecture i { opacity: .38; }
+
+.set[data-set="neon-citadel"] { --sky-top:#090827; --sky-bottom:#40235a; --sun:#ff7cbf; --set-accent:#d570ff; }
+.set[data-set="neon-citadel"] .skyline i { clip-path: polygon(42% 0, 58% 0, 72% 34%, 100% 100%, 0 100%, 28% 34%); }
+
+.set[data-set="iron-foundry"] { --sky-top:#130807; --sky-bottom:#4c1c0c; --sun:#ffb15d; --set-accent:#ff752f; }
+.set[data-set="iron-foundry"] .horizon { opacity: 1; filter: blur(1.8cqw); }
+.set[data-set="iron-foundry"] .skyline i { border-radius: 45% 45% 0 0; }
+
+.set[data-set="red-wastes"] { --sky-top:#1c080d; --sky-bottom:#6a2630; --sun:#ffdb8a; --set-accent:#ff654d; }
+.set[data-set="red-wastes"] .skyline { transform: scaleY(.42); transform-origin: 50% 100%; }
+.set[data-set="red-wastes"] .architecture { display: none; }
+
+.set[data-set="fracture"] { --sky-top:#090419; --sky-bottom:#35104b; --sun:#ef74ff; --set-accent:#e54fff; }
+.set[data-set="fracture"] { animation: set-fracture 2.8s steps(5,end) infinite; }
+
+.set[data-set="memory-vault"] { --sky-top:#031414; --sky-bottom:#123b42; --sun:#a7ffff; --set-accent:#79f6dc; }
+.set[data-set="memory-vault"] .architecture i { opacity:.55; border-style:dashed; }
+
+.set[data-set="pantheon"] { --sky-top:#07113a; --sky-bottom:#4f315f; --sun:#fff3c7; --set-accent:#b8c8ff; }
+.set[data-set="pantheon"] .skyline i { background:linear-gradient(145deg,#6b7192,#171d45); clip-path:polygon(35% 0,65% 0,70% 18%,88% 18%,100% 100%,0 100%,12% 18%,30% 18%); }
+
+.set[data-set="vessel"] { --sky-top:#09000f; --sky-bottom:#3c0b3a; --sun:#ff5ad6; --set-accent:#e54fff; filter:hue-rotate(30deg); }
+
+.set[data-set="event-horizon"] { --sky-top:#000; --sky-bottom:#13051d; --sun:#e54fff; --set-accent:#9c5cff; }
+.set[data-set="event-horizon"] .skyline { opacity:.18; }
+.set[data-set="event-horizon"] .sky { filter:contrast(1.35); }
+
+.set[data-set="living-dawn"] { --sky-top:#102345; --sky-bottom:#a85d84; --sun:#fff7d0; --set-accent:#8effe9; }
+.set[data-set="living-dawn"] .skyline i { opacity:.3; filter:brightness(1.5); }
+
+@keyframes set-clouds { to { translate: 9cqw -1cqh; } }
+@keyframes set-orbit { to { rotate: 360deg; } }
+@keyframes set-horizon { 50% { opacity:.62; transform:scaleY(1.35); } }
+@keyframes set-fracture { 0%,100% { filter:none; } 48% { filter:hue-rotate(22deg) contrast(1.2); translate:-.25cqw 0; } 52% { translate:.2cqw -.15cqh; } }
+
+@media (prefers-reduced-motion:reduce) {
+  .set * { animation-duration:.4s !important; animation-iteration-count:1 !important; }
+}

@@ -9,6 +9,7 @@ import {
 } from '@/src/story/cinematics';
 import { StoryCastFigure } from './StoryCastFigure';
 import { StoryFighterSprite } from './StoryFighterSprite';
+import { StorySetExtension } from './StorySetExtension';
 import styles from './StoryCinematicStage.module.css';
 
 /**
@@ -49,6 +50,7 @@ export function StoryCinematicStage({
         '--beat-duration': `${cinematic.durationSeconds}s`,
       } as React.CSSProperties}
     >
+      <StorySetExtension chapterIndex={chapterIndex} />
       <div className={styles.depth}>
         <span className={styles.planeFar} />
         <span className={styles.planeMid} />

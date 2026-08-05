@@ -8,14 +8,11 @@
   transform-origin: 50% 100%;
 }
 
-.sprite,
+.performance,
 .echo {
   position: absolute;
   z-index: 2;
   inset: -12% -18% -4%;
-  background-position: 0 0;
-  background-repeat: no-repeat;
-  background-size: 400% 400%;
   filter:
     drop-shadow(0 1.2cqw 0.8cqw rgb(0 0 0 / 88%))
     drop-shadow(-0.12cqw 0 0.1cqw rgb(139 247 255 / 52%))
@@ -26,7 +23,29 @@
   animation: actor-breathe 3.2s ease-in-out infinite;
 }
 
-.actor[data-facing="left"] .sprite,
+.pose,
+.echo {
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-size: 400% 400%;
+  image-rendering: auto;
+}
+
+.pose {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation-duration: 1.7s;
+  animation-iteration-count: infinite;
+  animation-timing-function: steps(1, end);
+}
+
+.pose:nth-child(1) { animation-name: pose-one; }
+.pose:nth-child(2) { animation-name: pose-two; }
+.pose:nth-child(3) { animation-name: pose-three; }
+.pose:nth-child(4) { animation-name: pose-four; }
+
+.actor[data-facing="left"] .performance,
 .actor[data-facing="left"] .echo {
   transform: scaleX(-1);
 }
@@ -72,25 +91,25 @@
   animation: actor-ground 2.4s ease-out infinite;
 }
 
-.actor[data-character="glitch"] .sprite,
+.actor[data-character="glitch"] .pose,
 .actor[data-character="glitch"] .echo { background-image: url('/sprites/reference-fighters/glitch-atlas.webp'); }
-.actor[data-character="mim"] .sprite,
+.actor[data-character="mim"] .pose,
 .actor[data-character="mim"] .echo { background-image: url('/sprites/reference-fighters/mim-atlas.webp'); }
-.actor[data-character="lucky"] .sprite,
+.actor[data-character="lucky"] .pose,
 .actor[data-character="lucky"] .echo { background-image: url('/sprites/reference-fighters/lucky-atlas.webp'); }
-.actor[data-character="titan"] .sprite,
+.actor[data-character="titan"] .pose,
 .actor[data-character="titan"] .echo { background-image: url('/sprites/reference-fighters/titan-atlas.webp'); }
-.actor[data-character="vorgh"] .sprite,
+.actor[data-character="vorgh"] .pose,
 .actor[data-character="vorgh"] .echo { background-image: url('/sprites/reference-fighters/vorgh-atlas.webp'); }
 
 /* Each atlas performs like its fighter instead of sharing one floating pose. */
-.actor[data-character="glitch"] .sprite { animation-name: glitch-phase; animation-duration: 2.4s; }
-.actor[data-character="mim"] .sprite { animation-name: mim-sway; animation-duration: 3.1s; }
-.actor[data-character="lucky"] .sprite { animation-name: lucky-feint; animation-duration: 2.8s; }
-.actor[data-character="titan"] .sprite { animation-name: titan-reactor; animation-duration: 3.6s; }
-.actor[data-character="vorgh"] .sprite { animation-name: vorgh-prowl; animation-duration: 2.2s; }
+.actor[data-character="glitch"] .performance { animation-name: glitch-phase; animation-duration: 2.4s; }
+.actor[data-character="mim"] .performance { animation-name: mim-sway; animation-duration: 3.1s; }
+.actor[data-character="lucky"] .performance { animation-name: lucky-feint; animation-duration: 2.8s; }
+.actor[data-character="titan"] .performance { animation-name: titan-reactor; animation-duration: 3.6s; }
+.actor[data-character="vorgh"] .performance { animation-name: vorgh-prowl; animation-duration: 2.2s; }
 
-.actor[data-speaking="true"] .sprite {
+.actor[data-speaking="true"] .performance {
   filter:
     drop-shadow(0 1.2cqw 0.8cqw rgb(0 0 0 / 88%))
     drop-shadow(-0.16cqw 0 0.12cqw rgb(198 255 255 / 62%))
@@ -136,7 +155,7 @@
   border-radius: 50%;
 }
 
-.actor[data-corrupted="true"] .sprite {
+.actor[data-corrupted="true"] .performance {
   filter: hue-rotate(72deg) saturate(1.6) drop-shadow(0 0 0.8cqw #e54fff);
   animation: corrupted-jolt 1.4s steps(2, end) infinite;
 }
@@ -150,6 +169,11 @@
   0%, 100% { translate: 0 0; }
   50% { translate: 0 -0.35cqh; }
 }
+
+@keyframes pose-one { 0%, 24.99% { opacity: 1; } 25%, 100% { opacity: 0; } }
+@keyframes pose-two { 0%, 24.99% { opacity: 0; } 25%, 49.99% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes pose-three { 0%, 49.99% { opacity: 0; } 50%, 74.99% { opacity: 1; } 75%, 100% { opacity: 0; } }
+@keyframes pose-four { 0%, 74.99% { opacity: 0; } 75%, 100% { opacity: 1; } }
 
 @keyframes glitch-phase {
   0%, 100% { translate: 0 0; rotate: 0deg; }
@@ -205,7 +229,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sprite,
+  .performance,
+  .pose,
   .echo,
   .aura { animation: none !important; }
 }
