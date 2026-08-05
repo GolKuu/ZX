@@ -43,6 +43,8 @@ export function StoryFilmStage({
       >
         <div className={styles.camera}>
           <StoryCinematicStage chapterIndex={chapterIndex} line={line} lineKey={shotIndex} />
+          <div className={styles.haze} />
+          <div className={styles.shaft} />
           <div className={styles.rift} />
           <div className={styles.echoes}>
             {ECHO_DRIFTS.map(([dx, dy], index) => (

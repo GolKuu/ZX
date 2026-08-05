@@ -1,4 +1,4 @@
-import { storyChapter } from './campaign.js';
+import { STORY_CHAPTERS, storyChapter } from './campaign.js';
 import { storyCinematic, storyLineFocus, storyLineIntensity } from './cinematics.js';
 import { STORY_DIALOGUE, type StoryLine } from './dialogue.js';
 import {
@@ -117,7 +117,11 @@ function generatedFilm(chapterIndex: number): StoryFilm {
 }
 
 export function storyFilm(chapterIndex: number): StoryFilm {
-  return storyChapter(chapterIndex).id === PROLOGUE_FILM.chapterId
+  // Clamped here rather than inside the builder: `storyChapter` already clamps,
+  // so an out-of-range index used to find a chapter and then miss its dialogue,
+  // which cut every line out of the film instead of failing loudly.
+  const index = Math.max(0, Math.min(Math.trunc(chapterIndex), STORY_CHAPTERS.length - 1));
+  return storyChapter(index).id === PROLOGUE_FILM.chapterId
     ? PROLOGUE_FILM
-    : generatedFilm(chapterIndex);
+    : generatedFilm(index);
 }

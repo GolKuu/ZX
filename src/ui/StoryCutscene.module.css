@@ -1,31 +1,174 @@
 /*
- * Chapter cutscene chrome: title, subtitle, controls and history.
+ * Cutscene chrome: letterbox, slate, pause state and dialogue history.
  *
- * The moving picture behind all of this is `StoryCinematicStage`. Everything
- * here sits above it, so the z-index ladder matters: stage 1, scanlines 5,
- * header 2, subtitle 3, nav 4, history 8.
+ * The picture is `StoryFilmStage`; everything here frames it. z-index ladder:
+ * film 1, scanlines 5, slate 4, caption 6, controls 8, letterbox 7, history 9.
  */
-.scene{position:absolute;z-index:48;inset:0;overflow:hidden;padding:clamp(24px,4vw,60px);color:#eaffff;pointer-events:auto;background:radial-gradient(circle at 68% 48%,#153c43,#05090f 58%)}
 
-/* The line's own colour, laid over the whole shot rather than on a portrait. */
-.scene::before{position:absolute;z-index:2;inset:0;background:radial-gradient(circle at 27% 46%,var(--mood,#153c43) 0%,transparent 52%);opacity:.35;content:"";pointer-events:none;mix-blend-mode:screen;transition:background .6s ease}
-.scene[data-expression='injured']{--mood:#ffb36b}
-.scene[data-expression='unstable']{--mood:#7ad9ff}
-.scene[data-expression='angry']{--mood:#ff5a6c}
-.scene[data-expression='frightened']{--mood:#5f6bff}
-.scene[data-expression='determined']{--mood:#6af4e8}
-.scene[data-expression='influenced']{--mood:#e54fff}
-.scene[data-expression='liberated']{--mood:#ffffff}
-.scene[data-expression='fifth']{--mood:#c14bff}
-.scene[data-expression='other']{--mood:#8fb0b5}
+.scene {
+  position: absolute;
+  z-index: 48;
+  inset: 0;
+  overflow: hidden;
+  color: #eaffff;
+  background: #010307;
+  pointer-events: auto;
+}
 
-/* Above the animation, so the picture reads as one broadcast image. */
-.scanlines{position:absolute;z-index:5;inset:0;opacity:.12;background:repeating-linear-gradient(0deg,transparent 0 3px,#6ff 4px);pointer-events:none}
-.scene header{position:relative;z-index:3}.scene header span{color:#64eee2;font:700 11px monospace;letter-spacing:.2em}.scene h1{margin:8px 0 0;font:900 clamp(35px,5vw,70px)/.9 sans-serif;text-shadow:0 2px 24px #04090dcc}.scene header p{margin:8px 0;color:#8fadb2;font:700 11px monospace;letter-spacing:.1em}
-.subtitle{position:absolute;z-index:6;left:6vw;right:6vw;bottom:16vh;padding:22px 28px;background:#050b10e8;border-left:4px solid #69f5e9;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-.subtitle strong{color:#69f5e9;font:800 12px monospace;letter-spacing:.15em}.subtitle p{margin:10px 0 6px;font:700 clamp(18px,2.4vw,32px)/1.25 sans-serif}.subtitle small{color:#71898e;font:500 12px/1.4 sans-serif}
-.scene nav{position:absolute;z-index:7;left:6vw;right:6vw;bottom:8vh;display:flex;gap:7px}.scene button{padding:10px 13px;color:#9eb7bb;cursor:pointer;background:#09151a;border:1px solid #29464b;font:700 10px monospace}.scene button:hover,.scene button:focus-visible{color:#061112;background:#6af4e8;outline:none}.scene .advance{margin-left:auto;min-width:140px;color:#041113;background:#6af4e8}
-.history{position:absolute;z-index:9;inset:10vh 8vw 20vh;padding:28px;overflow:auto;background:#03080cf5;border:1px solid #528b8b}.history h2{font:800 16px monospace}.history p{display:grid;grid-template-columns:160px 1fr;gap:14px;padding:11px;border-top:1px solid #1d3539;color:#b8cccf}.history b{color:#67eee3}
-.scene footer{position:absolute;z-index:6;left:6vw;right:6vw;bottom:3vh;display:flex;gap:16px;color:#627a7f;font:700 10px monospace}.scene footer b{color:#b3c8ca}.scene footer i{margin-left:auto;color:#68efe4;font-style:normal}
-@media(max-width:700px){.subtitle{bottom:22vh}.scene nav{bottom:8vh;flex-wrap:wrap}.scene footer{display:none}.scene .advance{min-width:110px}.history{inset:8vh 4vw 25vh}.history p{grid-template-columns:1fr}}
-@media(prefers-reduced-motion:reduce){.scene::before{transition:none}}
+/*
+ * PAUSE stops the film, not just the clock. Every keyframe under the scene —
+ * camera move, grain, echoes, caret — halts on the frame the player paused on.
+ */
+.scene[data-paused="true"] *,
+.scene[data-paused="true"] *::before,
+.scene[data-paused="true"] *::after {
+  animation-play-state: paused !important;
+}
+
+.scanlines {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgb(102 255 255 / 55%) 4px);
+  opacity: 0.07;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------- letterbox */
+
+/*
+ * Bars, not padding: they slide in over the picture on the first shot and they
+ * hold the slate and the controls, so the frame the player watches is a strip
+ * with nothing else in it.
+ */
+.barTop,
+.barBottom {
+  position: absolute;
+  z-index: 7;
+  right: 0;
+  left: 0;
+  height: clamp(30px, 8vh, 86px);
+  background: #010307;
+  pointer-events: none;
+}
+
+.barTop {
+  top: 0;
+  border-bottom: 1px solid rgb(106 244 232 / 22%);
+  animation: bar-top 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.barBottom {
+  bottom: 0;
+  height: clamp(46px, 12vh, 128px);
+  border-top: 1px solid rgb(106 244 232 / 22%);
+  animation: bar-bottom 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes bar-top {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes bar-bottom {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* -------------------------------------------------------------- slate */
+
+.slate {
+  position: absolute;
+  z-index: 8;
+  top: clamp(9px, 2.4vh, 28px);
+  left: clamp(24px, 6vw, 92px);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: #6ceee3;
+  font: 700 11px/1 ui-monospace, monospace;
+  letter-spacing: 0.2em;
+}
+
+.slate i {
+  width: 8px;
+  height: 8px;
+  background: #ff4d6a;
+  border-radius: 50%;
+  animation: rec 1.6s ease-in-out infinite;
+}
+
+.slate small {
+  color: #5d7a7f;
+  font: 600 10px/1 ui-monospace, monospace;
+  letter-spacing: 0.16em;
+}
+
+@keyframes rec {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.paused {
+  position: absolute;
+  z-index: 8;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  color: #d9fffb;
+  font: 800 clamp(14px, 1.6vw, 20px)/1 ui-monospace, monospace;
+  letter-spacing: 0.6em;
+  text-indent: 0.6em;
+  text-shadow: 0 0 30px rgb(2 6 10 / 90%);
+  transform: translate(-50%, -50%);
+}
+
+/* ------------------------------------------------------------ history */
+
+.history {
+  position: absolute;
+  z-index: 9;
+  inset: 12vh 8vw 20vh;
+  overflow: auto;
+  padding: 28px;
+  background: rgb(3 8 12 / 96%);
+  border: 1px solid #3f7476;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.history h2 {
+  margin: 0 0 8px;
+  color: #9fe9e2;
+  font: 800 14px/1 ui-monospace, monospace;
+  letter-spacing: 0.18em;
+}
+
+.history p {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 14px;
+  padding: 12px 4px;
+  color: #b8cccf;
+  font: 500 14px/1.45 system-ui, sans-serif;
+  border-top: 1px solid #172f33;
+}
+
+.history b {
+  color: #67eee3;
+  font: 800 11px/1.6 ui-monospace, monospace;
+  letter-spacing: 0.14em;
+}
+
+@media (max-width: 700px) {
+  .slate small { display: none; }
+  .history { inset: 8vh 4vw 24vh; }
+  .history p { grid-template-columns: 1fr; gap: 4px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barTop,
+  .barBottom { animation-duration: 0.25s; }
+
+  .slate i { animation: none; }
+}

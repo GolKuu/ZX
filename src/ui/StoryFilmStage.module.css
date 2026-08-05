@@ -33,30 +33,56 @@
 
 /* ---------------------------------------------------------------- camera */
 
+/*
+ * Framing decides how tight the shot is; the subject decides both what the
+ * camera is pointed at and where in the frame it sits. `--sx/--sy` is where the
+ * subject stands in the staging, `--tx/--ty` is where the shot wants them, and
+ * the shift below is the one that puts the first at the second:
+ *
+ *     screen = 50% + (subject - 50%) * zoom + shift
+ *
+ * Anchoring the zoom on a transform-origin instead is what put every close-up's
+ * head above the frame and pointed the macro shot at a pair of legs.
+ */
 .camera {
   --zoom: 1;
   --tilt: 0deg;
-  --origin-x: 50%;
-  --origin-y: 46%;
-  transform-origin: var(--origin-x) var(--origin-y);
+  --sx: 36%;
+  --sy: 40%;
+  --tx: var(--sx);
+  --ty: var(--sy);
+  --shift-x: calc(var(--tx) - 50% - (var(--sx) - 50%) * var(--zoom));
+  --shift-y: calc(var(--ty) - 50% - (var(--sy) - 50%) * var(--zoom));
+  transform-origin: 50% 50%;
   animation-duration: var(--shot-seconds);
   animation-fill-mode: both;
   animation-timing-function: cubic-bezier(0.33, 0.02, 0.16, 1);
   will-change: transform;
 }
 
-.film[data-framing="void"] .camera { --zoom: 0.88; filter: blur(0.16cqw) brightness(0.66) saturate(0.75); }
+/* Where each subject stands, and the third of the frame it is composed on. */
+.film[data-subject="space"] .camera { --sx: 36%; --sy: 40%; --tx: 42%; --ty: 44%; }
+.film[data-subject="glitch"] .camera { --sx: 20.5%; --sy: 32.5%; --tx: 32%; --ty: 36%; }
+.film[data-subject="opposite"] .camera { --sx: 49%; --sy: 34%; --tx: 60%; --ty: 38%; }
+.film[data-subject="both"] .camera { --sx: 35%; --sy: 34%; --tx: 44%; --ty: 40%; }
+
+.film[data-framing="void"] .camera { --zoom: 1.04; filter: blur(0.2cqw) brightness(0.42) saturate(0.6); }
 .film[data-framing="wide"] .camera { --zoom: 1; }
-.film[data-framing="medium"] .camera { --zoom: 1.45; }
+.film[data-framing="medium"] .camera { --zoom: 1.55; }
 .film[data-framing="close"] .camera { --zoom: 2.1; }
 .film[data-framing="macro"] .camera { --zoom: 3.4; filter: contrast(1.1) saturate(1.2); }
 .film[data-framing="low"] .camera { --zoom: 1.62; --tilt: 6deg; }
 
-/* The zoom pivots on whoever the shot is about. */
-.film[data-subject="space"] .camera { --origin-x: 50%; --origin-y: 42%; }
-.film[data-subject="glitch"] .camera { --origin-x: 21%; --origin-y: 56%; }
-.film[data-subject="opposite"] .camera { --origin-x: 50%; --origin-y: 54%; }
-.film[data-subject="both"] .camera { --origin-x: 35%; --origin-y: 55%; }
+/*
+ * A frame no wider than the picture cannot be recomposed: at wide and at void
+ * there is no overscan to move into, so the shot holds the staging as authored
+ * and lets framing alone carry it.
+ */
+.film[data-framing="wide"] .camera,
+.film[data-framing="void"] .camera {
+  --tx: var(--sx);
+  --ty: var(--sy);
+}
 
 .film[data-move="hold"] .camera { animation-name: move-hold; }
 .film[data-move="push"] .camera { animation-name: move-push; }
@@ -71,40 +97,63 @@
 .film[data-move="handheld"] .frame { animation: frame-handheld 3.1s ease-in-out infinite; }
 
 @keyframes move-hold {
-  from { transform: perspective(120cqw) rotateX(var(--tilt)) scale(var(--zoom)) translate(0, 0); }
-  to { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.035)) translate(-0.4cqw, 0); }
+  from { transform: perspective(120cqw) rotateX(var(--tilt)) translate(var(--shift-x), var(--shift-y)) scale(var(--zoom)); }
+  to { transform: perspective(120cqw) rotateX(var(--tilt)) translate(calc(var(--shift-x) - 0.5%), var(--shift-y)) scale(calc(var(--zoom) * 1.035)); }
 }
 
 @keyframes move-push {
-  from { transform: perspective(120cqw) rotateX(var(--tilt)) scale(var(--zoom)); }
-  to { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.17)); }
+  from { transform: perspective(120cqw) rotateX(var(--tilt)) translate(var(--shift-x), var(--shift-y)) scale(var(--zoom)); }
+  to { transform: perspective(120cqw) rotateX(var(--tilt)) translate(var(--shift-x), var(--shift-y)) scale(calc(var(--zoom) * 1.16)); }
 }
 
 @keyframes move-pull {
-  from { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.2)); }
-  to { transform: perspective(120cqw) rotateX(var(--tilt)) scale(var(--zoom)); }
+  from { transform: perspective(120cqw) rotateX(var(--tilt)) translate(var(--shift-x), var(--shift-y)) scale(calc(var(--zoom) * 1.18)); }
+  to { transform: perspective(120cqw) rotateX(var(--tilt)) translate(var(--shift-x), var(--shift-y)) scale(var(--zoom)); }
 }
 
 @keyframes move-pan-left {
-  from { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.06)) translateX(3.2cqw); }
-  to { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.06)) translateX(-3.2cqw); }
+  from { transform: perspective(120cqw) rotateX(var(--tilt)) translate(calc(var(--shift-x) + 3%), var(--shift-y)) scale(calc(var(--zoom) * 1.06)); }
+  to { transform: perspective(120cqw) rotateX(var(--tilt)) translate(calc(var(--shift-x) - 3%), var(--shift-y)) scale(calc(var(--zoom) * 1.06)); }
 }
 
 @keyframes move-pan-right {
-  from { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.06)) translateX(-3.2cqw); }
-  to { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.06)) translateX(3.2cqw); }
+  from { transform: perspective(120cqw) rotateX(var(--tilt)) translate(calc(var(--shift-x) - 3%), var(--shift-y)) scale(calc(var(--zoom) * 1.06)); }
+  to { transform: perspective(120cqw) rotateX(var(--tilt)) translate(calc(var(--shift-x) + 3%), var(--shift-y)) scale(calc(var(--zoom) * 1.06)); }
 }
 
 @keyframes move-crane {
-  from { transform: perspective(120cqw) rotateX(calc(var(--tilt) + 9deg)) scale(calc(var(--zoom) * 1.1)) translateY(-5cqh); }
-  to { transform: perspective(120cqw) rotateX(var(--tilt)) scale(var(--zoom)) translateY(0); }
+  from {
+    transform:
+      perspective(120cqw) rotateX(calc(var(--tilt) + 9deg))
+      translate(var(--shift-x), calc(var(--shift-y) - 5%))
+      scale(calc(var(--zoom) * 1.12));
+  }
+  to { transform: perspective(120cqw) rotateX(var(--tilt)) translate(var(--shift-x), var(--shift-y)) scale(var(--zoom)); }
 }
 
 /* A cut that lands hard: overshoot, then settle inside the first fifth. */
 @keyframes move-snap {
-  0% { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.32)) translateX(1.6cqw); opacity: 0.35; }
-  16% { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 0.99)) translateX(-0.3cqw); opacity: 1; }
-  100% { transform: perspective(120cqw) rotateX(var(--tilt)) scale(calc(var(--zoom) * 1.04)); opacity: 1; }
+  0% {
+    opacity: 0.35;
+    transform:
+      perspective(120cqw) rotateX(var(--tilt))
+      translate(calc(var(--shift-x) + 1.5%), var(--shift-y))
+      scale(calc(var(--zoom) * 1.3));
+  }
+  16% {
+    opacity: 1;
+    transform:
+      perspective(120cqw) rotateX(var(--tilt))
+      translate(var(--shift-x), var(--shift-y))
+      scale(calc(var(--zoom) * 0.99));
+  }
+  100% {
+    opacity: 1;
+    transform:
+      perspective(120cqw) rotateX(var(--tilt))
+      translate(var(--shift-x), var(--shift-y))
+      scale(calc(var(--zoom) * 1.04));
+  }
 }
 
 @keyframes frame-handheld {
@@ -123,6 +172,7 @@
  */
 .marks {
   position: absolute;
+  z-index: 2;
   inset: 0;
   opacity: 0;
   transition: opacity 0.4s ease;
@@ -154,6 +204,7 @@
 
 .rift {
   position: absolute;
+  z-index: 2;
   inset: 0;
   opacity: 0;
 }
@@ -189,6 +240,7 @@
 
 .echoes span {
   position: absolute;
+  z-index: 2;
   bottom: 33cqh;
   left: 13cqw;
   width: 15cqw;
@@ -216,10 +268,12 @@
 
 /* ----------------------------------------------------------- the shatter */
 
+/* The fan starts at his head: the space cracks around the figure, not above it. */
 .cracks span {
   position: absolute;
-  top: 22%;
-  left: 24%;
+  z-index: 2;
+  top: 30%;
+  left: 20.5%;
   width: 0.2cqw;
   height: 58cqh;
   background: linear-gradient(#eaffff, rgb(106 244 232 / 0%));
@@ -293,6 +347,45 @@
   0% { opacity: 0.95; }
   22% { opacity: 0.28; }
   100% { opacity: 0; }
+}
+
+/*
+ * Air. Two slow volumes of light drifting through the room, which is the
+ * difference between a lit set and a dark page with shapes on it.
+ */
+.haze {
+  position: absolute;
+  z-index: 2;
+  inset: -10%;
+  background:
+    radial-gradient(50cqw 40cqh at 26% 34%, rgb(106 244 232 / 12%), transparent 68%),
+    radial-gradient(38cqw 52cqh at 68% 62%, rgb(176 124 255 / 10%), transparent 70%);
+  mix-blend-mode: screen;
+  animation: haze-drift 24s ease-in-out infinite;
+}
+
+/* One shaft from off-frame, so the room has a direction the light comes from. */
+.shaft {
+  position: absolute;
+  z-index: 2;
+  top: -20%;
+  left: 4%;
+  width: 34cqw;
+  height: 130%;
+  background: linear-gradient(97deg, transparent 42%, rgb(150 255 246 / 9%) 50%, transparent 58%);
+  filter: blur(0.6cqw);
+  mix-blend-mode: screen;
+  animation: shaft-breathe 11s ease-in-out infinite;
+}
+
+@keyframes haze-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(2.5cqw, -1.6cqh) scale(1.06); }
+}
+
+@keyframes shaft-breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
 }
 
 /* A split down the red and cyan edges: the cheap read of a lens under strain. */

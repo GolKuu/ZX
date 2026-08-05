@@ -102,6 +102,28 @@
   display: block;
 }
 
+/*
+ * Contact light. Without a pool under the feet both figures hovered over the
+ * floor grid instead of standing on it, which the close framings only made
+ * worse. It is light rather than shadow because the room's only source is them.
+ */
+.glitch::after,
+.opposite::after {
+  position: absolute;
+  bottom: -2%;
+  left: 50%;
+  width: 96%;
+  height: 8%;
+  background: radial-gradient(closest-side, rgb(106 244 232 / 26%), transparent 72%);
+  border-radius: 50%;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.stage[data-side="fifth"] .opposite::after {
+  background: radial-gradient(closest-side, rgb(229 79 255 / 30%), transparent 72%);
+}
+
 .torso {
   top: 19%;
   left: 24%;
@@ -268,13 +290,64 @@
 /*
  * A construct is machined, not grown: hard corners and a lit seam. The fill has
  * to carry real value against the backdrop or the silhouette disappears into it.
+ *
+ * Panel lines and a core are drawn into the fill rather than added as elements.
+ * Held at any size the camera asks for, an unbroken rectangle reads as a missing
+ * asset — the interior detail is what makes it read as a body.
  */
 .stage[data-side="construct"] .oppositeBody,
 .stage[data-side="construct"] .oppositeHead {
-  background: linear-gradient(155deg, #2f6a78, #10333e 60%, #0a1f28);
+  background:
+    repeating-linear-gradient(
+      transparent 0 3.4%,
+      rgb(106 244 232 / 9%) 3.4% 3.7%,
+      transparent 3.7% 7%
+    ),
+    linear-gradient(155deg, #2f6a78, #10333e 60%, #0a1f28);
   border: 0.12cqw solid rgb(106 244 232 / 78%);
   border-radius: 8%;
-  box-shadow: inset 0 0 1.4cqw rgb(106 244 232 / 22%);
+  box-shadow:
+    inset 0 0 1.4cqw rgb(106 244 232 / 22%),
+    inset -0.6cqw -0.4cqw 2cqw rgb(2 8 12 / 70%);
+}
+
+/* The core: the one thing on it that is alive. */
+.stage[data-side="construct"] .oppositeBody::before {
+  position: absolute;
+  top: 16%;
+  left: 50%;
+  width: 22%;
+  aspect-ratio: 0.62;
+  background: radial-gradient(circle, #d6fffb, rgb(106 244 232 / 45%) 42%, transparent 72%);
+  border-radius: 50%;
+  content: "";
+  transform: translateX(-50%);
+  animation: core-pulse 2.8s ease-in-out infinite;
+}
+
+/* A lit band where a face would be, which is what makes it read as facing you. */
+.stage[data-side="construct"] .oppositeHead::after,
+.stage[data-side="fifth"] .oppositeHead::after {
+  position: absolute;
+  top: 44%;
+  right: 16%;
+  left: 16%;
+  height: 10%;
+  background: var(--cyan);
+  border-radius: 30%;
+  box-shadow: 0 0 1.2cqw var(--cyan), 0 0 3.4cqw rgb(106 244 232 / 50%);
+  content: "";
+  animation: visor-pulse 3.1s 0.4s ease-in-out infinite;
+}
+
+.stage[data-side="fifth"] .oppositeHead::after {
+  background: var(--magenta);
+  box-shadow: 0 0 1.4cqw var(--magenta), 0 0 4cqw rgb(229 79 255 / 55%);
+}
+
+@keyframes core-pulse {
+  0%, 100% { opacity: 0.55; transform: translateX(-50%) scale(0.94); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
 }
 
 .stage[data-side="construct"] .oppositeAura {

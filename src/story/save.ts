@@ -39,7 +39,9 @@ export function newStorySave(): StorySave {
     relationshipStates: { mim: 0, lucky: 0, titan: 0, vorgh: 0 },
     memoryDiscoveries: [],
     endingEligibility: ['stable-prison', 'unbound-world'],
-    subtitleSettings: { language: 'en', autoAdvance: false },
+    // A cutscene plays itself. Auto-advance off is the reading mode a player
+    // opts into, not the state the campaign opens in.
+    subtitleSettings: { language: 'en', autoAdvance: true },
   };
 }
 
@@ -64,7 +66,7 @@ export function migrateStorySave(value: unknown): StorySave {
     endingEligibility: strings(value.endingEligibility),
     subtitleSettings: {
       language: subtitle.language === 'ru' ? 'ru' : 'en',
-      autoAdvance: subtitle.autoAdvance === true,
+      autoAdvance: subtitle.autoAdvance !== false,
     },
   };
 }

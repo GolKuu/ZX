@@ -15,7 +15,7 @@ export function GloryBadge() {
       <progress max={1} value={standing.progress} />
       <span>{next === null
         ? `${standing.xp} XP · все награды открыты`
-        : `${standing.xp} XP · до «${next.titleRu}» ещё ${next.xp - standing.xp} XP`}</span>
+        : `${standing.xp} XP · до «${next.title}» ещё ${next.xp - standing.xp} XP`}</span>
     </div>
   );
 }

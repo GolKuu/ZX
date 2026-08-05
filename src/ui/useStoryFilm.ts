@@ -9,8 +9,12 @@ export interface StoryFilmPlayback {
   readonly paused: boolean;
   /** True while a dialogue shot is finished and waiting to be clicked on. */
   readonly waiting: boolean;
-  /** Attach to the scene root: the shot's 0–1 progress is written on it. */
-  readonly rootRef: React.RefObject<HTMLElement | null>;
+  /**
+   * Attach to the scene root: the shot's 0–1 progress is written on it as
+   * `--shot-progress`. A callback rather than a ref object, so nothing that
+   * renders the scene ever reads a ref while rendering.
+   */
+  readonly attachRoot: (node: HTMLElement | null) => void;
   readonly next: () => void;
   readonly togglePause: () => void;
 }
@@ -74,6 +78,7 @@ export function useStoryFilm(
   }, [advance, film, hold, isLast, paused, shotIndex, waiting]);
 
   const togglePause = useCallback(() => { setPaused((value) => !value); }, []);
+  const attachRoot = useCallback((node: HTMLElement | null) => { rootRef.current = node; }, []);
 
-  return { shotIndex, shot, paused, waiting, rootRef, next: advance, togglePause };
+  return { shotIndex, shot, paused, waiting, attachRoot, next: advance, togglePause };
 }
