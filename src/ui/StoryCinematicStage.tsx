@@ -1,11 +1,13 @@
 'use client';
 
+import { storyCast } from '@/src/story/cast';
 import type { StoryLine } from '@/src/story/dialogue';
 import {
   storyCinematic,
   storyLineFocus,
   storyLineIntensity,
 } from '@/src/story/cinematics';
+import { StoryCastFigure } from './StoryCastFigure';
 import styles from './StoryCinematicStage.module.css';
 
 /**
@@ -31,6 +33,7 @@ export function StoryCinematicStage({
   readonly lineKey: number;
 }) {
   const cinematic = storyCinematic(chapterIndex);
+  const cast = storyCast(chapterIndex);
   return (
     <div
       key={lineKey}
@@ -65,10 +68,10 @@ export function StoryCinematicStage({
         <span className={styles.fracture} />
       </div>
 
-      <div className={styles.opposite}>
-        <span className={styles.oppositeBody} />
-        <span className={styles.oppositeHead} />
-        <span className={styles.oppositeAura} />
+      <div className={styles.opposite} data-count={cast.members.length}>
+        {cast.members.map((member) => (
+          <StoryCastFigure key={member.id} corrupted={cast.corrupted} member={member} />
+        ))}
       </div>
 
       <div className={styles.coordinates}>

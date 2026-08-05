@@ -1,0 +1,463 @@
+/*
+ * The antagonist rig.
+ *
+ * One skeleton, five builds. Everything is sized in percentages of the figure's
+ * own box, so the same rules draw a single opponent filling the stage and four
+ * gods standing in a row — the camera decides how big any of them gets.
+ *
+ * Colours arrive as `--coat`, `--shade` and `--accent` from `story/cast.ts`, so
+ * a character's look lives with the character and not in this file.
+ */
+
+.figure {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 0.62;
+  filter: drop-shadow(0 1cqw 1.4cqw rgb(0 0 0 / 70%));
+  transform-origin: 50% 100%;
+  animation: cast-enter 1s cubic-bezier(0.2, 0.85, 0.3, 1) both,
+    cast-breathe 4.2s 1s ease-in-out infinite;
+}
+
+.figure > span {
+  position: absolute;
+  display: block;
+}
+
+/* ---------------------------------------------------------------- body */
+
+.torso {
+  top: 19%;
+  left: 23%;
+  width: 54%;
+  height: 45%;
+  background: linear-gradient(152deg, var(--coat), var(--shade) 72%);
+  border: 0.1cqw solid color-mix(in srgb, var(--accent) 42%, transparent);
+  border-radius: 34% 34% 16% 16%;
+  box-shadow: inset -0.8cqw -0.5cqw 1.4cqw rgb(2 5 10 / 55%);
+}
+
+.head {
+  top: 0;
+  left: 31%;
+  width: 38%;
+  aspect-ratio: 0.88;
+  background: linear-gradient(142deg, var(--coat), var(--shade) 68%);
+  border: 0.1cqw solid color-mix(in srgb, var(--accent) 46%, transparent);
+  border-radius: 44% 44% 36% 36%;
+  transform-origin: 50% 100%;
+  animation: cast-head 5.1s ease-in-out infinite;
+}
+
+.eye {
+  position: absolute;
+  top: 44%;
+  right: 17%;
+  left: 17%;
+  height: 13%;
+  background: var(--accent);
+  border-radius: 40%;
+  box-shadow: 0 0 1cqw var(--accent), 0 0 2.6cqw color-mix(in srgb, var(--accent) 55%, transparent);
+  animation: cast-eye 2.6s ease-in-out infinite;
+}
+
+.armLead,
+.armRear {
+  top: 22%;
+  width: 14%;
+  height: 36%;
+  background: linear-gradient(var(--coat), var(--shade));
+  border-radius: 42%;
+  transform-origin: 50% 8%;
+}
+
+.armLead { left: 9%; animation: cast-arm-lead 4.4s ease-in-out infinite; }
+.armRear { right: 9%; animation: cast-arm-rear 4.4s ease-in-out infinite; }
+
+.legLead,
+.legRear {
+  bottom: 0;
+  width: 16%;
+  height: 40%;
+  background: linear-gradient(var(--shade), rgb(3 6 12 / 95%));
+  border-radius: 22% 22% 34% 34%;
+}
+
+.legLead { left: 26%; }
+.legRear { right: 26%; }
+
+.aura {
+  inset: -12% -18%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 20%, transparent), transparent 66%);
+  border-radius: 46%;
+  animation: cast-aura 3.4s ease-in-out infinite;
+}
+
+/* Light pooled where they stand, so the figure is in the room and not on it. */
+.contact {
+  bottom: -2%;
+  left: 50%;
+  width: 96%;
+  height: 7%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 26%, transparent), transparent 72%);
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+/* -------------------------------------------------------------- builds */
+
+/* TITAN: everything above the waist, nothing below it. */
+.figure[data-build="colossus"] { aspect-ratio: 0.78; }
+.figure[data-build="colossus"] .torso { top: 16%; left: 15%; width: 70%; height: 50%; border-radius: 26% 26% 12% 12%; }
+.figure[data-build="colossus"] .head { top: 2%; left: 36%; width: 28%; }
+.figure[data-build="colossus"] .armLead,
+.figure[data-build="colossus"] .armRear { top: 19%; width: 19%; height: 42%; }
+.figure[data-build="colossus"] .legLead,
+.figure[data-build="colossus"] .legRear { width: 26%; height: 34%; }
+
+/* A machine does not stand: it hangs, squared off, with the seam lit. */
+.figure[data-build="construct"] .torso,
+.figure[data-build="construct"] .head {
+  background:
+    repeating-linear-gradient(transparent 0 3.4%, color-mix(in srgb, var(--accent) 12%, transparent) 3.4% 3.8%, transparent 3.8% 7%),
+    linear-gradient(155deg, var(--coat), var(--shade) 70%);
+  border-color: color-mix(in srgb, var(--accent) 74%, transparent);
+  border-radius: 8%;
+}
+
+.figure[data-build="construct"] .legLead,
+.figure[data-build="construct"] .legRear { display: none; }
+
+.figure[data-build="construct"] .torso { height: 62%; }
+.figure[data-build="construct"] { animation-name: cast-enter, cast-hover; }
+
+/* A god is tall, narrow and does not touch the floor. */
+.figure[data-build="god"] { aspect-ratio: 0.44; }
+.figure[data-build="god"] .torso {
+  top: 22%;
+  left: 27%;
+  width: 46%;
+  height: 66%;
+  border-radius: 46% 46% 4% 4%;
+  clip-path: polygon(28% 0%, 72% 0%, 100% 100%, 0% 100%);
+}
+
+.figure[data-build="god"] .head { left: 33%; width: 34%; border-radius: 50% 50% 40% 40%; }
+.figure[data-build="god"] .armLead,
+.figure[data-build="god"] .armRear { top: 26%; width: 10%; height: 40%; }
+.figure[data-build="god"] .legLead,
+.figure[data-build="god"] .legRear { display: none; }
+.figure[data-build="god"] { animation-name: cast-enter, cast-hover; }
+
+/* The Fifth is the shape of a person with nothing inside it. */
+.figure[data-build="void"] .torso,
+.figure[data-build="void"] .head {
+  background: linear-gradient(rgb(6 1 10 / 92%), rgb(2 0 5 / 96%));
+  border-color: color-mix(in srgb, var(--accent) 85%, transparent);
+  box-shadow: 0 0 2.4cqw color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.figure[data-build="void"] .armLead,
+.figure[data-build="void"] .armRear,
+.figure[data-build="void"] .legLead,
+.figure[data-build="void"] .legRear { opacity: 0.35; filter: blur(0.2cqw); }
+.figure[data-build="void"] .aura { animation-duration: 2.2s; }
+
+/* ---------------------------------------------------------- signatures */
+
+.mark { inset: 0; pointer-events: none; }
+
+/* MIM — the bone mask, and the cane he never puts down. */
+.figure[data-signature="mask"] .mark::before {
+  position: absolute;
+  top: 3%;
+  left: 34%;
+  width: 32%;
+  aspect-ratio: 0.8;
+  background:
+    radial-gradient(circle at 33% 46%, #2a0f4f 0 10%, transparent 11%),
+    radial-gradient(circle at 67% 46%, #2a0f4f 0 10%, transparent 11%),
+    linear-gradient(160deg, #fffdf2, #d9c9a4);
+  border-radius: 50% 50% 42% 42%;
+  box-shadow: 0 0 1.2cqw rgb(255 240 200 / 45%);
+  content: "";
+}
+
+.figure[data-signature="mask"] .mark::after {
+  position: absolute;
+  bottom: 4%;
+  left: 8%;
+  width: 0.3cqw;
+  height: 52%;
+  background: linear-gradient(var(--accent), #fffdf2);
+  box-shadow: 0 0 0.8cqw var(--accent);
+  content: "";
+  transform: rotate(14deg);
+}
+
+/* LUCKY — a fan of cards held out in the lead hand. */
+.figure[data-signature="cards"] .mark::before,
+.figure[data-signature="cards"] .mark::after {
+  position: absolute;
+  bottom: 26%;
+  left: 2%;
+  width: 9%;
+  height: 15%;
+  background: linear-gradient(#fffdf6, #cdd6cf);
+  border: 0.08cqw solid var(--accent);
+  border-radius: 8%;
+  box-shadow: 0 0 1cqw color-mix(in srgb, var(--accent) 40%, transparent);
+  content: "";
+  transform: rotate(-22deg);
+}
+
+.figure[data-signature="cards"] .mark::after { left: 8%; transform: rotate(9deg); }
+
+/* TITAN — shoulder plates, and the reactor line between them. */
+.figure[data-signature="plates"] .mark::before {
+  position: absolute;
+  top: 19%;
+  right: 5%;
+  left: 5%;
+  height: 13%;
+  background: linear-gradient(#6c7a83, var(--shade));
+  border: 0.1cqw solid color-mix(in srgb, var(--accent) 50%, transparent);
+  border-radius: 40% 40% 12% 12%;
+  content: "";
+}
+
+.figure[data-signature="plates"] .mark::after {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 26%;
+  height: 3%;
+  background: var(--accent);
+  box-shadow: 0 0 1.4cqw var(--accent);
+  content: "";
+  transform: translateX(-50%);
+  animation: cast-eye 1.9s ease-in-out infinite;
+}
+
+/* VORGH — the claws, and the crack across the plate. */
+.figure[data-signature="claws"] .mark::before {
+  position: absolute;
+  bottom: 22%;
+  left: 4%;
+  width: 12%;
+  height: 12%;
+  background:
+    linear-gradient(76deg, transparent 44%, var(--accent) 46% 52%, transparent 54%),
+    linear-gradient(96deg, transparent 44%, var(--accent) 46% 52%, transparent 54%);
+  filter: drop-shadow(0 0 0.7cqw var(--accent));
+  content: "";
+}
+
+.figure[data-signature="claws"] .mark::after {
+  position: absolute;
+  top: 24%;
+  left: 42%;
+  width: 0.24cqw;
+  height: 34%;
+  background: var(--accent);
+  box-shadow: 0 0 1cqw var(--accent);
+  content: "";
+  transform: rotate(-16deg);
+}
+
+/* GLITCH's own circuitry, used where a copy of him is on the other side. */
+.figure[data-signature="circuit"] .mark::before {
+  position: absolute;
+  top: 24%;
+  left: 38%;
+  width: 24%;
+  height: 34%;
+  border: 0.1cqw solid color-mix(in srgb, var(--accent) 60%, transparent);
+  border-radius: 12%;
+  box-shadow: 0 0 1.2cqw color-mix(in srgb, var(--accent) 40%, transparent);
+  content: "";
+}
+
+/* CONSTRUCT — the core it runs on. */
+.figure[data-signature="core"] .mark::before {
+  position: absolute;
+  top: 32%;
+  left: 50%;
+  width: 20%;
+  aspect-ratio: 0.7;
+  background: radial-gradient(circle, #eafffd, color-mix(in srgb, var(--accent) 55%, transparent) 44%, transparent 72%);
+  border-radius: 50%;
+  content: "";
+  transform: translateX(-50%);
+  animation: cast-core 2.8s ease-in-out infinite;
+}
+
+/* MEMORY ENGINE — the ring of everything it is holding. */
+.figure[data-signature="ring"] .mark::before {
+  position: absolute;
+  top: 26%;
+  left: 50%;
+  width: 92%;
+  aspect-ratio: 1;
+  border: 0.12cqw dashed color-mix(in srgb, var(--accent) 65%, transparent);
+  border-radius: 50%;
+  content: "";
+  transform: translateX(-50%) rotateX(72deg);
+  animation: cast-ring 9s linear infinite;
+}
+
+/* The four laws, each carrying its own. */
+.figure[data-signature="frame"] .mark::before {
+  position: absolute;
+  top: 4%;
+  left: 50%;
+  width: 44%;
+  aspect-ratio: 1;
+  border: 0.12cqw solid var(--accent);
+  box-shadow: 0 0 1.4cqw color-mix(in srgb, var(--accent) 50%, transparent), inset 0 0 1cqw color-mix(in srgb, var(--accent) 30%, transparent);
+  content: "";
+  transform: translateX(-50%) rotate(45deg);
+  animation: cast-emblem 7s linear infinite;
+}
+
+.figure[data-signature="block"] .mark::before {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  width: 34%;
+  aspect-ratio: 1;
+  background: linear-gradient(150deg, var(--accent), var(--shade));
+  box-shadow: 0 0 1.6cqw color-mix(in srgb, var(--accent) 45%, transparent);
+  content: "";
+  transform: translateX(-50%);
+}
+
+.figure[data-signature="die"] .mark::before {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  width: 34%;
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle at 28% 28%, var(--accent) 12%, transparent 14%),
+    radial-gradient(circle at 72% 72%, var(--accent) 12%, transparent 14%),
+    radial-gradient(circle at 50% 50%, var(--accent) 12%, transparent 14%),
+    linear-gradient(var(--shade), #05100b);
+  border: 0.1cqw solid color-mix(in srgb, var(--accent) 60%, transparent);
+  border-radius: 14%;
+  content: "";
+  transform: translateX(-50%) rotate(-12deg);
+  animation: cast-emblem 11s linear infinite reverse;
+}
+
+.figure[data-signature="bolt"] .mark::before {
+  position: absolute;
+  top: 4%;
+  left: 50%;
+  width: 30%;
+  height: 22%;
+  background: var(--accent);
+  clip-path: polygon(58% 0%, 20% 54%, 46% 54%, 34% 100%, 78% 42%, 50% 42%);
+  filter: drop-shadow(0 0 1.4cqw var(--accent));
+  content: "";
+  transform: translateX(-50%);
+  animation: cast-eye 1.4s ease-in-out infinite;
+}
+
+/* The tear the Fifth speaks through, straight down the middle of the body. */
+.figure[data-signature="rift"] .mark::before {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  width: 0.34cqw;
+  height: 84%;
+  background: linear-gradient(transparent, var(--accent) 18% 82%, transparent);
+  box-shadow: 0 0 1.6cqw var(--accent);
+  content: "";
+  transform: translateX(-50%) rotate(4deg);
+  animation: cast-rift 3.2s ease-in-out infinite;
+}
+
+/* ----------------------------------------------------------- corrupted */
+
+/*
+ * Worn by the Fifth. The hue rotation is one declaration over every layer of the
+ * figure, which is also the cheap compositor path.
+ */
+.figure[data-corrupted="true"] { animation-name: cast-enter, cast-corrupt; }
+.figure[data-corrupted="true"] .eye { background: #e54fff; box-shadow: 0 0 1.2cqw #e54fff; }
+
+/* ---------------------------------------------------------- keyframes */
+
+@keyframes cast-enter {
+  from { opacity: 0; transform: translateY(4%) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes cast-breathe {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-0.3%) scaleY(1.012); }
+}
+
+@keyframes cast-hover {
+  0%, 100% { transform: translateY(-1.5%); }
+  50% { transform: translateY(1.5%); }
+}
+
+@keyframes cast-corrupt {
+  0%, 100% { filter: drop-shadow(0 1cqw 1.4cqw rgb(0 0 0 / 70%)) hue-rotate(0deg); }
+  50% { filter: drop-shadow(0 1cqw 1.4cqw rgb(0 0 0 / 70%)) hue-rotate(96deg) saturate(1.5); }
+}
+
+@keyframes cast-head {
+  0%, 100% { transform: rotate(-1.4deg); }
+  50% { transform: rotate(1.8deg); }
+}
+
+@keyframes cast-eye {
+  0%, 100% { opacity: 0.78; }
+  50% { opacity: 1; }
+}
+
+@keyframes cast-arm-lead {
+  0%, 100% { transform: rotate(4deg); }
+  50% { transform: rotate(-6deg); }
+}
+
+@keyframes cast-arm-rear {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+@keyframes cast-aura {
+  0%, 100% { opacity: 0.4; transform: scale(0.95); }
+  50% { opacity: 0.85; transform: scale(1.05); }
+}
+
+@keyframes cast-core {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(0.92); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+}
+
+@keyframes cast-ring {
+  from { transform: translateX(-50%) rotateX(72deg) rotate(0deg); }
+  to { transform: translateX(-50%) rotateX(72deg) rotate(360deg); }
+}
+
+@keyframes cast-emblem {
+  from { transform: translateX(-50%) rotate(0deg); }
+  to { transform: translateX(-50%) rotate(360deg); }
+}
+
+@keyframes cast-rift {
+  0%, 100% { opacity: 0.55; transform: translateX(-50%) rotate(4deg) scaleY(0.94); }
+  50% { opacity: 1; transform: translateX(-50%) rotate(2deg) scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .figure,
+  .figure * {
+    animation-duration: 0.4s !important;
+    animation-iteration-count: 1 !important;
+  }
+}
