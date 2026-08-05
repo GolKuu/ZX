@@ -159,6 +159,8 @@ async function main() {
   await shot('04-versus');
 
   await page.keyboard.press('Enter');
+  await wait(200);
+  await page.keyboard.press('Enter');
   await waitForScreen('fight');
   await wait(2_000);
   await shot('05-fight-neutral');
