@@ -5,8 +5,6 @@ import { useRef } from 'react';
 import {
   MathUtils,
   type Group,
-  type Mesh,
-  type MeshBasicMaterial,
 } from 'three';
 import type { RefObject } from 'react';
 
@@ -20,38 +18,17 @@ export function GeminiShadowFight() {
   const rightRoot = useRef<Group>(null);
   const rightArm = useRef<Group>(null);
   const rightLeg = useRef<Group>(null);
-  const impact = useRef<Mesh>(null);
 
   useFrame(({ clock }) => {
     const time = clock.elapsedTime;
     animateRig(leftRoot.current, leftArm.current, leftLeg.current, time, 1, LEFT_X);
     animateRig(rightRoot.current, rightArm.current, rightLeg.current, time + 0.16, -1, RIGHT_X);
-
-    const impactMesh = impact.current;
-    if (impactMesh !== null) {
-      const beat = Math.pow(Math.max(0, Math.sin(time * 8.4)), 18);
-      impactMesh.scale.setScalar(0.28 + beat * 1.55);
-      const material = impactMesh.material as MeshBasicMaterial;
-      material.opacity = beat * 0.72;
-      impactMesh.rotation.z = time * 2.8;
-    }
   });
 
   return (
     <group position={[0, 1.05, -10.5]} renderOrder={-8}>
       <ShadowFighter armRef={leftArm} color="#56e7ff" legRef={leftLeg} rootRef={leftRoot} />
       <ShadowFighter armRef={rightArm} color="#c278ff" legRef={rightLeg} mirrored rootRef={rightRoot} />
-
-      <mesh ref={impact} position={[0, 1.3, 0.04]}>
-        <ringGeometry args={[0.38, 0.48, 6]} />
-        <meshBasicMaterial
-          color="#f4fbff"
-          depthWrite={false}
-          opacity={0}
-          toneMapped={false}
-          transparent
-        />
-      </mesh>
 
       <group position={[0, -0.14, -0.02]}>
         <mesh scale={[5.6, 0.09, 1]}>
