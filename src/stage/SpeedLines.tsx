@@ -3,6 +3,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import { MathUtils, ShaderMaterial } from 'three';
+import { readCombatFighter } from '@/src/game/combatRuntime';
 import { createSpeedLinesMaterial } from '@/src/render/speedLinesMaterial';
 import { useRenderStore } from '@/src/store/renderStore';
 
@@ -10,7 +11,7 @@ export function SpeedLines() {
   const material = useMemo(() => createSpeedLinesMaterial(), []);
   const materialRef = useRef<ShaderMaterial>(material);
   const enabledRef = useRef(useRenderStore.getState().effectsEnabled);
-  const intensityRef = useRef(0.85);
+  const intensityRef = useRef(0.05);
 
   useEffect(() => {
     const unsubscribe = useRenderStore.subscribe((state) => {
@@ -24,7 +25,15 @@ export function SpeedLines() {
 
   useFrame(({ clock }, delta) => {
     const shader = materialRef.current;
-    const target = enabledRef.current ? 0.85 : 0;
+    const p1 = readCombatFighter('p1');
+    const p2 = readCombatFighter('p2');
+    const combatBurst = [p1, p2].some((fighter) => fighter !== null && (
+      fighter.dashFrames > 0
+      || fighter.action !== null
+      || fighter.hitstop > 0
+      || fighter.hitstun > 0
+    ));
+    const target = enabledRef.current ? (combatBurst ? 0.9 : 0.05) : 0;
     intensityRef.current = MathUtils.damp(intensityRef.current, target, 7, delta);
     shader.uniforms.uTime!.value = clock.elapsedTime;
     shader.uniforms.uIntensity!.value = intensityRef.current;
