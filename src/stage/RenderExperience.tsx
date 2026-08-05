@@ -12,6 +12,7 @@ import styles from './RenderExperience.module.css';
 export function RenderExperience() {
   const fighterSelection = useHudStore((state) => state.fighterSelection);
   const arenaId = useHudStore((state) => state.arenaId);
+  const screen = useHudStore((state) => state.screen);
 
   useEffect(() => {
     useRenderStore.getState().hydratePreferences();
@@ -25,7 +26,7 @@ export function RenderExperience() {
         <RenderCanvas arenaId={arenaId} fighterSelection={fighterSelection} />
       </div>
       <PlayOverlay />
-      <ProgressionNotifications />
+      {screen !== 'story-scene' && <ProgressionNotifications />}
     </main>
   );
 }

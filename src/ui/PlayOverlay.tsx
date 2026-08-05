@@ -34,7 +34,7 @@ export function PlayOverlay() {
           <MobileControls visible={mobileMode} />
         </>
       )}
-      {process.env.NODE_ENV !== 'production' && <DevelopmentTools />}
+      {process.env.NODE_ENV !== 'production' && screen !== 'story-scene' && <DevelopmentTools />}
     </div>
   );
 }
