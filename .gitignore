@@ -28,3 +28,6 @@ public/models/
 
 # Render-critique screenshots (scripts/shoot.mjs)
 .shots/
+.codex-run/
+.qa-path
+.tmp/

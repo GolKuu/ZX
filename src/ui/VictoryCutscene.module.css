@@ -61,7 +61,7 @@
   z-index: 3;
   top: 50%;
   left: 50%;
-  width: min(78vw, 88vh);
+  width: min(70vw, 80vh);
   aspect-ratio: 1;
   filter: drop-shadow(0 2.2rem 1rem rgb(0 0 0 / 72%));
   transform-origin: 50% 82%;
@@ -76,7 +76,6 @@
   background-repeat: no-repeat;
   background-size: 400% 400%;
   image-rendering: pixelated;
-  filter: contrast(1.08) saturate(1.08) drop-shadow(0 .8rem .45rem rgb(0 0 0 / 68%));
   filter:
     contrast(1.14)
     saturate(1.12)
@@ -251,8 +250,8 @@
 @keyframes fighter-camera {
   0% { opacity: 0; transform: translate(-50%, -43%) scale(.68); }
   10% { opacity: 1; }
-  46% { transform: translate(-50%, -48%) scale(.92); }
-  100% { opacity: 1; transform: translate(-50%, -51%) scale(1.08); }
+  46% { transform: translate(-50%, -46%) scale(.88); }
+  100% { opacity: 1; transform: translate(-50%, -47%) scale(.96); }
 }
 
 @keyframes defeated-drop {
