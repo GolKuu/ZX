@@ -474,7 +474,7 @@
 /* ----------------------------------------------------------- keyframes */
 
 @keyframes layer-in {
-  from { opacity: 0; }
+  from { opacity: 0.88; }
   to { opacity: 1; }
 }
 
@@ -494,7 +494,7 @@
 }
 
 @keyframes figure-enter {
-  from { opacity: 0; transform: translateX(-5cqw) scale(0.97); }
+  from { opacity: 0.9; transform: translateX(-5cqw) scale(0.97); }
   to { opacity: 1; transform: translateX(0) scale(1); }
 }
 
@@ -548,7 +548,7 @@
 }
 
 @keyframes opposite-enter {
-  from { opacity: 0; transform: translateX(6cqw) scale(0.96); }
+  from { opacity: 0.9; transform: translateX(6cqw) scale(0.96); }
   to { opacity: 1; transform: translateX(0) scale(1); }
 }
 
