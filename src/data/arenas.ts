@@ -14,11 +14,11 @@ export const ARENAS: readonly ArenaDefinition[] = [
   {
     id: 'null-circle',
     name: 'MONASTERY CIRCLE',
-    theme: 'Священный каменный двор',
-    note: 'Круглая арена древнего монастыря среди гор. Свечи и закатный свет не влияют на баланс боя.',
+    theme: 'Монастырь Спинджитцу',
+    note: 'Высокогорный двор с красными колоннами, золотыми воротами и тёмными крышами. Баланс боя не меняется.',
     performance: 'LOW',
-    background: '#17130f',
-    fog: '#49392b',
+    background: '#b9cbd5',
+    fog: '#ccd5d9',
   },
   {
     id: 'storm-dome',
