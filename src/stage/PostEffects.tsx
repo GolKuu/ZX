@@ -38,7 +38,7 @@ export function PostEffects() {
   const chromaticOffset = useMemo(() => new Vector2(0.0011, 0.00065), []);
 
   return (
-    <EffectComposer enableNormalPass multisampling={0}>
+    <EffectComposer multisampling={0}>
       {/* Contact darkening. This is the single biggest step from "assets on a
           plane" to "objects in a room": creases, the gap under a boot, the seam
           where a fighter meets the disc. Tinted violet rather than black, so

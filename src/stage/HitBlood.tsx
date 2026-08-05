@@ -63,6 +63,8 @@ export function HitBlood() {
   );
   const nextSlot = useRef(0);
   const seenSerial = useRef<Record<string, number>>({ p1: 0, p2: 0 });
+  const hasActiveDroplets = useRef(false);
+  const initialized = useRef(false);
   const scratch = useRef({
     matrix: new Matrix4(),
     offset: new Vector3(),
@@ -75,10 +77,12 @@ export function HitBlood() {
     const instanced = mesh.current;
     if (instanced === null) return;
 
+    let spawned = false;
     for (const fighterId of ['p1', 'p2'] as const) {
       const hit = readLatestHit(fighterId);
       if (hit === null || hit.serial === seenSerial.current[fighterId]) continue;
       seenSerial.current[fighterId] = hit.serial;
+      spawned = true;
       // Heavier blows throw more, and further. `damage` spans roughly 20…90.
       const power = Math.min(1.6, 0.5 + hit.damage / 70);
       for (let index = 0; index < PER_BURST; index += 1) {
@@ -86,8 +90,11 @@ export function HitBlood() {
       }
     }
 
+    if (!spawned && !hasActiveDroplets.current && initialized.current) return;
+
     const { matrix, offset, scale, spin, axis } = scratch.current;
     const step = Math.min(delta, 1 / 30);
+    let active = false;
     for (let index = 0; index < POOL; index += 1) {
       const droplet = droplets.current[index];
       if (droplet === undefined) continue;
@@ -97,6 +104,7 @@ export function HitBlood() {
         continue;
       }
       droplet.life -= step;
+      active = active || droplet.life > 0;
       droplet.velocity.y -= GRAVITY * step;
       droplet.position.addScaledVector(droplet.velocity, step);
       // Stop at the floor rather than falling through it, and die there.
@@ -119,6 +127,8 @@ export function HitBlood() {
       matrix.compose(offset, spin, scale);
       instanced.setMatrixAt(index, matrix);
     }
+    initialized.current = true;
+    hasActiveDroplets.current = active;
     instanced.instanceMatrix.needsUpdate = true;
   });
 

@@ -38,6 +38,8 @@ export function HitSparkBurst() {
   const sparks = useRef(Array.from({ length: POOL_SIZE }, makeSpark));
   const cursor = useRef(0);
   const seen = useRef({ p1: 0, p2: 0 });
+  const hasActiveSparks = useRef(false);
+  const initialized = useRef(false);
   const scratch = useRef({
     matrix: new Matrix4(),
     scale: new Vector3(),
@@ -49,10 +51,12 @@ export function HitSparkBurst() {
     const instances = mesh.current;
     if (instances === null) return;
 
+    let spawned = false;
     for (const fighterId of ['p1', 'p2'] as const) {
       const hit = readLatestHit(fighterId);
       if (hit === null || hit.serial === seen.current[fighterId]) continue;
       seen.current[fighterId] = hit.serial;
+      spawned = true;
       const intensity = Math.min(1.65, 0.7 + hit.damage / 78);
       const count = Math.round(10 + Math.min(12, hit.damage / 6));
       for (let index = 0; index < count; index += 1) {
@@ -60,8 +64,11 @@ export function HitSparkBurst() {
       }
     }
 
+    if (!spawned && !hasActiveSparks.current && initialized.current) return;
+
     const step = Math.min(delta, 1 / 30);
     const { matrix, scale, rotation, axis } = scratch.current;
+    let active = false;
     for (let index = 0; index < sparks.current.length; index += 1) {
       const spark = sparks.current[index];
       if (spark === undefined || spark.life <= 0) {
@@ -70,6 +77,7 @@ export function HitSparkBurst() {
         continue;
       }
       spark.life -= step;
+      active = active || spark.life > 0;
       spark.velocity.multiplyScalar(Math.exp(-5.5 * step));
       spark.velocity.y -= 1.2 * step;
       spark.position.addScaledVector(spark.velocity, step);
@@ -80,6 +88,8 @@ export function HitSparkBurst() {
       matrix.compose(spark.position, rotation, scale);
       instances.setMatrixAt(index, matrix);
     }
+    initialized.current = true;
+    hasActiveSparks.current = active;
     instances.instanceMatrix.needsUpdate = true;
   });
 
