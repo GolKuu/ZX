@@ -53,8 +53,8 @@ export function HitSparkBurst() {
       const hit = readLatestHit(fighterId);
       if (hit === null || hit.serial === seen.current[fighterId]) continue;
       seen.current[fighterId] = hit.serial;
-      const intensity = Math.min(1.35, 0.65 + hit.damage / 100);
-      const count = Math.round(10 + Math.min(10, hit.damage / 8));
+      const intensity = Math.min(1.65, 0.7 + hit.damage / 78);
+      const count = Math.round(10 + Math.min(12, hit.damage / 6));
       for (let index = 0; index < count; index += 1) {
         spawnSpark(sparks.current, cursor, hit.x, hit.y, hit.away, intensity, index);
       }
@@ -88,7 +88,7 @@ export function HitSparkBurst() {
       <planeGeometry args={[1, 1]} />
       <meshBasicMaterial
         blending={AdditiveBlending}
-        color="#fff0a0"
+        color="#fff4c8"
         depthWrite={false}
         toneMapped={false}
         transparent
@@ -104,12 +104,12 @@ function spawnSpark(
   const spark = sparks[cursor.current % sparks.length];
   cursor.current = (cursor.current + 1) % sparks.length;
   if (spark === undefined) return;
-  const radial = index < 3 ? index * Math.PI * 0.66 + Math.PI * 0.3 : (Math.random() - 0.5) * 2.1;
-  const speed = (index < 3 ? 4.2 : 2.2 + Math.random() * 3.2) * intensity;
+  const radial = index < 4 ? index * Math.PI * 0.5 + Math.PI * 0.25 : (Math.random() - 0.5) * 2.25;
+  const speed = (index < 4 ? 5.4 : 2.6 + Math.random() * 4.1) * intensity;
   spark.position.set(x, y, 0.42 + Math.random() * 0.08);
   spark.velocity.set(Math.cos(radial) * speed * away, Math.sin(radial) * speed, 0);
-  spark.span = 0.1 + Math.random() * 0.17;
+  spark.span = 0.11 + Math.random() * 0.18;
   spark.life = spark.span;
-  spark.length = (index < 3 ? 0.34 : 0.16 + Math.random() * 0.26) * intensity;
-  spark.width = index < 3 ? 0.048 : 0.016 + Math.random() * 0.024;
+  spark.length = (index < 4 ? 0.42 : 0.2 + Math.random() * 0.34) * intensity;
+  spark.width = index < 4 ? 0.055 : 0.018 + Math.random() * 0.025;
 }
