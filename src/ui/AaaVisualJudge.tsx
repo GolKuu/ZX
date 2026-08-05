@@ -137,7 +137,7 @@ export function AaaVisualJudge() {
 
   const [samples, setSamples] = useState<Partial<Record<CapturePhase, FrameAnalysis>>>({});
   const [log, setLog] = useState<string[]>([]);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const previousScreen = useRef(screen);
   const lastCaptureAt = useRef<Record<CapturePhase, number>>({

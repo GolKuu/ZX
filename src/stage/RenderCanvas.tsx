@@ -43,7 +43,7 @@ export function RenderCanvas({
         // moves the curve into `PostEffects`. Kept so the first frames, and the
         // FX-off path, are not written out linear.
         gl.toneMapping = ACESFilmicToneMapping;
-        gl.toneMappingExposure = 1.05;
+        gl.toneMappingExposure = 1.12;
         gl.shadowMap.type = PCFShadowMap;
       }}
       shadows={graphicsPreset !== 'low'}

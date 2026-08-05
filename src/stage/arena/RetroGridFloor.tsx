@@ -13,31 +13,31 @@ export function RetroGridFloor() {
     <group position-y={-0.006}>
       <mesh position={[0, 0, -5.15]} rotation-x={-Math.PI / 2}>
         <planeGeometry args={[26, 15.4]} />
-        <meshBasicMaterial color="#536e63" fog={false} />
+        <meshBasicMaterial color="#4f8065" fog={false} />
       </mesh>
       <mesh position={[0, 0.006, -4.6]} rotation-x={-Math.PI / 2}>
         <planeGeometry args={[20.5, 12.8]} />
-        <meshBasicMaterial color="#849584" fog={false} />
+        <meshBasicMaterial color="#96ad8b" fog={false} />
       </mesh>
 
       {STONE_SEAMS.map((x, index) => (
         <mesh key={x} position={[x, 0.014, -5]} rotation-x={-Math.PI / 2} rotation-z={(index % 3 - 1) * 0.006}>
           <planeGeometry args={[index % 4 === 0 ? 0.055 : 0.025, 13.5]} />
-          <meshBasicMaterial color={index % 4 === 0 ? '#455b54' : '#65776c'} depthWrite={false} fog={false} />
+          <meshBasicMaterial color={index % 4 === 0 ? '#3f6258' : '#6e8d75'} depthWrite={false} fog={false} />
         </mesh>
       ))}
 
       {STONE_ROWS.map((z, index) => (
         <mesh key={z} position={[0, 0.018, z]} rotation-x={-Math.PI / 2}>
           <planeGeometry args={[22, index % 3 === 0 ? 0.075 : 0.04]} />
-          <meshBasicMaterial color={index % 3 === 0 ? '#415b55' : '#647a6e'} depthWrite={false} fog={false} />
+          <meshBasicMaterial color={index % 3 === 0 ? '#426a5b' : '#75937b'} depthWrite={false} fog={false} />
         </mesh>
       ))}
 
       {MOSS_PATCHES.map((patch, index) => (
         <mesh key={`${patch.x}-${patch.z}`} position={[patch.x, 0.024, patch.z]} rotation-x={-Math.PI / 2} rotation-z={(index % 5) * 0.2}>
           <planeGeometry args={[patch.width, 0.045 + (index % 3) * 0.025]} />
-          <meshBasicMaterial color={index % 3 === 0 ? '#8fa34f' : '#5f8b55'} depthWrite={false} opacity={0.72} transparent />
+          <meshBasicMaterial color={index % 3 === 0 ? '#b6c94e' : '#68a85b'} depthWrite={false} opacity={0.8} transparent />
         </mesh>
       ))}
 

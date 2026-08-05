@@ -10,15 +10,15 @@ export function ArenaPlatform2D() {
       <group position-z={-0.42}>
         <mesh position={[0, -0.48, 0]}>
           <planeGeometry args={[20, 0.96]} />
-          <meshBasicMaterial color="#4b625a" fog={false} />
+          <meshBasicMaterial color="#4d7763" fog={false} />
         </mesh>
         <mesh position={[0, -0.04, 0.02]}>
           <planeGeometry args={[20, 0.12]} />
-          <meshBasicMaterial color="#d9d3a7" fog={false} toneMapped={false} />
+          <meshBasicMaterial color="#fff0ae" fog={false} toneMapped={false} />
         </mesh>
         <mesh position={[0, -0.17, 0.01]}>
           <planeGeometry args={[20, 0.08]} />
-          <meshBasicMaterial color="#79a765" fog={false} toneMapped={false} />
+          <meshBasicMaterial color="#9dcf5b" fog={false} toneMapped={false} />
         </mesh>
 
         {FACE_PANELS.map((x, index) => (
@@ -26,13 +26,13 @@ export function ArenaPlatform2D() {
             <mesh>
               <planeGeometry args={[0.42, 0.22]} />
               <meshBasicMaterial
-                color={index % 2 === 0 ? '#718077' : '#5e7068'}
+                color={index % 2 === 0 ? '#789484' : '#628276'}
                 fog={false}
               />
             </mesh>
             <mesh position={[0, -0.35, 0]}>
               <planeGeometry args={[0.72, 0.035]} />
-              <meshBasicMaterial color={index % 4 === 0 ? '#aeba77' : '#3f5e58'} fog={false} />
+              <meshBasicMaterial color={index % 4 === 0 ? '#d3d96d' : '#427a67'} fog={false} />
             </mesh>
           </group>
         ))}

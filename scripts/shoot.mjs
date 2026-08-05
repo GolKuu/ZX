@@ -127,12 +127,18 @@ async function main() {
     await wait(120);
   }
   await page.keyboard.press('Enter');
+  await wait(500);
+  await page.keyboard.press('Enter');
   await wait(1_200);
-  await shot('03-versus');
+  await shot('03-stage-select');
+
+  await page.keyboard.press('Enter');
+  await wait(1_200);
+  await shot('04-versus');
 
   await page.keyboard.press('Enter');
   await wait(2_500);
-  await shot('04-fight-neutral');
+  await shot('05-fight-neutral');
 
   // A few frames of actual combat: walk in, then throw attacks so the shot
   // catches impact FX rather than an idle pose.
@@ -140,17 +146,17 @@ async function main() {
   await wait(900);
   await page.keyboard.up('KeyD');
   await wait(300);
-  await shot('05-fight-closed-in');
+  await shot('06-fight-closed-in');
 
   await page.keyboard.press('KeyK'); // heavy punch
   // Long enough to land inside the active window. A heavy runs ~47 frames, so a
   // 150ms capture only ever caught the windup.
   await wait(330);
-  await shot('06-attack-active');
+  await shot('07-attack-active');
   await wait(700);
   await page.keyboard.press('KeyO'); // special
   await wait(280);
-  await shot('07-special');
+  await shot('08-special');
 
   // Stand still in range and let the AI hit back. The damage reaction and the
   // blood spray are the only things in the frame the player never triggers, so
@@ -158,10 +164,10 @@ async function main() {
   // Several captures because which frame the AI commits on is not fixed.
   for (let attempt = 1; attempt <= 4; attempt += 1) {
     await wait(320);
-    await shot(`08-taking-a-hit-${String(attempt)}`);
+    await shot(`09-taking-a-hit-${String(attempt)}`);
   }
   await wait(1_200);
-  await shot('09-fight-recovery');
+  await shot('10-fight-recovery');
 
   const fps = await page.evaluate(async () => {
     let frames = 0;

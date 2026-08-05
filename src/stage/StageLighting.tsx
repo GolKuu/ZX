@@ -47,7 +47,7 @@ export function StageLighting() {
     const superPulseLight = superPulseRef.current;
     const superWash = superWashRef.current;
     if (key !== null) {
-      key.intensity = MathUtils.lerp(2.75, 3.45, rimPulse);
+      key.intensity = MathUtils.lerp(3.05, 3.8, rimPulse);
       key.shadow.radius = MathUtils.lerp(2.6, 3.2, rimPulse);
     }
     if (impactPulseLight !== null) {
@@ -63,14 +63,14 @@ export function StageLighting() {
 
   return (
     <>
-      <hemisphereLight args={['#9aa8c4', '#090914', 0.38]} />
-      <ambientLight color="#394052" intensity={0.16} />
+      <hemisphereLight args={['#bcecff', '#263719', 0.52]} />
+      <ambientLight color="#6c7884" intensity={0.2} />
 
       <directionalLight
         ref={keyLightRef}
         castShadow
-        color="#ffe8c9"
-        intensity={2.75}
+        color="#fff0bd"
+        intensity={3.05}
         position={[-5.2, 8.6, 5.4]}
         shadow-bias={-0.0006}
         shadow-camera-bottom={-SHADOW_EXTENT}
@@ -110,30 +110,30 @@ export function StageLighting() {
       />
 
       <directionalLight
-        color="#8794b8"
-        intensity={0.75}
+        color="#75d7ff"
+        intensity={0.92}
         position={[4.6, 5.8, -6.2]}
       />
 
       <directionalLight
-        color="#b8c6dc"
-        intensity={0.42}
+        color="#ffb85f"
+        intensity={0.55}
         position={[6.4, 2.1, 4.2]}
       />
 
       <pointLight
-        color="#66708c"
+        color="#7dd6ff"
         decay={2}
         distance={34}
-        intensity={3.2}
+        intensity={3.7}
         position={[-4.8, 4.8, -9]}
       />
 
       <pointLight
-        color="#8290a8"
+        color="#ffd77d"
         decay={2}
         distance={9}
-        intensity={1.1}
+        intensity={1.35}
         position={[0, 0.55, 0.6]}
       />
     </>

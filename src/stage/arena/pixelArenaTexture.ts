@@ -39,8 +39,8 @@ export function createPixelArenaTexture(): DataTexture {
 
 function paintSky(pixels: Uint8Array): void {
   const bands: readonly Rgb[] = [
-    [67, 166, 194], [82, 181, 199], [105, 195, 198],
-    [143, 207, 190], [184, 218, 183], [218, 226, 186],
+    [55, 174, 215], [69, 192, 220], [92, 207, 216],
+    [135, 219, 198], [185, 231, 186], [238, 236, 179],
   ];
   for (let y = 0; y < 104; y += 1) {
     const band = Math.min(bands.length - 1, Math.floor(y / 18));
@@ -53,7 +53,7 @@ function paintSun(pixels: Uint8Array): void {
   const centerY = 24;
   for (let radius = 22; radius > 0; radius -= 1) {
     const warmth = Math.floor((22 - radius) * 1.4);
-    fillCircle(pixels, centerX, centerY, radius, [255, 225 + warmth, 164 + warmth]);
+    fillCircle(pixels, centerX, centerY, radius, [255, 226 + warmth, 140 + warmth]);
   }
   for (let streak = 0; streak < 6; streak += 1) {
     fillRect(pixels, 163 + streak * 6, 47 + streak * 3, 48 - streak * 4, 1, [229, 235, 194]);
@@ -126,8 +126,8 @@ function paintCanopy(pixels: Uint8Array): void {
     const x = leftSide ? (index * 13) % 72 : WIDTH - ((index * 17) % 76);
     const y = 52 + ((index * 19) % 65);
     const radius = 3 + (index % 5);
-    fillCircle(pixels, x, y, radius + 2, [36, 83, 70]);
-    fillCircle(pixels, x + (leftSide ? 2 : -2), y - 2, radius, index % 3 === 0 ? [78, 132, 79] : [58, 112, 75]);
+    fillCircle(pixels, x, y, radius + 2, [27, 94, 69]);
+    fillCircle(pixels, x + (leftSide ? 2 : -2), y - 2, radius, index % 3 === 0 ? [103, 158, 68] : [60, 139, 72]);
     if (index % 4 === 0) fillRect(pixels, x - 1, y, 2, 16, [75, 88, 65]);
   }
   fillRect(pixels, 0, 119, WIDTH, 8, [45, 93, 73]);

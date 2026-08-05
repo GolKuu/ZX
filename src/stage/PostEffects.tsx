@@ -64,11 +64,11 @@ export function PostEffects() {
           the engraved ring all bleed. At the previous 0.72 effectively only
           pure white bloomed, so the stage's own light sources stayed inert. */}
       <Bloom
-        intensity={0.82}
-        luminanceSmoothing={0.3}
-        luminanceThreshold={0.62}
+        intensity={0.96}
+        luminanceSmoothing={0.34}
+        luminanceThreshold={0.56}
         mipmapBlur
-        radius={0.78}
+        radius={0.82}
       />
 
       <ChromaticAberration
@@ -82,12 +82,12 @@ export function PostEffects() {
           (58, 0, 151), which is not a colour any palette in this project
           contains. Contrast eased for the same reason: stacked on AO and the
           vignette it was crushing the shade band out of the characters. */}
-      <HueSaturation hue={0} saturation={0.04} />
-      <BrightnessContrast brightness={0.01} contrast={0.06} />
+      <HueSaturation hue={0} saturation={0.1} />
+      <BrightnessContrast brightness={0.025} contrast={0.045} />
 
       {/* Fighters live near the frame edges whenever the camera is panned, so a
           0.66 vignette was dimming whichever one the player was watching. */}
-      <Vignette darkness={0.34} eskil={false} offset={0.32} />
+      <Vignette darkness={0.24} eskil={false} offset={0.38} />
 
       {/* ACES rather than AgX: AgX rolls saturated highlights toward white, and
           this stage is built out of saturated highlights — the rift core and
