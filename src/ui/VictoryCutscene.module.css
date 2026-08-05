@@ -6,7 +6,7 @@
   inset: 0;
   overflow: hidden;
   color: #fff;
-  background: #090b0d;
+  background: #244e4c;
   pointer-events: auto;
   isolation: isolate;
 }
@@ -15,7 +15,9 @@
   position: absolute;
   z-index: 5;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 54%, transparent 42%, rgb(0 0 0 / 58%) 100%);
+  background:
+    linear-gradient(90deg, rgb(3 12 12 / 68%), transparent 46%, rgb(3 10 10 / 14%)),
+    radial-gradient(ellipse at 54% 54%, transparent 36%, rgb(0 0 0 / 58%) 100%);
   content: '';
   pointer-events: none;
 }
@@ -25,29 +27,31 @@
   z-index: 0;
   inset: 0;
   background:
-    linear-gradient(180deg, rgb(6 9 12 / 10%) 0 58%, rgb(2 3 4 / 76%) 100%),
-    radial-gradient(ellipse at 50% 58%, color-mix(in srgb, var(--victory-soft) 42%, #20262a), #080a0d 66%);
+    radial-gradient(circle at 78% 17%, rgb(255 240 173 / 96%) 0 3%, rgb(255 226 145 / 28%) 4% 13%, transparent 25%),
+    linear-gradient(180deg, transparent 0 54%, rgb(25 67 58 / 18%) 55% 62%, rgb(15 37 34 / 76%) 100%),
+    linear-gradient(#5ab5c3 0%, #9dccb9 40%, #d2d8aa 65%, #567b67 100%);
   transform: scale(1.08);
   animation: backdrop-focus 6.2s ease-out both;
 }
 
 .backdrop::before {
   position: absolute;
-  inset: 12% 8% 14%;
-  border: 1px solid rgb(255 255 255 / 7%);
+  inset: 20% -5% 13%;
   background:
-    linear-gradient(90deg, transparent 49.8%, rgb(255 255 255 / 5%) 50%, transparent 50.2%),
-    linear-gradient(0deg, transparent 49.8%, rgb(255 255 255 / 4%) 50%, transparent 50.2%);
-  box-shadow: inset 0 -5rem 7rem rgb(0 0 0 / 55%);
+    linear-gradient(90deg, transparent 0 9%, #668774 9% 13%, transparent 13% 19%, #8fa486 19% 23%, transparent 23% 68%, #708d78 68% 73%, transparent 73% 82%, #557865 82% 87%, transparent 87%),
+    repeating-linear-gradient(90deg, transparent 0 7%, rgb(230 218 164 / 24%) 7.2% 7.7%),
+    linear-gradient(180deg, transparent 0 42%, #638c78 43% 50%, #acc6a0 51% 58%, #416c5f 59% 100%);
+  box-shadow: inset 0 -5rem 7rem rgb(0 0 0 / 38%);
+  clip-path: polygon(0 18%, 8% 6%, 17% 22%, 28% 4%, 39% 20%, 54% 0, 66% 18%, 77% 7%, 90% 21%, 100% 4%, 100% 100%, 0 100%);
   content: '';
-  opacity: .8;
+  opacity: .94;
 }
 
 .flash {
   position: absolute;
   z-index: 12;
   inset: 0;
-  background: #fff;
+  background: #fff8d8;
   pointer-events: none;
   animation: victory-flash 520ms ease-out both;
 }
@@ -73,8 +77,73 @@
   background-size: 400% 400%;
   image-rendering: pixelated;
   filter: contrast(1.08) saturate(1.08) drop-shadow(0 .8rem .45rem rgb(0 0 0 / 68%));
+  filter:
+    contrast(1.14)
+    saturate(1.12)
+    drop-shadow(-6px 0 0 #112d2c)
+    drop-shadow(6px 0 0 #112d2c)
+    drop-shadow(0 .8rem .45rem rgb(0 0 0 / 68%));
   animation: victory-pose 3.2s steps(1, end) both;
 }
+
+.defeatedFrame {
+  position: absolute;
+  z-index: 2;
+  left: 52%;
+  bottom: -12vh;
+  width: min(46vw, 58vh);
+  aspect-ratio: 1;
+  filter: drop-shadow(0 1.2rem .65rem rgb(0 0 0 / 64%));
+  opacity: .78;
+  transform: rotate(76deg) scaleY(.72);
+  transform-origin: 52% 72%;
+  animation: defeated-drop 900ms 100ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+.defeated {
+  position: absolute;
+  inset: 0;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-size: 400% 400%;
+  image-rendering: pixelated;
+  filter: grayscale(.45) brightness(.54) saturate(.66) drop-shadow(0 0 5px #071716);
+}
+
+.dust {
+  position: absolute;
+  z-index: 4;
+  right: 8vw;
+  bottom: 12vh;
+  width: 52vw;
+  height: 26vh;
+  pointer-events: none;
+}
+
+.dust i {
+  position: absolute;
+  left: calc((var(--dust-index, 0) + 1) * 7%);
+  bottom: 0;
+  width: .42rem;
+  height: .16rem;
+  background: var(--victory-accent);
+  box-shadow: 0 0 .8rem var(--victory-accent);
+  opacity: 0;
+  animation: dust-rise 2.5s calc(.55s + var(--dust-index, 0) * .12s) ease-out infinite;
+}
+
+.dust i:nth-child(1) { --dust-index: 0; }
+.dust i:nth-child(2) { --dust-index: 1; }
+.dust i:nth-child(3) { --dust-index: 2; }
+.dust i:nth-child(4) { --dust-index: 3; }
+.dust i:nth-child(5) { --dust-index: 4; }
+.dust i:nth-child(6) { --dust-index: 5; }
+.dust i:nth-child(7) { --dust-index: 6; }
+.dust i:nth-child(8) { --dust-index: 7; }
+.dust i:nth-child(9) { --dust-index: 8; }
+.dust i:nth-child(10) { --dust-index: 9; }
+.dust i:nth-child(11) { --dust-index: 10; }
+.dust i:nth-child(12) { --dust-index: 11; }
 
 .floorShadow {
   position: absolute;
@@ -118,7 +187,7 @@
 
 .copy p {
   margin: 0;
-  color: #d7dce2;
+  color: #edf1df;
   font: 800 clamp(.78rem, 1.25vw, 1.05rem)/1.25 ui-monospace, Consolas, monospace;
   letter-spacing: .16em;
   text-transform: uppercase;
@@ -186,6 +255,17 @@
   100% { opacity: 1; transform: translate(-50%, -51%) scale(1.08); }
 }
 
+@keyframes defeated-drop {
+  from { opacity: 0; transform: translate(13vw, -35vh) rotate(35deg) scaleY(.9); }
+  to { opacity: .78; transform: rotate(76deg) scaleY(.72); }
+}
+
+@keyframes dust-rise {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0); }
+  20% { opacity: .78; }
+  100% { opacity: 0; transform: translate(4vw, -19vh) rotate(220deg); }
+}
+
 @keyframes victory-pose {
   0%, 12% { background-position: 0 0; }
   12.01%, 25% { background-position: 33.333% 0; }
@@ -220,6 +300,12 @@
     max-width: 78vw;
   }
 
+  .defeatedFrame {
+    left: 42%;
+    bottom: -2vh;
+    width: min(60vw, 44vh);
+  }
+
   .copy h1 { font-size: clamp(2.5rem, 14vw, 5rem); }
 }
 
@@ -228,6 +314,8 @@
   .flash,
   .fighterFrame,
   .fighter,
+  .defeatedFrame,
+  .dust i,
   .floorShadow,
   .copy,
   .letterboxTop,
