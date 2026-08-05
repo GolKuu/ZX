@@ -2,6 +2,7 @@
 
 import type { StoryLine } from '@/src/story/dialogue';
 import type { StoryShot } from '@/src/story/film';
+import { CinematicAtmosphere } from './CinematicAtmosphere';
 import { StoryCinematicStage } from './StoryCinematicStage';
 import styles from './StoryFilmStage.module.css';
 
@@ -69,6 +70,7 @@ export function StoryFilmStage({
               />
             ))}
           </div>
+          <CinematicAtmosphere effect={shot.effect} framing={shot.framing} />
         </div>
         <div className={styles.wash} />
         <div className={styles.flash} />

@@ -1,0 +1,135 @@
+.atmosphere {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.backlight {
+  position: absolute;
+  inset: -12%;
+  background:
+    radial-gradient(ellipse at 18% 36%, rgb(118 240 255 / 24%), transparent 25%),
+    radial-gradient(ellipse at 68% 28%, rgb(255 74 114 / 16%), transparent 28%),
+    linear-gradient(110deg, rgb(4 14 24 / 88%), transparent 38% 58%, rgb(5 4 14 / 82%));
+  mix-blend-mode: screen;
+  animation: light-breathe 7s ease-in-out infinite;
+}
+
+.volumes i {
+  position: absolute;
+  top: -24%;
+  width: 22%;
+  height: 142%;
+  background: linear-gradient(90deg, transparent, rgb(164 239 255 / 8%), transparent);
+  filter: blur(18px);
+  mix-blend-mode: screen;
+  transform: rotate(12deg);
+  animation: volume-drift 9s ease-in-out infinite alternate;
+}
+
+.volumes i:nth-child(1) { left: 5%; }
+.volumes i:nth-child(2) { left: 44%; animation-delay: -3s; animation-duration: 12s; }
+.volumes i:nth-child(3) { left: 78%; animation-delay: -6s; animation-duration: 15s; }
+
+.dust i {
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  width: var(--size);
+  aspect-ratio: 1;
+  background: #d9fbff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgb(127 237 255 / 85%);
+  opacity: 0;
+  animation: dust-rise var(--speed) var(--delay) linear infinite;
+}
+
+.debris i {
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  width: calc((var(--debris) + 5) * 0.22cqw);
+  height: calc((var(--debris) + 3) * 0.12cqh);
+  background: linear-gradient(145deg, #162934, #030609 66%);
+  clip-path: polygon(0 22%, 78% 0, 100% 66%, 31% 100%);
+  filter: blur(calc(var(--debris) * 0.12px)) drop-shadow(0 0 5px rgb(85 224 236 / 24%));
+  opacity: 0.72;
+  transform: rotate(var(--rotate)) scale(var(--scale));
+  animation: debris-hover calc(5s + var(--debris) * 1.3s) ease-in-out infinite alternate;
+}
+
+.lensFlare {
+  position: absolute;
+  top: 27%;
+  left: 13%;
+  width: 62%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgb(211 255 255 / 78%), transparent);
+  box-shadow: 0 0 18px rgb(90 235 255 / 65%);
+  opacity: 0.38;
+  mix-blend-mode: screen;
+  transform: rotate(-1deg);
+}
+
+.lensFlare i {
+  position: absolute;
+  top: 50%;
+  width: 2.8cqw;
+  aspect-ratio: 1;
+  border: 1px solid rgb(133 241 255 / 34%);
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.lensFlare i:nth-child(1) { left: 42%; }
+.lensFlare i:nth-child(2) { left: 61%; width: 1.2cqw; }
+.lensFlare i:nth-child(3) { left: 77%; width: 4.8cqw; opacity: 0.45; }
+
+.cut {
+  position: absolute;
+  inset: 0;
+  background: #eaffff;
+  opacity: 0;
+  mix-blend-mode: screen;
+  animation: cut-in 0.34s steps(2, end) both;
+}
+
+.atmosphere[data-effect="possession"] .backlight,
+.atmosphere[data-effect="tear"] .backlight {
+  filter: hue-rotate(92deg) saturate(1.7);
+}
+
+.atmosphere[data-effect="flash"] .debris i,
+.atmosphere[data-effect="shatter"] .debris i { animation-duration: 0.65s; }
+.atmosphere[data-framing="macro"] .dust { opacity: 0.35; filter: blur(2px); }
+.atmosphere[data-framing="void"] .lensFlare { opacity: 0.12; }
+
+@keyframes cut-in {
+  0% { opacity: 0.7; }
+  34% { opacity: 0.08; }
+  100% { opacity: 0; }
+}
+
+@keyframes dust-rise {
+  0% { opacity: 0; translate: 0 4cqh; }
+  18%, 72% { opacity: 0.62; }
+  100% { opacity: 0; translate: 2.2cqw -12cqh; }
+}
+
+@keyframes debris-hover {
+  to { translate: calc((var(--debris) - 2) * 0.35cqw) -1.4cqh; rotate: 8deg; }
+}
+
+@keyframes light-breathe {
+  50% { opacity: 0.72; transform: scale(1.035); }
+}
+
+@keyframes volume-drift {
+  to { translate: 5cqw 0; opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atmosphere * { animation-duration: 0.25s !important; animation-iteration-count: 1 !important; }
+}
