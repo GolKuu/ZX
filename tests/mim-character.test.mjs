@@ -35,6 +35,20 @@ test('MIM owns one unique move for every attack button', () => {
   }
 });
 
+test('simultaneous J+I resolves to MIM 540 kick', () => {
+  const buffer = new InputBuffer();
+  buffer.push(5, 0);
+  buffer.push(5, BUTTON_BIT.lp | BUTTON_BIT.hp);
+
+  assert.equal(
+    resolveCommand(buffer, MIM_COMMANDS)?.moveId,
+    MIM_MOVE_IDS.vaultKnee,
+  );
+  const move = MIM_MOVES.find(({ id }) => id === MIM_MOVE_IDS.vaultKnee);
+  assert.equal(move?.hitboxes.length, 3);
+  assert.equal(move?.hitboxes.at(-1)?.hit.groundBounce?.count, 1);
+});
+
 test('MIM frame data contains four damaging, active attacks', () => {
   assert.deepEqual(
     MIM_MOVES.map(({ id }) => id),

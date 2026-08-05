@@ -239,3 +239,17 @@ test('kick animation has anticipation, contact travel and a neutral return', () 
     x: 0, y: 0, rotation: 0, turnY: 0, scaleX: 1, scaleY: 1,
   });
 });
+
+test('MIM J+I performs an airborne 540 heel before landing neutral', () => {
+  const coil = photoAttackMotion('mim.dual.vault-knee', 0.16);
+  const apex = photoAttackMotion('mim.dual.vault-knee', 0.5);
+  const heel = photoAttackMotion('mim.dual.vault-knee', 0.7);
+  const recovery = photoAttackMotion('mim.dual.vault-knee', 1);
+
+  assert.ok(coil.x < 0 && coil.y < 0, 'the kick must compress before takeoff');
+  assert.ok(apex.y > 0.35, 'the 540 must visibly leave the floor');
+  assert.ok(heel.rotation >= Math.PI * 3, 'the heel must travel at least 540 degrees');
+  assert.deepEqual(recovery, {
+    x: 0, y: 0, rotation: 0, turnY: 0, scaleX: 1, scaleY: 1,
+  });
+});

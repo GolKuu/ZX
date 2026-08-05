@@ -32,6 +32,9 @@ export interface PhotoAttackMotion {
  */
 export const MAX_HIP_TURN = 0.26;
 
+/** MIM's simultaneous J+I technique, animated as a 540-degree heel kick. */
+export const PHOTO_540_KICK_MOVE_ID = 'mim.dual.vault-knee';
+
 /** The physical I/L standing normals for every fighter in the roster. */
 export const PHOTO_KICK_NORMAL_IDS = [
   'mim.capoeira',
@@ -321,11 +324,61 @@ export function photoAttackMotion(
   moveId: string,
   progress: number,
 ): PhotoAttackMotion {
+  if (moveId.toLowerCase() === PHOTO_540_KICK_MOVE_ID) {
+    return fiveFortyKickMotion(progress);
+  }
   const standingNormal = PHOTO_NORMAL_ATTACK_KINDS[moveId.toLowerCase()];
   if (standingNormal !== undefined) {
     return motionFrom(STANDING_NORMAL_MOTION[standingNormal], progress);
   }
   return motionFrom(GENERIC_MOTION[photoAttackKind(moveId)], progress);
+}
+
+function fiveFortyKickMotion(progress: number): PhotoAttackMotion {
+  const p = clamp01(progress);
+  if (p < 0.18) {
+    const coil = smooth(p / 0.18);
+    return {
+      x: -0.13 * coil,
+      y: -0.12 * coil,
+      rotation: -0.22 * coil,
+      turnY: MAX_HIP_TURN * 0.55 * coil,
+      scaleX: 1 + 0.08 * coil,
+      scaleY: 1 - 0.08 * coil,
+    };
+  }
+  if (p < 0.7) {
+    const spin = smooth((p - 0.18) / 0.52);
+    const arc = Math.sin(spin * Math.PI);
+    return {
+      x: -0.13 + 0.5 * spin,
+      y: -0.12 + 0.62 * arc + 0.2 * spin,
+      rotation: -0.22 + (Math.PI * 3 + 0.22) * spin,
+      turnY: MAX_HIP_TURN * Math.sin(spin * Math.PI * 2),
+      scaleX: 1.08 + 0.12 * arc,
+      scaleY: 0.92 + 0.16 * arc,
+    };
+  }
+  if (p < 0.86) {
+    const landing = smooth((p - 0.7) / 0.16);
+    return {
+      x: 0.37 - 0.23 * landing,
+      y: 0.08 * (1 - landing),
+      rotation: Math.PI * (3 + landing),
+      turnY: -MAX_HIP_TURN * (1 - landing),
+      scaleX: 1.08 - 0.08 * landing,
+      scaleY: 0.94 + 0.06 * landing,
+    };
+  }
+  const settle = 1 - smooth((p - 0.86) / 0.14);
+  return {
+    x: 0.14 * settle,
+    y: settle === 0 ? 0 : -0.08 * settle,
+    rotation: 0,
+    turnY: 0,
+    scaleX: 1 + 0.1 * settle,
+    scaleY: 1 - 0.08 * settle,
+  };
 }
 
 function kickEnvelope(progress: number): { chamber: number; contact: number } {
