@@ -13,12 +13,12 @@ export interface ArenaDefinition {
 export const ARENAS: readonly ArenaDefinition[] = [
   {
     id: 'null-circle',
-    name: 'NULL CIRCLE',
-    theme: 'Тёмный турнирный разлом',
-    note: 'Нейтральная арена без опасностей. Лучший выбор для обучения.',
+    name: 'MONASTERY CIRCLE',
+    theme: 'Священный каменный двор',
+    note: 'Круглая арена древнего монастыря среди гор. Свечи и закатный свет не влияют на баланс боя.',
     performance: 'LOW',
-    background: '#07061d',
-    fog: '#10082c',
+    background: '#17130f',
+    fog: '#49392b',
   },
   {
     id: 'storm-dome',

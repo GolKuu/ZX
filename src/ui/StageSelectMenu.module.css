@@ -18,6 +18,7 @@
 .grid { display: grid; align-items: stretch; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 2vw, 28px); }
 .grid button { position: relative; overflow: hidden; padding: clamp(18px, 3vw, 36px); color: inherit; text-align: left; cursor: pointer; background: #0b111c; border: 1px solid #31445c; }
 .grid button::before { position: absolute; inset: 0; content: ''; opacity: .45; background: linear-gradient(145deg, transparent 30%, #203850); }
+.grid button[data-arena='null-circle']::before { background: linear-gradient(145deg, transparent 20%, #6d4629 70%, #c28a44); }
 .grid button[data-arena='storm-dome']::before { background: linear-gradient(145deg, transparent 25%, #064a5a); }
 .grid button[data-arena='ruined-megacity']::before { background: linear-gradient(145deg, transparent 25%, #4a2635); }
 .grid button[data-focused='true'] { border-color: #7ee7ff; outline: 3px solid rgb(126 231 255 / 18%); transform: translateY(-4px); }
