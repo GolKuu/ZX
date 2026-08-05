@@ -1,49 +1,32 @@
 'use client';
 
-const STONE_ROWS = [-0.25, -0.72, -1.28, -1.95, -2.78, -3.78, -4.95, -6.35, -8, -9.9, -12.1];
-const STONE_SEAMS = Array.from({ length: 19 }, (_, index) => -9 + index);
-const MOSS_PATCHES = Array.from({ length: 28 }, (_, index) => ({
-  x: -9.4 + ((index * 23) % 47) * 0.4,
-  z: -0.35 - ((index * 31) % 45) * 0.25,
-  width: 0.18 + (index % 4) * 0.1,
-}));
+import { useEffect, useMemo } from 'react';
+import { createArenaFloorTexture } from './arenaFloorTexture';
 
 export function RetroGridFloor() {
+  const texture = useMemo(() => createArenaFloorTexture(), []);
+  useEffect(() => () => texture.dispose(), [texture]);
+
   return (
-    <group position-y={-0.006}>
-      <mesh position={[0, 0, -5.15]} rotation-x={-Math.PI / 2}>
-        <planeGeometry args={[26, 15.4]} />
-        <meshBasicMaterial color="#4f8065" fog={false} />
+    <group position-y={-0.012}>
+      <mesh position={[0, -0.025, -8.5]} rotation-x={-Math.PI / 2}>
+        <planeGeometry args={[46, 34]} />
+        <meshBasicMaterial color="#294e45" fog={false} />
       </mesh>
-      <mesh position={[0, 0.006, -4.6]} rotation-x={-Math.PI / 2}>
-        <planeGeometry args={[20.5, 12.8]} />
-        <meshBasicMaterial color="#96ad8b" fog={false} />
+      <mesh position={[0, 0, -8.2]} rotation-x={-Math.PI / 2}>
+        <planeGeometry args={[44, 32]} />
+        <meshBasicMaterial fog={false} map={texture} toneMapped={false} />
       </mesh>
-
-      {STONE_SEAMS.map((x, index) => (
-        <mesh key={x} position={[x, 0.014, -5]} rotation-x={-Math.PI / 2} rotation-z={(index % 3 - 1) * 0.006}>
-          <planeGeometry args={[index % 4 === 0 ? 0.055 : 0.025, 13.5]} />
-          <meshBasicMaterial color={index % 4 === 0 ? '#3f6258' : '#6e8d75'} depthWrite={false} fog={false} />
-        </mesh>
-      ))}
-
-      {STONE_ROWS.map((z, index) => (
-        <mesh key={z} position={[0, 0.018, z]} rotation-x={-Math.PI / 2}>
-          <planeGeometry args={[22, index % 3 === 0 ? 0.075 : 0.04]} />
-          <meshBasicMaterial color={index % 3 === 0 ? '#426a5b' : '#75937b'} depthWrite={false} fog={false} />
-        </mesh>
-      ))}
-
-      {MOSS_PATCHES.map((patch, index) => (
-        <mesh key={`${patch.x}-${patch.z}`} position={[patch.x, 0.024, patch.z]} rotation-x={-Math.PI / 2} rotation-z={(index % 5) * 0.2}>
-          <planeGeometry args={[patch.width, 0.045 + (index % 3) * 0.025]} />
-          <meshBasicMaterial color={index % 3 === 0 ? '#b6c94e' : '#68a85b'} depthWrite={false} opacity={0.8} transparent />
-        </mesh>
-      ))}
-
-      <mesh position={[0, 0.026, -12.65]} rotation-x={-Math.PI / 2}>
-        <planeGeometry args={[28, 0.18]} />
-        <meshBasicMaterial color="#d7e8c5" depthWrite={false} opacity={0.72} toneMapped={false} transparent />
+      <mesh position={[0, 0.018, -5.4]} rotation-x={-Math.PI / 2}>
+        <ringGeometry args={[1.28, 1.48, 64]} />
+        <meshBasicMaterial
+          color="#f4dfa0"
+          depthWrite={false}
+          fog={false}
+          opacity={0.74}
+          toneMapped={false}
+          transparent
+        />
       </mesh>
     </group>
   );

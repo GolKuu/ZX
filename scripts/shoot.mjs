@@ -99,20 +99,42 @@ async function main() {
     await page.screenshot({ path: file });
     console.log(`shot  ${name}`);
   };
+  const currentScreen = async () => page.evaluate(
+    () => document.querySelector('[data-screen]')?.getAttribute('data-screen') ?? 'unknown',
+  );
+  const waitForScreen = async (screen) => {
+    await page.waitForFunction(
+      (expected) => document.querySelector('[data-screen]')?.getAttribute('data-screen') === expected,
+      screen,
+      { timeout: 30_000 },
+    );
+  };
 
   console.log(`open  ${args.url}/play`);
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
   await page.goto(`${args.url}/play`, { waitUntil: 'load', timeout: 120_000 });
 
   // The route compiles the render pipeline on first hit; give dev-mode time.
   await page.waitForSelector('canvas', { timeout: 180_000 });
   await wait(2_500);
+  const initialScreen = await currentScreen();
+  if (initialScreen === 'result' || initialScreen === 'victory') {
+    await page.locator(`[data-screen="${initialScreen}"] button`).last().click();
+    await waitForScreen('mode');
+  }
   await shot('01-mode-menu');
 
   // mode -> character select -> P1 -> P2 -> versus -> fight
   await page.keyboard.press('ArrowDown'); // focus "vs AI"
   await wait(200);
   await page.keyboard.press('Enter');
-  await wait(1_200);
+  await waitForScreen('difficulty');
+  await page.keyboard.press('Enter'); // default AI difficulty
+  await waitForScreen('character');
+  await wait(800);
   await shot('02-character-select');
 
   // Walk the roster cursor onto the requested fighters before confirming.
@@ -127,17 +149,18 @@ async function main() {
     await wait(120);
   }
   await page.keyboard.press('Enter');
-  await wait(500);
-  await page.keyboard.press('Enter');
-  await wait(1_200);
+  await waitForScreen('stage');
+  await wait(800);
   await shot('03-stage-select');
 
   await page.keyboard.press('Enter');
-  await wait(1_200);
+  await waitForScreen('versus');
+  await wait(800);
   await shot('04-versus');
 
   await page.keyboard.press('Enter');
-  await wait(2_500);
+  await waitForScreen('fight');
+  await wait(2_000);
   await shot('05-fight-neutral');
 
   // A few frames of actual combat: walk in, then throw attacks so the shot

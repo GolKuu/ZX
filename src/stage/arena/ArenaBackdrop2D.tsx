@@ -8,9 +8,15 @@ export function ArenaBackdrop2D() {
   useEffect(() => () => texture.dispose(), [texture]);
 
   return (
-    <mesh position={[0, 3.55, -18]} renderOrder={-20}>
-      <planeGeometry args={[32, 18]} />
-      <meshBasicMaterial depthWrite={false} fog={false} map={texture} toneMapped={false} />
-    </mesh>
+    <group renderOrder={-20}>
+      <mesh position={[0, 4.2, -22]}>
+        <planeGeometry args={[64, 36]} />
+        <meshBasicMaterial depthWrite={false} fog={false} map={texture} toneMapped={false} />
+      </mesh>
+      <mesh position={[0, -3.6, -20.5]}>
+        <planeGeometry args={[68, 12]} />
+        <meshBasicMaterial color="#315e50" depthWrite={false} fog={false} />
+      </mesh>
+    </group>
   );
 }
