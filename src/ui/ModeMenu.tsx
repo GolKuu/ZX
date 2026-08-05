@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useHudStore, type MatchMode } from '@/src/store/hudStore';
 import { useMenuNavigation } from './useMenuNavigation';
@@ -68,11 +67,6 @@ const MODES = [
   description: string;
 }[];
 
-const MODE_ARTWORKS = [
-  { id: 'local', src: '/assets/modes/local-battle-preview.webp' },
-  { id: 'ai', src: '/assets/modes/ai-battle-preview.webp' },
-] as const;
-
 export function ModeMenu() {
   const router = useRouter();
   const menuFocus = useHudStore((state) => state.menuFocus);
@@ -128,26 +122,10 @@ export function ModeMenu() {
       aria-label="Выбор режима боя"
       aria-modal="true"
       className={styles.scrim}
+      data-mode={selected.id}
       role="dialog"
     >
-      {MODE_ARTWORKS.map((artwork) => (
-        <div
-          key={artwork.id}
-          aria-hidden="true"
-          className={styles.modeArtwork}
-          data-variant={artwork.id}
-          data-visible={selected.id === artwork.id}
-        >
-          <Image
-            alt=""
-            className={styles.modeArtworkImage}
-            fill
-            priority={artwork.id === 'local'}
-            sizes="100vw"
-            src={artwork.src}
-          />
-        </div>
-      ))}
+      <div aria-hidden="true" className={styles.modeBackdrop} />
       <ModeFightPreview />
 
       <header className={styles.brand}>

@@ -1,51 +1,109 @@
 .scrim {
   --menu-blue: #9fd8ff;
   --menu-line: rgb(146 173 205 / 22%);
+  --mode-accent: #57c9ff;
+  --mode-secondary: #152943;
   position: absolute;
   z-index: 90;
   inset: 0;
   overflow: hidden;
   color: #edf4fb;
-  background:
-    radial-gradient(circle at 78% 44%, rgb(40 115 151 / 18%), transparent 30cqw),
-    linear-gradient(110deg, rgb(4 7 11 / 98%) 0 57%, rgb(5 9 14 / 92%) 57%),
-    #05070a;
+  background: #05070a;
   container-type: inline-size;
   pointer-events: auto;
 }
 
-.modeArtwork {
+.modeBackdrop {
   position: absolute;
   z-index: 0;
   inset: 0;
   overflow: hidden;
-  opacity: 0;
   pointer-events: none;
-  transition: opacity 260ms ease;
+  background:
+    radial-gradient(circle at 78% 42%, color-mix(in srgb, var(--mode-accent) 20%, transparent), transparent 26cqw),
+    linear-gradient(115deg, rgb(3 6 10 / 98%) 0 52%, color-mix(in srgb, var(--mode-secondary) 76%, #05070a) 100%);
+  transition: background 280ms ease;
 }
 
-.modeArtwork[data-visible="true"] { opacity: 1; }
-
-.modeArtwork::after {
+.modeBackdrop::before,
+.modeBackdrop::after {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(90deg, rgb(4 7 11 / 32%) 0 48%, rgb(5 9 14 / 88%) 72% 100%),
-    linear-gradient(180deg, rgb(4 7 11 / 35%), transparent 42%, rgb(4 7 11 / 82%));
   content: "";
 }
 
-.modeArtwork[data-variant="local"]::after {
+.modeBackdrop::before {
   background:
-    linear-gradient(90deg, rgb(4 7 11 / 74%) 0 48%, rgb(5 9 14 / 84%) 73% 100%),
-    radial-gradient(circle at 50% 55%, transparent 0 13%, rgb(4 7 11 / 34%) 35%),
-    linear-gradient(180deg, rgb(4 7 11 / 42%), transparent 38%, rgb(4 7 11 / 86%));
+    repeating-linear-gradient(90deg, transparent 0 7cqw, color-mix(in srgb, var(--mode-accent) 8%, transparent) 7.05cqw 7.12cqw),
+    repeating-linear-gradient(0deg, transparent 0 7cqw, color-mix(in srgb, var(--mode-accent) 7%, transparent) 7.05cqw 7.12cqw);
+  mask-image: linear-gradient(90deg, transparent 28%, #000 58% 100%);
+  transform: perspective(42cqw) rotateX(58deg) scale(1.35) translateY(22%);
+  transform-origin: bottom;
+  animation: backdrop-drift 12s linear infinite;
 }
 
-.modeArtworkImage {
-  object-fit: cover;
-  object-position: center 47%;
-  transform: scale(1.015);
+.modeBackdrop::after {
+  inset: 11% 4% 10% 51%;
+  border: 1px solid color-mix(in srgb, var(--mode-accent) 22%, transparent);
+  background:
+    radial-gradient(circle, transparent 0 22%, color-mix(in srgb, var(--mode-accent) 8%, transparent) 22.3% 22.8%, transparent 23.1% 42%, color-mix(in srgb, var(--mode-accent) 10%, transparent) 42.3% 42.7%, transparent 43%),
+    conic-gradient(from 18deg, transparent 0 8%, color-mix(in srgb, var(--mode-accent) 16%, transparent) 8.2% 8.8%, transparent 9% 23%, color-mix(in srgb, var(--mode-accent) 11%, transparent) 23.2% 24%, transparent 24.2%);
+  border-radius: 50%;
+  opacity: .75;
+  animation: backdrop-orbit 24s linear infinite;
+}
+
+.scrim[data-mode='story'] { --mode-accent: #ffb45e; --mode-secondary: #3d2118; }
+.scrim[data-mode='ai'] { --mode-accent: #54dcff; --mode-secondary: #102d43; }
+.scrim[data-mode='local'] { --mode-accent: #ff5c7d; --mode-secondary: #35172a; }
+.scrim[data-mode='training'] { --mode-accent: #62e694; --mode-secondary: #123523; }
+.scrim[data-mode='tutorial'] { --mode-accent: #ffd763; --mode-secondary: #3b3216; }
+.scrim[data-mode='progression'] { --mode-accent: #be83ff; --mode-secondary: #291940; }
+.scrim[data-mode='online'] { --mode-accent: #5e9bff; --mode-secondary: #14274d; }
+
+.scrim[data-mode='story'] .modeBackdrop::before {
+  background: repeating-linear-gradient(118deg, transparent 0 6cqw, rgb(255 180 94 / 8%) 6.1cqw 6.25cqw);
+  clip-path: polygon(34% 0, 100% 0, 100% 100%, 7% 100%, 42% 57%);
+}
+
+.scrim[data-mode='local'] .modeBackdrop {
+  background:
+    radial-gradient(circle at 68% 46%, rgb(83 202 255 / 18%), transparent 20cqw),
+    radial-gradient(circle at 87% 47%, rgb(255 72 113 / 20%), transparent 22cqw),
+    linear-gradient(115deg, #04070b 0 53%, #281321 100%);
+}
+
+.scrim[data-mode='training'] .modeBackdrop::after {
+  inset: 18% 8% 16% 55%;
+  border-radius: 0;
+  background: repeating-linear-gradient(135deg, transparent 0 9%, rgb(98 230 148 / 12%) 9.3% 9.7%);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+.scrim[data-mode='tutorial'] .modeBackdrop::before {
+  background:
+    linear-gradient(90deg, transparent 0 62%, rgb(255 215 99 / 12%) 62.2% 62.5%, transparent 62.7%),
+    repeating-radial-gradient(circle at 76% 48%, transparent 0 3cqw, rgb(255 215 99 / 9%) 3.05cqw 3.15cqw);
+}
+
+.scrim[data-mode='progression'] .modeBackdrop::before {
+  background:
+    linear-gradient(62deg, transparent 0 68%, rgb(190 131 255 / 14%) 68.2% 68.5%, transparent 68.7%),
+    linear-gradient(118deg, transparent 0 73%, rgb(190 131 255 / 12%) 73.2% 73.5%, transparent 73.7%);
+}
+
+.scrim[data-mode='online'] .modeBackdrop::before {
+  background:
+    radial-gradient(circle, rgb(94 155 255 / 42%) 0 .12cqw, transparent .15cqw) 0 0 / 5cqw 5cqw,
+    linear-gradient(25deg, transparent 0 49.8%, rgb(94 155 255 / 8%) 50% 50.2%, transparent 50.4%);
+}
+
+@keyframes backdrop-drift {
+  to { background-position: 7cqw 0, 0 7cqw; }
+}
+
+@keyframes backdrop-orbit {
+  to { transform: rotate(360deg); }
 }
 
 .scrim::before,
