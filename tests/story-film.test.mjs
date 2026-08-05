@@ -5,6 +5,11 @@ import { STORY_DIALOGUE } from '../.sim-test-build/src/story/dialogue.js';
 import { filmSeconds, filmShot } from '../.sim-test-build/src/story/film.js';
 import { storyFilm } from '../.sim-test-build/src/story/filmScript.js';
 import { PROLOGUE_FILM } from '../.sim-test-build/src/story/prologueFilm.js';
+import {
+  STORY_FRAME_MS,
+  STORY_FRAME_RATE,
+  storyRenderFrame,
+} from '../.sim-test-build/src/story/frameTimeline.js';
 
 const FRAMINGS = ['void', 'wide', 'medium', 'close', 'macro', 'low'];
 const MOVES = ['hold', 'push', 'pull', 'pan-left', 'pan-right', 'crane', 'handheld', 'snap'];
@@ -13,6 +18,23 @@ const EFFECTS = ['none', 'count', 'tear', 'echo-storm', 'possession', 'flash', '
 const CUES = ['hush', 'drone', 'tick', 'swell', 'impact'];
 
 const everyFilm = () => STORY_CHAPTERS.map((chapter, index) => [chapter, storyFilm(index), index]);
+
+test('the story director redraws one deterministic picture at 24 FPS', () => {
+  assert.equal(STORY_FRAME_RATE, 24);
+  assert.equal(storyRenderFrame(0, 1_000).index, 0);
+  assert.equal(storyRenderFrame(STORY_FRAME_MS - 0.01, 1_000).index, 0);
+  assert.equal(storyRenderFrame(STORY_FRAME_MS, 1_000).index, 1);
+  assert.deepEqual(storyRenderFrame(500, 1_000), {
+    index: 12,
+    timeMs: 500,
+    progress: 0.5,
+  });
+  assert.deepEqual(storyRenderFrame(1_500, 1_000), {
+    index: 24,
+    timeMs: 1_000,
+    progress: 1,
+  });
+});
 
 test('every chapter is cut as a shot list the renderer can actually stage', () => {
   for (const [chapter, film] of everyFilm()) {

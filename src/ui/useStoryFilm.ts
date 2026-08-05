@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { filmShot, type StoryFilm, type StoryShot } from '@/src/story/film';
+import { storyRenderFrame } from '@/src/story/frameTimeline';
 
 export interface StoryFilmPlayback {
   readonly shotIndex: number;
@@ -11,7 +12,8 @@ export interface StoryFilmPlayback {
   readonly waiting: boolean;
   /**
    * Attach to the scene root: the shot's 0–1 progress is written on it as
-   * `--shot-progress`. A callback rather than a ref object, so nothing that
+   * `--shot-progress`, together with the current 24 FPS drawing. A callback
+   * rather than a ref object, so nothing that
    * renders the scene ever reads a ref while rendering.
    */
   readonly attachRoot: (node: HTMLElement | null) => void;
@@ -24,9 +26,9 @@ export interface StoryFilmPlayback {
  *
  * The cutscene runs itself — a scene the player has to click through one line at
  * a time is a slideshow, not a cutscene. Progress is written straight onto the
- * scene element as `--shot-progress` every frame instead of being held in state,
- * so the camera, the effects and the timeline bar all read the same clock
- * without re-rendering React sixty times a second.
+ * scene element at a fixed 24 FPS instead of being held in state. Every CSS
+ * animation in the picture is paused and redrawn at that exact film-frame time,
+ * so the camera, actors and effects share one clock without re-rendering React.
  *
  * `hold` is the player's subtitle preference inverted: with auto-advance off the
  * film stops at the end of every spoken shot and waits.
@@ -40,11 +42,17 @@ export function useStoryFilm(
   const [waiting, setWaiting] = useState(false);
   const rootRef = useRef<HTMLElement | null>(null);
   const elapsedRef = useRef(0);
+  const renderedFrameRef = useRef(-1);
+  const animationStateRef = useRef<FrameAnimationState>({
+    picture: null,
+    animations: [],
+  });
   const shot = filmShot(film, shotIndex);
   const isLast = shotIndex >= film.shots.length - 1;
 
   const advance = useCallback(() => {
     elapsedRef.current = 0;
+    renderedFrameRef.current = -1;
     setWaiting(false);
     if (isLast) onEnd();
     else setShotIndex((index) => index + 1);
@@ -53,6 +61,7 @@ export function useStoryFilm(
   // A new chapter reuses the mounted scene, so the film has to rewind with it.
   useEffect(() => {
     elapsedRef.current = 0;
+    renderedFrameRef.current = -1;
     setShotIndex(0);
     setWaiting(false);
   }, [film]);
@@ -65,9 +74,12 @@ export function useStoryFilm(
     let frame = requestAnimationFrame(function tick(now: number) {
       elapsedRef.current += now - previous;
       previous = now;
-      const progress = Math.min(1, elapsedRef.current / total);
-      rootRef.current?.style.setProperty('--shot-progress', progress.toFixed(3));
-      if (progress < 1) {
+      const drawing = storyRenderFrame(elapsedRef.current, total);
+      if (drawing.index !== renderedFrameRef.current) {
+        renderedFrameRef.current = drawing.index;
+        paintStoryFrame(rootRef.current, drawing, animationStateRef.current);
+      }
+      if (drawing.progress < 1) {
         frame = requestAnimationFrame(tick);
         return;
       }
@@ -81,4 +93,32 @@ export function useStoryFilm(
   const attachRoot = useCallback((node: HTMLElement | null) => { rootRef.current = node; }, []);
 
   return { shotIndex, shot, paused, waiting, attachRoot, next: advance, togglePause };
+}
+
+interface FrameAnimationState {
+  picture: Element | null;
+  animations: Animation[];
+}
+
+/** Redraw the complete picture at one exact 24 FPS timeline position. */
+function paintStoryFrame(
+  root: HTMLElement | null,
+  drawing: ReturnType<typeof storyRenderFrame>,
+  animationState: FrameAnimationState,
+): void {
+  if (root === null) return;
+  root.style.setProperty('--shot-progress', drawing.progress.toFixed(4));
+  root.style.setProperty('--story-frame', String(drawing.index));
+  root.dataset.storyFrame = String(drawing.index);
+  root.dataset.storyFps = '24';
+
+  const picture = root.querySelector('[data-story-frame-root="true"]');
+  if (picture !== animationState.picture) {
+    animationState.picture = picture;
+    animationState.animations = picture?.getAnimations({ subtree: true }) ?? [];
+    for (const animation of animationState.animations) animation.pause();
+  }
+  for (const animation of animationState.animations) {
+    animation.currentTime = drawing.timeMs;
+  }
 }

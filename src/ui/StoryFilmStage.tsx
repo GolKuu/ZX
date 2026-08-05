@@ -15,7 +15,8 @@ import styles from './StoryFilmStage.module.css';
  * run, and the lens dirt (grain, aberration, vignette) that makes the result
  * read as film rather than as a web page.
  *
- * `shotIndex` remounts the frame so every keyframe restarts on the cut.
+ * `shotIndex` remounts the frame so every keyframe restarts on the cut. The film
+ * root is also the boundary the director redraws at exactly 24 FPS.
  */
 export function StoryFilmStage({
   chapterIndex,
@@ -32,6 +33,7 @@ export function StoryFilmStage({
     <div
       aria-hidden="true"
       className={styles.film}
+      data-story-frame-root="true"
       data-effect={shot.effect}
       data-framing={shot.framing}
       data-move={shot.move}
