@@ -16,6 +16,7 @@ export function VictoryCutscene() {
   const finished = useRef(false);
   const winnerIndex = result.winner.startsWith('P2') ? 1 : 0;
   const characterId = selection[winnerIndex];
+  const defeatedId = selection[winnerIndex === 0 ? 1 : 0];
   const character = getCharacterDefinition(characterId);
   const cinematic = victoryCinematicFor(characterId);
 
@@ -55,12 +56,21 @@ export function VictoryCutscene() {
     >
       <div className={styles.flash} aria-hidden="true" />
       <div className={styles.backdrop} aria-hidden="true" />
+      <div className={styles.defeatedFrame} aria-hidden="true">
+        <div
+          className={styles.defeated}
+          style={{ backgroundImage: `url('/sprites/reference-fighters/${defeatedId}-atlas.webp')` }}
+        />
+      </div>
       <div className={styles.fighterFrame} aria-hidden="true">
         <div className={styles.floorShadow} />
         <div
           className={styles.fighter}
           style={{ backgroundImage: `url('/sprites/reference-fighters/${characterId}-atlas.webp')` }}
         />
+      </div>
+      <div className={styles.dust} aria-hidden="true">
+        {Array.from({ length: 12 }, (_, index) => <i key={index} />)}
       </div>
       <div className={styles.copy}>
         <span className={styles.eyebrow}>{winnerIndex === 0 ? 'PLAYER 1' : 'PLAYER 2'} // WINNER</span>

@@ -183,6 +183,10 @@ export function PhotoSpriteFighter({
       {kind === 'vorgh' ? <VorghEffects fighterId={fighterId} /> : null}
       <group ref={outer}>
         {kind === 'mim' ? <MimAttackEffects fighterId={fighterId} /> : null}
+        <mesh position={[0, 0.025, -0.18]} rotation-x={-Math.PI / 2} scale={[1.25, 0.42, 1]}>
+          <circleGeometry args={[0.72, 32]} />
+          <meshBasicMaterial color="#09130f" depthWrite={false} opacity={0.42} transparent />
+        </mesh>
         <group ref={body} position-y={CENTER_Y}>
           {textures === null ? null : (
             <>
@@ -198,6 +202,26 @@ export function PhotoSpriteFighter({
                   width={width}
                 />
               ))}
+              <PhotoPlane
+                materialRef={() => undefined}
+                opacity={0.76}
+                positionZ={-0.012}
+                scale={1.055}
+                texture={textures.current}
+                tint="#102d31"
+                toneMapped={false}
+                width={width}
+              />
+              <PhotoPlane
+                materialRef={() => undefined}
+                opacity={0.58}
+                positionZ={-0.008}
+                scale={1.028}
+                texture={textures.current}
+                tint={fighterId === 'p1' ? '#5ce6ff' : '#ffd35c'}
+                toneMapped={false}
+                width={width}
+              />
               <PhotoPlane
                 materialRef={previousMaterial}
                 positionZ={-0.002}
@@ -226,20 +250,24 @@ function PhotoPlane({
   opacity = 1,
   positionX = 0,
   positionZ,
+  scale = 1,
   texture,
   tint,
+  toneMapped = true,
   width,
 }: {
   readonly materialRef: RefObject<MeshBasicMaterial | null> | ((material: MeshBasicMaterial | null) => void);
   readonly opacity?: number;
   readonly positionX?: number;
   readonly positionZ: number;
+  readonly scale?: number;
   readonly texture: Texture;
   readonly tint: string;
+  readonly toneMapped?: boolean;
   readonly width: number;
 }) {
   return (
-    <mesh position-x={positionX} position-z={positionZ}>
+    <mesh position-x={positionX} position-z={positionZ} scale={scale}>
       <planeGeometry args={[width, DISPLAY_HEIGHT]} />
       <meshBasicMaterial
         ref={materialRef}
@@ -250,7 +278,7 @@ function PhotoPlane({
         opacity={opacity}
         transparent
         side={DoubleSide}
-        toneMapped
+        toneMapped={toneMapped}
       />
     </mesh>
   );
