@@ -25,9 +25,12 @@ export function MimAttackEffects({
       return;
     }
     const kind = attackKind(fighter.action.moveId);
-    group.visible = kind !== -1;
+    // J and I now use the roster-wide lead-limb trails. Keeping the older MIM
+    // diamond on top made those two normals much noisier than everyone else's.
+    const usesLeadTrail = kind === 0 || kind === 2;
+    group.visible = kind !== -1 && !usesLeadTrail;
     if (epic !== null) epic.visible = kind === 4;
-    if (kind === -1) return;
+    if (kind === -1 || usesLeadTrail) return;
 
     const progress = combatAnimationProgress(
       fighter.action.moveId,

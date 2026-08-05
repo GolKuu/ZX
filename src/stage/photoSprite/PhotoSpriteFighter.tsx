@@ -24,6 +24,7 @@ import { isFalling, photoFallPose } from './photoFallAnimation';
 import { photoAttackMotion } from './photoKickAnimation';
 import { photoDashEchoOpacity, photoImpactPose } from './photoCombatMotion';
 import { PHOTO_COLUMNS, PHOTO_ROWS, photoFrameFor } from './photoSpriteAnimation';
+import { LeadAttackEffects } from './LeadAttackEffects';
 
 const DISPLAY_HEIGHT = 3.05;
 const GROUND = 0.91;
@@ -183,6 +184,7 @@ export function PhotoSpriteFighter({
       {kind === 'vorgh' ? <VorghEffects fighterId={fighterId} /> : null}
       <group ref={outer}>
         {kind === 'mim' ? <MimAttackEffects fighterId={fighterId} /> : null}
+        <LeadAttackEffects fighterId={fighterId} kind={kind} />
         <mesh position={[0, 0.025, -0.18]} rotation-x={-Math.PI / 2} scale={[1.25, 0.42, 1]}>
           <circleGeometry args={[0.72, 32]} />
           <meshBasicMaterial color="#09130f" depthWrite={false} opacity={0.42} transparent />
