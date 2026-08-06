@@ -6,7 +6,6 @@ import { CombatSession } from '@/src/game/CombatSession';
 import {
   readCombatResetVersion,
   combatRenderFrame,
-  publishCombatFrame,
 } from '@/src/game/combatRuntime';
 import {
   DEFAULT_CONTEXT,
@@ -28,7 +27,6 @@ import {
   readRemoteInput,
   sendOnlineInput,
   subscribeOnline,
-  takeRemoteFrame,
   takeRemoteResult,
 } from '@/src/online/onlineSession';
 import { reportOnlineMatchResult } from '@/src/online/onlineGlory';
@@ -46,6 +44,8 @@ interface InputSource {
 }
 
 class MobileAwareInputSource implements InputSource {
+  private lastInput: FighterInput = {};
+
   public constructor(private readonly keyboard: KeyboardInputSource) {}
 
   public sample(
@@ -54,8 +54,11 @@ class MobileAwareInputSource implements InputSource {
     context: CommandContext = DEFAULT_CONTEXT,
   ): FighterInput {
     this.keyboard.setVirtualControls(readMobileControls());
-    return this.keyboard.sample(facing, attacksLocked, context);
+    this.lastInput = this.keyboard.sample(facing, attacksLocked, context);
+    return this.lastInput;
   }
+
+  public readLastSample(): FighterInput { return this.lastInput; }
 
   public updateBindings(
     bindings: Parameters<KeyboardInputSource['updateBindings']>[0],
@@ -115,7 +118,8 @@ export function CombatGameLoop({
     getOnlineSnapshot,
   ).role;
   const localFighterIndex = onlineRole === 'guest' ? 1 : 0;
-  const playerOne = useMemo(
+  const isOnline = onlineRole !== null;
+  const localInput = useMemo(
     () => new MobileAwareInputSource(new KeyboardInputSource({
       bindings: useControlStore.getState().bindings,
       commands: commandsFor(fighterSelection[localFighterIndex]),
@@ -123,34 +127,40 @@ export function CombatGameLoop({
     })),
     [fighterSelection, localFighterIndex],
   );
+  const remoteInput = useMemo(() => new OnlineRemoteInputSource(), []);
   const playerTwoAI = useMemo(
-    () => onlineRole === 'host' ? new OnlineRemoteInputSource() : new KeyboardInputSource({
+    () => new KeyboardInputSource({
       bindings: PLAYER_TWO_BINDINGS,
       commands: commandsFor(fighterSelection[1]),
       profile: profileFor(fighterSelection[1]),
     }),
-    [fighterSelection, onlineRole],
+    [fighterSelection],
   );
+  const playerOne = isOnline && onlineRole === 'guest' ? remoteInput : localInput;
+  const playerTwo = isOnline
+    ? onlineRole === 'guest' ? localInput : remoteInput
+    : playerTwoAI;
   const session = useMemo(
-    () => new CombatSession(playerOne, playerTwoAI, fighterSelection),
-    [fighterSelection, playerOne, playerTwoAI],
+    () => new CombatSession(playerOne, playerTwo, fighterSelection),
+    [fighterSelection, playerOne, playerTwo],
   );
   const handledReset = useRef(readCombatResetVersion());
   const handledMode = useRef(useHudStore.getState().mode);
+  const lastSentInput = useRef('');
 
   useEffect(() => {
     useControlStore.getState().hydrate();
-    playerOne.updateBindings(useControlStore.getState().bindings);
-    playerOne.attach(window);
-    playerTwoAI.attach(window);
+    localInput.updateBindings(useControlStore.getState().bindings);
+    localInput.attach(window);
+    if (!isOnline) playerTwoAI.attach(window);
     const unsubscribe = useControlStore.subscribe((state, previous) => {
       if (state.bindings !== previous.bindings) {
-        playerOne.updateBindings(state.bindings);
+        localInput.updateBindings(state.bindings);
       }
     });
     const unsubscribeHud = useHudStore.subscribe((state, previous) => {
       if (state.screen !== previous.screen) {
-        playerOne.releaseAll();
+        localInput.releaseAll();
         playerTwoAI.releaseAll();
       }
       if (state.screen === 'victory' && previous.screen !== 'victory' && state.mode === 'online') {
@@ -163,11 +173,11 @@ export function CombatGameLoop({
     return () => {
       unsubscribe();
       unsubscribeHud();
-      playerOne.detach(window);
+      localInput.detach(window);
       playerTwoAI.detach(window);
       resetMobileInput();
     };
-  }, [onlineRole, playerOne, playerTwoAI]);
+  }, [isOnline, localInput, onlineRole, playerTwoAI]);
 
   useFrame((_, delta) => {
     const resetVersion = readCombatResetVersion();
@@ -183,19 +193,26 @@ export function CombatGameLoop({
       if (hud.mode !== null && hud.mode !== 'online') session.reset();
     }
     if (hud.screen === 'fight') {
-      if (hud.mode !== 'online' || onlineRole === 'host') {
+      if (hud.mode !== 'online' || onlineRole === 'host' || onlineRole === 'guest') {
+        // Both peers run the deterministic combat step locally. This makes the
+        // attack, hitstop and impact VFX happen on the input frame instead of
+        // waiting for a broadcast from the host. Host snapshots remain useful
+        // for diagnostics/recovery, while the local prediction owns rendering.
         session.advance(Math.min(delta, 0.1) * 1_000);
-        const world = combatRenderFrame.world;
-        if (hud.mode === 'online' && world !== null && world.frame % 2 === 0) {
-          broadcastOnlineFrame(world, useHudStore.getState().snapshot);
-        }
-      } else if (onlineRole === 'guest') {
-        const fighter = combatRenderFrame.world?.fighters.find(({ id }) => id === 'p2');
-        sendOnlineInput(playerOne.sample(fighter?.facing ?? -1));
-        const packet = takeRemoteFrame();
-        if (packet !== null) {
-          publishCombatFrame(packet.world, 0);
-          useHudStore.getState().publishSnapshot(packet.hud);
+        if (hud.mode === 'online') {
+          const world = combatRenderFrame.world;
+          // CombatSession already sampled the local source for this fixed
+          // step. Reuse that exact packet; sampling a second time here would
+          // consume one-frame attack presses before they reach the peer.
+          const localInputPacket = localInput.readLastSample();
+          const serializedInput = JSON.stringify(localInputPacket);
+          if (serializedInput !== lastSentInput.current) {
+            lastSentInput.current = serializedInput;
+            sendOnlineInput(localInputPacket);
+          }
+          if (onlineRole === 'host' && world !== null && world.frame % 2 === 0) {
+            broadcastOnlineFrame(world, useHudStore.getState().snapshot);
+          }
         }
         const result = takeRemoteResult();
         if (result !== null) useHudStore.getState().openVictory(result);
