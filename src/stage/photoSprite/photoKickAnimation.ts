@@ -82,6 +82,51 @@ export const PHOTO_NORMAL_ATTACK_KINDS: Readonly<Record<string, PhotoAttackKind>
   'vorgh.normal.rising-maul': 'highKick',
 };
 
+const EXPLICIT_MOVE_KINDS: Readonly<Record<string, PhotoAttackKind>> = {
+  'glitch.aerial-launcher': 'uppercut',
+  'glitch.air-finisher': 'highKick',
+  'glitch.air-heavy': 'heavy',
+  'glitch.air-light': 'jab',
+  'glitch.air-medium': 'kick',
+  'glitch.anti-air': 'uppercut',
+  'glitch.dual.phase-break': 'heavy',
+  'glitch.dual.vector-cross': 'highKick',
+  'glitch.ex.rift-uppercut': 'uppercut',
+  'glitch.launcher': 'uppercut',
+  'glitch.phase-break': 'heavy',
+  'glitch.reality-slice': 'sweep',
+  'glitch.rift-uppercut': 'uppercut',
+  'glitch.spatial-dash': 'kick',
+  'glitch.teleport-strike': 'jab',
+  'lucky.air-descending-heel': 'highKick',
+  'lucky.air-down-kick': 'kick',
+  'lucky.air-hammer': 'heavy',
+  'lucky.air-jab': 'jab',
+  'lucky.air-palm': 'heavy',
+  'lucky.air-quick-kick': 'kick',
+  'lucky.crouching-shin-kick': 'sweep',
+  'lucky.rising-hand': 'uppercut',
+  'lucky.running-low-kick': 'sweep',
+  'lucky.sweep-the-table': 'sweep',
+  'mim.anti-air': 'uppercut',
+  'mim.dual.acrobat-kick': 'highKick',
+  'mim.dual.butterfly': 'highKick',
+  'mim.dual.mirror-strike': 'heavy',
+  'mim.story.triple-kick': 'kick',
+  'mim.story.wall-dive': 'kick',
+  'titan.normal-launcher': 'uppercut',
+  'titan.normal-sweep': 'sweep',
+  'titan.special.ground-slam': 'heavy',
+  'titan.super.continental-slam': 'heavy',
+  'vorgh.air-throw': 'heavy',
+  'vorgh.dual.break': 'heavy',
+  'vorgh.dual.fang': 'jab',
+  'vorgh.dual.rend': 'heavy',
+  'vorgh.special.berserk-dash': 'kick',
+  'vorgh.special.predator-leap': 'highKick',
+  'vorgh.special.rage-slash': 'heavy',
+};
+
 const EXPLICIT_KICKS: Readonly<Record<string, PhotoAttackKind>> = {
   ...PHOTO_NORMAL_ATTACK_KINDS,
   'titan.normal-anti-air': 'highKick',
@@ -89,6 +134,8 @@ const EXPLICIT_KICKS: Readonly<Record<string, PhotoAttackKind>> = {
 
 export function photoAttackKind(moveId: string): PhotoAttackKind {
   const id = moveId.toLowerCase();
+  const explicitMove = EXPLICIT_MOVE_KINDS[id];
+  if (explicitMove !== undefined) return explicitMove;
   const explicit = EXPLICIT_KICKS[id];
   if (explicit !== undefined) return explicit;
   if (includesAny(id, ['sweep', 'low-vector', 'shin-kick', 'sliding-fortune'])) {
