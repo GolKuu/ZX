@@ -4,9 +4,10 @@ import type {
   CharacterId,
   CharacterSelection,
 } from '@/src/data/characterRoster';
-import { getArenaDefinition, type ArenaId } from '@/src/data/arenas';
+import type { ArenaId } from '@/src/data/arenas';
 import { modelUrlFor } from '@/src/data/characterModels';
 import { Arena } from './Arena';
+import { kombatTheme } from './kombat/kombatTheme';
 import { LazyModelFighter } from './LazyModelFighter';
 import { CameraRig } from './CameraRig';
 import { CombatGameLoop } from './CombatGameLoop';
@@ -31,13 +32,17 @@ export function RenderScene({
   readonly fighterSelection: CharacterSelection;
   readonly arenaId: ArenaId;
 }) {
-  const arena = getArenaDefinition(arenaId);
+  const theme = kombatTheme(arenaId);
   const training = useHudStore((state) => state.mode === 'training');
   return (
     <>
-      <color attach="background" args={[arena.background]} />
-      <fog attach="fog" args={[arena.fog, 14, 34]} />
-      <StageLighting />
+      <color attach="background" args={[theme.skyTop]} />
+      {/* Fog is the stage's depth cue, so its range is authored per theme
+          alongside the colours rather than being a fixed pair of numbers. It
+          starts past the fighting disc — fogging the fighters would grey out the
+          very silhouettes the rim lights exist to carve. */}
+      <fog attach="fog" args={[theme.fog, theme.fogNear, theme.fogFar]} />
+      <StageLighting arenaId={arenaId} />
 
       <Arena arenaId={arenaId} />
       <CombatGameLoop fighterSelection={fighterSelection} />

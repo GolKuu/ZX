@@ -18,7 +18,7 @@ const MOTES = Array.from({ length: 42 }, (_, index) => {
 });
 
 const ARENA_PALETTE: Record<ArenaId, { readonly core: string; readonly rim: string; readonly mote: string }> = {
-  'null-circle': { core: '#a8ffe0', rim: '#f0c86a', mote: '#fff0b0' },
+  'null-circle': { core: '#e6b56e', rim: '#f6d89a', mote: '#ffe6b3' },
   'storm-dome': { core: '#75ddff', rim: '#be78ff', mote: '#b8f3ff' },
   'ruined-megacity': { core: '#ff9b66', rim: '#ff476d', mote: '#ffd08a' },
 };
@@ -70,7 +70,7 @@ export function CinematicArenaFX({ arenaId }: { readonly arenaId: ArenaId }) {
         ))}
       </group>
 
-      <group position={[0, 2.65, -7.4]} renderOrder={-11}>
+      {arenaId === 'null-circle' ? null : <group position={[0, 2.65, -7.4]} renderOrder={-11}>
         {[-6.4, -4.2, -1.9, 1.9, 4.2, 6.4].map((x, index) => (
           <mesh
             key={`light-shaft-${x}`}
@@ -89,7 +89,7 @@ export function CinematicArenaFX({ arenaId }: { readonly arenaId: ArenaId }) {
             />
           </mesh>
         ))}
-      </group>
+      </group>}
 
       <group ref={motesRef} position-z={-0.25} renderOrder={4}>
         {motes.map((mote, index) => (

@@ -1,34 +1,17 @@
 'use client';
 
-import { ArenaBackdrop2D } from './arena/ArenaBackdrop2D';
-import { ArenaEmbers2D } from './arena/ArenaEmbers2D';
-import { ArenaPlatform2D } from './arena/ArenaPlatform2D';
-import { ArenaSunGlow2D } from './arena/ArenaSunGlow2D';
-import { RetroGridFloor } from './arena/RetroGridFloor';
 import type { ArenaId } from '@/src/data/arenas';
-import { RuinedMegacityArena } from './arena/RuinedMegacityArena';
-import { MonasteryCircleArena } from './arena/MonasteryCircleArena';
-import { NaturalArenaWalls } from './arena/NaturalArenaWalls';
-import { StormDomeArena } from './arena/StormDomeArena';
-import { CinematicArenaFX } from './arena/CinematicArenaFX';
-import { ArenaAtmosphericField } from './arena/ArenaAtmosphericField';
-import { ArenaDepthArchitecture } from './arena/ArenaDepthArchitecture';
+import { KombatStage } from './kombat/KombatStage';
 
+/**
+ * The stage every arena is built from.
+ *
+ * Each arena used to assemble its own pile of flat quads — a painted backdrop,
+ * a painted floor, a painted skyline — which meant three separate stages to keep
+ * looking right, and none of them survived a camera move. There is now one 3D
+ * stage, themed per arena, so the camera is free and a staging fix lands in all
+ * three at once.
+ */
 export function Arena({ arenaId }: { readonly arenaId: ArenaId }) {
-  if (arenaId === 'null-circle') return <><MonasteryCircleArena /><ArenaDepthArchitecture arenaId={arenaId} /><CinematicArenaFX arenaId={arenaId} /><ArenaAtmosphericField /></>;
-  if (arenaId === 'ruined-megacity') return <><RuinedMegacityArena /><ArenaDepthArchitecture arenaId={arenaId} /><CinematicArenaFX arenaId={arenaId} /><ArenaAtmosphericField /></>;
-  if (arenaId === 'storm-dome') return <><StormDomeArena /><ArenaDepthArchitecture arenaId={arenaId} /><CinematicArenaFX arenaId={arenaId} /><ArenaAtmosphericField /></>;
-
-  return (
-    <group>
-      <ArenaBackdrop2D />
-      <ArenaSunGlow2D />
-      <RetroGridFloor />
-      <ArenaPlatform2D />
-      <NaturalArenaWalls />
-      <ArenaEmbers2D />
-      <CinematicArenaFX arenaId={arenaId} />
-      <ArenaAtmosphericField />
-    </group>
-  );
+  return <KombatStage arenaId={arenaId} />;
 }
