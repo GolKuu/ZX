@@ -10,6 +10,16 @@
   isolation: isolate;
 }
 
+:global(:root[data-theme="light"]) .artwork {
+  background: linear-gradient(180deg, rgb(255 255 255 / 70%), transparent 24%), radial-gradient(circle at 50% 38%, rgb(98 202 224 / 24%), transparent 42%), linear-gradient(135deg, #dcecf1, #e7dfe8 52%, #d9eef0);
+  border-color: rgb(30 90 104 / 28%);
+  box-shadow: 0 22px 60px rgb(39 78 92 / 22%);
+}
+
+:global(:root[data-theme="light"]) .arenaBackdrop {
+  background: linear-gradient(180deg, rgb(231 247 250 / 8%), rgb(61 94 110 / 35%) 64%, #b8d3da 100%), radial-gradient(ellipse at 52% 58%, rgb(255 92 72 / 20%), transparent 24%), linear-gradient(110deg, #a6c5d1 0%, #c7aec2 48%, #9fc6cf 100%);
+}
+
 .artwork::before {
   position: absolute;
   z-index: -1;
@@ -279,6 +289,8 @@
 }
 
 .name strong { color: #f7f4eb; font: italic 900 clamp(1rem, 1.55vw, 1.55rem)/1 Impact, sans-serif; letter-spacing: 0.04em; }
+:global(:root[data-theme="light"]) .name strong,
+:global(:root[data-theme="light"]) .caption strong { color: #17303a; text-shadow: 0 1px rgb(255 255 255 / 55%); }
 .name small { overflow: hidden; color: var(--fighter-accent); font: 700 0.52rem "Courier New", monospace; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
 
 .caption {

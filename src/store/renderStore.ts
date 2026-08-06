@@ -4,6 +4,7 @@ import type { MimSuperKind } from '@/src/data/mim-super-moves';
 import type { LuckySuperKind } from '@/src/data/lucky/supers';
 
 type RenderState = {
+  theme: 'dark' | 'light';
   effectsEnabled: boolean;
   graphicsPreset: 'low' | 'medium' | 'high';
   screenShakeEnabled: boolean;
@@ -20,6 +21,7 @@ type RenderState = {
   xrayFighterId: 'p1' | 'p2' | null;
   xrayVersion: number;
   hydratePreferences: () => void;
+  setTheme: (theme: RenderState['theme']) => void;
   toggleEffects: () => void;
   setGraphicsPreset: (preset: RenderState['graphicsPreset']) => void;
   toggleScreenShake: () => void;
@@ -40,6 +42,7 @@ type RenderState = {
 };
 
 export const useRenderStore = create<RenderState>((set) => ({
+  theme: 'dark',
   effectsEnabled: true,
   graphicsPreset: 'medium',
   screenShakeEnabled: true,
@@ -56,14 +59,20 @@ export const useRenderStore = create<RenderState>((set) => ({
   xrayFighterId: null,
   xrayVersion: 0,
   hydratePreferences: () => {
+    const theme = readTheme();
     const savedEffects = readSavedEffects();
     const graphicsPreset = readGraphicsPreset();
     const screenShakeEnabled = readBoolean(SHAKE_STORAGE_KEY);
     set({
+      ...(theme === null ? {} : { theme }),
       ...(savedEffects === null ? {} : { effectsEnabled: savedEffects }),
       ...(graphicsPreset === null ? {} : { graphicsPreset }),
       ...(screenShakeEnabled === null ? {} : { screenShakeEnabled }),
     });
+  },
+  setTheme: (theme) => {
+    saveValue(THEME_STORAGE_KEY, theme);
+    set({ theme });
   },
   toggleEffects: () =>
     set((state) => {
@@ -110,6 +119,7 @@ export const useRenderStore = create<RenderState>((set) => ({
 const EFFECTS_STORAGE_KEY = 'cc-effects-enabled-v1';
 const GRAPHICS_STORAGE_KEY = 'cc-graphics-preset-v1';
 const SHAKE_STORAGE_KEY = 'cc-screen-shake-v1';
+const THEME_STORAGE_KEY = 'cc-theme-v1';
 
 function saveEffects(effectsEnabled: boolean): void {
   if (typeof window === 'undefined') return;
@@ -146,5 +156,13 @@ function readGraphicsPreset(): RenderState['graphicsPreset'] | null {
   try {
     const saved = window.localStorage.getItem(GRAPHICS_STORAGE_KEY);
     return saved === 'low' || saved === 'medium' || saved === 'high' ? saved : null;
+  } catch { return null; }
+}
+
+function readTheme(): RenderState['theme'] | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
+    return saved === 'dark' || saved === 'light' ? saved : null;
   } catch { return null; }
 }

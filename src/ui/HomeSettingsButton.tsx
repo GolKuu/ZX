@@ -25,8 +25,10 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
   const titleId = useId();
   const [open, setOpen] = useState(false);
   const effectsEnabled = useRenderStore((state) => state.effectsEnabled);
+  const theme = useRenderStore((state) => state.theme);
   const hydratePreferences = useRenderStore((state) => state.hydratePreferences);
   const toggleEffects = useRenderStore((state) => state.toggleEffects);
+  const setTheme = useRenderStore((state) => state.setTheme);
   const graphicsPreset = useRenderStore((state) => state.graphicsPreset);
   const setGraphicsPreset = useRenderStore((state) => state.setGraphicsPreset);
   const screenShakeEnabled = useRenderStore((state) => state.screenShakeEnabled);
@@ -93,6 +95,14 @@ export function HomeSettingsButton({ variant }: SettingsButtonProps) {
               </button>
             </header>
 
+            <div className={panelStyles.settingRow}>
+              <div><strong>THEME</strong><p>Переключает оформление интерфейса между тёмным и светлым режимом.</p></div>
+              <div className={panelStyles.choiceGroup} role="group" aria-label="Theme">
+                {(['dark', 'light'] as const).map((option) => (
+                  <button key={option} aria-pressed={theme === option} type="button" onClick={() => setTheme(option)}>{option.toUpperCase()}</button>
+                ))}
+              </div>
+            </div>
             <div className={panelStyles.settingRow}>
               <div>
                 <strong>Боевые эффекты</strong>

@@ -3,6 +3,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { getSiteUrl } from '@/src/lib/site';
+import { ThemeSync } from '@/src/ui/ThemeSync';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -37,8 +38,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: 'dark',
-  themeColor: '#050019',
+  colorScheme: 'dark light',
+  themeColor: '#eef3f5',
   width: 'device-width',
   initialScale: 1,
 };
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ru">
       <body>
+        <ThemeSync />
         {children}
         <Analytics />
         <SpeedInsights />
