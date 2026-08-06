@@ -237,14 +237,16 @@ export function PhotoSpriteFighter({
                   width={width}
                 />
               ))}
-              {/* Eight-way ink shell: a stable silhouette pass gives the photo
-                  atlas the dense, high-contrast character separation expected
-                  from a premium 3D fighter without altering the source frames. */}
+              {/* Eight-way ink shell: a stable silhouette pass separates the
+                  atlas from whatever is behind it without altering the source
+                  frames. Thinned right down — against a dark room a heavy black
+                  shell is a smudge, and it was swallowing the coloured rim that
+                  does the actual separating. */}
               {INK_OFFSETS.map(([x, z], index) => (
                 <PhotoPlane
                   key={`ink-shell-${index}`}
                   materialRef={() => undefined}
-                  opacity={0.34}
+                  opacity={0.2}
                   positionX={x}
                   positionZ={-0.016 + z}
                   texture={textures.current}
@@ -253,23 +255,17 @@ export function PhotoSpriteFighter({
                   width={width}
                 />
               ))}
+              {/* Player rim. The atlas is drawn unlit, so no light in the scene
+                  can put an edge on a fighter — this plane, peeking out a few
+                  percent behind the body, *is* their rim light, and the one cue
+                  that keeps the two apart mid-combo. */}
               <PhotoPlane
                 materialRef={() => undefined}
-                opacity={0.76}
-                positionZ={-0.012}
-                scale={1.055}
-                texture={textures.current}
-                tint="#102d31"
-                toneMapped={false}
-                width={width}
-              />
-              <PhotoPlane
-                materialRef={() => undefined}
-                opacity={0.58}
+                opacity={0.9}
                 positionZ={-0.008}
-                scale={1.028}
+                scale={1.032}
                 texture={textures.current}
-                tint={fighterId === 'p1' ? '#5ce6ff' : '#ffd35c'}
+                tint={fighterId === 'p1' ? '#5ce6ff' : '#ffb03c'}
                 toneMapped={false}
                 width={width}
               />
