@@ -35,6 +35,116 @@
   pointer-events: none;
 }
 
+.arenaBackdrop {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgb(5 8 18 / 8%), rgb(5 8 18 / 74%) 64%, #07090e 100%),
+    radial-gradient(ellipse at 52% 58%, rgb(255 92 72 / 24%), transparent 24%),
+    linear-gradient(110deg, #11152d 0%, #291936 48%, #081b28 100%);
+}
+
+.arenaBackdrop::before {
+  position: absolute;
+  right: -10%;
+  bottom: 12%;
+  left: -10%;
+  height: 28%;
+  background:
+    linear-gradient(164deg, transparent 0 42%, rgb(102 231 242 / 42%) 42.3% 42.7%, transparent 43%),
+    linear-gradient(16deg, transparent 0 50%, rgb(255 92 99 / 35%) 50.2% 50.7%, transparent 51%),
+    linear-gradient(180deg, #182a36, #090d14 42%);
+  border-top: 1px solid rgb(170 235 238 / 54%);
+  box-shadow: 0 -16px 48px rgb(34 205 220 / 14%);
+  content: "";
+  transform: perspective(320px) rotateX(58deg);
+  transform-origin: bottom;
+}
+
+.arenaBackdrop::after {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 7%, rgb(113 207 224 / 10%) 7.1% 7.2%, transparent 7.3% 13%),
+    linear-gradient(90deg, transparent 0 48%, rgb(255 197 73 / 28%) 48.2% 48.35%, transparent 48.5% 100%);
+  clip-path: polygon(0 42%, 100% 20%, 100% 100%, 0 100%);
+  content: "";
+  opacity: .8;
+}
+
+.moon {
+  position: absolute;
+  top: 16%;
+  right: 17%;
+  width: clamp(58px, 9vw, 116px);
+  aspect-ratio: 1;
+  background: radial-gradient(circle at 38% 35%, #fff6ca 0 7%, #f4c96c 33%, rgb(244 201 108 / 35%) 58%, transparent 70%);
+  border-radius: 50%;
+  box-shadow: 0 0 54px rgb(244 201 108 / 32%);
+}
+
+.arenaTower {
+  position: absolute;
+  bottom: 25%;
+  width: 13%;
+  background: linear-gradient(90deg, #0a101b, #23354a 52%, #101526);
+  border: 1px solid rgb(102 231 242 / 24%);
+  box-shadow: 0 0 28px rgb(28 191 220 / 13%);
+}
+
+.arenaTower::after {
+  position: absolute;
+  inset: 8% 18%;
+  background: repeating-linear-gradient(180deg, rgb(102 231 242 / 55%) 0 2px, transparent 2px 15px);
+  content: "";
+  opacity: .55;
+}
+
+.towerOne { left: 5%; height: 37%; }
+.towerTwo { right: 5%; height: 48%; }
+.towerThree { right: 29%; width: 8%; height: 27%; opacity: .74; }
+
+.arenaPlatform {
+  position: absolute;
+  right: 21%;
+  bottom: 24%;
+  left: 21%;
+  height: 2px;
+  background: #f4c94f;
+  box-shadow: 0 0 18px #f4c94f, 0 0 45px rgb(244 201 79 / 45%);
+  transform: skewX(-28deg);
+}
+
+.siteEntry {
+  position: absolute;
+  z-index: 6;
+  top: 76px;
+  right: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  color: #211606;
+  background: linear-gradient(180deg, #ffe98a, #e4aa2e);
+  border: 2px solid #fff5ba;
+  box-shadow: 3px 3px 0 rgb(0 0 0 / 60%), inset 0 -3px 0 rgb(119 70 7 / 44%);
+  font: 950 0.67rem "Courier New", monospace;
+  letter-spacing: .08em;
+  text-shadow: 0 1px rgb(255 255 255 / 35%);
+  transition: filter 120ms ease, transform 120ms ease;
+}
+
+.siteEntry:hover,
+.siteEntry:focus-visible {
+  filter: brightness(1.14);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.siteEntryMark { font-size: 1rem; }
+
 .topline,
 .caption {
   position: relative;
@@ -151,6 +261,7 @@
   .fighter:nth-child(odd) { height: 72%; }
   .sprite { right: -78%; left: -78%; }
   .name small, .caption span { display: none; }
+  .siteEntry { top: 66px; right: 12px; padding: 8px 10px; font-size: 0.56rem; }
 }
 
 @media (prefers-reduced-motion: reduce) { .fighter { transition: none; } }
