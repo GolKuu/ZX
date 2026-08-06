@@ -87,7 +87,7 @@ export function createCombatEngine(
       fighterDefinition('p1', 1, -1.55, 1, selection[0],playerNodes),
       fighterDefinition('p2', 2, 1.55, -1, selection[1]),
     ],
-    world: { leftWall: fixed(-4.8), rightWall: fixed(4.8) },
+    world: { leftWall: fixed(-6.9), rightWall: fixed(6.9) },
   });
 }
 

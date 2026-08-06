@@ -8,6 +8,7 @@ import { RetroGridFloor } from './arena/RetroGridFloor';
 import type { ArenaId } from '@/src/data/arenas';
 import { RuinedMegacityArena } from './arena/RuinedMegacityArena';
 import { MonasteryCircleArena } from './arena/MonasteryCircleArena';
+import { NaturalArenaWalls } from './arena/NaturalArenaWalls';
 
 export function Arena({ arenaId }: { readonly arenaId: ArenaId }) {
   if (arenaId === 'null-circle') return <MonasteryCircleArena />;
@@ -19,6 +20,7 @@ export function Arena({ arenaId }: { readonly arenaId: ArenaId }) {
       <ArenaSunGlow2D />
       <RetroGridFloor />
       <ArenaPlatform2D />
+      <NaturalArenaWalls />
       <ArenaEmbers2D />
     </group>
   );

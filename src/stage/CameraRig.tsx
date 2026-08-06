@@ -52,7 +52,7 @@ type FighterId = 'p1' | 'p2';
 
 /** Framing: a 2.62 m fighter should fill a little over half the frame. */
 const NEAR_DISTANCE = 6.2;
-const FAR_DISTANCE = 10.4;
+const FAR_DISTANCE = 12.4;
 /** Metres of dolly per metre of separation. */
 const DISTANCE_PER_GAP = 0.66;
 
@@ -65,7 +65,7 @@ const DISTANCE_PER_GAP = 0.66;
  * stuck against the left edge of the frame. Panning this far shows some stage
  * past the rim, which is what the backdrop is for.
  */
-const MAX_PAN = 4;
+const MAX_PAN = 5.8;
 /** Exponential follow rate, per second. High enough to keep up with a dash. */
 const FOLLOW_RATE = 7.5;
 

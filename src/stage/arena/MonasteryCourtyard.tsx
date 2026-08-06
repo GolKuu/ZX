@@ -1,6 +1,7 @@
 'use client';
 
 import { ARENA_RADIUS } from './arenaData';
+import { NaturalArenaWalls } from './NaturalArenaWalls';
 
 const TILES = Array.from({ length: 33 }, (_, index) => index - 16);
 const LANTERNS = [-4.68, -4.12, 4.12, 4.68] as const;
@@ -31,8 +32,7 @@ export function MonasteryCourtyard() {
         </mesh>
       ))}
       {LANTERNS.map((x) => <CourtyardLantern key={x} x={x} />)}
-      <StonePost x={-ARENA_RADIUS} />
-      <StonePost x={ARENA_RADIUS} />
+      <NaturalArenaWalls />
     </group>
   );
 }
@@ -49,21 +49,6 @@ function CourtyardLantern({ x }: { readonly x: number }) {
         <meshBasicMaterial color="#ffd05f" toneMapped={false} />
       </mesh>
       <pointLight color="#ffb054" decay={2} distance={2.2} intensity={0.55} position={[0, 0.18, 0.25]} />
-    </group>
-  );
-}
-
-function StonePost({ x }: { readonly x: number }) {
-  return (
-    <group position={[x, 0.55, -0.38]}>
-      <mesh castShadow>
-        <boxGeometry args={[0.24, 1.1, 0.24]} />
-        <meshStandardMaterial color="#94221f" roughness={0.86} />
-      </mesh>
-      <mesh position={[0, 0.62, 0]} rotation-y={Math.PI / 4}>
-        <octahedronGeometry args={[0.2, 0]} />
-        <meshStandardMaterial color="#d1ad45" roughness={0.72} />
-      </mesh>
     </group>
   );
 }

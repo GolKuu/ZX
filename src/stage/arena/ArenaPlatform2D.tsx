@@ -1,7 +1,5 @@
 'use client';
 
-import { ARENA_RADIUS } from './arenaData';
-
 const FACE_PANELS = Array.from({ length: 32 }, (_, index) => -15.5 + index);
 
 export function ArenaPlatform2D() {
@@ -43,27 +41,6 @@ export function ArenaPlatform2D() {
         <shadowMaterial color="#162722" opacity={0.42} transparent />
       </mesh>
 
-      <ArenaBoundaryPost x={-ARENA_RADIUS} />
-      <ArenaBoundaryPost x={ARENA_RADIUS} />
-    </group>
-  );
-}
-
-function ArenaBoundaryPost({ x }: { readonly x: number }) {
-  return (
-    <group position={[x, 0.66, -0.36]}>
-      <mesh>
-        <planeGeometry args={[0.12, 1.45]} />
-        <meshBasicMaterial color="#586c61" fog={false} />
-      </mesh>
-      <mesh position={[0, 0.76, 0.01]}>
-        <planeGeometry args={[0.32, 0.2]} />
-        <meshBasicMaterial color="#e5d7a3" fog={false} toneMapped={false} />
-      </mesh>
-      <mesh position={[0, -0.77, 0.01]}>
-        <planeGeometry args={[0.34, 0.12]} />
-        <meshBasicMaterial color="#75a061" fog={false} toneMapped={false} />
-      </mesh>
     </group>
   );
 }

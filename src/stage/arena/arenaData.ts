@@ -1,4 +1,7 @@
-export const ARENA_RADIUS = 5.1;
+// Gives the fighters room to breathe while keeping the rim readable in the
+// tracking camera. Gameplay boundaries use the same radius minus the fighter
+// pushbox margin (see combatSetup.ts).
+export const ARENA_RADIUS = 7.2;
 
 export interface ArenaDebris {
   readonly position: readonly [number, number, number];
