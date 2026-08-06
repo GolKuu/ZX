@@ -78,6 +78,13 @@ export function CharacterHeroFX({
 
   return (
     <group ref={root} position={[0, 1.52, -0.34]} renderOrder={-1}>
+      <pointLight
+        color={color}
+        decay={2}
+        distance={3.2}
+        intensity={0.32}
+        position={[fighterId === 'p1' ? -0.38 : 0.38, 0.72, 0.34]}
+      />
       <mesh scale={[1.18, 1.46, 1]}>
         <circleGeometry args={[0.9, 48]} />
         <meshBasicMaterial
