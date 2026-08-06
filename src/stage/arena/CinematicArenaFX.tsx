@@ -3,6 +3,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
 import { AdditiveBlending, Group, Mesh, MeshBasicMaterial } from 'three';
+import type { ArenaId } from '@/src/data/arenas';
 
 const MOTES = Array.from({ length: 42 }, (_, index) => {
   const seed = index * 1.61803398875;
@@ -16,10 +17,17 @@ const MOTES = Array.from({ length: 42 }, (_, index) => {
   };
 });
 
+const ARENA_PALETTE: Record<ArenaId, { readonly core: string; readonly rim: string; readonly mote: string }> = {
+  'null-circle': { core: '#a8ffe0', rim: '#f0c86a', mote: '#fff0b0' },
+  'storm-dome': { core: '#75ddff', rim: '#be78ff', mote: '#b8f3ff' },
+  'ruined-megacity': { core: '#ff9b66', rim: '#ff476d', mote: '#ffd08a' },
+};
+
 /** Adds cinematic depth without introducing external textures or gameplay state. */
-export function CinematicArenaFX() {
+export function CinematicArenaFX({ arenaId }: { readonly arenaId: ArenaId }) {
   const motesRef = useRef<Group>(null);
   const motes = useMemo(() => MOTES, []);
+  const palette = ARENA_PALETTE[arenaId];
 
   useFrame(({ clock }) => {
     const group = motesRef.current;
@@ -41,15 +49,15 @@ export function CinematicArenaFX() {
       <group position={[0, 4.6, -13.5]} renderOrder={-18}>
         <mesh>
           <circleGeometry args={[2.1, 64]} />
-          <meshBasicMaterial color="#9ed8ff" opacity={0.12} transparent depthWrite={false} toneMapped={false} />
+          <meshBasicMaterial color={palette.core} opacity={0.12} transparent depthWrite={false} toneMapped={false} />
         </mesh>
         <mesh rotation-z={Math.PI / 6}>
           <ringGeometry args={[2.65, 2.7, 6]} />
-          <meshBasicMaterial color="#78caff" opacity={0.34} transparent depthWrite={false} toneMapped={false} />
+          <meshBasicMaterial color={palette.rim} opacity={0.34} transparent depthWrite={false} toneMapped={false} />
         </mesh>
         <mesh rotation-z={-Math.PI / 6} scale={1.22}>
           <ringGeometry args={[2.65, 2.67, 6]} />
-          <meshBasicMaterial color="#d78cff" opacity={0.16} transparent depthWrite={false} toneMapped={false} />
+          <meshBasicMaterial color={palette.core} opacity={0.16} transparent depthWrite={false} toneMapped={false} />
         </mesh>
       </group>
 
@@ -57,7 +65,7 @@ export function CinematicArenaFX() {
         {[-5.8, -3.9, 3.9, 5.8].map((x, index) => (
           <mesh key={x} position={[x, 2.25 + (index % 2) * 0.7, 0]} rotation-z={index % 2 === 0 ? 0.08 : -0.08}>
             <planeGeometry args={[0.035, 5.2]} />
-            <meshBasicMaterial color={index % 2 === 0 ? '#5ccfff' : '#c581ff'} opacity={0.28} transparent depthWrite={false} toneMapped={false} blending={AdditiveBlending} />
+            <meshBasicMaterial color={index % 2 === 0 ? palette.core : palette.rim} opacity={0.28} transparent depthWrite={false} toneMapped={false} blending={AdditiveBlending} />
           </mesh>
         ))}
       </group>
@@ -66,7 +74,7 @@ export function CinematicArenaFX() {
         {motes.map((mote, index) => (
           <mesh key={`mote-${index}`} position={[mote.x, mote.y, mote.z]} scale={[mote.size * 2.5, mote.size, 1]}>
             <planeGeometry args={[1, 1]} />
-            <meshBasicMaterial color={index % 3 === 0 ? '#ffd28a' : '#a8e4ff'} opacity={0.22} transparent depthWrite={false} toneMapped={false} blending={AdditiveBlending} />
+            <meshBasicMaterial color={index % 3 === 0 ? palette.mote : palette.core} opacity={0.22} transparent depthWrite={false} toneMapped={false} blending={AdditiveBlending} />
           </mesh>
         ))}
       </group>

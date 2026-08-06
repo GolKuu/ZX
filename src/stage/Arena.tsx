@@ -14,9 +14,9 @@ import { CinematicArenaFX } from './arena/CinematicArenaFX';
 import { ArenaAtmosphericField } from './arena/ArenaAtmosphericField';
 
 export function Arena({ arenaId }: { readonly arenaId: ArenaId }) {
-  if (arenaId === 'null-circle') return <><MonasteryCircleArena /><CinematicArenaFX /><ArenaAtmosphericField /></>;
-  if (arenaId === 'ruined-megacity') return <><RuinedMegacityArena /><CinematicArenaFX /><ArenaAtmosphericField /></>;
-  if (arenaId === 'storm-dome') return <><StormDomeArena /><CinematicArenaFX /><ArenaAtmosphericField /></>;
+  if (arenaId === 'null-circle') return <><MonasteryCircleArena /><CinematicArenaFX arenaId={arenaId} /><ArenaAtmosphericField /></>;
+  if (arenaId === 'ruined-megacity') return <><RuinedMegacityArena /><CinematicArenaFX arenaId={arenaId} /><ArenaAtmosphericField /></>;
+  if (arenaId === 'storm-dome') return <><StormDomeArena /><CinematicArenaFX arenaId={arenaId} /><ArenaAtmosphericField /></>;
 
   return (
     <group>
@@ -26,7 +26,7 @@ export function Arena({ arenaId }: { readonly arenaId: ArenaId }) {
       <ArenaPlatform2D />
       <NaturalArenaWalls />
       <ArenaEmbers2D />
-      <CinematicArenaFX />
+      <CinematicArenaFX arenaId={arenaId} />
       <ArenaAtmosphericField />
     </group>
   );
