@@ -44,7 +44,7 @@ export function VersusScreen() {
       role="dialog"
     >
       <header className={styles.header}>
-        <strong>CC//ULTIMATE</strong>
+        <strong>YZX//FIGHT</strong>
         <span>ПРЕДСТОЯЩИЙ БОЙ</span>
         <small>{mode === 'ai' ? 'ОДИН ИГРОК · ПРОТИВ ИИ' : 'ЛОКАЛЬНЫЙ БОЙ · 2 ИГРОКА'}</small>
       </header>

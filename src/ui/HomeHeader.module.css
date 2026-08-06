@@ -15,7 +15,7 @@
 
 .brand {
   display: grid;
-  grid-template-columns: 42px auto;
+  grid-template-columns: 46px auto;
   align-items: center;
   color: var(--color-text);
   line-height: 1;
@@ -27,13 +27,13 @@
   width: 36px;
   height: 36px;
   color: #080b0d;
-  background: var(--color-link-dark);
+  background: linear-gradient(135deg, #ff5c63 0 48%, #66e7f2 49% 100%);
   border: 2px solid #fff;
   border-radius: 0;
   box-shadow: 4px 4px 0 rgb(215 174 85 / 72%);
-  font-size: 0.67rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-size: 0.56rem;
+  font-weight: 950;
+  letter-spacing: 0.02em;
   place-items: center;
 }
 

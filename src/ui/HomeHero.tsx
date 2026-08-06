@@ -26,11 +26,6 @@ export function HomeHero() {
           </Link>
           <HomeSettingsButton variant="secondary" />
         </div>
-        <a className={styles.minecraftCta} href="https://testiskander.vercel.app" target="_blank" rel="noreferrer">
-          <span className={styles.minecraftCtaTitle}>ЗАЙТИ НА НЕЁ</span>
-          <span className={styles.minecraftCtaHint}>ОТКРОЕТСЯ В НОВОЙ ВКЛАДКЕ</span>
-          <span className={styles.minecraftCtaArrow} aria-hidden="true">↗</span>
-        </a>
         <p className={styles.inputNote}><span aria-hidden="true">●</span> Без установки · клавиатура, геймпад и сенсорное управление</p>
       </div>
       <HomeArtwork />

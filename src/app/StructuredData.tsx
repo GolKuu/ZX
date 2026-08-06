@@ -1,7 +1,7 @@
 const applicationData = {
   '@context': 'https://schema.org',
   '@type': 'VideoGame',
-  name: 'Circle Clash Ultimate',
+  name: 'YZX',
   description:
     'A browser-based 3D fighting game with cel-shaded combat and cinematic impact effects.',
   applicationCategory: 'GameApplication',

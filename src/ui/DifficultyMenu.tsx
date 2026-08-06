@@ -75,7 +75,7 @@ export function DifficultyMenu() {
       role="dialog"
     >
       <header className={styles.brand}>
-        <span>CC//ULTIMATE</span>
+        <span>YZX//FIGHT</span>
         <small>GEMINI · ИИ · РЕЖИМ</small>
       </header>
 

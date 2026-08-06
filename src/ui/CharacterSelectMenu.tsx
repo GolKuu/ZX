@@ -53,7 +53,7 @@ export function CharacterSelectMenu() {
   return (
     <div aria-label="Выбор персонажей" aria-modal="true" className={styles.scrim} role="dialog">
       <header className={styles.brand}>
-        <span>CC//ULTIMATE</span>
+        <span>YZX//FIGHT</span>
         <small>ВЫБОР ПЕРСОНАЖА · {mode === 'ai' ? 'ПРОТИВ ИИ' : 'ЛОКАЛЬНЫЙ БОЙ'}</small>
       </header>
       <main className={styles.layout}>

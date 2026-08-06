@@ -7,31 +7,31 @@ import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
-  applicationName: 'Circle Clash Ultimate',
+  applicationName: 'YZX',
   title: {
-    default: 'Circle Clash Ultimate',
-    template: '%s | Circle Clash Ultimate',
+    default: 'YZX',
+    template: '%s | YZX',
   },
   description:
     'A fast browser-based 3D fighting game with cel-shaded combat and cinematic impact effects.',
   category: 'games',
   keywords: ['browser fighting game', 'cel-shaded fighter', 'WebGL game', 'indie game'],
-  creator: 'Circle Clash Ultimate',
-  publisher: 'Circle Clash Ultimate',
+  creator: 'YZX',
+  publisher: 'YZX',
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'Circle Clash Ultimate',
+    title: 'YZX',
     description: 'Cel-shaded 3D combat built for a smooth 60 FPS browser experience.',
-    siteName: 'Circle Clash Ultimate',
+    siteName: 'YZX',
     locale: 'ru_RU',
     type: 'website',
     url: '/',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Circle Clash Ultimate',
+    title: 'YZX',
     description: 'Cel-shaded 3D combat built for a smooth 60 FPS browser experience.',
   },
 };

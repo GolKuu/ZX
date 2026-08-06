@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Circle Clash Ultimate',
-    short_name: 'Circle Clash',
+    name: 'YZX',
+    short_name: 'YZX',
     description: 'A fast browser-based 3D cel-shaded fighting game.',
     start_url: '/',
     display: 'standalone',

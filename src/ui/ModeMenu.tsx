@@ -129,7 +129,7 @@ export function ModeMenu() {
       <ModeFightPreview />
 
       <header className={styles.brand}>
-        <span>CC//ULTIMATE</span>
+        <span>YZX//FIGHT</span>
         <small>СЕТЬ И РЕЖИМЫ</small>
         <button
           type="button"
