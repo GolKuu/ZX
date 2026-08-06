@@ -11,7 +11,7 @@ import {
 } from 'three';
 import { readLatestHit } from '@/src/game/combatRuntime';
 
-const POOL_SIZE = 84;
+const POOL_SIZE = 132;
 
 interface Spark {
   readonly position: Vector3;
@@ -57,8 +57,12 @@ export function HitSparkBurst() {
       if (hit === null || hit.serial === seen.current[fighterId]) continue;
       seen.current[fighterId] = hit.serial;
       spawned = true;
-      const intensity = Math.min(1.65, 0.7 + hit.damage / 78);
-      const count = Math.round(10 + Math.min(12, hit.damage / 6));
+      // Weighted harder than before. A jab and a launcher used to throw nearly
+      // the same shower, which flattened the whole damage range into one
+      // effect — the sparks are the closest thing the frame has to a
+      // hit-strength readout.
+      const intensity = Math.min(2.3, 0.72 + hit.damage / 52);
+      const count = Math.round(12 + Math.min(22, hit.damage / 3.4));
       for (let index = 0; index < count; index += 1) {
         spawnSpark(sparks.current, cursor, hit.x, hit.y, hit.away, intensity, index);
       }
@@ -114,12 +118,15 @@ function spawnSpark(
   const spark = sparks[cursor.current % sparks.length];
   cursor.current = (cursor.current + 1) % sparks.length;
   if (spark === undefined) return;
+  // The first four are the star: a fixed cross thrown out along the diagonals,
+  // which is what gives the burst a readable shape at the instant it appears.
+  // The rest scatter along the direction of the blow.
   const radial = index < 4 ? index * Math.PI * 0.5 + Math.PI * 0.25 : (Math.random() - 0.5) * 2.25;
-  const speed = (index < 4 ? 5.4 : 2.6 + Math.random() * 4.1) * intensity;
+  const speed = (index < 4 ? 7.2 : 3.2 + Math.random() * 5.4) * intensity;
   spark.position.set(x, y, 0.42 + Math.random() * 0.08);
   spark.velocity.set(Math.cos(radial) * speed * away, Math.sin(radial) * speed, 0);
-  spark.span = 0.11 + Math.random() * 0.18;
+  spark.span = 0.1 + Math.random() * 0.2;
   spark.life = spark.span;
-  spark.length = (index < 4 ? 0.42 : 0.2 + Math.random() * 0.34) * intensity;
-  spark.width = index < 4 ? 0.055 : 0.018 + Math.random() * 0.025;
+  spark.length = (index < 4 ? 0.58 : 0.24 + Math.random() * 0.44) * intensity;
+  spark.width = index < 4 ? 0.07 : 0.02 + Math.random() * 0.03;
 }

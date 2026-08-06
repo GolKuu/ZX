@@ -23,8 +23,11 @@ const fragmentShader = /* glsl */ `
     float sectors = abs(sin(angle * 38.0 + sin(angle * 7.0) * 2.0));
     float spokes = pow(sectors, 28.0);
     float motion = pow(1.0 - fract(radius * 8.0 - uTime * 1.9), 5.0);
-    float outerMask = smoothstep(0.1, 0.38, radius);
-    float edgeFade = 1.0 - smoothstep(0.42, 0.72, radius);
+    // Streaks are held out at the frame edge. They used to start a tenth of the
+    // way out from centre, which put them straight across the fighters — the
+    // one part of the picture an impact effect must leave alone.
+    float outerMask = smoothstep(0.32, 0.58, radius);
+    float edgeFade = 1.0 - smoothstep(0.74, 1.05, radius);
     float lines = spokes * motion * outerMask * edgeFade * uIntensity;
     // Scaled by intensity as well, so at rest the pane is fully clear. It sits
     // on the lens now — a residual tint here would grey the whole match.

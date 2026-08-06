@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { ACESFilmicToneMapping, PCFShadowMap, SRGBColorSpace } from 'three';
+import { ACESFilmicToneMapping, PCFSoftShadowMap, SRGBColorSpace } from 'three';
 import type { CharacterSelection } from '@/src/data/characterRoster';
 import type { ArenaId } from '@/src/data/arenas';
 import { RenderScene } from './RenderScene';
@@ -50,7 +50,12 @@ export function RenderCanvas({
         // Keep the arena's emissive architecture cinematic instead of letting
         // white panels clip and wash the fighter silhouettes out of the frame.
         gl.toneMappingExposure = 0.98;
-        gl.shadowMap.type = PCFShadowMap;
+        // Soft PCF, not hard: the key is a single hard-edged directional light
+        // on a stage where the only caster is a fighter standing on a flat
+        // disc. Hard shadows put a stair-stepped outline right beside them,
+        // which is the most visible aliasing in the frame; the soft kernel is
+        // also the only setting `shadow-radius` does anything under.
+        gl.shadowMap.type = PCFSoftShadowMap;
       }}
       shadows={graphicsPreset !== 'low'}
     >

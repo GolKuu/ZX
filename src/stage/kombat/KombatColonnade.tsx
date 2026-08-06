@@ -84,23 +84,32 @@ function StonePillar({
 function BackArcade({ surfaces }: { readonly surfaces: KombatSurfaces }) {
   const piers = [-9.6, -5.8, -2, 2, 5.8, 9.6];
   return (
+    // Nothing in the arcade casts. It stands fifteen metres behind the disc and
+    // the key light rakes backwards, so every shadow it could throw lands off
+    // the back of the stage where no camera angle can see it — pure cost. It
+    // still receives, which is what makes it read as lit stone.
     <group position={[0, -1, -15]}>
       {piers.map((x) => (
-        <mesh key={x} castShadow material={surfaces.stone} position={[x, 3.4, 0]} receiveShadow>
+        <mesh key={x} material={surfaces.stone} position={[x, 3.4, 0]} receiveShadow>
           <boxGeometry args={[1.6, 6.8, 1.9]} />
         </mesh>
       ))}
       {/* Lintel course across the top of the openings. */}
-      <mesh castShadow material={surfaces.stone} position={[0, 7.3, 0]} receiveShadow>
+      <mesh material={surfaces.stone} position={[0, 7.3, 0]} receiveShadow>
         <boxGeometry args={[22.8, 1, 2.1]} />
       </mesh>
-      <mesh castShadow material={surfaces.stoneDark} position={[0, 8.35, 0.15]} receiveShadow>
+      <mesh material={surfaces.stoneDark} position={[0, 8.35, 0.15]} receiveShadow>
         <boxGeometry args={[24.4, 1.1, 2.6]} />
       </mesh>
-      {/* Solid mass behind the arcade so the openings read as depth, not holes
-          punched in the sky. */}
-      <mesh material={surfaces.stoneDark} position={[0, 5, -6]} receiveShadow>
-        <boxGeometry args={[46, 14, 1.4]} />
+      {/* Low wall across the base of the openings only.
+          A full-height slab used to stand behind this arcade, and it turned
+          every arch into a dead black panel — the arches are worth building
+          precisely because you can see the sky and the far ridges through them,
+          and blocking that is the whole cost with none of the benefit. What is
+          left is a parapet: it stops the eye running out along the ground while
+          leaving the openings open. */}
+      <mesh material={surfaces.stoneDark} position={[0, 0.85, -3]} receiveShadow>
+        <boxGeometry args={[46, 1.7, 1.4]} />
       </mesh>
     </group>
   );

@@ -4,7 +4,6 @@ import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import {
   AdditiveBlending,
-  CanvasTexture,
   Color,
   Group,
   Mesh,
@@ -12,6 +11,7 @@ import {
   NormalBlending,
 } from 'three';
 import { readCombatFighter, readLatestHit } from '@/src/game/combatRuntime';
+import { createSoftFalloffTexture } from '@/src/render/softFalloffTexture';
 
 type CharacterKind = 'glitch' | 'lucky' | 'mim' | 'titan' | 'vorgh';
 
@@ -54,10 +54,17 @@ export function CharacterHeroFX({
   const colour = RIM_COLORS[kind];
 
   const surfaces = useMemo(() => {
-    const falloff = createFalloffTexture();
+    const falloff = createSoftFalloffTexture();
+    // Both quads lie flat, a couple of centimetres above a floor that stretches
+    // to the fog — which is the textbook depth-buffer fight, and it showed as a
+    // torn black rag under every fighter rather than as a shadow. Polygon
+    // offset is the fix decals are meant to use: it biases these two surfaces
+    // toward the camera in depth only, without moving them in the world.
+    const decal = { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -6 };
     return {
       falloff,
       shadow: new MeshBasicMaterial({
+        ...decal,
         alphaMap: falloff,
         blending: NormalBlending,
         color: new Color('#000000'),
@@ -66,6 +73,7 @@ export function CharacterHeroFX({
         transparent: true,
       }),
       pool: new MeshBasicMaterial({
+        ...decal,
         alphaMap: falloff,
         blending: AdditiveBlending,
         color: new Color(colour),
@@ -103,7 +111,7 @@ export function CharacterHeroFX({
     // ground by their jump height — so undo that lift to keep the shadow on the
     // floor, and shrink it with altitude the way a real one behaves.
     const lift = Math.max(0, group.parent?.position.y ?? 0);
-    group.position.y = -lift + 0.035;
+    group.position.y = -lift + 0.055;
     const spread = 1 / (1 + lift * 0.55);
 
     const blob = shadow.current;
@@ -136,22 +144,3 @@ export function CharacterHeroFX({
   );
 }
 
-/** Radial white-to-clear ramp, used as the alpha of both ground quads. */
-function createFalloffTexture(): CanvasTexture {
-  const size = 128;
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  const context = canvas.getContext('2d');
-  if (context !== null) {
-    const ramp = context.createRadialGradient(
-      size / 2, size / 2, 0, size / 2, size / 2, size / 2,
-    );
-    ramp.addColorStop(0, '#ffffff');
-    ramp.addColorStop(0.45, '#9a9a9a');
-    ramp.addColorStop(1, '#000000');
-    context.fillStyle = ramp;
-    context.fillRect(0, 0, size, size);
-  }
-  return new CanvasTexture(canvas);
-}

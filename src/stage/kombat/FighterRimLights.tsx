@@ -32,20 +32,24 @@ export function FighterRimLights({ theme }: { readonly theme: KombatTheme }) {
 
   return (
     <>
+      {/* Short range on purpose. These are character lights, not stage lights —
+          at 9.5 m each one washed half the disc in flat colour and the two of
+          them met in the middle, which put a hard magenta seam across the floor
+          between the fighters. A tight pool stays a pool. */}
       <pointLight
         ref={warm}
         color={theme.rimWarm}
         decay={2}
-        distance={9.5}
-        intensity={9}
+        distance={6}
+        intensity={7}
         position={[-2.4, 2.6, -2.2]}
       />
       <pointLight
         ref={cool}
         color={theme.rimCool}
         decay={2}
-        distance={9.5}
-        intensity={9}
+        distance={6}
+        intensity={7}
         position={[2.4, 2.6, -2.2]}
       />
     </>

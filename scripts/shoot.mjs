@@ -34,6 +34,7 @@ function parseArgs(argv) {
     scale: 1,
     p1: 0,
     p2: 0,
+    stage: 0,
   };
   for (let i = 0; i < argv.length; i += 1) {
     const flag = argv[i];
@@ -48,6 +49,10 @@ function parseArgs(argv) {
     // and a character you have just changed never appears in one.
     else if (flag === '--p1') args.p1 = Number(argv[(i += 1)]);
     else if (flag === '--p2') args.p2 = Number(argv[(i += 1)]);
+    // Arena index, same idea as the roster ones. Every arena is now themed off
+    // one shared 3D stage, so a lighting change lands in all three at once —
+    // which is exactly why a capture run has to be able to reach all three.
+    else if (flag === '--stage') args.stage = Number(argv[(i += 1)]);
   }
   return args;
 }
@@ -151,6 +156,10 @@ async function main() {
   await page.keyboard.press('Enter');
   await waitForScreen('stage');
   await wait(800);
+  for (let step = 0; step < args.stage; step += 1) {
+    await page.keyboard.press('ArrowRight');
+    await wait(140);
+  }
   await shot('03-stage-select');
 
   await page.keyboard.press('Enter');

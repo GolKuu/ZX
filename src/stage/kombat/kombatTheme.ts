@@ -39,30 +39,30 @@ export interface KombatTheme {
 }
 
 const TEMPLE: KombatTheme = {
-  skyTop: '#03060d', skyHorizon: '#14202e',
-  fog: '#0a1119', fogNear: 11, fogFar: 46,
-  stone: '#3b3a3c', stoneShadow: '#0d0e12',
-  floor: '#14161b', floorLine: '#c8892f', floorEdge: '#ff6a2a',
+  skyTop: '#050c18', skyHorizon: '#2e4a63',
+  fog: '#101d2a', fogNear: 13, fogFar: 52,
+  stone: '#4a4749', stoneShadow: '#14161c',
+  floor: '#191b21', floorLine: '#a08148', floorEdge: '#c8763c',
   key: '#dfe8ff', rimWarm: '#ff8a3c', rimCool: '#5fb9ff', bounce: '#2a3550',
   fire: '#ff7a1e', fireCore: '#ffd98a', ember: '#ff9c42', mist: '#5f7591',
   beacon: '#cfe2ff',
 };
 
 const STORM: KombatTheme = {
-  skyTop: '#020610', skyHorizon: '#0d2740',
-  fog: '#07131f', fogNear: 10, fogFar: 44,
-  stone: '#2f3a45', stoneShadow: '#080d14',
-  floor: '#0e161d', floorLine: '#57d4ff', floorEdge: '#8f6bff',
+  skyTop: '#030a16', skyHorizon: '#1c4b6e',
+  fog: '#0c1f2e', fogNear: 12, fogFar: 50,
+  stone: '#3c4a56', stoneShadow: '#0e1620',
+  floor: '#131b23', floorLine: '#4aa8c8', floorEdge: '#6f57c0',
   key: '#d8ecff', rimWarm: '#a97bff', rimCool: '#54d8ff', bounce: '#1b3348',
   fire: '#49b7ff', fireCore: '#d6f4ff', ember: '#7fd8ff', mist: '#4d7ea0',
   beacon: '#9fd8ff',
 };
 
 const CITY: KombatTheme = {
-  skyTop: '#0a0308', skyHorizon: '#33131a',
-  fog: '#150910', fogNear: 10, fogFar: 42,
-  stone: '#38302f', stoneShadow: '#0f090c',
-  floor: '#150f12', floorLine: '#ff5a45', floorEdge: '#ff2f6a',
+  skyTop: '#12060c', skyHorizon: '#5c2320',
+  fog: '#241118', fogNear: 12, fogFar: 48,
+  stone: '#443a38', stoneShadow: '#170e11',
+  floor: '#1b1418', floorLine: '#c25040', floorEdge: '#c03256',
   key: '#ffd9bc', rimWarm: '#ff5b3c', rimCool: '#6fa8ff', bounce: '#3a1c26',
   fire: '#ff4a22', fireCore: '#ffcf7a', ember: '#ff7038', mist: '#8a5566',
   beacon: '#ff9c6a',

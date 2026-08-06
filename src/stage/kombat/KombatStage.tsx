@@ -10,6 +10,7 @@ import { KombatGroundMist } from './KombatGroundMist';
 import { KombatHorizon } from './KombatHorizon';
 import { KombatLightShafts } from './KombatLightShafts';
 import { KombatSky } from './KombatSky';
+import { KombatTerrace } from './KombatTerrace';
 import { useKombatSurfaces } from './kombatMaterials';
 import { kombatTheme } from './kombatTheme';
 
@@ -37,6 +38,7 @@ export function KombatStage({ arenaId }: { readonly arenaId: ArenaId }) {
       <KombatSky theme={theme} />
       <KombatHorizon theme={theme} />
       <KombatColonnade surfaces={surfaces} />
+      <KombatTerrace surfaces={surfaces} />
       <KombatFloor surfaces={surfaces} theme={theme} />
       <KombatBraziers surfaces={surfaces} theme={theme} />
       {volumetrics ? <KombatLightShafts theme={theme} /> : null}

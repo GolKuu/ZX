@@ -45,6 +45,9 @@ export function SpeedLines() {
     return [height * 2.4, height] as const;
   }, []);
 
+  // Three.js uniforms are intentionally mutable render state; driving them from
+  // the frame loop is the documented way to animate a shader.
+  // eslint-disable-next-line react-hooks/immutability
   useFrame(({ clock }, delta) => {
     const glass = quad.current;
     if (glass !== null) {
@@ -64,18 +67,17 @@ export function SpeedLines() {
     const impact = [p1, p2].some(
       (fighter) => fighter !== null && (fighter.hitstop > 0 || fighter.dashFrames > 0),
     );
-    const target = enabledRef.current && impact ? 0.85 : 0;
+    const target = enabledRef.current && impact ? 0.42 : 0;
     // Snap on, ease off: an impact effect that fades *in* has already missed
     // the moment it exists to punctuate.
     const rate = target > intensityRef.current ? 26 : 7;
     intensityRef.current = MathUtils.damp(intensityRef.current, target, rate, delta);
 
     const shader = material as ShaderMaterial;
-    // Three.js uniforms are intentionally mutable render state.
-    // eslint-disable-next-line react-hooks/immutability
+    /* eslint-disable react-hooks/immutability */
     shader.uniforms.uTime!.value = clock.elapsedTime;
-    // eslint-disable-next-line react-hooks/immutability
     shader.uniforms.uIntensity!.value = intensityRef.current;
+    /* eslint-enable react-hooks/immutability */
   });
 
   return (

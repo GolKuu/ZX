@@ -70,6 +70,16 @@ export function createArenaFloorMaterial(
     metalness: 0.12,
     roughness: 0.4,
     dithering: true,
+    // The disc is a lid laid on top of the stone platform that carries it, so
+    // it is coplanar with that stone to within a few centimetres across fifteen
+    // metres — a depth fight the buffer cannot win at this range. It showed as
+    // torn black islands eating into the engraved rim, which looked like damage
+    // to the artwork rather than like a rendering fault. Biasing the disc toward
+    // the camera in depth only, without moving it in the world, is the fix this
+    // is for: the lid always wins, the platform never pokes through.
+    polygonOffset: true,
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -6,
   }) as ArenaFloorMaterial;
 
   Object.defineProperty(material, 'arena', { value: uniforms, enumerable: true });
@@ -89,7 +99,23 @@ export function createArenaFloorMaterial(
         '#include <begin_vertex>',
         /* glsl */ `
         #include <begin_vertex>
-        vArenaXz = ( modelMatrix * vec4( transformed, 1.0 ) ).xz;
+        // The disc's *own* coordinates, not the world's.
+        //
+        // This used to project the vertex into world space and read its xz.
+        // That ties the pattern to wherever the disc happens to sit and however
+        // it happens to be scaled — and the stage now squashes the platform
+        // along the camera axis, which stretched \`length()\` into an ellipse
+        // that no longer reached 1.0 anywhere except the extreme left and right
+        // edges. Every band keyed off that radius therefore bunched up and tore
+        // at exactly those two points. Reading the local vertex keeps the
+        // engraving a true circle in the disc's own frame, and the squash then
+        // foreshortens the whole pattern along with the geometry, which is what
+        // was wanted in the first place.
+        //
+        // The plane is authored in local XY and laid flat by a -90° turn about
+        // X, so local +y becomes world -z; the negation keeps "away from the
+        // camera" pointing the same way for the reflection streak below.
+        vArenaXz = vec2( transformed.x, -transformed.y );
         `,
       );
 
@@ -126,8 +152,23 @@ export function createArenaFloorMaterial(
           return 1.0 - smoothstep( halfWidth, halfWidth + aa, d );
         }
 
+        // Hash without \`sin\`.
+        //
+        // The usual \`fract(sin(dot(p, k)) * 43758)\` breaks down once \`p\` gets
+        // large, and the grain below samples this at eleven times world scale —
+        // so across a 15 m disc the argument runs into the tens of thousands and
+        // the GPU's \`sin\` has no mantissa left to resolve it. Neighbouring
+        // pixels collapse onto the same value, and the "noise" comes out as flat
+        // torn islands. Those islands were baked into the surface roughness,
+        // which is why they only showed where the rim is bright enough to carry
+        // a specular: a permanent black tear in the arena's edge glow.
+        //
+        // This variant only ever multiplies fractions, so its precision does not
+        // depend on how far from the origin it is asked.
         float arenaHash( vec2 p ) {
-          return fract( sin( dot( p, vec2( 127.1, 311.7 ) ) ) * 43758.5453 );
+          vec3 q = fract( vec3( p.xyx ) * vec3( 0.1031, 0.1030, 0.0973 ) );
+          q += dot( q, q.yzx + 33.33 );
+          return fract( ( q.x + q.y ) * q.z );
         }
 
         float arenaNoise( vec2 p ) {
@@ -148,7 +189,15 @@ export function createArenaFloorMaterial(
         #include <roughnessmap_fragment>
         float arenaGrain = arenaNoise( vArenaXz * 2.6 ) * 0.6
                          + arenaNoise( vArenaXz * 11.0 ) * 0.4;
-        roughnessFactor = clamp( roughnessFactor * ( 0.72 + arenaGrain * 0.75 ), 0.05, 1.0 );
+        // Floor of 0.18, not 0.05.
+        //
+        // Below roughly 0.15 the GGX specular collapses toward a mirror: the
+        // distribution term spikes, its geometry term divides by something
+        // approaching zero, and on a surface this close to a bright point light
+        // the result overflows to a non-number. A NaN is written out as pure
+        // black, which is what was tearing holes in the arena's edge glow. The
+        // polish is unaffected — 0.18 is still a wet floor.
+        roughnessFactor = clamp( roughnessFactor * ( 0.72 + arenaGrain * 0.75 ), 0.18, 1.0 );
         `,
       )
       .replace(
@@ -160,10 +209,17 @@ export function createArenaFloorMaterial(
           float t    = clamp( dist / uRadius, 0.0, 1.0 );
 
           // 1.0 lit, 0.0 fully shadowed. Everything the disc emits is scaled by
-          // this, so a fighter standing on the circle visibly snuffs the
-          // engraving out beneath themselves.
+          // this, so a fighter standing on the circle visibly dims the
+          // engraving beneath themselves.
+          //
+          // The shadowed floor is 0.55 rather than 0.16. At 0.16 the emissive
+          // was effectively switched off wherever the mask dipped, so *any*
+          // wobble in the mask — shadow-map aliasing, a grazing depth compare —
+          // punched a hard black hole through the bright rim. Keeping most of
+          // the glow in shade means the same wobble costs a little brightness
+          // instead of tearing a shape out of the artwork.
           float lit = getShadowMask();
-          float glow = mix( 0.16, 1.0, lit );
+          float glow = mix( 0.55, 1.0, lit );
 
           // --- engraving ----------------------------------------------------
           // Three weighted rings rather than a uniform comb: an even repeat
@@ -187,8 +243,26 @@ export function createArenaFloorMaterial(
           // --- rim ------------------------------------------------------------
           // The rim is a light source in its own right and reads as the arena's
           // boundary, so it keeps most of its value in shadow.
-          float rim = smoothstep( 0.93, 0.985, t ) * ( 1.0 - smoothstep( 0.995, 1.0, t ) );
-          totalEmissiveRadiance += uEdge * rim * 1.15 * mix( 0.7, 1.0, lit );
+          // Wider and softer than it was, and roughly half as hot. A narrow
+          // rim at 1.15 clipped to a solid stripe of pure hue that sat at the
+          // bottom of frame competing with the fighters; a broad, dimmer band
+          // reads as the edge of the platform catching light, which is what it
+          // is supposed to be.
+          //
+          // The outer cut this used to carry — a second smoothstep switching
+          // the rim off again over the last half-percent of the radius — is
+          // gone. It was guarding against bleed past an edge the geometry
+          // already ends at, and all it actually did was carve a hard notch
+          // into the brightest band on the stage.
+          //
+          // A quarter of its old strength. A self-illuminated ring around the
+          // fighting area belongs to an arcade cabinet, not to a lit room: it
+          // was the brightest thing in frame, brighter than either fighter, and
+          // it sat along the bottom edge dragging the eye off the fight. At
+          // this level it reads as the platform's edge catching the braziers,
+          // which is what the stage should be saying.
+          float rim = smoothstep( 0.86, 0.99, t );
+          totalEmissiveRadiance += uEdge * rim * 0.16 * mix( 0.8, 1.0, lit );
 
           // --- faked rift reflection -------------------------------------------
           // The rift sits behind the arena and is the brightest thing in the
@@ -207,7 +281,30 @@ export function createArenaFloorMaterial(
           // the same mistake as a black floor — it leaves their cast shadow
           // nothing to be darker than.
           diffuseColor.rgb *= mix( 0.82, 1.05, t );
+
+          // Scrub. Everything above is procedural, and a single non-finite
+          // value anywhere in it is written out as pure black and then smeared
+          // across the neighbourhood by the bloom — which is how a shading
+          // detail turns into a hole torn in the arena. \`max\` against zero
+          // discards a NaN on every implementation that lowers it to a compare,
+          // and the ceiling keeps an overflow out of the HDR buffer the
+          // composite chain reads.
+          totalEmissiveRadiance =
+            min( max( totalEmissiveRadiance, vec3( 0.0 ) ), vec3( 12.0 ) );
+          diffuseColor.rgb =
+            min( max( diffuseColor.rgb, vec3( 0.0 ) ), vec3( 4.0 ) );
         }
+        `,
+      )
+      // Final guard, after the lighting model has run. The procedural roughness
+      // feeds a specular term evaluated against lights that sit centimetres off
+      // this surface, so the last chance to catch a non-number is here.
+      .replace(
+        '#include <dithering_fragment>',
+        /* glsl */ `
+        #include <dithering_fragment>
+        gl_FragColor.rgb =
+          min( max( gl_FragColor.rgb, vec3( 0.0 ) ), vec3( 24.0 ) );
         `,
       );
   };

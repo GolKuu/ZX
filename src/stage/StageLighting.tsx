@@ -98,8 +98,12 @@ export function StageLighting({ arenaId }: { readonly arenaId: ArenaId }) {
         shadow-camera-near={0.5}
         shadow-camera-right={SHADOW_EXTENT}
         shadow-camera-top={SHADOW_EXTENT}
-        shadow-mapSize-height={2048}
-        shadow-mapSize-width={2048}
+        {/* 1024, not 2048. The soft PCF kernel blurs a shadow across several
+            texels anyway, so the extra resolution was being filtered straight
+            back off — it cost a quarter of the frame on integrated graphics and
+            produced an image nobody could tell apart. */}
+        shadow-mapSize-height={1024}
+        shadow-mapSize-width={1024}
         shadow-normalBias={0.028}
         shadow-radius={3}
       />

@@ -32,14 +32,31 @@ const fragmentShader = /* glsl */ `
   }
 
   void main() {
+    // Ramp biased toward the horizon colour.
+    // A fight camera looks slightly *down*, so the band of sky it actually
+    // frames sits just above the skyline — with an even gradient that band came
+    // out at zenith black and the top of every shot was a hole. Holding the
+    // horizon tone up through the lower sky puts the light where the lens is
+    // pointed.
     float height = clamp(vDirection.y * 0.5 + 0.5, 0.0, 1.0);
-    vec3 sky = mix(uHorizon, uTop, pow(height, 0.62));
+    vec3 sky = mix(uHorizon, uTop, pow(clamp((height - 0.5) * 2.0, 0.0, 1.0), 0.85));
 
     // Glow pooled above the horizon behind the arena: the set's own skyline
     // light, which is what stops the dome reading as an empty gradient.
     float back = clamp(-vDirection.z, 0.0, 1.0);
     float pool = pow(back, 2.4) * (1.0 - smoothstep(0.5, 0.86, height));
     sky += uBeacon * pool * 0.22;
+
+    // A disc hanging behind and above the arena.
+    // The top half of a fight camera's frame is mostly sky, and sky with
+    // nothing in it is a hole. One bright object fixes the eye, gives the
+    // architecture something to be silhouetted against, and — being the only
+    // thing up there — tells the audience which way the key light comes from.
+    vec3 toBeacon = normalize(vec3(0.26, 0.34, -1.0));
+    float aim = dot(normalize(vDirection), toBeacon);
+    float disc = smoothstep(0.9955, 0.9975, aim);
+    float halo = pow(max(0.0, aim), 220.0) * 0.55 + pow(max(0.0, aim), 22.0) * 0.12;
+    sky += uBeacon * (disc * 1.5 + halo);
 
     // Torn cloud band, cheap and directional.
     float band = sin(vDirection.x * 3.1 + vDirection.z * 1.7) * 0.5 + 0.5;

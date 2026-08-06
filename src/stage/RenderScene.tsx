@@ -16,6 +16,9 @@ import { FrameProfiler } from './FrameProfiler';
 import { HitBlood } from './HitBlood';
 import { HitSparkBurst } from './HitSparkBurst';
 import { GuardImpact } from './GuardImpact';
+import { GroundDust } from './impact/GroundDust';
+import { ImpactFlash } from './impact/ImpactFlash';
+import { ImpactShockwave } from './impact/ImpactShockwave';
 import { LazyPostEffects } from './LazyPostEffects';
 import { PhotoSpriteFighter } from './photoSprite/PhotoSpriteFighter';
 import { SpeedLines } from './SpeedLines';
@@ -64,7 +67,10 @@ export function RenderScene({
       <AttackCue />
       <HitBlood />
       <HitSparkBurst />
+      <ImpactShockwave />
+      <GroundDust />
       <GuardImpact />
+      <ImpactFlash />
       <CameraRig />
       <LazyPostEffects />
       <FrameProfiler />

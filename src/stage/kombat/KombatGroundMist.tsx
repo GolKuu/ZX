@@ -21,9 +21,14 @@ import type { KombatTheme } from './kombatTheme';
  * so it never fogs the fighters themselves.
  */
 const LAYERS = [
-  { y: -0.86, radius: 26, spin: 0.014 },
-  { y: -0.6, radius: 20, spin: -0.021 },
-  { y: -0.3, radius: 15, spin: 0.03 },
+  { y: -0.82, radius: 30, spin: 0.014 },
+  { y: -0.5, radius: 24, spin: -0.021 },
+  // Sits just under the lip of the bottom step and reaches past it. The step
+  // ring is the strongest value break on the stage — bright lit stone against
+  // the sunken floor, right where the camera's pan puts it in the corner of
+  // frame — and haze lying across that seam is what a real set would have there
+  // anyway.
+  { y: -0.24, radius: 17, spin: 0.03 },
 ] as const;
 
 function createMistTexture(): CanvasTexture {

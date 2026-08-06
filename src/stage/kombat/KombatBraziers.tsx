@@ -97,7 +97,7 @@ function Brazier({
         castShadow={false}
         color={theme.fire}
         decay={2}
-        distance={17}
+        distance={11}
         intensity={5.4}
         position={[0, 1.9, 0.3]}
       />

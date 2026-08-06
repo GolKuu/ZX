@@ -36,8 +36,15 @@ const BASE_FOCUS = 1.42;
 /** How much of a fighter's airborne height the lens follows. */
 const AIR_TRACKING = 0.42;
 
-/** Clear space kept outside the pair, in metres, on each side. */
-const SIDE_MARGIN = 1.45;
+/**
+ * Clear space kept outside the pair, in metres, on each side.
+ *
+ * Sized for a *knocked-down* fighter, not a standing one: a body on the floor
+ * is rotated flat, so it reaches roughly a metre further from its own centre
+ * than it does upright, and framing to the standing width cropped every
+ * knockdown that happened near the rim.
+ */
+const SIDE_MARGIN = 1.75;
 /** Half the height that must fit: a fighter plus headroom. */
 const HALF_SUBJECT_HEIGHT = 2.05;
 

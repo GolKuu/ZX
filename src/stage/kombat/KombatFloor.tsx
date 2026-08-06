@@ -57,14 +57,22 @@ export function KombatFloor({
   return (
     <group>
       {/* Sunken outer floor. Sits below the steps so the platform reads as
-          raised; wide enough that the fog, not an edge, ends it. */}
+          raised; wide enough that the fog, not an edge, ends it.
+
+          Same stone as the steps, not the near-black shadow stone it used to
+          be. The braziers light the bottom step to a bright warm orange, and
+          putting a surface with almost no albedo directly against it made the
+          platform's outer edge a maximum-contrast boundary — every bit of
+          aliasing along that silhouette bloomed into a torn black smear at the
+          edge of frame. Sharing the material lets the same lights fall on both
+          sides of the step, and the edge becomes an edge again. */}
       <mesh
-        material={surfaces.stoneDark}
+        material={surfaces.stone}
         position={[0, -0.98, 0]}
         receiveShadow
         rotation-x={-Math.PI / 2}
       >
-        <circleGeometry args={[40, 64]} />
+        <circleGeometry args={[40, 96]} />
       </mesh>
 
       {/* The platform is squashed along the camera axis.
@@ -75,10 +83,16 @@ export function KombatFloor({
           sees is a round arena that leaves room for the fight. Simulation
           bounds are in X and never see this. */}
       <group scale={[1, 1, 0.66]}>
+      {/* The platform receives shadows but casts none.
+          A 15 m disc 26 cm thick presents an almost perfectly grazing face to
+          the key light, and a grazing caster is the classic shadow-acne case:
+          the steps shadowed *themselves* in a torn, aliased wedge that ate a
+          bite out of the rim glow every frame. Nothing in the shot needs the
+          floor's own shadow — the fighters and the architecture cast, the
+          ground receives. */}
       {STEPS.map((step) => (
         <mesh
           key={step.radius}
-          castShadow
           material={surfaces.stone}
           position={[0, step.y, 0]}
           receiveShadow
@@ -89,12 +103,7 @@ export function KombatFloor({
 
       {/* Plinth: the mass under the disc. Slightly tapered so the key light
           rakes the side and gives the platform a lit top and a dark flank. */}
-      <mesh
-        castShadow
-        material={surfaces.stone}
-        position={[0, -0.06, 0]}
-        receiveShadow
-      >
+      <mesh material={surfaces.stone} position={[0, -0.06, 0]} receiveShadow>
         <cylinderGeometry args={[ARENA_RADIUS + 0.06, ARENA_RADIUS - 0.1, 0.16, 128, 1]} />
       </mesh>
 
