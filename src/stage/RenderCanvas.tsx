@@ -17,7 +17,11 @@ export function RenderCanvas({
 }) {
   const graphicsPreset = useRenderStore((state) => state.graphicsPreset);
   const simulationActive = useHudStore((state) => state.screen === 'fight');
-  const dpr: [number, number] = graphicsPreset === 'high' ? [1, 1.5] : graphicsPreset === 'medium' ? [1, 1.25] : [1, 1];
+  // High preset targets a 4K-class internal surface on a 2x display while
+  // retaining a safe floor for older hardware. The sprite atlases remain
+  // source-limited, but the arena, lighting and post stack now resolve at the
+  // display's native high-density pixel grid instead of a 1.5x ceiling.
+  const dpr: [number, number] = graphicsPreset === 'high' ? [1, 2] : graphicsPreset === 'medium' ? [1, 1.25] : [1, 1];
   return (
     <Canvas
       camera={{ fov: 40, far: 80, near: 0.1, position: [0, 2.42, 8.2] }}

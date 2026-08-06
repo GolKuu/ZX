@@ -5,8 +5,8 @@ import { useEffect, useRef, useState, type RefObject } from 'react';
 import {
   DoubleSide,
   Group,
+  LinearFilter,
   MeshBasicMaterial,
-  NearestFilter,
   SRGBColorSpace,
   Texture,
   TextureLoader,
@@ -290,8 +290,11 @@ function PhotoPlane({
 
 function prepareTexture(texture: Texture): void {
   texture.colorSpace = SRGBColorSpace;
-  texture.magFilter = NearestFilter;
-  texture.minFilter = NearestFilter;
+  // The atlas is authored at 1024px, but the final frame can be 4K. Linear
+  // sampling avoids stair-stepping on the enlarged hero planes; mipmaps stay
+  // disabled because each UV window is a deliberately selected animation cel.
+  texture.magFilter = LinearFilter;
+  texture.minFilter = LinearFilter;
   texture.generateMipmaps = false;
   texture.repeat.set(1 / PHOTO_COLUMNS, 1 / PHOTO_ROWS);
 }
