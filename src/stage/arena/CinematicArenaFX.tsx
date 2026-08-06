@@ -70,6 +70,27 @@ export function CinematicArenaFX({ arenaId }: { readonly arenaId: ArenaId }) {
         ))}
       </group>
 
+      <group position={[0, 2.65, -7.4]} renderOrder={-11}>
+        {[-6.4, -4.2, -1.9, 1.9, 4.2, 6.4].map((x, index) => (
+          <mesh
+            key={`light-shaft-${x}`}
+            position={[x, (index % 2) * 0.18, 0]}
+            rotation-z={index % 2 === 0 ? -0.06 : 0.06}
+            scale={[1 + (index % 3) * 0.24, 1, 1]}
+          >
+            <planeGeometry args={[1.15, 5.8]} />
+            <meshBasicMaterial
+              blending={AdditiveBlending}
+              color={index % 2 === 0 ? palette.core : palette.rim}
+              depthWrite={false}
+              opacity={0.026}
+              transparent
+              toneMapped={false}
+            />
+          </mesh>
+        ))}
+      </group>
+
       <group ref={motesRef} position-z={-0.25} renderOrder={4}>
         {motes.map((mote, index) => (
           <mesh key={`mote-${index}`} position={[mote.x, mote.y, mote.z]} scale={[mote.size * 2.5, mote.size, 1]}>
