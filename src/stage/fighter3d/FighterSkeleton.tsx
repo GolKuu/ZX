@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import type { Group } from 'three';
 import type { CharacterBuild } from './characterBuild';
 import { CharacterFeatures } from './CharacterFeatures';
@@ -34,46 +34,50 @@ export const FighterSkeleton = forwardRef<
   FighterJoints,
   { readonly build: CharacterBuild; readonly surfaces: FighterSurfaces }
 >(function FighterSkeleton({ build, surfaces }, ref) {
-  const joints: Record<keyof FighterJoints, React.RefObject<Group | null>> = {
-    root: useRef<Group>(null),
-    hips: useRef<Group>(null),
-    torso: useRef<Group>(null),
-    head: useRef<Group>(null),
-    leftArm: useRef<Group>(null),
-    leftForearm: useRef<Group>(null),
-    rightArm: useRef<Group>(null),
-    rightForearm: useRef<Group>(null),
-    leftLeg: useRef<Group>(null),
-    leftShin: useRef<Group>(null),
-    rightLeg: useRef<Group>(null),
-    rightShin: useRef<Group>(null),
-  };
+  const root = useRef<Group>(null);
+  const hips = useRef<Group>(null);
+  const torso = useRef<Group>(null);
+  const head = useRef<Group>(null);
+  const leftArm = useRef<Group>(null);
+  const leftForearm = useRef<Group>(null);
+  const rightArm = useRef<Group>(null);
+  const rightForearm = useRef<Group>(null);
+  const leftLeg = useRef<Group>(null);
+  const leftShin = useRef<Group>(null);
+  const rightLeg = useRef<Group>(null);
+  const rightShin = useRef<Group>(null);
+
+  const rootRef = useCallback((node: Group | null) => { root.current = node; }, []);
+  const hipsRef = useCallback((node: Group | null) => { hips.current = node; }, []);
+  const torsoRef = useCallback((node: Group | null) => { torso.current = node; }, []);
+  const headRef = useCallback((node: Group | null) => { head.current = node; }, []);
+  const leftArmRef = useCallback((node: Group | null) => { leftArm.current = node; }, []);
+  const leftForearmRef = useCallback((node: Group | null) => { leftForearm.current = node; }, []);
+  const rightArmRef = useCallback((node: Group | null) => { rightArm.current = node; }, []);
+  const rightForearmRef = useCallback((node: Group | null) => { rightForearm.current = node; }, []);
+  const leftLegRef = useCallback((node: Group | null) => { leftLeg.current = node; }, []);
+  const leftShinRef = useCallback((node: Group | null) => { leftShin.current = node; }, []);
+  const rightLegRef = useCallback((node: Group | null) => { rightLeg.current = node; }, []);
+  const rightShinRef = useCallback((node: Group | null) => { rightShin.current = node; }, []);
 
   useImperativeHandle(ref, () => ({
-    root: joints.root.current!,
-    hips: joints.hips.current!,
-    torso: joints.torso.current!,
-    head: joints.head.current!,
-    leftArm: joints.leftArm.current!,
-    leftForearm: joints.leftForearm.current!,
-    rightArm: joints.rightArm.current!,
-    rightForearm: joints.rightForearm.current!,
-    leftLeg: joints.leftLeg.current!,
-    leftShin: joints.leftShin.current!,
-    rightLeg: joints.rightLeg.current!,
-    rightShin: joints.rightShin.current!,
-  }), []);
+    root: root.current!, hips: hips.current!, torso: torso.current!, head: head.current!,
+    leftArm: leftArm.current!, leftForearm: leftForearm.current!,
+    rightArm: rightArm.current!, rightForearm: rightForearm.current!,
+    leftLeg: leftLeg.current!, leftShin: leftShin.current!,
+    rightLeg: rightLeg.current!, rightShin: rightShin.current!,
+  }), [head, hips, leftArm, leftForearm, leftLeg, leftShin, rightArm, rightForearm, rightLeg, rightShin, root, torso]);
 
   const shoulder = 0.19 * build.shoulders;
   const hip = 0.115 * build.limbs;
   const limb = 0.062 * build.limbs;
 
   return (
-    <group ref={joints.root} scale={build.height}>
-      <group ref={joints.hips} position={[0, 0.86, 0]}>
+    <group ref={rootRef} scale={build.height}>
+      <group ref={hipsRef} position={[0, 0.86, 0]}>
         <Segment length={0.2} material={surfaces.under} radius={hip * 1.15} />
 
-        <group ref={joints.torso} position={[0, 0.16, 0]}>
+        <group ref={torsoRef} position={[0, 0.16, 0]}>
           {/* Chest. Tapered so the shoulders read wider than the waist, which
               is most of what makes a body look like a body. */}
           <mesh castShadow position={[0, 0.24, 0]} receiveShadow>
@@ -90,7 +94,7 @@ export const FighterSkeleton = forwardRef<
             <primitive attach="material" object={surfaces.glow} />
           </mesh>
 
-          <group ref={joints.head} position={[0, 0.62, 0]}>
+          <group ref={headRef} position={[0, 0.62, 0]}>
             <mesh castShadow receiveShadow scale={build.head}>
               <sphereGeometry args={[0.115, 14, 12]} />
               <primitive attach="material" object={surfaces.plate} />
@@ -98,15 +102,15 @@ export const FighterSkeleton = forwardRef<
           </group>
 
           <Arm
-            forearmRef={joints.leftForearm}
-            joint={joints.leftArm}
+            forearmRef={leftForearmRef}
+            joint={leftArmRef}
             position={[-shoulder, 0.4, 0]}
             radius={limb}
             surfaces={surfaces}
           />
           <Arm
-            forearmRef={joints.rightForearm}
-            joint={joints.rightArm}
+            forearmRef={rightForearmRef}
+            joint={rightArmRef}
             position={[shoulder, 0.4, 0]}
             radius={limb}
             surfaces={surfaces}
@@ -115,17 +119,17 @@ export const FighterSkeleton = forwardRef<
         </group>
 
         <Leg
-          joint={joints.leftLeg}
+          joint={leftLegRef}
           position={[-hip * 0.62, -0.1, 0]}
           radius={limb * 1.12}
-          shinRef={joints.leftShin}
+          shinRef={leftShinRef}
           surfaces={surfaces}
         />
         <Leg
-          joint={joints.rightLeg}
+          joint={rightLegRef}
           position={[hip * 0.62, -0.1, 0]}
           radius={limb * 1.12}
-          shinRef={joints.rightShin}
+          shinRef={rightShinRef}
           surfaces={surfaces}
         />
       </group>
@@ -158,8 +162,8 @@ function Arm({
   radius,
   surfaces,
 }: {
-  readonly forearmRef: React.RefObject<Group | null>;
-  readonly joint: React.RefObject<Group | null>;
+  readonly forearmRef: (node: Group | null) => void;
+  readonly joint: (node: Group | null) => void;
   readonly position: readonly [number, number, number];
   readonly radius: number;
   readonly surfaces: FighterSurfaces;
@@ -185,10 +189,10 @@ function Leg({
   shinRef,
   surfaces,
 }: {
-  readonly joint: React.RefObject<Group | null>;
+  readonly joint: (node: Group | null) => void;
   readonly position: readonly [number, number, number];
   readonly radius: number;
-  readonly shinRef: React.RefObject<Group | null>;
+  readonly shinRef: (node: Group | null) => void;
   readonly surfaces: FighterSurfaces;
 }) {
   return (
