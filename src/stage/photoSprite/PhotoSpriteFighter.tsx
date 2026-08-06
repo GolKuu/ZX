@@ -7,10 +7,12 @@ import {
   Group,
   LinearFilter,
   MeshBasicMaterial,
+  Color,
   SRGBColorSpace,
   Texture,
   TextureLoader,
 } from 'three';
+import type { Material } from 'three';
 import { combatRenderFrame, readCombatFighter, readLatestHit } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
 import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
@@ -47,6 +49,14 @@ const CHARACTER_DISPLAY_SCALE = {
   mim: 0.98,
   titan: 1.12,
   vorgh: 1.05,
+} as const;
+
+const HERO_SURFACE_ACCENTS = {
+  glitch: '#48dfff',
+  lucky: '#e8ba62',
+  mim: '#bb6dff',
+  titan: '#ff8c42',
+  vorgh: '#ff3d5e',
 } as const;
 
 interface PhotoTextures {
@@ -269,6 +279,7 @@ export function PhotoSpriteFighter({
                 positionZ={-0.002}
                 texture={textures.previous}
                 tint={kind === 'mim' || kind === 'glitch' ? '#d7dce4' : '#ffffff'}
+                heroAccent={kind}
                 width={width}
               />
               <PhotoPlane
@@ -277,6 +288,7 @@ export function PhotoSpriteFighter({
                 texture={textures.current}
                 width={width}
                 tint={kind === 'mim' || kind === 'glitch' ? '#d7dce4' : '#ffffff'}
+                heroAccent={kind}
               />
             </>
           )}
@@ -295,6 +307,7 @@ function PhotoPlane({
   scale = 1,
   texture,
   tint,
+  heroAccent,
   toneMapped = true,
   width,
 }: {
@@ -305,6 +318,7 @@ function PhotoPlane({
   readonly scale?: number;
   readonly texture: Texture;
   readonly tint: string;
+  readonly heroAccent?: 'glitch' | 'lucky' | 'mim' | 'titan' | 'vorgh';
   readonly toneMapped?: boolean;
   readonly width: number;
 }) {
@@ -312,6 +326,7 @@ function PhotoPlane({
     <mesh position-x={positionX} position-z={positionZ} scale={scale}>
       <planeGeometry args={[width, DISPLAY_HEIGHT]} />
       <meshBasicMaterial
+        onBeforeCompile={heroAccent === undefined ? undefined : gradeHeroSurface(heroAccent)}
         ref={materialRef}
         alphaTest={0.05}
         color={tint}
@@ -324,6 +339,29 @@ function PhotoPlane({
       />
     </mesh>
   );
+}
+
+function gradeHeroSurface(
+  heroAccent: keyof typeof HERO_SURFACE_ACCENTS,
+): (shader: Parameters<Material['onBeforeCompile']>[0]) => void {
+  return (shader) => {
+    shader.uniforms.uHeroAccent = { value: new Color(HERO_SURFACE_ACCENTS[heroAccent]) };
+    shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <map_fragment>',
+      `#include <map_fragment>
+        uniform vec3 uHeroAccent;
+        // A restrained surface grade gives the atlas a directional-light
+        // read without pretending that a 2D frame is a real mesh.
+        vec2 heroUv = fract(vMapUv * vec2(float(${PHOTO_COLUMNS}), float(${PHOTO_ROWS})));
+        float heroLight = 0.78 + heroUv.y * 0.25;
+        float heroRim = smoothstep(0.72, 1.0, heroUv.x) * 0.07;
+        float heroGloss = pow(max(0.0, 1.0 - abs(heroUv.x - 0.67) * 3.8), 18.0) * 0.09;
+        diffuseColor.rgb *= heroLight;
+        diffuseColor.rgb += uHeroAccent * (heroRim + heroGloss);
+        diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * diffuseColor.rgb * 1.16, 0.22);
+      `,
+    );
+  };
 }
 
 function prepareTexture(texture: Texture): void {
