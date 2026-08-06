@@ -15,6 +15,7 @@ import {
 import type { Material } from 'three';
 import { combatRenderFrame, readCombatFighter, readLatestHit } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
+import { useRenderStore } from '@/src/store/renderStore';
 import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
 import { MimAttackEffects } from '../mim/MimAttackEffects';
 import { MimSpecialEffects } from '../mim/MimSpecialEffects';
@@ -86,13 +87,15 @@ export function PhotoSpriteFighter({
   const impactAt = useRef(-1);
   const impactDamage = useRef(0);
   const [textures, setTextures] = useState<PhotoTextures | null>(null);
+  const graphicsPreset = useRenderStore((state) => state.graphicsPreset);
   const opponentId = fighterId === 'p1' ? 'p2' : 'p1';
   const bodyScale = CHARACTER_DISPLAY_SCALE[kind];
 
   useEffect(() => {
     let disposed = false;
     let loaded: PhotoTextures | null = null;
-    new TextureLoader().loadAsync(`/sprites/reference-fighters/${kind}-atlas.webp`)
+    const atlasName = graphicsPreset === 'high' ? `${kind}-atlas-hd.avif` : `${kind}-atlas.webp`;
+    new TextureLoader().loadAsync(`/sprites/reference-fighters/${atlasName}`)
       .then((result) => {
         if (disposed) {
           result.dispose();
@@ -116,7 +119,7 @@ export function PhotoSpriteFighter({
       loaded?.previous.dispose();
       setTextures(null);
     };
-  }, [kind]);
+  }, [graphicsPreset, kind]);
 
   useFrame(({ clock }) => {
     const fighter = readCombatFighter(fighterId);
