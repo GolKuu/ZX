@@ -4,7 +4,7 @@ import styles from './HomeArtwork.module.css';
 
 export function HomeArtwork() {
   return (
-    <section className={styles.artwork} aria-label="Арена и доступные бойцы">
+    <section className={styles.artwork} aria-label="YZX arena and fighter roster">
       <div className={styles.arenaBackdrop} aria-hidden="true">
         <span className={styles.moon} />
         <span className={`${styles.arenaTower} ${styles.towerOne}`} />
@@ -13,12 +13,12 @@ export function HomeArtwork() {
         <span className={styles.arenaPlatform} />
       </div>
       <header className={styles.topline}>
-        <span>АРЕНА // НОЧНОЙ РАЗЛОМ</span>
-        <b>5 БОЙЦОВ В СТРОЮ</b>
+        <span>ARENA // NIGHT FRACTURE</span>
+        <b>5 FIGHTERS ONLINE</b>
       </header>
-      <Link className={styles.siteEntry} href="https://testiskander.vercel.app" target="_blank" rel="noreferrer">
+      <Link className={styles.siteEntry} href="/play">
         <span className={styles.siteEntryMark} aria-hidden="true">↗</span>
-        <span>ЗАЙТИ В OCEAN DEPTHS</span>
+        <span>ENTER LIVE ARENA</span>
       </Link>
       <div className={styles.fighters}>
         {CHARACTER_ROSTER.map((fighter, index) => (
@@ -33,8 +33,8 @@ export function HomeArtwork() {
         ))}
       </div>
       <footer className={styles.caption}>
-        <span>У КАЖДОГО — СВОЙ ТЕМП, МЕХАНИКА И СУПЕРПРИЁМ</span>
-        <strong>ВЫБРАТЬ БОЙЦА →</strong>
+        <span>WEIGHT · SPEED · CONTROL · IMPACT</span>
+        <strong>CHOOSE YOUR FIGHTER →</strong>
       </footer>
     </section>
   );

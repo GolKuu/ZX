@@ -80,8 +80,8 @@ export function StageLighting({ arenaId }: { readonly arenaId: ArenaId }) {
     <>
       {/* Sky/ground bounce, not illumination. Enough that the stone's shadow
           side is a colour rather than a hole. */}
-      <hemisphereLight args={[theme.bounce, theme.stoneShadow, 0.42]} />
-      <ambientLight color={theme.bounce} intensity={0.12} />
+      <hemisphereLight args={[theme.bounce, theme.stoneShadow, 0.58]} />
+      <ambientLight color={theme.bounce} intensity={0.18} />
 
       {/* Key. High, front-left, hard: it draws the fighters' lit side and drops
           their cast shadow back and to the right across the disc.
@@ -120,8 +120,19 @@ export function StageLighting({ arenaId }: { readonly arenaId: ArenaId }) {
         color={theme.fire}
         decay={2}
         distance={13}
-        intensity={2.4}
+        intensity={3.1}
         position={[0, -0.4, 2.4]}
+      />
+
+      {/* A restrained front fill keeps dark costumes readable without flattening
+          the key light. It is deliberately wide and low-intensity: silhouette
+          separation, not a second shadow-casting key. */}
+      <pointLight
+        color="#b9d7ff"
+        decay={2}
+        distance={17}
+        intensity={1.8}
+        position={[0, 2.1, 5.6]}
       />
 
       <FighterRimLights theme={theme} />

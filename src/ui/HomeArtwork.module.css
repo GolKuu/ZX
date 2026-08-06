@@ -8,6 +8,7 @@
   box-shadow: 0 28px 80px rgb(0 0 0 / 45%);
   clip-path: polygon(0 0, calc(100% - 38px) 0, 100% 38px, 100% 100%, 38px 100%, 0 calc(100% - 38px));
   isolation: isolate;
+  transform-style: preserve-3d;
 }
 
 :global(:root[data-theme="light"]) .artwork {
@@ -259,7 +260,9 @@
   background-repeat: no-repeat;
   background-size: 400% 400%;
   filter: drop-shadow(0 18px 16px rgb(0 0 0 / 70%));
-  image-rendering: pixelated;
+  image-rendering: auto;
+  transform: perspective(900px) rotateY(-5deg) translateZ(8px);
+  transition: transform 220ms ease, filter 220ms ease;
 }
 
 .fighter[data-character="mim"] .sprite { background-image: url('/sprites/reference-fighters/mim-atlas.webp'); }
@@ -267,6 +270,11 @@
 .fighter[data-character="lucky"] .sprite { background-image: url('/sprites/reference-fighters/lucky-atlas.webp'); }
 .fighter[data-character="vorgh"] .sprite { background-image: url('/sprites/reference-fighters/vorgh-atlas.webp'); }
 .fighter[data-character="titan"] .sprite { background-image: url('/sprites/reference-fighters/titan-atlas.webp'); }
+
+.fighter:hover .sprite,
+.fighter:focus-visible .sprite {
+  transform: perspective(900px) rotateY(0deg) translateZ(18px) scale(1.03);
+}
 
 .index {
   position: absolute;

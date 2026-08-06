@@ -39,18 +39,24 @@ export function useFighterSurfaces(characterId: CharacterId): FighterSurfaces {
     return {
       body: new MeshStandardMaterial({
         color: new Color(palette.coat.lit),
+        emissive: new Color(build.accent),
+        emissiveIntensity: 0.24,
         roughness: 0.62,
-        metalness: 0.18,
+        metalness: 0.24,
         dithering: true,
       }),
       plate: new MeshStandardMaterial({
         color: new Color(palette.boot.lit),
+        emissive: new Color(build.accent),
+        emissiveIntensity: 0.12,
         roughness: 0.34,
         metalness: 0.55,
         dithering: true,
       }),
       under: new MeshStandardMaterial({
         color: new Color(palette.trousers.shade),
+        emissive: new Color(build.accent),
+        emissiveIntensity: 0.06,
         roughness: 0.85,
         metalness: 0.08,
         dithering: true,
@@ -63,7 +69,7 @@ export function useFighterSurfaces(characterId: CharacterId): FighterSurfaces {
       // this is what stops a dark costume dissolving into a dark room — the
       // rim lights carve the lit side, this carves the shadow side.
       outline: new MeshBasicMaterial({
-        color: new Color('#05060b'),
+        color: new Color(build.accent).multiplyScalar(0.18),
         side: BackSide,
       }),
     };

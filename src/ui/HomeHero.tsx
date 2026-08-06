@@ -8,25 +8,25 @@ export function HomeHero() {
     <section className={styles.hero}>
       <div className={styles.copy}>
         <p className={styles.eyebrow}>
-          <span>PIXEL WORLD // MAIN MENU</span>
-          <b>SEASON 01</b>
+          <span>REALTIME 3D COMBAT // MAIN MENU</span>
+          <b>YZX // SEASON 01</b>
         </p>
-        <h1>Твой стиль.<span>Твои правила.</span></h1>
+        <h1>Own the arena.<span>Break the limit.</span></h1>
         <p className={styles.description}>
-          Пять непохожих бойцов, быстрые локальные матчи и умный соперник.
-          Выбери героя — и забери арену.
+          Five original fighters. One reactive 3D arena. Build your loadout,
+          read the opponent and take the round with precise timing.
         </p>
         <div className={styles.actions}>
           <Link className={styles.primaryCta} href="/play">
             <span className={styles.ctaCopy}>
-              <strong>НАЧАТЬ БОЙ</strong>
-              <small>ВЫБРАТЬ РЕЖИМ</small>
+              <strong>START FIGHT</strong>
+              <small>SELECT MODE // FIGHTER</small>
             </span>
             <span className={styles.ctaArrow} aria-hidden="true">→</span>
           </Link>
           <HomeSettingsButton variant="secondary" />
         </div>
-        <p className={styles.inputNote}><span aria-hidden="true">●</span> Без установки · клавиатура, геймпад и сенсорное управление</p>
+        <p className={styles.inputNote}><span aria-hidden="true">●</span> KEYBOARD · GAMEPAD · TOUCH READY</p>
       </div>
       <HomeArtwork />
     </section>

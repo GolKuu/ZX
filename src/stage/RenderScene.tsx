@@ -20,10 +20,9 @@ import { GroundDust } from './impact/GroundDust';
 import { ImpactFlash } from './impact/ImpactFlash';
 import { ImpactShockwave } from './impact/ImpactShockwave';
 import { LazyPostEffects } from './LazyPostEffects';
-import { PhotoSpriteFighter } from './photoSprite/PhotoSpriteFighter';
+import { KombatFighter } from './fighter3d/KombatFighter';
 import { SpeedLines } from './SpeedLines';
 import { RenderDebugBridge } from './RenderDebugBridge';
-import { Sprite2DFighter } from './sprite2d/Sprite2DFighter';
 import { StageLighting } from './StageLighting';
 import { TrainingTarget } from './TrainingTarget';
 import { useHudStore } from '@/src/store/hudStore';
@@ -88,7 +87,7 @@ function SelectedFighter({
   readonly characterId: CharacterId;
   readonly fighterId: 'p1' | 'p2';
 }) {
-  const blockout = primitiveFighter(auraColor, characterId, fighterId);
+  const blockout = primitiveFighter(characterId, fighterId);
   const url = modelUrlFor(characterId);
 
   // The rigged model is preferred whenever its file is present. The primitive
@@ -113,39 +112,22 @@ function SelectedFighter({
  * drift from its sheet. Adding a character means slicing it —
  * `node scripts/slice-characters.mjs <name>-profile` — and adding a row here.
  */
-const SPRITE_RIGS: Partial<Record<CharacterId, {
+const LEGACY_SPRITE_RIGS: Partial<Record<CharacterId, {
   readonly rig: string;
   /** Sliced clean attack panels, shown at the strike impact frame. */
   readonly attacks?: string;
 }>> = {
 };
+void LEGACY_SPRITE_RIGS;
 
 function primitiveFighter(
-  auraColor: string,
   characterId: CharacterId,
   fighterId: 'p1' | 'p2',
 ) {
-  if (characterId === 'vorgh' || characterId === 'titan') {
-    return <PhotoSpriteFighter fighterId={fighterId} kind={characterId} />;
-  }
-  const sprite = SPRITE_RIGS[characterId];
-  if (sprite !== undefined) {
-    return (
-      <Sprite2DFighter
-        attackPoseName={sprite.attacks}
-        fighterId={fighterId}
-        rigName={sprite.rig}
-      />
-    );
-  }
-  if (characterId === 'mim') {
-    return <PhotoSpriteFighter fighterId={fighterId} kind="mim" />;
-  }
-  if (characterId === 'glitch') {
-    return <PhotoSpriteFighter fighterId={fighterId} kind="glitch" />;
-  }
-  if (characterId === 'lucky') {
-    return <PhotoSpriteFighter fighterId={fighterId} kind="lucky" />;
-  }
-  return null;
+  // GLB files remain the preferred production path. Until those optimized
+  // assets are installed, every roster member uses the same authored 3D rig
+  // rather than dropping back to a flat sprite. The rig reads the authoritative
+  // combat runtime, so attacks, hit reactions, facing and knockdowns stay in
+  // lockstep with the simulation.
+  return <KombatFighter characterId={characterId} fighterId={fighterId} />;
 }
