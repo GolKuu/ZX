@@ -111,13 +111,15 @@ export function CharacterDepthFX({ kind }: { readonly kind: CharacterKind }) {
 
 function DepthMaterial({ color, opacity }: { readonly color: string; readonly opacity: number }) {
   return (
-    <meshBasicMaterial
-      blending={AdditiveBlending}
+    <meshStandardMaterial
       color={color}
       depthWrite={false}
+      emissive={color}
+      emissiveIntensity={0.22}
+      metalness={0.72}
       opacity={opacity}
+      roughness={0.32}
       transparent
-      toneMapped={false}
     />
   );
 }
