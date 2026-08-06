@@ -111,8 +111,14 @@ export function StageLighting() {
 
       <directionalLight
         color="#75d7ff"
-        intensity={0.92}
+        intensity={1.08}
         position={[4.6, 5.8, -6.2]}
+      />
+
+      <directionalLight
+        color="#b983ff"
+        intensity={0.72}
+        position={[-4.2, 4.4, -4.8]}
       />
 
       <directionalLight
@@ -127,6 +133,14 @@ export function StageLighting() {
         distance={34}
         intensity={3.7}
         position={[-4.8, 4.8, -9]}
+      />
+
+      <pointLight
+        color="#a66dff"
+        decay={2}
+        distance={18}
+        intensity={2.1}
+        position={[4.2, 2.1, -5.5]}
       />
 
       <pointLight

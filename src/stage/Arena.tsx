@@ -10,11 +10,12 @@ import { RuinedMegacityArena } from './arena/RuinedMegacityArena';
 import { MonasteryCircleArena } from './arena/MonasteryCircleArena';
 import { NaturalArenaWalls } from './arena/NaturalArenaWalls';
 import { StormDomeArena } from './arena/StormDomeArena';
+import { CinematicArenaFX } from './arena/CinematicArenaFX';
 
 export function Arena({ arenaId }: { readonly arenaId: ArenaId }) {
-  if (arenaId === 'null-circle') return <MonasteryCircleArena />;
-  if (arenaId === 'ruined-megacity') return <RuinedMegacityArena />;
-  if (arenaId === 'storm-dome') return <StormDomeArena />;
+  if (arenaId === 'null-circle') return <><MonasteryCircleArena /><CinematicArenaFX /></>;
+  if (arenaId === 'ruined-megacity') return <><RuinedMegacityArena /><CinematicArenaFX /></>;
+  if (arenaId === 'storm-dome') return <><StormDomeArena /><CinematicArenaFX /></>;
 
   return (
     <group>
@@ -24,6 +25,7 @@ export function Arena({ arenaId }: { readonly arenaId: ArenaId }) {
       <ArenaPlatform2D />
       <NaturalArenaWalls />
       <ArenaEmbers2D />
+      <CinematicArenaFX />
     </group>
   );
 }
