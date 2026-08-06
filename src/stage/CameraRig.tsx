@@ -84,7 +84,8 @@ export function CameraRig() {
     shot.roll = approach(shot.roll, 0, 8, delta);
     fovTargetRef.current = approach(fovTargetRef.current, BASE_FOV, FOV_RETURN, delta);
 
-    const target = readFraming(framingRef.current);
+    const lens = cameraRef.current;
+    const target = readFraming(framingRef.current, lens.fov, lens.aspect);
     const held = framingRef.current;
     // The finish shot freezes the pan and creeps in; letting it keep tracking
     // would have the camera drift off to follow a corpse sliding across the
@@ -96,8 +97,6 @@ export function CameraRig() {
       focus: approach(held.focus, target.focus, followRate * 0.8, delta),
     };
     const framing = framingRef.current;
-
-    const lens = cameraRef.current;
     const time = clock.elapsedTime;
     const shake = screenShakeEnabled ? shot.shake : 0;
 

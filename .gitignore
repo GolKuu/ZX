@@ -31,3 +31,4 @@ public/models/
 .codex-run/
 .qa-path
 .tmp/
+.aider*

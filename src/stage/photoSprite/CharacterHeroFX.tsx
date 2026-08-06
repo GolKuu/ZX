@@ -1,18 +1,21 @@
 'use client';
 
 import { useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import {
   AdditiveBlending,
+  CanvasTexture,
+  Color,
   Group,
   Mesh,
   MeshBasicMaterial,
+  NormalBlending,
 } from 'three';
 import { readCombatFighter, readLatestHit } from '@/src/game/combatRuntime';
 
 type CharacterKind = 'glitch' | 'lucky' | 'mim' | 'titan' | 'vorgh';
 
-const HERO_COLORS: Record<CharacterKind, string> = {
+const RIM_COLORS: Record<CharacterKind, string> = {
   glitch: '#48dfff',
   lucky: '#e8ba62',
   mim: '#bb6dff',
@@ -20,14 +23,22 @@ const HERO_COLORS: Record<CharacterKind, string> = {
   vorgh: '#ff3d5e',
 };
 
-const PARTICLES = Array.from({ length: 12 }, (_, index) => ({
-  angle: (index / 12) * Math.PI * 2,
-  radius: 0.86 + (index % 3) * 0.18,
-  height: 0.52 + (index % 4) * 0.38,
-  phase: index * 0.73,
-}));
-
-/** Cinematic character pass for sprite fighters: depth, rim energy and impact response. */
+/**
+ * What welds a flat fighter to a 3D stage: a shadow and a glow, nothing else.
+ *
+ * The pass this replaces hung a halo, a spinning octagon, two light bars and
+ * twelve floating crystals off every character. Against the old flat backdrop
+ * that read as energy; in a built room it reads as tinsel — and worse, it was
+ * the brightest thing near the fighter, so the eye went to the decoration
+ * instead of to the fight.
+ *
+ * What is left is what a real fighter gets. A soft contact shadow on the disc,
+ * because an unshadowed sprite floats however well the room is lit. And a
+ * ground pool of the character's own colour, which does the job the scene's rim
+ * lights cannot: the atlas is drawn with an unlit material, so no light in the
+ * scene can touch it, and this is the only way a character's colour reaches the
+ * stage they are standing on. Both react to being hit.
+ */
 export function CharacterHeroFX({
   fighterId,
   kind,
@@ -36,103 +47,111 @@ export function CharacterHeroFX({
   readonly kind: CharacterKind;
 }) {
   const root = useRef<Group>(null);
-  const ring = useRef<Mesh>(null);
+  const shadow = useRef<Mesh>(null);
+  const pool = useRef<Mesh>(null);
   const hitAt = useRef(-10);
   const seenHit = useRef(0);
-  const color = HERO_COLORS[kind];
-  const particleMaterials = useRef<Array<MeshBasicMaterial | null>>([]);
+  const colour = RIM_COLORS[kind];
 
-  useFrame(({ clock }, delta) => {
+  const surfaces = useMemo(() => {
+    const falloff = createFalloffTexture();
+    return {
+      falloff,
+      shadow: new MeshBasicMaterial({
+        alphaMap: falloff,
+        blending: NormalBlending,
+        color: new Color('#000000'),
+        depthWrite: false,
+        opacity: 0.62,
+        transparent: true,
+      }),
+      pool: new MeshBasicMaterial({
+        alphaMap: falloff,
+        blending: AdditiveBlending,
+        color: new Color(colour),
+        depthWrite: false,
+        opacity: 0.28,
+        toneMapped: false,
+        transparent: true,
+      }),
+    };
+  }, [colour]);
+
+  useEffect(
+    () => () => {
+      surfaces.shadow.dispose();
+      surfaces.pool.dispose();
+      surfaces.falloff.dispose();
+    },
+    [surfaces],
+  );
+
+  useFrame(({ clock }) => {
     const group = root.current;
     if (group === null) return;
     const fighter = readCombatFighter(fighterId);
     if (fighter === null) return;
+
     const latestHit = readLatestHit(fighterId);
     if (latestHit !== null && latestHit.serial !== seenHit.current) {
       seenHit.current = latestHit.serial;
       hitAt.current = clock.elapsedTime;
     }
+    const hitPulse = Math.max(0, 1 - (clock.elapsedTime - hitAt.current) * 5.2);
 
-    const hitPulse = Math.max(0, 1 - (clock.elapsedTime - hitAt.current) * 4.6);
-    const breathe = 1 + Math.sin(clock.elapsedTime * 2.2 + fighterId.length) * 0.035;
-    group.scale.set(breathe + hitPulse * 0.12, breathe - hitPulse * 0.06, 1);
-    group.rotation.z = Math.sin(clock.elapsedTime * 0.7 + fighterId.length) * 0.018;
+    // The group rides inside the fighter, which is already lifted off the
+    // ground by their jump height — so undo that lift to keep the shadow on the
+    // floor, and shrink it with altitude the way a real one behaves.
+    const lift = Math.max(0, group.parent?.position.y ?? 0);
+    group.position.y = -lift + 0.035;
+    const spread = 1 / (1 + lift * 0.55);
 
-    if (ring.current !== null) {
-      ring.current.rotation.z += delta * (0.45 + hitPulse * 2.4);
-      ring.current.scale.setScalar(1 + hitPulse * 0.22);
-      const material = ring.current.material as MeshBasicMaterial;
-      material.opacity = 0.2 + hitPulse * 0.38;
+    const blob = shadow.current;
+    if (blob !== null) {
+      blob.scale.set(1.15 * spread, 0.62 * spread, 1);
+      (blob.material as MeshBasicMaterial).opacity = 0.62 * spread;
     }
-
-    for (let index = 0; index < particleMaterials.current.length; index += 1) {
-      const material = particleMaterials.current[index];
-      if (material != null) {
-        const particle = PARTICLES[index];
-        if (particle !== undefined) {
-          material.opacity = 0.12 + (Math.sin(clock.elapsedTime * 1.7 + particle.phase) + 1) * 0.08 + hitPulse * 0.28;
-        }
-      }
+    const light = pool.current;
+    if (light !== null) {
+      const breathe = 1 + Math.sin(clock.elapsedTime * 2.2) * 0.04;
+      light.scale.set(1.6 * breathe + hitPulse * 0.5, 0.86 * breathe + hitPulse * 0.3, 1);
+      (light.material as MeshBasicMaterial).opacity = (0.24 + hitPulse * 0.5) * spread;
     }
   });
 
   return (
-    <group ref={root} position={[0, 1.52, -0.34]} renderOrder={-1}>
-      <pointLight
-        color={color}
-        decay={2}
-        distance={3.2}
-        intensity={0.32}
-        position={[fighterId === 'p1' ? -0.38 : 0.38, 0.72, 0.34]}
-      />
-      <mesh scale={[1.18, 1.46, 1]}>
-        <circleGeometry args={[0.9, 48]} />
-        <meshBasicMaterial
-          blending={AdditiveBlending}
-          color={color}
-          depthWrite={false}
-          opacity={0.065}
-          transparent
-          toneMapped={false}
-        />
+    <group ref={root}>
+      <mesh material={surfaces.shadow} ref={shadow} rotation-x={-Math.PI / 2}>
+        <planeGeometry args={[1, 1]} />
       </mesh>
-      <mesh ref={ring} rotation-z={Math.PI / 4}>
-        <ringGeometry args={[0.93, 0.955, 8]} />
-        <meshBasicMaterial
-          blending={AdditiveBlending}
-          color={color}
-          depthWrite={false}
-          opacity={0.22}
-          transparent
-          toneMapped={false}
-        />
+      <mesh
+        material={surfaces.pool}
+        position={[0, 0.012, 0]}
+        ref={pool}
+        rotation-x={-Math.PI / 2}
+      >
+        <planeGeometry args={[1, 1]} />
       </mesh>
-      <mesh position={[-0.88, 0.08, 0.01]} rotation-z={0.08}>
-        <planeGeometry args={[0.025, 2.1]} />
-        <meshBasicMaterial blending={AdditiveBlending} color={color} depthWrite={false} opacity={0.28} transparent toneMapped={false} />
-      </mesh>
-      <mesh position={[0.88, -0.08, 0.01]} rotation-z={-0.08}>
-        <planeGeometry args={[0.025, 1.65]} />
-        <meshBasicMaterial blending={AdditiveBlending} color={color} depthWrite={false} opacity={0.2} transparent toneMapped={false} />
-      </mesh>
-      {PARTICLES.map((particle, index) => (
-        <mesh
-          key={`hero-particle-${index}`}
-          position={[Math.cos(particle.angle) * particle.radius, particle.height, 0.02]}
-          scale={[0.035, 0.035, 0.035]}
-        >
-          <octahedronGeometry args={[1, 0]} />
-          <meshBasicMaterial
-            ref={(material) => { particleMaterials.current[index] = material; }}
-            blending={AdditiveBlending}
-            color={color}
-            depthWrite={false}
-            opacity={0.16}
-            transparent
-            toneMapped={false}
-          />
-        </mesh>
-      ))}
     </group>
   );
+}
+
+/** Radial white-to-clear ramp, used as the alpha of both ground quads. */
+function createFalloffTexture(): CanvasTexture {
+  const size = 128;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext('2d');
+  if (context !== null) {
+    const ramp = context.createRadialGradient(
+      size / 2, size / 2, 0, size / 2, size / 2, size / 2,
+    );
+    ramp.addColorStop(0, '#ffffff');
+    ramp.addColorStop(0.45, '#9a9a9a');
+    ramp.addColorStop(1, '#000000');
+    context.fillStyle = ramp;
+    context.fillRect(0, 0, size, size);
+  }
+  return new CanvasTexture(canvas);
 }

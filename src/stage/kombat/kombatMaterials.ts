@@ -91,7 +91,7 @@ export function useKombatSurfaces(theme: KombatTheme): KombatSurfaces {
         color: new Color(theme.floorEdge),
         blending: AdditiveBlending,
         depthWrite: false,
-        opacity: 0.7,
+        opacity: 0.34,
         side: DoubleSide,
         toneMapped: false,
         transparent: true,

@@ -67,6 +67,14 @@ export function KombatFloor({
         <circleGeometry args={[40, 64]} />
       </mesh>
 
+      {/* The platform is squashed along the camera axis.
+          A true circle 7.2 m across reaches 7.2 m *toward the lens*, so from a
+          fight camera the near edge rushes up and eats the bottom third of the
+          frame — the fighters end up standing on the horizon of their own
+          floor. Foreshortening hides the squash entirely; what the audience
+          sees is a round arena that leaves room for the fight. Simulation
+          bounds are in X and never see this. */}
+      <group scale={[1, 1, 0.66]}>
       {STEPS.map((step) => (
         <mesh
           key={step.radius}
@@ -99,11 +107,13 @@ export function KombatFloor({
         <circleGeometry args={[ARENA_RADIUS, 160]} />
       </mesh>
 
-      {/* Hot lip on the rim. The one place the stage is allowed to be bright
-          near the fighters' feet — it draws the eye to the fighting area. */}
+      {/* Warm lip on the rim: the edge of the fighting area, marked in light.
+          Deliberately thin and dim — it sits at the bottom of frame right where
+          the eye lands, so anything brighter competes with the fighters. */}
       <mesh material={surfaces.glow} position={[0, 0.03, 0]} rotation-x={-Math.PI / 2}>
-        <ringGeometry args={[ARENA_RADIUS - 0.08, ARENA_RADIUS + 0.04, 128]} />
+        <ringGeometry args={[ARENA_RADIUS - 0.05, ARENA_RADIUS + 0.02, 128]} />
       </mesh>
+      </group>
     </group>
   );
 }

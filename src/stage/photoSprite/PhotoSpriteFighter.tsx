@@ -29,7 +29,6 @@ import { photoDashEchoOpacity, photoImpactPose } from './photoCombatMotion';
 import { PHOTO_COLUMNS, PHOTO_ROWS, photoFrameFor } from './photoSpriteAnimation';
 import { LeadAttackEffects } from './LeadAttackEffects';
 import { CharacterHeroFX } from './CharacterHeroFX';
-import { CharacterDepthFX } from './CharacterDepthFX';
 
 const DISPLAY_HEIGHT = 3.05;
 const GROUND = 0.91;
@@ -223,12 +222,7 @@ export function PhotoSpriteFighter({
         <CharacterHeroFX fighterId={fighterId} kind={kind} />
         {kind === 'mim' ? <MimAttackEffects fighterId={fighterId} /> : null}
         <LeadAttackEffects fighterId={fighterId} kind={kind} />
-        <mesh position={[0, 0.025, -0.18]} rotation-x={-Math.PI / 2} scale={[1.25 * bodyScale, 0.42 * bodyScale, 1]}>
-          <circleGeometry args={[0.72, 32]} />
-          <meshBasicMaterial color="#09130f" depthWrite={false} opacity={0.42} transparent />
-        </mesh>
         <group ref={body} position-y={CENTER_Y}>
-          <CharacterDepthFX kind={kind} />
           {textures === null ? null : (
             <>
               {[0, 1, 2].map((index) => (
@@ -360,13 +354,23 @@ function gradeHeroSurface(
       `#include <map_fragment>
         // A restrained surface grade gives the atlas a directional-light
         // read without pretending that a 2D frame is a real mesh.
+        //
+        // Exposure is up and the contrast squeeze is gone. Both were authored
+        // against a bright painted backdrop, where a fighter had to be knocked
+        // back to sit in the picture. The stage is a dark room now, and the same
+        // grade turned every character into a black silhouette with a coloured
+        // edge — the one thing a fighting game cannot afford, because the player
+        // has to be able to read their own limbs.
         vec2 heroUv = fract(vMapUv * vec2(float(${PHOTO_COLUMNS}), float(${PHOTO_ROWS})));
-        float heroLight = 0.78 + heroUv.y * 0.25;
-        float heroRim = smoothstep(0.72, 1.0, heroUv.x) * 0.07;
-        float heroGloss = pow(max(0.0, 1.0 - abs(heroUv.x - 0.67) * 3.8), 18.0) * 0.09;
+        float heroLight = 1.12 + heroUv.y * 0.24;
+        float heroRim = smoothstep(0.66, 1.0, heroUv.x) * 0.16;
+        float heroGloss = pow(max(0.0, 1.0 - abs(heroUv.x - 0.67) * 3.8), 18.0) * 0.12;
         diffuseColor.rgb *= heroLight;
+        // Lift the deepest values before the accent goes on. A photo atlas has
+        // real black in its creases, and on this stage that black is the same
+        // value as the room behind it.
+        diffuseColor.rgb = diffuseColor.rgb * 0.9 + 0.055;
         diffuseColor.rgb += uHeroAccent * (heroRim + heroGloss);
-        diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * diffuseColor.rgb * 1.16, 0.22);
       `,
     );
   };
