@@ -49,6 +49,8 @@ export const PHOTO_KICK_NORMAL_IDS = [
   'vorgh.normal.rising-maul',
 ] as const;
 
+export type PhotoFighterKind = 'glitch' | 'lucky' | 'mim' | 'titan' | 'vorgh';
+
 /**
  * The four physical attack keys must always keep their own silhouette.
  *
@@ -323,15 +325,50 @@ const GENERIC_MOTION: Readonly<Record<PhotoAttackKind, MotionCurve>> = {
 export function photoAttackMotion(
   moveId: string,
   progress: number,
+  fighterKind?: PhotoFighterKind,
 ): PhotoAttackMotion {
   if (moveId.toLowerCase() === PHOTO_540_KICK_MOVE_ID) {
-    return fiveFortyKickMotion(progress);
+    return applyCharacterMotion(fiveFortyKickMotion(progress), fighterKind, progress);
   }
   const standingNormal = PHOTO_NORMAL_ATTACK_KINDS[moveId.toLowerCase()];
   if (standingNormal !== undefined) {
-    return motionFrom(STANDING_NORMAL_MOTION[standingNormal], progress);
+    return applyCharacterMotion(
+      motionFrom(STANDING_NORMAL_MOTION[standingNormal], progress),
+      fighterKind,
+      progress,
+    );
   }
-  return motionFrom(GENERIC_MOTION[photoAttackKind(moveId)], progress);
+  return applyCharacterMotion(
+    motionFrom(GENERIC_MOTION[photoAttackKind(moveId)], progress),
+    fighterKind,
+    progress,
+  );
+}
+
+/** Character-specific weight transfer layered over the shared authored move. */
+function applyCharacterMotion(
+  motion: PhotoAttackMotion,
+  fighterKind: PhotoFighterKind | undefined,
+  progress: number,
+): PhotoAttackMotion {
+  if (fighterKind === undefined) return motion;
+  const p = clamp01(progress);
+  const active = Math.sin(p * Math.PI);
+  const profile = {
+    glitch: { drive: 1.08, lift: 1.02, roll: 1.24, yaw: 1.16, squash: 1.02 },
+    lucky: { drive: 0.86, lift: 1.12, roll: 1.1, yaw: 0.92, squash: 1.08 },
+    mim: { drive: 0.96, lift: 1.06, roll: 1.32, yaw: 1.04, squash: 1.04 },
+    titan: { drive: 1.16, lift: 0.86, roll: 0.82, yaw: 0.9, squash: 0.92 },
+    vorgh: { drive: 1.12, lift: 0.94, roll: 0.9, yaw: 1.08, squash: 0.96 },
+  }[fighterKind];
+  return {
+    x: motion.x * profile.drive,
+    y: motion.y * profile.lift,
+    rotation: motion.rotation * profile.roll,
+    turnY: motion.turnY * profile.yaw,
+    scaleX: 1 + (motion.scaleX - 1) * profile.squash + active * (profile.drive - 1) * 0.025,
+    scaleY: 1 + (motion.scaleY - 1) * profile.squash - active * (profile.drive - 1) * 0.02,
+  };
 }
 
 function fiveFortyKickMotion(progress: number): PhotoAttackMotion {

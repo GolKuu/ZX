@@ -165,10 +165,11 @@ export function PhotoSpriteFighter({
     const impact = fighter.hitstop > 0 ? 0.06 : 0;
     const falling = isFalling(fighter);
     const motion = falling || fighter.action === null
-      ? photoAttackMotion('', 0)
+      ? photoAttackMotion('', 0, kind)
       : photoAttackMotion(
         fighter.action.moveId,
         combatAnimationProgress(fighter.action.moveId, fighter.action.frame),
+        kind,
       );
     const fall = photoFallPose(fighter, clock.elapsedTime, defeatFrames);
     const reaction = falling
