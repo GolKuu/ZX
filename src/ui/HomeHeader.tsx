@@ -11,6 +11,7 @@ export function HomeHeader() {
       </Link>
       <div className={styles.actions}>
         <span className={styles.status}><i aria-hidden="true" />ИГРОВАЯ СБОРКА</span>
+        <Link className={styles.storeLink} href="/store"><span>◈</span> АРСЕНАЛ</Link>
         <HomeSettingsButton variant="compact" />
         <AccountLinkButton />
       </div>

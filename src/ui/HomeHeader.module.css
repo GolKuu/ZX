@@ -58,6 +58,27 @@
   gap: 10px;
 }
 
+.storeLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 11px;
+  color: var(--color-primary);
+  border: 1px solid rgb(215 174 85 / 38%);
+  background: rgb(215 174 85 / 7%);
+  font: 700 0.62rem "Courier New", monospace;
+  letter-spacing: 0.08em;
+}
+
+.storeLink:hover,
+.storeLink:focus-visible {
+  color: #071015;
+  background: var(--color-primary);
+  outline: none;
+}
+
+.storeLink span { font-size: 0.8rem; }
+
 .status {
   display: flex;
   align-items: center;
@@ -93,6 +114,8 @@
   .actions {
     gap: 7px;
   }
+
+  .storeLink { padding: 8px; font-size: 0; }
 }
 
 @media (max-width: 460px) {

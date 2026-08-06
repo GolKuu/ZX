@@ -9,7 +9,9 @@ const TOTAL_CLIENT_BUDGET = {
   // VFX and AI. Keep a hard ceiling, with modest headroom for the roster.
   raw: 2.4 * 1024 * 1024,
   // Victory cinematics add one compact UI sequence shared by all fighters.
-  gzip: 740 * 1024,
+  // The armory is an interactive client route with its own catalog state.
+  // Keep a small, explicit headroom for that feature without loosening route budgets.
+  gzip: 750 * 1024,
 };
 
 async function loadJson(filename) {
@@ -63,7 +65,7 @@ console.log(
 );
 
 if (totalSize.raw > TOTAL_CLIENT_BUDGET.raw || totalSize.gzip > TOTAL_CLIENT_BUDGET.gzip) {
-  failures.push('All client JavaScript exceeds the 2.4 MB raw / 730 KB gzip budget');
+  failures.push('All client JavaScript exceeds the 2.4 MB raw / 750 KB gzip budget');
 }
 
 if (failures.length > 0) {
