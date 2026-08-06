@@ -24,11 +24,12 @@ export const GLITCH_UTILITY_IDS = {
   throw: 'glitch.throw',
   throwEscape: 'glitch.throw-escape',
   throwEscapeRelease: 'glitch.throw-escape.release',
-  dualPhase: 'glitch.dual.phase-break',
   dualVector: 'glitch.dual.vector-cross',
 } as const;
 
 export const GLITCH_SPECIAL_IDS = {
+  /** The J+I chord: a hopping 540° spin kick that hits on the way round twice. */
+  fiveFortyKick: 'glitch.540-kick',
   spatialDash: 'glitch.spatial-dash',
   shiftForward: 'glitch.shift-forward',
   shiftBackward: 'glitch.shift-backward',

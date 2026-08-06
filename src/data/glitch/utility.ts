@@ -78,16 +78,6 @@ const rows: readonly GlitchMoveRow[] = [
     tags: ['defense', 'throw-escape', 'recovery'],
   },
   {
-    id: U.dualPhase, startup: 8, active: 5, recovery: 14,
-    hits: [hit({
-      id: 'dual-phase', from: 8, to: 13, box: [0.73, 1.42, 0.4, 0.32],
-      level: 'mid', damage: 51, hitstun: 21, blockstun: 12,
-    })],
-    cancels: [{ from: 8, to: 16, into: [S.teleportStrike, U.dualVector], limit: 1 }],
-    presentation: present('dual-phase', 'split-limb-afterimage', 'dual_phase', 'elbow_hit'),
-    tags: ['dual-technique', 'route'],
-  },
-  {
     id: U.dualVector, startup: 12, active: 6, recovery: 17,
     hits: [
       hit({

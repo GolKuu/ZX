@@ -78,8 +78,10 @@ export const GLITCH_COMMANDS: readonly CommandRow[] = [
     available: ready(S.spatialDash, grounded) },
   { moveId: U.throw, motion: 'none', button: 'lp', alsoPressed: ['lk'],
     stance: 'standing', available: grounded },
-  { moveId: U.dualPhase, motion: 'none', button: 'lp', alsoPressed: ['hp'],
-    stance: 'standing', available: grounded },
+  // J + I. Sits above the plain LP and HP rows so the chord wins over either
+  // button on its own — rows match in array order.
+  { moveId: S.fiveFortyKick, motion: 'none', button: 'lp', alsoPressed: ['hp'],
+    stance: 'standing', available: ready(S.fiveFortyKick, grounded) },
   { moveId: U.dualVector, motion: 'none', button: 'lk', alsoPressed: ['hk'],
     stance: 'standing', available: grounded },
   { moveId: U.launcher, motion: 'none', button: 'lp', alsoPressed: ['hp'],

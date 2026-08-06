@@ -84,7 +84,12 @@ export function StageLighting({ arenaId }: { readonly arenaId: ArenaId }) {
       <ambientLight color={theme.bounce} intensity={0.12} />
 
       {/* Key. High, front-left, hard: it draws the fighters' lit side and drops
-          their cast shadow back and to the right across the disc. */}
+          their cast shadow back and to the right across the disc.
+
+          The map is 1024, not 2048. The soft PCF kernel blurs a shadow across
+          several texels anyway, so the extra resolution was being filtered
+          straight back off — it cost a noticeable slice of the frame on
+          integrated graphics and produced an image nobody could tell apart. */}
       <directionalLight
         ref={keyLightRef}
         castShadow
@@ -98,10 +103,6 @@ export function StageLighting({ arenaId }: { readonly arenaId: ArenaId }) {
         shadow-camera-near={0.5}
         shadow-camera-right={SHADOW_EXTENT}
         shadow-camera-top={SHADOW_EXTENT}
-        {/* 1024, not 2048. The soft PCF kernel blurs a shadow across several
-            texels anyway, so the extra resolution was being filtered straight
-            back off — it cost a quarter of the frame on integrated graphics and
-            produced an image nobody could tell apart. */}
         shadow-mapSize-height={1024}
         shadow-mapSize-width={1024}
         shadow-normalBias={0.028}

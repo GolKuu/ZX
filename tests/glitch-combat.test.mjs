@@ -70,6 +70,40 @@ test('J K I L resolve to the four authored Glitch normals', () => {
   assert.equal(play([], 'hk'), N.breakpointAxe);
 });
 
+test('J + I is the 540 kick, and neither button alone is', () => {
+  assert.equal(play([], 'lp', {}, ['hp']), S.fiveFortyKick);
+  // The chord row sits above the plain rows, so the singles must be untouched —
+  // this is the assertion that catches a future row being inserted above it.
+  assert.equal(play([], 'lp'), N.phaseJab);
+  assert.equal(play([], 'hp'), N.lowVectorSweep);
+  // Order of the two keys cannot matter: the chord is read off the held mask.
+  assert.equal(play([], 'hp', {}, ['lp']), S.fiveFortyKick);
+});
+
+test('the 540 kick spins through two hits and is punishable on block', () => {
+  const move = GLITCH_MOVES.find((entry) => entry.id === S.fiveFortyKick);
+  assert.ok(move, '540 kick is missing from the move table');
+  assert.deepEqual(
+    [move.startup, move.active, move.recovery],
+    [12, 15, 22],
+  );
+
+  // Two separate hitboxes, the second the heavier one — that pairing is what
+  // makes the rotation read as a spin rather than as one long kick.
+  assert.equal(move.hitboxes.length, 2);
+  const [rise, heel] = move.hitboxes;
+  assert.equal(rise.hitId, '540-rise');
+  assert.equal(heel.hitId, '540-heel');
+  assert.ok(heel.hit.damage > rise.hit.damage);
+  // The windows must not overlap, or a single opponent eats both on one frame.
+  assert.ok(heel.frames.from >= rise.frames.toExclusive);
+
+  // Airborne through the spin: the reward for committing is that lows miss.
+  const definition = GLITCH_MOVE_DEFINITIONS.get(S.fiveFortyKick);
+  assert.ok(definition.tags.includes('airborne-10'));
+  assert.ok(definition.tags.includes('chord'));
+});
+
 test('the four normals match the requested phase timings and hit levels', () => {
   const expected = [
     [N.phaseJab, 4, 2, 9, 'high'],

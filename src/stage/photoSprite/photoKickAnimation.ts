@@ -32,8 +32,18 @@ export interface PhotoAttackMotion {
  */
 export const MAX_HIP_TURN = 0.26;
 
-/** MIM's simultaneous J+I technique, animated as a 540-degree heel kick. */
-export const PHOTO_540_KICK_MOVE_ID = 'mim.dual.vault-knee';
+/**
+ * Moves animated as a full 540° heel kick rather than as a single strike.
+ *
+ * Both are the J+I chord on their character. A spin is the one attack shape
+ * that cannot be faked with a chamber-and-contact envelope — the body has to
+ * actually go round — so these get their own motion curve, and the set exists
+ * so a second character joining them is one line rather than a branch.
+ */
+export const PHOTO_540_KICK_MOVE_IDS: ReadonlySet<string> = new Set([
+  'mim.dual.vault-knee',
+  'glitch.540-kick',
+]);
 
 /** The physical I/L standing normals for every fighter in the roster. */
 export const PHOTO_KICK_NORMAL_IDS = [
@@ -89,7 +99,7 @@ const EXPLICIT_MOVE_KINDS: Readonly<Record<string, PhotoAttackKind>> = {
   'glitch.air-light': 'jab',
   'glitch.air-medium': 'kick',
   'glitch.anti-air': 'uppercut',
-  'glitch.dual.phase-break': 'heavy',
+  'glitch.540-kick': 'highKick',
   'glitch.dual.vector-cross': 'highKick',
   'glitch.ex.rift-uppercut': 'uppercut',
   'glitch.launcher': 'uppercut',
@@ -374,7 +384,7 @@ export function photoAttackMotion(
   progress: number,
   fighterKind?: PhotoFighterKind,
 ): PhotoAttackMotion {
-  if (moveId.toLowerCase() === PHOTO_540_KICK_MOVE_ID) {
+  if (PHOTO_540_KICK_MOVE_IDS.has(moveId.toLowerCase())) {
     return applyCharacterMotion(fiveFortyKickMotion(progress), fighterKind, progress);
   }
   const standingNormal = PHOTO_NORMAL_ATTACK_KINDS[moveId.toLowerCase()];

@@ -5,6 +5,45 @@ import { GLITCH_AIR_IDS as A, GLITCH_SPECIAL_IDS as S } from './ids.js';
 import type { GlitchMoveRow } from './types.js';
 
 const rows: readonly GlitchMoveRow[] = [
+  /**
+   * 540 kick — J + I.
+   *
+   * Glitch hops, turns a full turn and a half in the air and lands the heel on
+   * the way round. Two hits, because that is what makes a spin read as a spin:
+   * the first catches on the rise and pops the opponent up a little, the second
+   * arrives out of the rotation and puts them on the floor. One hit and the
+   * whole move would look like a long, slow roundhouse.
+   *
+   * Priced as a commitment. Twelve frames of startup is slow for a chord, and
+   * twenty-two of recovery is a full punish if it is blocked — the payoff is the
+   * knockdown and the route out of the second hit.
+   */
+  {
+    id: S.fiveFortyKick, startup: 12, active: 15, recovery: 22,
+    hits: [
+      hit({
+        id: '540-rise', from: 12, to: 17, box: [0.66, 1.52, 0.46, 0.42],
+        level: 'mid', damage: 44, hitstun: 26, blockstun: 13,
+        knockback: [0.06, 0.24], guardDamage: 16,
+      }),
+      hit({
+        id: '540-heel', from: 21, to: 27, box: [0.88, 1.16, 0.56, 0.5],
+        level: 'mid', damage: 74, hitstun: 34, blockstun: 17,
+        knockback: [0.26, 0.2], hitstop: [10, 15], chip: 6, guardDamage: 28,
+      }),
+    ],
+    hurtboxes: [
+      { from: 0, to: 10, boxes: GLITCH_STAND_PROFILE },
+      // Airborne through the spin: the legs leave the ground, so a sweep no
+      // longer catches them. This is the move's defensive reward.
+      { from: 10, to: 30, boxes: GLITCH_AIR_PROFILE },
+      { from: 30, to: 49, boxes: GLITCH_STAND_PROFILE },
+    ],
+    cancels: [{ from: 21, to: 30, into: [A.medium, S.airShift, S.teleportStrike], limit: 1 }],
+    displacements: [displacement(10, 0.72), displacement(20, 0.48)],
+    presentation: present('540-kick', 'spiral-space-trail', 'spin_wind', 'launch_hit', 'shake'),
+    tags: ['special', 'chord', 'spin', 'airborne-10', 'knockdown', 'punish-recovery-22'],
+  },
   {
     id: S.riftUppercut, startup: 8, active: 6, recovery: 25,
     hits: [hit({
