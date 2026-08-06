@@ -32,6 +32,11 @@ const GROUND = 0.91;
 const CENTER_Y = (GROUND - 0.5) * DISPLAY_HEIGHT;
 const FRAME_BLEND_SECONDS = 0.065;
 const SIMULATION_HZ = 60;
+const INK_OFFSETS = [
+  [-0.018, -0.018], [0, -0.022], [0.018, -0.018],
+  [-0.022, 0], [0.022, 0],
+  [-0.018, 0.018], [0, 0.022], [0.018, 0.018],
+] as const;
 
 interface PhotoTextures {
   readonly current: Texture;
@@ -203,6 +208,22 @@ export function PhotoSpriteFighter({
                   positionZ={-0.014 - index * 0.004}
                   texture={textures.current}
                   tint={index % 2 === 0 ? '#65e8ff' : '#c26cff'}
+                  width={width}
+                />
+              ))}
+              {/* Eight-way ink shell: a stable silhouette pass gives the photo
+                  atlas the dense, high-contrast character separation expected
+                  from a premium 3D fighter without altering the source frames. */}
+              {INK_OFFSETS.map(([x, z], index) => (
+                <PhotoPlane
+                  key={`ink-shell-${index}`}
+                  materialRef={() => undefined}
+                  opacity={0.34}
+                  positionX={x}
+                  positionZ={-0.016 + z}
+                  texture={textures.current}
+                  tint="#03050a"
+                  toneMapped={false}
                   width={width}
                 />
               ))}
