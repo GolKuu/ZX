@@ -28,6 +28,7 @@ import { photoDashEchoOpacity, photoImpactPose } from './photoCombatMotion';
 import { PHOTO_COLUMNS, PHOTO_ROWS, photoFrameFor } from './photoSpriteAnimation';
 import { LeadAttackEffects } from './LeadAttackEffects';
 import { CharacterHeroFX } from './CharacterHeroFX';
+import { CharacterDepthFX } from './CharacterDepthFX';
 
 const DISPLAY_HEIGHT = 3.05;
 const GROUND = 0.91;
@@ -224,6 +225,7 @@ export function PhotoSpriteFighter({
           <meshBasicMaterial color="#09130f" depthWrite={false} opacity={0.42} transparent />
         </mesh>
         <group ref={body} position-y={CENTER_Y}>
+          <CharacterDepthFX kind={kind} />
           {textures === null ? null : (
             <>
               {[0, 1, 2].map((index) => (
