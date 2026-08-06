@@ -9,9 +9,9 @@ export function StormDome() {
     () =>
       new ShaderMaterial({
         uniforms: {
-          uTop: { value: new Color('#030714') },
-          uHorizon: { value: new Color('#242357') },
-          uStorm: { value: new Color('#4c2b75') },
+          uTop: { value: new Color('#07091f') },
+          uHorizon: { value: new Color('#d45a68') },
+          uStorm: { value: new Color('#73345f') },
         },
         vertexShader: domeVertex,
         fragmentShader: domeFragment,

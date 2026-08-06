@@ -9,10 +9,12 @@ import type { ArenaId } from '@/src/data/arenas';
 import { RuinedMegacityArena } from './arena/RuinedMegacityArena';
 import { MonasteryCircleArena } from './arena/MonasteryCircleArena';
 import { NaturalArenaWalls } from './arena/NaturalArenaWalls';
+import { StormDomeArena } from './arena/StormDomeArena';
 
 export function Arena({ arenaId }: { readonly arenaId: ArenaId }) {
   if (arenaId === 'null-circle') return <MonasteryCircleArena />;
   if (arenaId === 'ruined-megacity') return <RuinedMegacityArena />;
+  if (arenaId === 'storm-dome') return <StormDomeArena />;
 
   return (
     <group>
