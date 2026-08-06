@@ -12,11 +12,12 @@ import { NaturalArenaWalls } from './arena/NaturalArenaWalls';
 import { StormDomeArena } from './arena/StormDomeArena';
 import { CinematicArenaFX } from './arena/CinematicArenaFX';
 import { ArenaAtmosphericField } from './arena/ArenaAtmosphericField';
+import { ArenaDepthArchitecture } from './arena/ArenaDepthArchitecture';
 
 export function Arena({ arenaId }: { readonly arenaId: ArenaId }) {
-  if (arenaId === 'null-circle') return <><MonasteryCircleArena /><CinematicArenaFX arenaId={arenaId} /><ArenaAtmosphericField /></>;
-  if (arenaId === 'ruined-megacity') return <><RuinedMegacityArena /><CinematicArenaFX arenaId={arenaId} /><ArenaAtmosphericField /></>;
-  if (arenaId === 'storm-dome') return <><StormDomeArena /><CinematicArenaFX arenaId={arenaId} /><ArenaAtmosphericField /></>;
+  if (arenaId === 'null-circle') return <><MonasteryCircleArena /><ArenaDepthArchitecture arenaId={arenaId} /><CinematicArenaFX arenaId={arenaId} /><ArenaAtmosphericField /></>;
+  if (arenaId === 'ruined-megacity') return <><RuinedMegacityArena /><ArenaDepthArchitecture arenaId={arenaId} /><CinematicArenaFX arenaId={arenaId} /><ArenaAtmosphericField /></>;
+  if (arenaId === 'storm-dome') return <><StormDomeArena /><ArenaDepthArchitecture arenaId={arenaId} /><CinematicArenaFX arenaId={arenaId} /><ArenaAtmosphericField /></>;
 
   return (
     <group>
