@@ -25,6 +25,7 @@ import { photoAttackMotion } from './photoKickAnimation';
 import { photoDashEchoOpacity, photoImpactPose } from './photoCombatMotion';
 import { PHOTO_COLUMNS, PHOTO_ROWS, photoFrameFor } from './photoSpriteAnimation';
 import { LeadAttackEffects } from './LeadAttackEffects';
+import { CharacterHeroFX } from './CharacterHeroFX';
 
 const DISPLAY_HEIGHT = 3.05;
 const GROUND = 0.91;
@@ -183,6 +184,7 @@ export function PhotoSpriteFighter({
       {kind === 'lucky' ? <LuckySpriteEffects fighterId={fighterId} /> : null}
       {kind === 'vorgh' ? <VorghEffects fighterId={fighterId} /> : null}
       <group ref={outer}>
+        <CharacterHeroFX fighterId={fighterId} kind={kind} />
         {kind === 'mim' ? <MimAttackEffects fighterId={fighterId} /> : null}
         <LeadAttackEffects fighterId={fighterId} kind={kind} />
         <mesh position={[0, 0.025, -0.18]} rotation-x={-Math.PI / 2} scale={[1.25, 0.42, 1]}>
