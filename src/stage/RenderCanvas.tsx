@@ -47,7 +47,9 @@ export function RenderCanvas({
         // moves the curve into `PostEffects`. Kept so the first frames, and the
         // FX-off path, are not written out linear.
         gl.toneMapping = ACESFilmicToneMapping;
-        gl.toneMappingExposure = 1.12;
+        // Keep the arena's emissive architecture cinematic instead of letting
+        // white panels clip and wash the fighter silhouettes out of the frame.
+        gl.toneMappingExposure = 0.98;
         gl.shadowMap.type = PCFShadowMap;
       }}
       shadows={graphicsPreset !== 'low'}
