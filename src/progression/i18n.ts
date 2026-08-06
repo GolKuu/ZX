@@ -5,11 +5,12 @@ const EN = {
   locked:'LOCKED', completed:'COMPLETED', inProgress:'IN PROGRESS', rewardClaimed:'REWARD CLAIMED', back:'BACK',
   respec:'FULL RESPEC', ranked:'Ranked uses standardized loadouts and ignores permanent Token progression.',
   training:'Training can preview base, purchased, all-node, or custom builds without changing saved Tokens.',
-  glory:'GLORY ROAD', gloryLevel:'GLORY LEVEL', gloryXp:'GLORY XP', gloryWins:'ONLINE WINS',
+  leaderboard:'LEADERBOARD', glory:'GLORY ROAD', gloryLevel:'GLORY LEVEL', gloryXp:'GLORY XP', gloryWins:'ONLINE WINS',
   gloryNext:'TO NEXT REWARD', gloryMax:'EVERY REWARD UNLOCKED',
   gloryRule:'Quick match only: every online win pays XP, and each milestone pays Tokens once.',
 };
 const RU: Record<ProgressionTextKey, string> = {
+  leaderboard:'ТАБЛИЦА ЛИДЕРОВ',
   hub:'ЦЕНТР ПРОГРЕССА', daily:'ЕЖЕДНЕВНЫЙ ТОКЕН', claim:'ПОЛУЧИТЬ', next:'СЛЕДУЮЩАЯ НАГРАДА', achievements:'ДОСТИЖЕНИЯ',
   trees:'ДЕРЕВЬЯ БОЙЦОВ', challenges:'ИСПЫТАНИЯ', balance:'БАЛАНС ТОКЕНОВ', purchased:'КУПЛЕНО', available:'ДОСТУПНО',
   locked:'ЗАКРЫТО', completed:'ВЫПОЛНЕНО', inProgress:'В ПРОЦЕССЕ', rewardClaimed:'НАГРАДА ПОЛУЧЕНА', back:'НАЗАД',
