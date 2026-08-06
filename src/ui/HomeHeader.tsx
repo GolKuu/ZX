@@ -11,7 +11,7 @@ export function HomeHeader() {
       </Link>
       <div className={styles.actions}>
         <a className={styles.serverLink} href="https://testiskander.vercel.app" target="_blank" rel="noreferrer">
-          <span aria-hidden="true">▶</span> ЗАЙТИ НА САЙТ
+          <span aria-hidden="true">▶</span> OCEAN DEPTHS
         </a>
         <span className={styles.status}><i aria-hidden="true" /> БОЕВАЯ СИСТЕМА ONLINE</span>
         <Link className={styles.storeLink} href="/store"><span>◆</span> АРСЕНАЛ</Link>

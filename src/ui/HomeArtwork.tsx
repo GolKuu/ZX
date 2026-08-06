@@ -18,7 +18,7 @@ export function HomeArtwork() {
       </header>
       <Link className={styles.siteEntry} href="https://testiskander.vercel.app" target="_blank" rel="noreferrer">
         <span className={styles.siteEntryMark} aria-hidden="true">↗</span>
-        <span>ЗАЙТИ НА ЭТОТ САЙТ</span>
+        <span>ЗАЙТИ В OCEAN DEPTHS</span>
       </Link>
       <div className={styles.fighters}>
         {CHARACTER_ROSTER.map((fighter, index) => (
