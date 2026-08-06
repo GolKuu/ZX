@@ -8,25 +8,30 @@ export function HomeHero() {
     <section className={styles.hero}>
       <div className={styles.copy}>
         <p className={styles.eyebrow}>
-          <span>БРАУЗЕРНЫЙ ФАЙТИНГ // 1 НА 1</span>
-          <b>СЕЗОН 01</b>
+          <span>PIXEL WORLD // MAIN MENU</span>
+          <b>SEASON 01</b>
         </p>
         <h1>Твой стиль.<span>Твои правила.</span></h1>
         <p className={styles.description}>
           Пять непохожих бойцов, быстрые локальные матчи и умный соперник.
-          Выбери характер — и забери арену.
+          Выбери героя — и забери арену.
         </p>
         <div className={styles.actions}>
           <Link className={styles.primaryCta} href="/play">
             <span className={styles.ctaCopy}>
-              <strong>Начать бой</strong>
-              <small>Выбрать режим</small>
+              <strong>НАЧАТЬ БОЙ</strong>
+              <small>ВЫБРАТЬ РЕЖИМ</small>
             </span>
             <span className={styles.ctaArrow} aria-hidden="true">→</span>
           </Link>
           <HomeSettingsButton variant="secondary" />
         </div>
-        <p className={styles.inputNote}><span aria-hidden="true">●</span>Без установки · клавиатура, геймпад и сенсорное управление</p>
+        <a className={styles.minecraftCta} href="https://testiskander.vercel.app" target="_blank" rel="noreferrer">
+          <span className={styles.minecraftCtaTitle}>ЗАЙТИ НА НЕЁ</span>
+          <span className={styles.minecraftCtaHint}>ОТКРОЕТСЯ В НОВОЙ ВКЛАДКЕ</span>
+          <span className={styles.minecraftCtaArrow} aria-hidden="true">↗</span>
+        </a>
+        <p className={styles.inputNote}><span aria-hidden="true">●</span> Без установки · клавиатура, геймпад и сенсорное управление</p>
       </div>
       <HomeArtwork />
     </section>
