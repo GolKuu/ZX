@@ -38,6 +38,17 @@ const INK_OFFSETS = [
   [-0.018, 0.018], [0, 0.022], [0.018, 0.018],
 ] as const;
 
+// Presentation-only body-class scale. Simulation units and hitboxes stay
+// untouched; the screen read now separates heavyweight, agile and technical
+// fighters the way a premium 3D fighter does.
+const CHARACTER_DISPLAY_SCALE = {
+  glitch: 1.02,
+  lucky: 0.96,
+  mim: 0.98,
+  titan: 1.12,
+  vorgh: 1.05,
+} as const;
+
 interface PhotoTextures {
   readonly current: Texture;
   readonly previous: Texture;
@@ -65,6 +76,7 @@ export function PhotoSpriteFighter({
   const impactDamage = useRef(0);
   const [textures, setTextures] = useState<PhotoTextures | null>(null);
   const opponentId = fighterId === 'p1' ? 'p2' : 'p1';
+  const bodyScale = CHARACTER_DISPLAY_SCALE[kind];
 
   useEffect(() => {
     let disposed = false;
@@ -108,7 +120,11 @@ export function PhotoSpriteFighter({
     root.position.y = fighter.position.y / FIXED_SCALE;
     root.position.z = 0.16;
     const presentation = withOpponentFacing(fighter, readCombatFighter(opponentId));
-    root.scale.x = spriteFacingScale(true, presentation.facing);
+    root.scale.set(
+      spriteFacingScale(true, presentation.facing) * bodyScale,
+      bodyScale,
+      1,
+    );
 
     const latestHit = readLatestHit(fighterId);
     if (latestHit !== null && latestHit.serial !== seenHit.current) {
@@ -192,7 +208,7 @@ export function PhotoSpriteFighter({
         <CharacterHeroFX fighterId={fighterId} kind={kind} />
         {kind === 'mim' ? <MimAttackEffects fighterId={fighterId} /> : null}
         <LeadAttackEffects fighterId={fighterId} kind={kind} />
-        <mesh position={[0, 0.025, -0.18]} rotation-x={-Math.PI / 2} scale={[1.25, 0.42, 1]}>
+        <mesh position={[0, 0.025, -0.18]} rotation-x={-Math.PI / 2} scale={[1.25 * bodyScale, 0.42 * bodyScale, 1]}>
           <circleGeometry args={[0.72, 32]} />
           <meshBasicMaterial color="#09130f" depthWrite={false} opacity={0.42} transparent />
         </mesh>
