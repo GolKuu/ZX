@@ -23,11 +23,13 @@ export function StoryFilmStage({
   line,
   shot,
   shotIndex,
+  preBattle = false,
 }: {
   readonly chapterIndex: number;
   readonly line: StoryLine;
   readonly shot: StoryShot;
   readonly shotIndex: number;
+  readonly preBattle?: boolean;
 }) {
   return (
     <div
@@ -38,6 +40,7 @@ export function StoryFilmStage({
       data-framing={shot.framing}
       data-move={shot.move}
       data-subject={shot.subject}
+      data-ritual={preBattle ? 'pre-battle' : 'none'}
     >
       <div
         key={shotIndex}
@@ -45,7 +48,7 @@ export function StoryFilmStage({
         style={{ '--shot-seconds': `${String(shot.seconds)}s` } as React.CSSProperties}
       >
         <div className={styles.camera}>
-          <StoryCinematicStage chapterIndex={chapterIndex} line={line} lineKey={shotIndex} />
+          <StoryCinematicStage chapterIndex={chapterIndex} line={line} lineKey={shotIndex} preBattle={preBattle} />
           <div className={styles.haze} />
           <div className={styles.shaft} />
           <div className={styles.rift} />

@@ -29,10 +29,12 @@ export function StoryCinematicStage({
   chapterIndex,
   line,
   lineKey,
+  preBattle = false,
 }: {
   readonly chapterIndex: number;
   readonly line: StoryLine;
   readonly lineKey: number;
+  readonly preBattle?: boolean;
 }) {
   const cinematic = storyCinematic(chapterIndex);
   const cast = storyCast(chapterIndex);
@@ -45,6 +47,7 @@ export function StoryCinematicStage({
       data-beat={cinematic.beat}
       data-focus={focus}
       data-side={cinematic.side}
+      data-ritual={preBattle ? 'pre-battle' : 'none'}
       style={{
         '--intensity': storyLineIntensity(line),
         '--beat-duration': `${cinematic.durationSeconds}s`,
@@ -89,6 +92,22 @@ export function StoryCinematicStage({
       </div>
       <div className={styles.flare} />
       <div className={styles.tear} />
+      {preBattle && <BattleRitual />}
+    </div>
+  );
+}
+
+function BattleRitual() {
+  return (
+    <div className={styles.ritual} aria-hidden="true">
+      <span className={styles.ritualHalo} />
+      <span className={styles.ritualRing} />
+      <span className={styles.ritualRing} />
+      <span className={styles.ritualOrbit} />
+      <span className={styles.ritualShard} />
+      <span className={styles.ritualShard} />
+      <span className={styles.ritualShard} />
+      <b className={styles.ritualLock}>LOCK // ENGAGE</b>
     </div>
   );
 }

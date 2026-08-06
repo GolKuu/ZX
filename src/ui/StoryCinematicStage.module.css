@@ -710,3 +710,140 @@
     opacity: 0.6;
   }
 }
+
+/* ------------------------------------------------------- pre-battle ritual */
+
+/*
+ * This is the story mode's own entrance choreography. It is deliberately not
+ * a copied attack: the fighters inhale, orbit and lock into opposing poses
+ * while the coordinate floor builds a shared arena between them.
+ */
+.ritual {
+  position: absolute;
+  z-index: 8;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  animation: ritual-arrive var(--beat-duration) cubic-bezier(.16,.8,.18,1) both;
+}
+
+.ritualHalo,
+.ritualRing,
+.ritualOrbit,
+.ritualShard {
+  position: absolute;
+  display: block;
+  left: 50%;
+  top: 54%;
+  transform: translate(-50%, -50%);
+}
+
+.ritualHalo {
+  width: 54cqw;
+  height: 24cqh;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgb(106 244 232 / 18%), transparent 62%);
+  filter: blur(1.2cqw);
+  animation: ritual-breathe 2.6s ease-in-out infinite;
+}
+
+.ritualRing {
+  width: 30cqw;
+  height: 12cqh;
+  border: 0.12cqw solid rgb(106 244 232 / 78%);
+  border-radius: 50%;
+  box-shadow: 0 0 1.8cqw rgb(106 244 232 / 70%), inset 0 0 1.5cqw rgb(229 79 255 / 35%);
+  transform: translate(-50%, -50%) rotateX(66deg) rotateZ(0deg);
+  animation: ritual-orbit 4.2s linear infinite;
+}
+
+.ritualRing:nth-child(3) {
+  width: 43cqw;
+  height: 17cqh;
+  border-color: rgb(229 79 255 / 65%);
+  transform: translate(-50%, -50%) rotateX(66deg) rotateZ(38deg);
+  animation-duration: 6.1s;
+  animation-direction: reverse;
+}
+
+.ritualOrbit {
+  width: 48cqw;
+  height: 48cqw;
+  border: 0.08cqw dashed rgb(223 252 255 / 44%);
+  border-radius: 50%;
+  animation: ritual-spin 8s linear infinite;
+}
+
+.ritualShard {
+  width: 0.55cqw;
+  height: 8cqh;
+  background: linear-gradient(transparent, #dfffff, transparent);
+  filter: drop-shadow(0 0 0.7cqw #6af4e8);
+  transform-origin: 50% 12cqw;
+  animation: ritual-shard 2.8s cubic-bezier(.2,.8,.2,1) infinite;
+}
+
+.ritualShard:nth-child(6) { transform: rotate(120deg); animation-delay: -.9s; }
+.ritualShard:nth-child(7) { transform: rotate(240deg); animation-delay: -1.8s; }
+
+.ritualLock {
+  position: absolute;
+  left: 50%;
+  top: 57%;
+  color: #edffff;
+  font: 700 1.1cqw/1 ui-monospace, monospace;
+  letter-spacing: .34em;
+  text-shadow: 0 0 1cqw #6af4e8;
+  transform: translate(-50%, 2cqh);
+  animation: ritual-lock 2.9s ease-in-out infinite;
+}
+
+.stage[data-ritual="pre-battle"] .glitch {
+  animation: ritual-glitch-bow var(--beat-duration) cubic-bezier(.2,.75,.16,1) both;
+}
+
+.stage[data-ritual="pre-battle"] .opposite {
+  animation: ritual-opponent-bow var(--beat-duration) cubic-bezier(.2,.75,.16,1) both;
+}
+
+@keyframes ritual-arrive {
+  0%, 18% { opacity: 0; filter: brightness(.6) blur(.35cqw); }
+  38% { opacity: .9; filter: brightness(1.25) blur(0); }
+  100% { opacity: .78; }
+}
+
+@keyframes ritual-glitch-bow {
+  0% { transform: translate(-5cqw, 2cqh) rotate(-4deg) scale(.92); filter: brightness(.72); }
+  34% { transform: translate(-1cqw, 0) rotate(2deg) scale(1.04); }
+  62% { transform: translate(1cqw, -1cqh) rotate(0) scale(1.08); filter: brightness(1.48); }
+  100% { transform: translate(0) rotate(0) scale(1); filter: brightness(1.15); }
+}
+
+@keyframes ritual-opponent-bow {
+  0% { transform: translate(5cqw, 3cqh) rotate(5deg) scale(.9); filter: brightness(.66); }
+  42% { transform: translate(1cqw, 0) rotate(-2deg) scale(1.05); }
+  68% { transform: translate(-1cqw, -1cqh) rotate(0) scale(1.1); filter: brightness(1.36); }
+  100% { transform: translate(0) rotate(0) scale(1); filter: brightness(1.08); }
+}
+
+@keyframes ritual-breathe {
+  0%, 100% { opacity: .5; transform: translate(-50%, -50%) scale(.86); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+}
+
+@keyframes ritual-orbit {
+  to { transform: translate(-50%, -50%) rotateX(66deg) rotateZ(360deg); }
+}
+
+@keyframes ritual-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+@keyframes ritual-shard {
+  0%, 100% { opacity: 0; transform: rotate(0) scaleY(.4); }
+  45% { opacity: .9; transform: rotate(60deg) scaleY(1); }
+  72% { opacity: 0; transform: rotate(110deg) scaleY(.2); }
+}
+
+@keyframes ritual-lock {
+  0%, 100% { opacity: .25; letter-spacing: .45em; }
+  55% { opacity: 1; letter-spacing: .24em; }
+}

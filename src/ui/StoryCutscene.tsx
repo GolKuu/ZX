@@ -90,7 +90,13 @@ export function StoryCutscene() {
       className={styles.scene}
       data-paused={paused}
     >
-      <StoryFilmStage chapterIndex={chapterIndex} line={line ?? lines[0]!} shot={shot} shotIndex={shotIndex} />
+      <StoryFilmStage
+        chapterIndex={chapterIndex}
+        line={line ?? lines[0]!}
+        shot={shot}
+        shotIndex={shotIndex}
+        preBattle={hasBattle && shotIndex >= film.shots.length - 1}
+      />
       <div className={styles.scanlines} aria-hidden="true" />
       <div className={styles.barTop} aria-hidden="true" />
       <div className={styles.barBottom} aria-hidden="true" />
