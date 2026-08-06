@@ -352,9 +352,12 @@ function gradeHeroSurface(
   return (shader) => {
     shader.uniforms.uHeroAccent = { value: new Color(HERO_SURFACE_ACCENTS[heroAccent]) };
     shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <common>',
+      'uniform vec3 uHeroAccent;\n#include <common>',
+    );
+    shader.fragmentShader = shader.fragmentShader.replace(
       '#include <map_fragment>',
       `#include <map_fragment>
-        uniform vec3 uHeroAccent;
         // A restrained surface grade gives the atlas a directional-light
         // read without pretending that a 2D frame is a real mesh.
         vec2 heroUv = fract(vMapUv * vec2(float(${PHOTO_COLUMNS}), float(${PHOTO_ROWS})));
