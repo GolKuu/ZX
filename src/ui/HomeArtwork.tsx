@@ -7,28 +7,35 @@ export function HomeArtwork() {
   return (
     <section className={styles.artwork} aria-label="YZX arena and fighter roster">
       <div className={styles.arenaBackdrop} aria-hidden="true">
-        <Image
-          className={styles.moon}
-          src="/ocean-fish.png"
-          alt=""
-          width={250}
-          height={190}
-          aria-hidden="true"
-          priority
-        />
         <span className={`${styles.arenaTower} ${styles.towerOne}`} />
         <span className={`${styles.arenaTower} ${styles.towerTwo}`} />
         <span className={`${styles.arenaTower} ${styles.towerThree}`} />
         <span className={styles.arenaPlatform} />
       </div>
+      <a
+        className={styles.fishLink}
+        href="https://testiskander.vercel.app/"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Play Ocean Depths"
+      >
+        <Image
+          className={styles.moon}
+          src="/ocean-fish.png"
+          alt="Pixel fish inviting you to play Ocean Depths"
+          width={250}
+          height={190}
+          priority
+        />
+      </a>
       <header className={styles.topline}>
         <span>ARENA // NIGHT FRACTURE</span>
         <b>5 FIGHTERS ONLINE</b>
       </header>
-      <Link className={styles.siteEntry} href="/play">
+      <a className={styles.siteEntry} href="https://testiskander.vercel.app/" target="_blank" rel="noreferrer">
         <span className={styles.siteEntryMark} aria-hidden="true">↗</span>
-        <span>ENTER LIVE ARENA</span>
-      </Link>
+        <span>PLAY OCEAN DEPTHS</span>
+      </a>
       <div className={styles.fighters}>
         {CHARACTER_ROSTER.map((fighter, index) => (
           <Link className={styles.fighter} data-character={fighter.id} data-featured={index === 2} href="/play" key={fighter.id}>

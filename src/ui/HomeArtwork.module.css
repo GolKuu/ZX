@@ -85,16 +85,30 @@
   opacity: .8;
 }
 
-.moon {
+.fishLink {
   position: absolute;
+  z-index: 5;
   top: 12%;
   right: 14%;
   width: clamp(112px, 15vw, 190px);
-  height: auto;
+  line-height: 0;
   filter: drop-shadow(0 0 12px rgb(255 216 106 / 60%)) drop-shadow(0 14px 14px rgb(0 0 0 / 42%));
-  image-rendering: pixelated;
   transform: rotate(-7deg);
   animation: fish-drift 5s ease-in-out infinite;
+  transition: filter 160ms ease;
+}
+
+.fishLink:hover,
+.fishLink:focus-visible {
+  filter: drop-shadow(0 0 20px rgb(255 216 106 / 95%)) drop-shadow(0 14px 14px rgb(0 0 0 / 42%));
+  outline: 2px solid #ffe895;
+  outline-offset: 6px;
+}
+
+.moon {
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
 }
 
 @keyframes fish-drift {
@@ -292,5 +306,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .fighter { transition: none; }
-  .moon { animation: none; }
+  .fishLink { animation: none; }
 }
