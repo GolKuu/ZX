@@ -44,7 +44,9 @@ type RenderState = {
 export const useRenderStore = create<RenderState>((set) => ({
   theme: 'dark',
   effectsEnabled: true,
-  graphicsPreset: 'medium',
+  // The roster ships with 4096px HD/4K atlases; use them by default for the
+  // full-screen fight presentation. Users can still choose Medium or Low.
+  graphicsPreset: 'high',
   screenShakeEnabled: true,
   glitchSuperFighterId: null,
   glitchSuperKind: null,

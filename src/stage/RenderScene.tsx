@@ -20,7 +20,7 @@ import { GroundDust } from './impact/GroundDust';
 import { ImpactFlash } from './impact/ImpactFlash';
 import { ImpactShockwave } from './impact/ImpactShockwave';
 import { LazyPostEffects } from './LazyPostEffects';
-import { KombatFighter } from './fighter3d/KombatFighter';
+import { PhotoSpriteFighter } from './photoSprite/PhotoSpriteFighter';
 import { SpeedLines } from './SpeedLines';
 import { RenderDebugBridge } from './RenderDebugBridge';
 import { StageLighting } from './StageLighting';
@@ -124,10 +124,8 @@ function primitiveFighter(
   characterId: CharacterId,
   fighterId: 'p1' | 'p2',
 ) {
-  // GLB files remain the preferred production path. Until those optimized
-  // assets are installed, every roster member uses the same authored 3D rig
-  // rather than dropping back to a flat sprite. The rig reads the authoritative
-  // combat runtime, so attacks, hit reactions, facing and knockdowns stay in
-  // lockstep with the simulation.
-  return <KombatFighter characterId={characterId} fighterId={fighterId} />;
+  // Use the existing high-resolution 2D fighter pipeline. It reads the same
+  // authoritative combat runtime, so attacks, hit reactions, facing and
+  // knockdowns remain synchronized with the simulation.
+  return <PhotoSpriteFighter fighterId={fighterId} kind={characterId} />;
 }
