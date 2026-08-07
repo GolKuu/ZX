@@ -28,11 +28,16 @@ export type AttackShape =
  */
 function envelope(progress: number) {
   const p = Math.max(0, Math.min(1, progress));
-  const chamber = Math.sin(Math.min(1, p / 0.34) * Math.PI * 0.5) * (1 - p);
-  const contact = p < 0.34
-    ? 0
-    : Math.sin(((p - 0.34) / 0.66) * Math.PI);
-  return { p, chamber, contact };
+  const chamber = Math.sin(Math.min(1, p / 0.3) * Math.PI * 0.5)
+    * (1 - smoothstep(0.3, 0.48, p));
+  const contact = smoothstep(0.28, 0.48, p) * (1 - smoothstep(0.62, 0.9, p));
+  const follow = smoothstep(0.5, 0.68, p) * (1 - smoothstep(0.76, 1, p));
+  return { p, chamber, contact, follow };
+}
+
+function smoothstep(edge0: number, edge1: number, value: number): number {
+  const x = Math.max(0, Math.min(1, (value - edge0) / (edge1 - edge0)));
+  return x * x * (3 - 2 * x);
 }
 
 export function applyAttackPose(
@@ -40,7 +45,7 @@ export function applyAttackPose(
   shape: AttackShape,
   progress: number,
 ): void {
-  const { p, chamber, contact } = envelope(progress);
+  const { p, chamber, contact, follow } = envelope(progress);
 
   if (shape === 'spin540') {
     applySpin(pose, p, contact);
@@ -48,21 +53,31 @@ export function applyAttackPose(
   }
 
   // Every strike drives off the back foot and turns the hips into the blow.
-  pose.torsoPitch += chamber * 0.18 - contact * 0.14;
-  pose.rootYaw += chamber * 0.22 - contact * 0.34;
+  pose.hipsYaw += chamber * 0.28 - contact * 0.52 + follow * 0.14;
+  pose.torsoYaw += chamber * 0.42 - contact * 0.72 + follow * 0.2;
+  pose.headYaw -= pose.torsoYaw * 0.38;
+  pose.torsoPitch += chamber * 0.15 - contact * 0.12 + follow * 0.06;
+  pose.hipsRoll += contact * 0.06;
 
   if (shape === 'jab' || shape === 'straight') {
     const reach = shape === 'jab' ? 1 : 1.25;
-    pose.rightArm.pitch = -1.5 - chamber * 0.5 + contact * 0.35;
-    pose.rightArm.hinge = -2.1 * chamber - 0.12 * (1 - contact) + contact * 0.05;
-    pose.rightArm.pitch -= contact * 1.15 * reach;
+    pose.rightArm.pitch = -1.2 - chamber * 0.42 - contact * 1.15 * reach;
+    pose.rightArm.hinge = -2.15 * chamber - 1.2 * follow - 0.05 * contact;
+    pose.rightArm.yaw = chamber * 0.42 - contact * 0.28;
+    pose.leftArm.pitch -= contact * 0.2;
+    pose.leftArm.hinge -= contact * 0.25;
     pose.torsoRoll -= contact * 0.16;
+    pose.hipsY -= contact * 0.035;
+    pose.leftLeg.hinge -= contact * 0.15;
     return;
   }
   if (shape === 'hook') {
     pose.rightArm.spread = 0.3 + chamber * 0.9 + contact * 0.5;
     pose.rightArm.pitch = -1.6 - chamber * 0.3 - contact * 0.4;
     pose.rightArm.hinge = -1.6;
+    pose.rightArm.yaw = -0.65 * chamber + 1.05 * contact;
+    pose.hipsYaw -= contact * 0.22;
+    pose.torsoYaw -= contact * 0.52;
     pose.torsoRoll -= contact * 0.34;
     return;
   }
@@ -71,6 +86,8 @@ export function applyAttackPose(
     pose.rootY += contact * 0.42;
     pose.rightArm.pitch = -0.6 + chamber * 0.8 - contact * 2.6;
     pose.rightArm.hinge = -1.9 + contact * 1.3;
+    pose.rightArm.yaw = chamber * 0.3;
+    pose.hipsRoll -= contact * 0.16;
     pose.torsoPitch -= contact * 0.3;
     return;
   }
@@ -81,6 +98,9 @@ export function applyAttackPose(
     pose.rightLeg.spread = contact * 1.15;
     pose.rightLeg.hinge = -1.4 * chamber - 0.1;
     pose.leftLeg.hinge = -1.1;
+    pose.hipsYaw += chamber * 0.35 - contact * 1.05;
+    pose.torsoYaw -= pose.hipsYaw * 0.45;
+    pose.leftArm.spread += contact * 0.55;
     return;
   }
   if (shape === 'highKick') {
@@ -89,6 +109,9 @@ export function applyAttackPose(
     pose.rightLeg.hinge = -2 * chamber + contact * 0.2;
     pose.rightLeg.spread = contact * 0.4;
     pose.torsoPitch -= contact * 0.34;
+    pose.hipsYaw -= contact * 0.48;
+    pose.torsoYaw += contact * 0.35;
+    pose.leftLeg.hinge -= contact * 0.22;
     pose.leftArm.spread += contact * 0.7;
     return;
   }
@@ -96,6 +119,10 @@ export function applyAttackPose(
     pose.rightLeg.pitch = chamber * 1.1 - contact * 1.7;
     pose.rightLeg.hinge = -2.2 * chamber + contact * 0.15;
     pose.torsoPitch += contact * 0.22;
+    pose.hipsY -= contact * 0.08;
+    pose.hipsRoll -= contact * 0.1;
+    pose.torsoYaw += contact * 0.18;
+    pose.leftArm.pitch -= contact * 0.3;
     return;
   }
   // slam
@@ -103,6 +130,9 @@ export function applyAttackPose(
   pose.leftArm.pitch = -2.4 * chamber + contact * 0.6;
   pose.rightArm.pitch = -2.4 * chamber + contact * 0.6;
   pose.torsoPitch += contact * 0.5 - chamber * 0.4;
+  pose.hipsY -= contact * 0.12;
+  pose.leftLeg.hinge -= contact * 0.3;
+  pose.rightLeg.hinge -= contact * 0.3;
 }
 
 /**
@@ -119,6 +149,8 @@ function applySpin(pose: Pose, p: number, contact: number): void {
   const turn = p < 0.8 ? p / 0.8 : 1;
   const eased = turn * turn * (3 - 2 * turn);
   pose.rootYaw += eased * Math.PI * 3;
+  pose.hipsYaw += Math.sin(p * Math.PI * 2) * 0.32;
+  pose.torsoYaw -= Math.sin(p * Math.PI * 2) * 0.2;
 
   // The hop. Peaks under the strike and is back on the floor for recovery.
   const hop = Math.sin(Math.min(1, p / 0.75) * Math.PI);

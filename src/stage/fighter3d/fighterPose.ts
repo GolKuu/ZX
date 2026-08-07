@@ -15,9 +15,13 @@ export interface Pose {
   /** Whole-body spin about the vertical. The 540 lives here. */
   rootYaw: number;
   hipsY: number;
+  hipsYaw: number;
+  hipsRoll: number;
   torsoPitch: number;
   torsoRoll: number;
+  torsoYaw: number;
   headPitch: number;
+  headYaw: number;
   leftArm: Limb;
   rightArm: Limb;
   leftLeg: Limb;
@@ -29,10 +33,12 @@ export interface Limb {
   pitch: number;
   spread: number;
   hinge: number;
+  /** Rotation across the body, essential for hooks and natural punches. */
+  yaw: number;
 }
 
-function limb(pitch = 0, spread = 0, hinge = 0): Limb {
-  return { pitch, spread, hinge };
+function limb(pitch = 0, spread = 0, hinge = 0, yaw = 0): Limb {
+  return { pitch, spread, hinge, yaw };
 }
 
 /** The fighting stance every other pose is a departure from. */
@@ -42,9 +48,13 @@ export function neutralPose(stoop: number): Pose {
     rootRoll: 0,
     rootYaw: 0,
     hipsY: 0,
+    hipsYaw: -0.08,
+    hipsRoll: 0,
     torsoPitch: stoop,
     torsoRoll: 0,
+    torsoYaw: 0.12,
     headPitch: -stoop * 0.6,
+    headYaw: -0.04,
     // Hands up, elbows in: a guard, not a T-pose. The lead arm is carried
     // lower so the two read as different arms from the front.
     leftArm: limb(-0.5, 0.34, -1.05),
@@ -58,6 +68,7 @@ export function idleBreath(pose: Pose, time: number): void {
   const breath = Math.sin(time * 2.3);
   pose.rootY += breath * 0.012;
   pose.torsoPitch += breath * 0.02;
+  pose.torsoYaw += breath * 0.012;
   pose.headPitch -= breath * 0.015;
   pose.leftArm.pitch += breath * 0.04;
   pose.rightArm.pitch += breath * 0.03;
@@ -76,11 +87,14 @@ export function walkPose(pose: Pose, time: number, speed: number): void {
   pose.leftArm.pitch += counter * 0.32;
   pose.rightArm.pitch += stride * 0.32;
   pose.torsoRoll += stride * 0.05;
+  pose.hipsYaw += stride * 0.08;
+  pose.torsoYaw -= stride * 0.07;
 }
 
 export function crouchPose(pose: Pose): void {
   pose.hipsY -= 0.3;
   pose.torsoPitch += 0.34;
+  pose.hipsRoll += 0.05;
   pose.leftLeg.pitch += 0.62;
   pose.leftLeg.hinge -= 1.3;
   pose.rightLeg.pitch += 0.62;
@@ -91,6 +105,7 @@ export function crouchPose(pose: Pose): void {
 export function guardPose(pose: Pose): void {
   pose.torsoPitch += 0.14;
   pose.torsoRoll += 0.18;
+  pose.torsoYaw -= 0.22;
   pose.leftArm.pitch = -1.5;
   pose.leftArm.hinge = -1.9;
   pose.rightArm.pitch = -1.35;
@@ -102,6 +117,8 @@ export function guardPose(pose: Pose): void {
 export function hitPose(pose: Pose, intensity: number): void {
   pose.torsoPitch -= 0.5 * intensity;
   pose.torsoRoll -= 0.3 * intensity;
+  pose.torsoYaw -= 0.35 * intensity;
+  pose.hipsYaw += 0.16 * intensity;
   pose.headPitch -= 0.4 * intensity;
   pose.rootRoll -= 0.16 * intensity;
   pose.leftArm.pitch += 0.9 * intensity;
@@ -128,9 +145,13 @@ export function applyPose(joints: FighterJoints, pose: Pose): void {
   joints.root.rotation.z = pose.rootRoll;
   joints.root.rotation.y = pose.rootYaw;
   joints.hips.position.y = 0.86 + pose.hipsY;
+  joints.hips.rotation.y = pose.hipsYaw;
+  joints.hips.rotation.z = pose.hipsRoll;
   joints.torso.rotation.x = pose.torsoPitch;
   joints.torso.rotation.z = pose.torsoRoll;
+  joints.torso.rotation.y = pose.torsoYaw;
   joints.head.rotation.x = pose.headPitch;
+  joints.head.rotation.y = pose.headYaw;
   setLimb(joints.leftArm, joints.leftForearm, pose.leftArm, -1);
   setLimb(joints.rightArm, joints.rightForearm, pose.rightArm, 1);
   setLimb(joints.leftLeg, joints.leftShin, pose.leftLeg, -1);
@@ -145,6 +166,7 @@ function setLimb(
 ): void {
   upper.rotation.x = values.pitch;
   upper.rotation.z = values.spread * side;
+  upper.rotation.y = values.yaw * side;
   lower.rotation.x = values.hinge;
 }
 

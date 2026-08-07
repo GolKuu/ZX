@@ -30,6 +30,10 @@ export interface FighterSurfaces {
   readonly skin: MeshStandardMaterial;
   /** Polished costume edging and small mechanical hardware. */
   readonly trim: MeshStandardMaterial;
+  /** Hair, fur and pale synthetic fibres. */
+  readonly hair: MeshStandardMaterial;
+  /** Character-specific secondary cloth or armour colour. */
+  readonly secondary: MeshStandardMaterial;
   /** The character's own colour, emissive. Visors, trim, eyes. */
   readonly glow: MeshBasicMaterial;
   /** Back-faced hull that draws a dark edge around the silhouette. */
@@ -42,7 +46,7 @@ export function useFighterSurfaces(characterId: CharacterId): FighterSurfaces {
     const build = characterBuild(characterId);
     return {
       body: new MeshStandardMaterial({
-        color: new Color(palette.coat.lit),
+        color: new Color(bodyColor(characterId, palette.coat.lit)),
         emissive: new Color(build.accent),
         emissiveIntensity: 0.24,
         roughness: 0.62,
@@ -66,17 +70,31 @@ export function useFighterSurfaces(characterId: CharacterId): FighterSurfaces {
         dithering: true,
       }),
       skin: new MeshStandardMaterial({
-        color: new Color(palette.skin.lit),
+        color: new Color(skinColor(characterId, palette.skin.lit)),
         roughness: characterId === 'mim' ? 0.22 : 0.58,
         metalness: characterId === 'mim' ? 0.2 : 0.02,
         dithering: true,
       }),
       trim: new MeshStandardMaterial({
-        color: new Color(characterId === 'lucky' ? '#d5a83f' : palette.body.lit),
+        color: new Color(trimColor(characterId, palette.body.lit)),
         emissive: new Color(build.accent),
         emissiveIntensity: 0.18,
         roughness: 0.24,
         metalness: 0.78,
+        dithering: true,
+      }),
+      hair: new MeshStandardMaterial({
+        color: new Color(characterId === 'glitch' ? '#d9deea' : '#eee8dc'),
+        roughness: 0.56,
+        metalness: characterId === 'glitch' ? 0.42 : 0.04,
+        dithering: true,
+      }),
+      secondary: new MeshStandardMaterial({
+        color: new Color(characterId === 'lucky' ? '#174a34' : build.accent),
+        emissive: new Color(build.accent),
+        emissiveIntensity: characterId === 'lucky' ? 0.04 : 0.12,
+        roughness: 0.62,
+        metalness: 0.18,
         dithering: true,
       }),
       glow: new MeshBasicMaterial({
@@ -100,6 +118,8 @@ export function useFighterSurfaces(characterId: CharacterId): FighterSurfaces {
       surfaces.under.dispose();
       surfaces.skin.dispose();
       surfaces.trim.dispose();
+      surfaces.hair.dispose();
+      surfaces.secondary.dispose();
       surfaces.glow.dispose();
       surfaces.outline.dispose();
     },
@@ -107,4 +127,25 @@ export function useFighterSurfaces(characterId: CharacterId): FighterSurfaces {
   );
 
   return surfaces;
+}
+
+function bodyColor(characterId: CharacterId, fallback: string): string {
+  if (characterId === 'mim') return '#e8e8e5';
+  if (characterId === 'lucky') return '#11130f';
+  return fallback;
+}
+
+function skinColor(characterId: CharacterId, fallback: string): string {
+  if (characterId === 'mim') return '#f2f1ec';
+  if (characterId === 'glitch') return '#0c1118';
+  if (characterId === 'vorgh') return '#381518';
+  if (characterId === 'titan') return '#353d42';
+  return fallback;
+}
+
+function trimColor(characterId: CharacterId, fallback: string): string {
+  if (characterId === 'mim') return '#6230a8';
+  if (characterId === 'lucky') return '#d2a43a';
+  if (characterId === 'vorgh') return '#671c20';
+  return fallback;
 }
