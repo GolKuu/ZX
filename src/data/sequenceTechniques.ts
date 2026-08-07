@@ -10,7 +10,7 @@ export interface SequenceTechnique {
   readonly description: string;
   readonly sequence: readonly [AttackButton, AttackButton];
   readonly unlockNodeId: string;
-  readonly patch?: 'mimWallSmash' | 'projectile' | 'heavyKnockback';
+  readonly patch?: 'instantWall' | 'mimWallSmash' | 'projectile' | 'heavyKnockback';
 }
 
 const technique = (
@@ -38,7 +38,7 @@ const technique = (
 export const SEQUENCE_TECHNIQUES: readonly SequenceTechnique[] = [
   technique('mim', 'invisible-wall', 'mim.wall.invisible', 'mim.jab', 'Invisible Wall',
     'Creates a thin outlined wall for about three seconds. The opponent cannot cross it.',
-    ['lp', 'lk'], 'mim.invisible-architecture.1'),
+    ['lp', 'lk'], 'mim.invisible-architecture.1', 'instantWall'),
   technique('mim', 'wall-smash', 'mim.wall.launch', 'mim.jab', 'Wall Smash',
     'Builds a plane behind the opponent and drives them into it for bonus damage and stun.',
     ['lp', 'hk'], 'mim.invisible-architecture.4', 'mimWallSmash'),

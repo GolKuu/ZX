@@ -70,6 +70,21 @@ function patchMove(
         }
       : hitbox.hit,
   }));
+  if (technique.patch === 'instantWall') {
+    return {
+      ...source,
+      id: technique.moveId,
+      startup: 5,
+      active: 4,
+      recovery: 14,
+      cancels: undefined,
+      walls: source.walls?.map((entry) => ({
+        ...entry,
+        spawnFrame: 5,
+        materializeFrames: 2,
+      })),
+    };
+  }
   return {
     ...source,
     id: technique.moveId,

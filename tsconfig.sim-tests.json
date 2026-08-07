@@ -36,6 +36,7 @@
     "src/game/CinematicFreeze.ts",
     "src/game/matchRules.ts",
     "src/data/combat-moves.ts",
+    "src/data/allMoves.ts",
     "src/data/arenas.ts",
     "src/data/meter-moves.ts",
     "src/data/mim-ai.ts",

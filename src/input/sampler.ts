@@ -85,14 +85,16 @@ export class InputSampler {
     if (freshSequence !== null) {
       this.consumedSequencePressFrame = sequencePressFrame;
     }
-    const regularCommand = resolveCommand(this.buffer, this.commands, context, {
-      ...(this.profile.leeway === undefined
-        ? {}
-        : { leeway: this.profile.leeway }),
-      ...(this.profile.settleFrames === undefined
-        ? {}
-        : { settleFrames: this.profile.settleFrames }),
-    });
+    const regularCommand = attacksLocked
+      ? null
+      : resolveCommand(this.buffer, this.commands, context, {
+          ...(this.profile.leeway === undefined
+            ? {}
+            : { leeway: this.profile.leeway }),
+          ...(this.profile.settleFrames === undefined
+            ? {}
+            : { settleFrames: this.profile.settleFrames }),
+        });
     const command = freshSequence ?? regularCommand;
     this.sampledFrames += 1;
 

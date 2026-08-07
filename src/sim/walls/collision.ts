@@ -39,6 +39,7 @@ export function applyWallAttackContacts(
     if (action === null || move === undefined || move.wallPiercing === true) {
       continue;
     }
+    let blocked = false;
     for (const hitbox of activeHitboxes(attacker, move)) {
       for (const wall of field.entities) {
         if (wall.ownerId === attacker.id || !isSolid(wall)) continue;
@@ -48,6 +49,7 @@ export function applyWallAttackContacts(
           (box) => overlapPoint(toWorldBox(attacker, box), wallBox(wall)) !== null,
         );
         if (!touched) continue;
+        blocked = true;
         wall.contactLedger.push(key);
         wall.integrity -= move.wallDamage ?? 1;
         events.push({
@@ -70,7 +72,16 @@ export function applyWallAttackContacts(
             position: { ...wall.center },
           });
         }
+        break;
       }
+      if (blocked) break;
+    }
+    if (blocked) {
+      // A plane is real cover, not only a durability counter. Ending the
+      // colliding action prevents a long ranged hitbox from damaging the wall
+      // and the fighter behind it on the same simulation frame.
+      attacker.action = null;
+      attacker.velocity.x = 0;
     }
   }
 }
