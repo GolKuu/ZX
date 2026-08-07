@@ -28,6 +28,16 @@ export function HomeArtwork() {
           priority
         />
       </a>
+      <a
+        className={styles.ballLink}
+        href="https://ali9-khaki.vercel.app/"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Play Touchline Game Master"
+      >
+        <span className={styles.ballGraphic} aria-hidden="true" />
+        <span className={styles.ballLabel}>PLAY TOUCHLINE</span>
+      </a>
       <header className={styles.topline}>
         <span>ARENA // NIGHT FRACTURE</span>
         <b>5 FIGHTERS ONLINE</b>

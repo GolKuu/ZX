@@ -111,6 +111,58 @@
   image-rendering: pixelated;
 }
 
+.ballLink {
+  position: absolute;
+  z-index: 5;
+  top: 18%;
+  right: 38%;
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  color: #f8f4e9;
+  filter: drop-shadow(0 12px 12px rgb(0 0 0 / 48%));
+  transition: filter 160ms ease, transform 160ms ease;
+}
+
+.ballGraphic {
+  display: block;
+  width: clamp(58px, 6.8vw, 88px);
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle at 50% 48%, #141a1d 0 12%, transparent 13%),
+    radial-gradient(circle at 24% 31%, #172025 0 9%, transparent 10%),
+    radial-gradient(circle at 77% 29%, #172025 0 9%, transparent 10%),
+    radial-gradient(circle at 25% 75%, #172025 0 9%, transparent 10%),
+    radial-gradient(circle at 75% 75%, #172025 0 9%, transparent 10%),
+    repeating-conic-gradient(from 18deg, rgb(9 16 20 / 26%) 0 2deg, transparent 2deg 34deg),
+    radial-gradient(circle at 34% 27%, #fff 0, #dce5e4 42%, #8b9b9f 78%, #34434a 100%);
+  border: 2px solid #f2f7f4;
+  border-radius: 50%;
+  box-shadow: inset -8px -10px 14px rgb(4 14 18 / 45%), inset 5px 5px 10px rgb(255 255 255 / 58%), 0 0 24px rgb(134 197 211 / 28%);
+  animation: ball-float 4.2s ease-in-out infinite;
+}
+
+.ballLabel {
+  padding: 5px 7px;
+  background: rgb(4 12 17 / 78%);
+  border: 1px solid rgb(134 197 211 / 52%);
+  font: 800 clamp(.48rem, .65vw, .62rem) "Courier New", monospace;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+.ballLink:hover,
+.ballLink:focus-visible {
+  filter: drop-shadow(0 0 16px rgb(134 197 211 / 78%)) drop-shadow(0 12px 12px rgb(0 0 0 / 48%));
+  outline: none;
+  transform: translateY(-4px) scale(1.06);
+}
+
+@keyframes ball-float {
+  0%, 100% { transform: translateY(0) rotate(-8deg); }
+  50% { transform: translateY(8px) rotate(10deg); }
+}
+
 @keyframes fish-drift {
   0%, 100% { transform: translate(0, 0) rotate(-7deg); }
   50% { transform: translate(-10px, 7px) rotate(-2deg); }
@@ -302,9 +354,12 @@
   .sprite { right: -78%; left: -78%; }
   .name small, .caption span { display: none; }
   .siteEntry { top: 66px; right: 12px; padding: 8px 10px; font-size: 0.56rem; }
+  .ballLink { top: 23%; right: 42%; }
+  .ballLabel { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .fighter { transition: none; }
   .fishLink { animation: none; }
+  .ballGraphic { animation: none; }
 }
