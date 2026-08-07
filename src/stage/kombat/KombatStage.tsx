@@ -3,6 +3,7 @@
 import type { ArenaId } from '@/src/data/arenas';
 import { useRenderStore } from '@/src/store/renderStore';
 import { KombatBraziers } from './KombatBraziers';
+import { KombatBackdropCore } from './KombatBackdropCore';
 import { KombatColonnade } from './KombatColonnade';
 import { KombatEmbers } from './KombatEmbers';
 import { KombatFloor } from './KombatFloor';
@@ -37,6 +38,7 @@ export function KombatStage({ arenaId }: { readonly arenaId: ArenaId }) {
     <group>
       <KombatSky theme={theme} />
       <KombatHorizon theme={theme} />
+      <KombatBackdropCore theme={theme} />
       <KombatColonnade surfaces={surfaces} />
       <KombatTerrace surfaces={surfaces} />
       <KombatFloor surfaces={surfaces} theme={theme} />

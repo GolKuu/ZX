@@ -33,7 +33,7 @@ import { CharacterHeroFX } from './CharacterHeroFX';
 const DISPLAY_HEIGHT = 3.05;
 const GROUND = 0.91;
 const CENTER_Y = (GROUND - 0.5) * DISPLAY_HEIGHT;
-const FRAME_BLEND_SECONDS = 0.065;
+const FRAME_BLEND_SECONDS = 0.035;
 const SIMULATION_HZ = 60;
 const INK_OFFSETS = [
   [-0.018, -0.018], [0, -0.022], [0.018, -0.018],
@@ -74,6 +74,8 @@ export function PhotoSpriteFighter({
 }) {
   const outer = useRef<Group>(null);
   const body = useRef<Group>(null);
+  const contactShadow = useRef<Group>(null);
+  const contactShadowMaterials = useRef<Array<MeshBasicMaterial | null>>([]);
   const currentMaterial = useRef<MeshBasicMaterial>(null);
   const previousMaterial = useRef<MeshBasicMaterial>(null);
   const dashMaterials = useRef<Array<MeshBasicMaterial | null>>([]);
@@ -138,6 +140,20 @@ export function PhotoSpriteFighter({
       bodyScale,
       1,
     );
+
+    const shadow = contactShadow.current;
+    if (shadow !== null) {
+      const airborne = Math.max(0, root.position.y);
+      shadow.position.y = (-root.position.y + 0.035) / bodyScale;
+      shadow.scale.set(1 + airborne * 0.09, 1, 1 + airborne * 0.04);
+      const fade = Math.max(0.18, 1 - airborne * 0.3);
+      for (let index = 0; index < contactShadowMaterials.current.length; index += 1) {
+        const material = contactShadowMaterials.current[index];
+        if (material !== null && material !== undefined) {
+          material.opacity = (0.07 + index * 0.055) * fade;
+        }
+      }
+    }
 
     const latestHit = readLatestHit(fighterId);
     if (latestHit !== null && latestHit.serial !== seenHit.current) {
@@ -219,6 +235,27 @@ export function PhotoSpriteFighter({
       {kind === 'lucky' ? <LuckySpriteEffects fighterId={fighterId} /> : null}
       {kind === 'vorgh' ? <VorghEffects fighterId={fighterId} /> : null}
       <group ref={outer}>
+        <group ref={contactShadow} position={[0, 0.035, 0.12]}>
+          {[1, 0.72, 0.46].map((scale, index) => (
+            <mesh
+              key={scale}
+              renderOrder={-1}
+              rotation-x={-Math.PI / 2}
+              scale={[0.92 * scale, 0.34 * scale, 1]}
+            >
+              <circleGeometry args={[1, 48]} />
+              <meshBasicMaterial
+                ref={(material) => { contactShadowMaterials.current[index] = material; }}
+                color="#020307"
+                depthWrite={false}
+                opacity={0.07 + index * 0.055}
+                polygonOffset
+                polygonOffsetFactor={-1}
+                transparent
+              />
+            </mesh>
+          ))}
+        </group>
         <CharacterHeroFX fighterId={fighterId} kind={kind} />
         {kind === 'mim' ? <MimAttackEffects fighterId={fighterId} /> : null}
         <LeadAttackEffects fighterId={fighterId} kind={kind} />
@@ -374,9 +411,9 @@ function gradeHeroSurface(
 
 function prepareTexture(texture: Texture): void {
   texture.colorSpace = SRGBColorSpace;
-  // The atlas is authored at 1024px, but the final frame can be 4K. Linear
-  // sampling avoids stair-stepping on the enlarged hero planes; mipmaps stay
-  // disabled because each UV window is a deliberately selected animation cel.
+  // High mode loads a 4096px AVIF sheet (1024px per authored frame). Linear
+  // sampling keeps each frame clean at Full HD and 4K output; mipmaps stay
+  // disabled because every UV window is a deliberately selected animation cel.
   texture.magFilter = LinearFilter;
   texture.minFilter = LinearFilter;
   texture.generateMipmaps = false;
