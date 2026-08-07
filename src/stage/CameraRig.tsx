@@ -39,8 +39,6 @@ import { useRenderStore } from '@/src/store/renderStore';
 const EYE_RISE = 1.15;
 const BASE_FOV = 39;
 const IMPACT_RETURN = 11;
-const PUNCH_RETURN = 6.5;
-const FOV_RETURN = 5;
 /** Exponential follow rate, per second. High enough to keep up with a dash. */
 const FOLLOW_RATE = 7.5;
 
@@ -50,7 +48,6 @@ export function CameraRig() {
   const framingRef = useRef<Framing>(NEUTRAL_FRAMING);
   const impulse = useRef(createImpulse());
   const watch = useRef(createWatch());
-  const fovTargetRef = useRef(BASE_FOV);
   const superVersionRef = useRef(
     useRenderStore.getState().mimSuperVersion
     + useRenderStore.getState().glitchSuperVersion,
@@ -73,16 +70,14 @@ export function CameraRig() {
     if (superVersion !== superVersionRef.current) {
       superVersionRef.current = superVersion;
       shot.shake = Math.min(MAX_SHAKE, Math.max(shot.shake, 1.5));
-      shot.punch = Math.max(shot.punch, 1.5);
-      fovTargetRef.current = BASE_FOV + 3.2;
     }
     accumulateImpacts(shot, watch.current);
 
     shot.shake = approach(shot.shake, 0, IMPACT_RETURN, delta);
     shot.kick = approach(shot.kick, 0, 16, delta);
-    shot.punch = approach(shot.punch, 0, PUNCH_RETURN, delta);
     shot.roll = approach(shot.roll, 0, 8, delta);
-    fovTargetRef.current = approach(fovTargetRef.current, BASE_FOV, FOV_RETURN, delta);
+    // Camera scale is intentionally fixed. Impact reactions use shake only;
+    // they must not change the player's distance read during neutral.
 
     const lens = cameraRef.current;
     const target = readFraming(framingRef.current, lens.fov, lens.aspect);
@@ -93,17 +88,17 @@ export function CameraRig() {
     const followRate = FOLLOW_RATE * (1 - shot.finish * 0.85);
     framingRef.current = {
       pan: approach(held.pan, target.pan, followRate, delta),
-      distance: approach(held.distance, target.distance, followRate, delta),
+      distance: NEUTRAL_FRAMING.distance,
       focus: approach(held.focus, target.focus, followRate * 0.8, delta),
     };
     const framing = framingRef.current;
     const time = clock.elapsedTime;
     const shake = screenShakeEnabled ? shot.shake : 0;
 
-    // Punch-in on a heavy landing, then a slow creep on a finish. Both pull the
-    // eye along the same axis, so they compose rather than fight.
-    const distance = framing.distance - shot.punch * 1.35 - shot.finish * 2.6;
-    lens.fov = approach(lens.fov, fovTargetRef.current - shot.finish * 4.5, 7, delta);
+    // Keep the lens and dolly fixed: no dynamic zoom or punch-in during hits,
+    // supers, finishes, or changes in fighter spacing.
+    const distance = NEUTRAL_FRAMING.distance;
+    lens.fov = BASE_FOV;
     lens.updateProjectionMatrix();
 
     lens.position.set(
