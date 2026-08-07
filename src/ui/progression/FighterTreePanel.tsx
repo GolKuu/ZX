@@ -128,6 +128,7 @@ function AnimatedCommand({ command }: { readonly command: ProgressionMoveCommand
   return (
     <article className={styles.commandMove}>
       <div><strong>{command.name}</strong><code>{command.moveId}</code></div>
+      {command.description === undefined ? null : <p>{command.description}</p>}
       <div aria-label={command.notation} className={styles.commandSequence}>
         {command.steps.map((step, index) => (
           <span className={styles.commandStep} key={`${command.moveId}-${index}`}>

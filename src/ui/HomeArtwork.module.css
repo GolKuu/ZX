@@ -86,46 +86,15 @@
 }
 
 .moon {
-  --fish-glow: #ffd86a;
   position: absolute;
-  top: 16%;
-  right: 18%;
-  width: clamp(74px, 11vw, 132px);
-  height: clamp(38px, 5.5vw, 68px);
-  background:
-    radial-gradient(circle at 76% 39%, #1d2530 0 3%, transparent 4%),
-    radial-gradient(ellipse at 50% 45%, #fff2a1 0 12%, #ffc94d 44%, #e87d35 100%);
-  border: 2px solid #ffe895;
-  border-radius: 58% 52% 48% 58%;
-  box-shadow: 0 0 18px var(--fish-glow), 0 0 56px rgb(244 201 108 / 36%);
-  filter: drop-shadow(0 10px 12px rgb(0 0 0 / 38%));
+  top: 12%;
+  right: 14%;
+  width: clamp(112px, 15vw, 190px);
+  height: auto;
+  filter: drop-shadow(0 0 12px rgb(255 216 106 / 60%)) drop-shadow(0 14px 14px rgb(0 0 0 / 42%));
+  image-rendering: pixelated;
   transform: rotate(-7deg);
   animation: fish-drift 5s ease-in-out infinite;
-}
-
-.moon::before {
-  position: absolute;
-  top: -3%;
-  left: -34%;
-  width: 48%;
-  height: 106%;
-  background: linear-gradient(135deg, #ffd960, #df7334);
-  border: 2px solid #ffe895;
-  clip-path: polygon(100% 50%, 0 0, 15% 50%, 0 100%);
-  content: "";
-}
-
-.moon::after {
-  position: absolute;
-  top: 22%;
-  left: 70%;
-  width: 16%;
-  aspect-ratio: 1;
-  background: #17202c;
-  border: 2px solid #fff4b4;
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px rgb(255 255 255 / 8%);
-  content: "";
 }
 
 @keyframes fish-drift {

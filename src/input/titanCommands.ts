@@ -1,8 +1,9 @@
 import { TITAN_MOVE_IDS as ID } from '../data/titan/ids.js';
 import type { CommandRow } from './command.js';
 import { TAUNT_COMMAND } from './sharedCommands.js';
+import { withSequenceCommands } from './sequenceCommands.js';
 
-export const TITAN_COMMANDS: readonly CommandRow[] = [
+const TITAN_BASE_COMMANDS: readonly CommandRow[] = [
   {
     moveId: ID.worldAnchor, motion: 'none', button: 'ultimate', stance: 'any',
     available: ({ ultimateReady }) => ultimateReady === true,
@@ -44,6 +45,8 @@ export const TITAN_COMMANDS: readonly CommandRow[] = [
   { moveId: ID.seismicStomp, motion: 'none', button: 'hp', stance: 'standing' },
   { moveId: ID.siegeRam, motion: 'none', button: 'hk', stance: 'standing' },
 ];
+
+export const TITAN_COMMANDS = withSequenceCommands('titan', TITAN_BASE_COMMANDS);
 
 function command(
   moveId: string,

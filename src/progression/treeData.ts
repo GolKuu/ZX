@@ -1,5 +1,6 @@
 import type { CharacterId } from '../data/characterRoster.js';
 import type { ProgressionNode } from './types.js';
+import { sequenceTechniquesUnlockedBy } from '../data/sequenceTechniques.js';
 
 export interface BranchSpec { readonly id: string; readonly name: string; readonly focus: string; readonly nodes: readonly string[]; }
 const b = (id: string, name: string, focus: string, nodes: readonly string[]): BranchSpec => ({ id, name, focus, nodes });
@@ -48,11 +49,15 @@ export const PROGRESSION_NODES: readonly ProgressionNode[] = Object.entries(PROG
     const id = `${fighter}.${branch.id}.${index + 1}`;
     const prior = index === 0 ? [] : [`${fighter}.${branch.id}.${index}`];
     const tier = tiers[index]!;
+    const unlockedTechniques = sequenceTechniquesUnlockedBy(id);
     return {
       id, fighterId: fighter as CharacterId, branchId: branch.id, tier, name,
-      description: `${name} expands ${branch.focus}. Active builds cap at 20 Tokens; recovery gains stop at 3 frames and never cross the fighter safety floor.`,
+      description: `${name} expands ${branch.focus}.${unlockedTechniques.length === 0 ? '' : ` Unlocks ${unlockedTechniques.map((entry) => entry.name).join(' / ')}.`} Active builds cap at 20 Tokens; recovery gains stop at 3 frames and never cross the fighter safety floor.`,
       cost: costs[index]!, prerequisites: prior, exclusions: [], capstone: tier === 4,
-      affectedMoves: TARGETS[fighter as CharacterId][branch.id] ?? [], effect: {
+      affectedMoves: [
+        ...(TARGETS[fighter as CharacterId][branch.id] ?? []),
+        ...unlockedTechniques.map((entry) => entry.moveId),
+      ], effect: {
         stat: index % 2 === 0 ? 'recovery / resource efficiency' : 'route flexibility',
         before: 'Authored base frame data', after: `Tier ${tier}: contributes to capped movement/recovery tuning with a health tradeoff`,
         maxBonusPercent: tier === 4 ? 12 : tier * 3,

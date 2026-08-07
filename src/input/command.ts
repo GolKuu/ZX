@@ -63,6 +63,20 @@ export interface CommandRow {
    * set is not knowable until the player has stopped adding buttons to it.
    */
   readonly exactChord?: readonly AttackButton[];
+  /**
+   * Ordered attack presses, oldest to newest. Unlike `exactChord`, every step
+   * must happen on a different frame, so J → K can never be mistaken for J+K.
+   */
+  readonly attackSequence?: readonly AttackButton[];
+  /** Maximum gap from the first sequence press to the committing press. */
+  readonly sequenceWindowFrames?: number;
+  /** Minimum separation between sequence presses; rejects near-simultaneous taps. */
+  readonly sequenceMinGapFrames?: number;
+  /** Player-facing metadata shared by the Hub and move list. */
+  readonly displayName?: string;
+  readonly description?: string;
+  /** Progression node that activates this sequence in persistent modes. */
+  readonly unlockNodeId?: string;
 }
 
 export interface CommandContext {
@@ -82,6 +96,8 @@ export interface CommandContext {
    * which is what versus and training pass.
    */
   readonly unlockedMoves?: ReadonlySet<string>;
+  /** Active Progression Hub node ids for this fighter. */
+  readonly activeProgressionNodes?: ReadonlySet<string>;
 }
 
 export const DEFAULT_CONTEXT: CommandContext = {
@@ -173,6 +189,13 @@ export function resolveCommand(
       continue;
     }
     if (chord !== null && chord !== expectedChordMask(row)) {
+      if (row.attackSequence !== undefined) {
+        // Sequential commands are intentionally not simultaneous chords.
+      } else {
+        continue;
+      }
+    }
+    if (!matchesAttackSequence(buffer, row, pressedAgo)) {
       continue;
     }
     if (row.requiresModifier === true && !buffer.isHeld('super')) {
@@ -204,6 +227,40 @@ export function resolveCommand(
     };
   }
   return null;
+}
+
+function matchesAttackSequence(
+  buffer: InputBuffer,
+  row: CommandRow,
+  pressedAgo: number,
+): boolean {
+  const sequence = row.attackSequence;
+  if (sequence === undefined) return true;
+  if (sequence.length < 2 || sequence[sequence.length - 1] !== row.button) {
+    return false;
+  }
+  const window = row.sequenceWindowFrames ?? 22;
+  const minimumGap = row.sequenceMinGapFrames ?? 3;
+  let newerAgo = pressedAgo;
+  for (let index = sequence.length - 2; index >= 0; index -= 1) {
+    const button = sequence[index];
+    if (button === undefined) return false;
+    const bit = BUTTON_BIT[button];
+    let found: number | null = null;
+    for (
+      let ago = newerAgo + minimumGap;
+      ago <= pressedAgo + window && ago < buffer.length;
+      ago += 1
+    ) {
+      if ((buffer.at(ago).pressed & bit) !== 0) {
+        found = ago;
+        break;
+      }
+    }
+    if (found === null) return false;
+    newerAgo = found;
+  }
+  return newerAgo - pressedAgo <= window;
 }
 
 /** Attack slots an `exactChord` table may name. */

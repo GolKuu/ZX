@@ -26,8 +26,12 @@ import {
 import { VORGH_MOVES } from './vorgh/index.js';
 import { TITAN_ALL_MOVES } from './titan/index.js';
 import { TAUNT_MOVES } from './taunt-move.js';
+import {
+  addSequenceCancelWindows,
+  buildSequenceTechniqueMoves,
+} from './sequenceTechniqueMoves.js';
 
-export const ALL_COMBAT_MOVES: readonly MoveFrameData[] = [
+const BASE_COMBAT_MOVES: readonly MoveFrameData[] = [
   ...KADE_MOVES,
   ...MIM_MOVES,
   ...MIM_SPECIAL_MOVES,
@@ -41,6 +45,11 @@ export const ALL_COMBAT_MOVES: readonly MoveFrameData[] = [
   ...TITAN_ALL_MOVES,
   ...TAUNT_MOVES,
 ];
+
+export const ALL_COMBAT_MOVES: readonly MoveFrameData[] = addSequenceCancelWindows([
+  ...BASE_COMBAT_MOVES,
+  ...buildSequenceTechniqueMoves(BASE_COMBAT_MOVES),
+]);
 
 const BY_ID = new Map(ALL_COMBAT_MOVES.map((move) => [move.id, move]));
 

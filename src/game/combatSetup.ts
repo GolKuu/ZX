@@ -39,6 +39,10 @@ import {
 } from '@/src/data/vorgh';
 import { TAUNT_MOVES } from '@/src/data/taunt-move';
 import {
+  addSequenceCancelWindows,
+  buildSequenceTechniqueMoves,
+} from '@/src/data/sequenceTechniqueMoves';
+import {
   TITAN_AI_LOADOUT,
   TITAN_ALL_MOVES,
   TITAN_HURTBOXES,
@@ -61,7 +65,7 @@ import { compileFighterModifier, compileProgressionMoves } from '@/src/progressi
  * ids are globally unique; which character may use which move is decided by
  * the command tables in `src/input/`, not here.
  */
-export const ALL_COMBAT_MOVES = [
+const BASE_COMBAT_MOVES = [
   ...MIM_MOVES,
   ...MIM_SPECIAL_MOVES,
   ...MIM_SUPER_MOVES,
@@ -75,12 +79,15 @@ export const ALL_COMBAT_MOVES = [
   ...TAUNT_MOVES,
 ];
 
+export const ALL_COMBAT_MOVES = addSequenceCancelWindows([
+  ...BASE_COMBAT_MOVES,
+  ...buildSequenceTechniqueMoves(BASE_COMBAT_MOVES),
+]);
+
 export function createCombatEngine(
   selection: CharacterSelection = DEFAULT_CHARACTER_SELECTION,
 ): CombatEngine {
-  const mode=useHudStore.getState().mode;const profile=useProgressionStore.getState().profile;
-  const progressionMode=mode==='training'?'training':mode==='story'?'story':mode==='ai'?'ai':'ranked';
-  const playerNodes=effectiveLoadout(profile,selection[0],progressionMode,mode==='training'?'all':'purchased');
+  const playerNodes=activeProgressionNodes(selection[0]);
   return new CombatEngine({
     moves: compileProgressionMoves(ALL_COMBAT_MOVES,selection[0],playerNodes),
     fighters: [
@@ -89,6 +96,24 @@ export function createCombatEngine(
     ],
     world: { leftWall: fixed(-6.9), rightWall: fixed(6.9) },
   });
+}
+
+export function activeProgressionNodes(characterId: CharacterId): readonly string[] {
+  const mode = useHudStore.getState().mode;
+  const profile = useProgressionStore.getState().profile;
+  const progressionMode = mode === 'training'
+    ? 'training'
+    : mode === 'story'
+      ? 'story'
+      : mode === 'ai'
+        ? 'ai'
+        : 'ranked';
+  return effectiveLoadout(
+    profile,
+    characterId,
+    progressionMode,
+    mode === 'training' ? 'all' : 'purchased',
+  );
 }
 
 export function createCombatAi(

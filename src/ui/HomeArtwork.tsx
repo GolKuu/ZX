@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { CHARACTER_ROSTER } from '@/src/data/characterRoster';
 import styles from './HomeArtwork.module.css';
 
@@ -6,7 +7,15 @@ export function HomeArtwork() {
   return (
     <section className={styles.artwork} aria-label="YZX arena and fighter roster">
       <div className={styles.arenaBackdrop} aria-hidden="true">
-        <span className={styles.moon} />
+        <Image
+          className={styles.moon}
+          src="/ocean-fish.png"
+          alt=""
+          width={250}
+          height={190}
+          aria-hidden="true"
+          priority
+        />
         <span className={`${styles.arenaTower} ${styles.towerOne}`} />
         <span className={`${styles.arenaTower} ${styles.towerTwo}`} />
         <span className={`${styles.arenaTower} ${styles.towerThree}`} />

@@ -40,16 +40,21 @@ export interface RecordedInputFrame {
 
 export class InputSampler {
   private readonly buffer = new InputBuffer();
+  private readonly rawBuffer = new InputBuffer();
   private readonly attackGate = new AttackButtonGate();
   private readonly doubleTapDash = new DoubleTapDash();
   private readonly commands: readonly CommandRow[];
+  private readonly sequenceCommands: readonly CommandRow[];
   private readonly profile: InputProfile;
+  private sampledFrames = 0;
+  private consumedSequencePressFrame = -1;
 
   public constructor(
     commands: readonly CommandRow[],
     profile: InputProfile = DEFAULT_INPUT_PROFILE,
   ) {
-    this.commands = commands;
+    this.commands = commands.filter((row) => row.attackSequence === undefined);
+    this.sequenceCommands = commands.filter((row) => row.attackSequence !== undefined);
     this.profile = profile;
   }
 
@@ -61,10 +66,26 @@ export class InputSampler {
     context: CommandContext = DEFAULT_CONTEXT,
   ): FighterInput {
     const direction = toFacingRelative(screenDirection, facing);
+    this.rawBuffer.push(direction, rawButtons);
     const buttons = this.attackGate.filter(rawButtons, attacksLocked);
     this.buffer.push(direction, buttons);
 
-    const command = resolveCommand(this.buffer, this.commands, context, {
+    const sequence = attacksLocked
+      ? null
+      : resolveCommand(this.rawBuffer, this.sequenceCommands, context, {
+          leeway: 24,
+        });
+    const sequencePressFrame = sequence === null
+      ? -1
+      : this.sampledFrames - sequence.pressedAgo;
+    const freshSequence = sequence !== null
+      && sequencePressFrame > this.consumedSequencePressFrame
+      ? sequence
+      : null;
+    if (freshSequence !== null) {
+      this.consumedSequencePressFrame = sequencePressFrame;
+    }
+    const regularCommand = resolveCommand(this.buffer, this.commands, context, {
       ...(this.profile.leeway === undefined
         ? {}
         : { leeway: this.profile.leeway }),
@@ -72,6 +93,8 @@ export class InputSampler {
         ? {}
         : { settleFrames: this.profile.settleFrames }),
     });
+    const command = freshSequence ?? regularCommand;
+    this.sampledFrames += 1;
 
     // A directional guard yields to any command the player actually committed,
     // so Back+K+L is Lucky Guard rather than a block that swallows the input.
@@ -117,8 +140,11 @@ export class InputSampler {
 
   public reset(): void {
     this.buffer.clear();
+    this.rawBuffer.clear();
     this.attackGate.reset();
     this.doubleTapDash.reset();
+    this.sampledFrames = 0;
+    this.consumedSequencePressFrame = -1;
   }
 
   /**

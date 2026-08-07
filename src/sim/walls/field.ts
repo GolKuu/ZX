@@ -133,6 +133,8 @@ export class WallField {
       pushSpeed: data.pushSpeed ?? 0,
       pushDamage: data.pushDamage ?? 0,
       pushHitstun: data.pushHitstun ?? 0,
+      impactDamage: data.impactDamage ?? 0,
+      impactHitstun: data.impactHitstun ?? 0,
       state: data.materializeFrames > 0 ? 'materializing' : 'solid',
       shatterFrames: 0,
       contactLedger: [],

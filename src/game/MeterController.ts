@@ -6,7 +6,13 @@ import type { CharacterSelection } from '@/src/data/characterRoster';
 /** Adapter between the meter ledger, the command tables and the HUD. */
 export class MeterController {
   private readonly ledger = new MeterLedger();
-  public constructor(private readonly selection: CharacterSelection) {}
+  public constructor(
+    private readonly selection: CharacterSelection,
+    private readonly progressionNodes: Readonly<Record<'p1' | 'p2', readonly string[]>> = {
+      p1: [],
+      p2: [],
+    },
+  ) {}
 
   public inputContext(fighter: FighterSnapshot): CommandContext {
     return {
@@ -19,6 +25,9 @@ export class MeterController {
           : 0,
       superMeter: this.ledger.charge(fighter.id),
       ultimateReady: this.isUltimateReady(fighter),
+      activeProgressionNodes: new Set(
+        fighter.id === 'p2' ? this.progressionNodes.p2 : this.progressionNodes.p1,
+      ),
     };
   }
 

@@ -38,6 +38,9 @@ export interface WallSpawnData {
   readonly pushSpeed?: number;
   readonly pushDamage?: number;
   readonly pushHitstun?: number;
+  /** Bonus impact when a stunned fighter is driven into this solid plane. */
+  readonly impactDamage?: number;
+  readonly impactHitstun?: number;
 }
 
 /**
@@ -72,6 +75,8 @@ export interface WallEntity {
   pushSpeed: number;
   pushDamage: number;
   pushHitstun: number;
+  readonly impactDamage: number;
+  readonly impactHitstun: number;
   state: WallState;
   shatterFrames: number;
   /** `hitId:defenderId` keys already consumed, so one swing breaks one layer. */

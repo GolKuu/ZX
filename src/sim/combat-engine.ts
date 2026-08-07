@@ -195,7 +195,12 @@ export class CombatEngine {
       this.config.maximumVelocity,
       events,
     );
-    resolveWallCollisions(this.walls, this.fighters);
+    resolveWallCollisions(
+      this.walls,
+      this.fighters,
+      this.completedFrames,
+      events,
+    );
     for (const fighter of this.fighters) {
       if (fighter.hitstop > 0) continue;
       const input = inputs[fighter.id];

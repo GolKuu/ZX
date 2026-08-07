@@ -25,6 +25,7 @@ import {
 import { AttackInputPolicy } from './attackInputPolicy';
 import {
   ALL_COMBAT_MOVES,
+  activeProgressionNodes,
   createCombatAi,
   createCombatEngine,
   createCombatHud,
@@ -85,7 +86,10 @@ export class CombatSession {
     private readonly fighterSelection: CharacterSelection,
   ) {
     this.engine = createCombatEngine(fighterSelection);
-    this.meters = new MeterController(fighterSelection);
+    this.meters = new MeterController(fighterSelection, {
+      p1: activeProgressionNodes(fighterSelection[0]),
+      p2: activeProgressionNodes(fighterSelection[1]),
+    });
     this.ai = createCombatAi(
       this.fighterSelection[1],
       storyAwareDifficulty(),

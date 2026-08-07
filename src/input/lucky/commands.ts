@@ -14,6 +14,7 @@ import type { CommandContext, CommandRow } from '../command.js';
 import { LUCKY_LUCK_IDS, LUCKY_MOVE_IDS } from '../../data/lucky/ids.js';
 import { LUCKY_CATALOGUE, type LuckyCommandSpec } from './catalogue.js';
 import { LUCKY_BUTTON_SLOT } from './buttons.js';
+import { withSequenceCommands } from '../sequenceCommands.js';
 
 /**
  * Input tuning.
@@ -44,7 +45,9 @@ export const LUCKY_JUMP_SUPPRESSING_MOVES: ReadonlySet<string> = new Set([
   LUCKY_MOVE_IDS.chargeRisingHeel,
 ]);
 
-export const LUCKY_COMMANDS: readonly CommandRow[] = LUCKY_CATALOGUE.map(toRow);
+const LUCKY_BASE_COMMANDS: readonly CommandRow[] = LUCKY_CATALOGUE.map(toRow);
+
+export const LUCKY_COMMANDS = withSequenceCommands('lucky', LUCKY_BASE_COMMANDS);
 
 function toRow(spec: LuckyCommandSpec): CommandRow {
   const role = spec.buttons[0];

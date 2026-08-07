@@ -124,17 +124,24 @@ export function applyMovingWallHits(
 export function resolveWallCollisions(
   field: WallField,
   fighters: readonly MutableFighterState[],
+  frame = 0,
+  events: CombatEvent[] = [],
 ): void {
   for (const wall of field.entities) {
     for (const fighter of fighters) {
       if (!affects(wall, fighter)) continue;
       if (wall.platform) landOnPlatform(fighter, wall);
-      blockCrossing(fighter, wall);
+      blockCrossing(fighter, wall, frame, events);
     }
   }
 }
 
-function blockCrossing(fighter: MutableFighterState, wall: WallEntity): void {
+function blockCrossing(
+  fighter: MutableFighterState,
+  wall: WallEntity,
+  frame: number,
+  events: CombatEvent[],
+): void {
   const top = wall.center.y + wall.halfSize.y;
   const bottom = wall.center.y - wall.halfSize.y;
   // Nothing to bump into if the fighter is entirely above or below the plane.
@@ -143,12 +150,52 @@ function blockCrossing(fighter: MutableFighterState, wall: WallEntity): void {
   }
   const left = wall.center.x - wall.halfSize.x;
   const right = wall.center.x + wall.halfSize.x;
+  let hitFromLeft = false;
+  let hitFromRight = false;
   if (fighter.previousPosition.x <= left && fighter.position.x > left) {
     fighter.position.x = left;
+    hitFromLeft = fighter.velocity.x > 0;
     fighter.velocity.x = Math.min(0, fighter.velocity.x);
   } else if (fighter.previousPosition.x >= right && fighter.position.x < right) {
     fighter.position.x = right;
+    hitFromRight = fighter.velocity.x < 0;
     fighter.velocity.x = Math.max(0, fighter.velocity.x);
+  }
+  if (!hitFromLeft && !hitFromRight) return;
+
+  const impactKey = `impact:${fighter.id}`;
+  if (
+    fighter.hitstun > 0
+    && wall.impactDamage > 0
+    && !wall.contactLedger.includes(impactKey)
+  ) {
+    wall.contactLedger.push(impactKey);
+    fighter.health = Math.max(0, fighter.health - wall.impactDamage);
+    fighter.hitstun = Math.max(fighter.hitstun, wall.impactHitstun);
+    fighter.hitstop = Math.max(fighter.hitstop, 8);
+    events.push({
+      type: 'hit',
+      frame,
+      attackerId: wall.ownerId,
+      defenderId: fighter.id,
+      moveId: `wall:${wall.kind}`,
+      hitId: 'wallImpact',
+      damage: wall.impactDamage,
+      position: { ...wall.center },
+    });
+  }
+  if (fighter.hitstun > 0 && fighter.bounce.wallRemaining > 0) {
+    fighter.velocity.x = (hitFromLeft ? -1 : 1) * fighter.bounce.wallHorizontalSpeed;
+    fighter.velocity.y = fighter.bounce.wallVerticalSpeed;
+    fighter.grounded = fighter.velocity.y === 0;
+    fighter.bounce.wallRemaining -= 1;
+    fighter.hitstun = Math.max(fighter.hitstun, fighter.bounce.wallMinimumHitstun);
+    events.push({
+      type: 'wallBounce',
+      frame,
+      fighterId: fighter.id,
+      remaining: fighter.bounce.wallRemaining,
+    });
   }
 }
 

@@ -11,6 +11,7 @@
 .commandMove{display:grid;gap:8px;padding:10px;background:#0b1116;border:1px solid #2d3b45}
 .commandMove>div:first-child{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .commandMove strong{font-size:12px}
+.commandMove>p{margin:0;color:#91a0a9;font-size:10px;line-height:1.4}
 .commandMove code{overflow:hidden;color:#71808a;font-size:8px;text-overflow:ellipsis;white-space:nowrap}
 .commandSequence{display:flex;align-items:center;gap:4px;overflow-x:auto;padding:5px 2px 7px}
 .commandStep{display:flex;align-items:center;gap:4px;flex:0 0 auto}

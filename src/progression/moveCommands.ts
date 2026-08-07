@@ -19,6 +19,7 @@ export interface ProgressionMoveCommand {
   readonly name: string;
   readonly steps: readonly ProgressionCommandStep[];
   readonly notation: string;
+  readonly description?: string;
 }
 
 type RelativeDirection = 'up' | 'down' | 'forward' | 'back';
@@ -53,9 +54,10 @@ export function progressionMoveCommands(
     const steps = commandSteps(row, bindings);
     return [{
       moveId,
-      name: humanizeMoveId(moveId),
+      name: row.displayName ?? humanizeMoveId(moveId),
       steps,
       notation: steps.map(stepNotation).join(' → '),
+      ...(row.description === undefined ? {} : { description: row.description }),
     }];
   });
 }
@@ -64,6 +66,11 @@ function commandSteps(
   row: CommandRow,
   bindings: KeyBindings,
 ): readonly ProgressionCommandStep[] {
+  if (row.attackSequence !== undefined) {
+    return row.attackSequence.map((button) => ({
+      keys: [keyLabel(bindingFor(bindings, button))],
+    }));
+  }
   const isCharge = row.motion === 'chargeBackForward'
     || row.motion === 'chargeDownUp';
   const motion = MOTION_STEPS[row.motion].map((directions, index) => ({

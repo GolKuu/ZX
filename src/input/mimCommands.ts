@@ -4,6 +4,7 @@ import type { CommandRow } from './command.js';
 import { MIM_SUPER_COMMANDS } from './mim/superCommands.js';
 import { MIM_WALL_COMMANDS } from './mim/wallCommands.js';
 import { TAUNT_COMMAND } from './sharedCommands.js';
+import { withSequenceCommands } from './sequenceCommands.js';
 
 /**
  * MIM's command table: W A S D for space, J K I L for the body.
@@ -12,7 +13,7 @@ import { TAUNT_COMMAND } from './sharedCommands.js';
  * four-button ultimate, story chords, supers, wall grammar, two-button
  * techniques, then the four normals.
  */
-export const MIM_COMMANDS: readonly CommandRow[] = [
+const MIM_BASE_COMMANDS: readonly CommandRow[] = [
   ...MIM_SUPER_COMMANDS.slice(0, 1),
   ...MIM_WALL_COMMANDS,
   ...MIM_SUPER_COMMANDS.slice(1),
@@ -87,3 +88,5 @@ export const MIM_COMMANDS: readonly CommandRow[] = [
   { moveId: MIM_MOVE_IDS.capoeiraKick, motion: 'none', button: 'hp', stance: 'any' },
   { moveId: MIM_MOVE_IDS.spinningKick, motion: 'none', button: 'hk', stance: 'any' },
 ];
+
+export const MIM_COMMANDS = withSequenceCommands('mim', MIM_BASE_COMMANDS);

@@ -11,6 +11,7 @@ import {
 } from '../data/glitch/supers.js';
 import type { CommandContext, CommandRow } from './command.js';
 import { TAUNT_COMMAND } from './sharedCommands.js';
+import { withSequenceCommands } from './sequenceCommands.js';
 
 const grounded = ({ grounded: value }: { readonly grounded: boolean }) => value;
 const airborne = ({ grounded: value }: { readonly grounded: boolean }) => !value;
@@ -27,7 +28,7 @@ const ready = (
   )
 );
 
-export const GLITCH_COMMANDS: readonly CommandRow[] = [
+const GLITCH_BASE_COMMANDS: readonly CommandRow[] = [
   {
     moveId: X.fourthGod, motion: 'none', button: 'ultimate', stance: 'any',
     available: ({ ultimateReady }) => ultimateReady === true,
@@ -107,5 +108,7 @@ export const GLITCH_COMMANDS: readonly CommandRow[] = [
   { moveId: N.lowVectorSweep, motion: 'none', button: 'hp', stance: 'standing' },
   { moveId: N.breakpointAxe, motion: 'none', button: 'hk', stance: 'standing' },
 ];
+
+export const GLITCH_COMMANDS = withSequenceCommands('glitch', GLITCH_BASE_COMMANDS);
 
 export { GLITCH_LEVEL_ONE_COST, GLITCH_LEVEL_THREE_COST };

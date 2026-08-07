@@ -6,11 +6,12 @@ import {
 } from '../data/vorgh/index.js';
 import type { CommandRow } from './command.js';
 import { TAUNT_COMMAND } from './sharedCommands.js';
+import { withSequenceCommands } from './sequenceCommands.js';
 
 const rage = (minimum: number) => ({ gauge }: { readonly gauge: number }) =>
   gauge >= minimum;
 
-export const VORGH_COMMANDS: readonly CommandRow[] = [
+const VORGH_BASE_COMMANDS: readonly CommandRow[] = [
   {
     moveId: U.lastBeast, motion: 'none', button: 'ultimate', stance: 'any',
     available: ({ gauge, superMeter, ultimateReady }) =>
@@ -63,6 +64,8 @@ export const VORGH_COMMANDS: readonly CommandRow[] = [
   { moveId: N.huntingSweep, motion: 'none', button: 'hp', stance: 'standing' },
   { moveId: N.risingMaul, motion: 'none', button: 'hk', stance: 'any' },
 ];
+
+export const VORGH_COMMANDS = withSequenceCommands('vorgh', VORGH_BASE_COMMANDS);
 
 function technique(moveId: string, button: 'lp' | 'lk' | 'hp', chord: 'lk' | 'hk') {
   return {
