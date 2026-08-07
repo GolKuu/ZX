@@ -9,6 +9,7 @@ export default tseslint.config(
     ignores: [
       '.next/**',
       '.next-*/**',
+      '.tmp/**',
       'dist/**',
       'tmp/**',
       '.tools/**',

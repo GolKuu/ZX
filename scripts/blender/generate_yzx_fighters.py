@@ -41,13 +41,13 @@ BONES = {
     "neck": ((0, 0, 1.53), (0, 0, 1.65), "chest"),
     "head": ((0, 0, 1.64), (0, 0, 1.88), "neck"),
     "shoulderL": ((0, 0, 1.48), (-.22, 0, 1.48), "chest"),
-    "upperArmL": ((-.22, 0, 1.48), (-.52, 0, 1.34), "shoulderL"),
-    "forearmL": ((-.52, 0, 1.34), (-.72, 0, 1.12), "upperArmL"),
-    "handL": ((-.72, 0, 1.12), (-.82, 0, 1.04), "forearmL"),
+    "upperArmL": ((-.22, 0, 1.48), (-.34, 0, 1.18), "shoulderL"),
+    "forearmL": ((-.34, 0, 1.18), (-.37, 0, .91), "upperArmL"),
+    "handL": ((-.37, 0, .91), (-.37, -.01, .77), "forearmL"),
     "shoulderR": ((0, 0, 1.48), (.22, 0, 1.48), "chest"),
-    "upperArmR": ((.22, 0, 1.48), (.52, 0, 1.34), "shoulderR"),
-    "forearmR": ((.52, 0, 1.34), (.72, 0, 1.12), "upperArmR"),
-    "handR": ((.72, 0, 1.12), (.82, 0, 1.04), "forearmR"),
+    "upperArmR": ((.22, 0, 1.48), (.34, 0, 1.18), "shoulderR"),
+    "forearmR": ((.34, 0, 1.18), (.37, 0, .91), "upperArmR"),
+    "handR": ((.37, 0, .91), (.37, -.01, .77), "forearmR"),
     "thighL": ((-.12, 0, .94), (-.13, 0, .55), "hips"),
     "shinL": ((-.13, 0, .55), (-.13, 0, .16), "thighL"),
     "footL": ((-.13, 0, .16), (-.13, -.2, .07), "shinL"),
@@ -70,9 +70,12 @@ def material(name, colour, metallic=.25, roughness=.45, emission=None):
     mat.diffuse_color = colour
     mat.metallic = metallic
     mat.roughness = roughness
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    bsdf.inputs["Base Color"].default_value = colour
+    bsdf.inputs["Metallic"].default_value = metallic
+    bsdf.inputs["Roughness"].default_value = roughness
     if emission:
-        mat.use_nodes = True
-        bsdf = mat.node_tree.nodes.get("Principled BSDF")
         bsdf.inputs["Emission Color"].default_value = emission
         bsdf.inputs["Emission Strength"].default_value = 4.0
     return mat
@@ -154,6 +157,13 @@ def import_human_base(fid, cfg, rig, mat):
     bpy.context.view_layer.objects.active = obj
     obj.select_set(True)
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    # The official sculpt is intentionally dense.  At fighting-game camera
+    # distance ~2.4k vertices retain its human silhouette while keeping five
+    # preloadable web models inside the project's strict asset budget.
+    decimate = obj.modifiers.new("Web_LOD", "DECIMATE")
+    decimate.ratio = .16
+    bpy.ops.object.modifier_apply(modifier=decimate.name)
+    smooth(obj)
     obj.data.materials.clear()
     obj.data.materials.append(mat)
     obj.vertex_groups.clear()
@@ -190,12 +200,18 @@ def apply_and_bind(obj, rig, bone, mat):
     return obj
 
 
+def smooth(obj):
+    for polygon in obj.data.polygons:
+        polygon.use_smooth = True
+    return obj
+
+
 def ellipsoid(name, location, scale, rig, bone, mat, subdivisions=2):
     bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=subdivisions, radius=1, location=location)
     obj = bpy.context.object
     obj.name = name
     obj.scale = scale
-    return apply_and_bind(obj, rig, bone, mat)
+    return apply_and_bind(smooth(obj), rig, bone, mat)
 
 
 def box(name, location, scale, rig, bone, mat, bevel=.04, rotation=(0, 0, 0)):
@@ -218,21 +234,21 @@ def cylinder(name, start, end, radius, rig, bone, mat, vertices=12):
     obj.name = name
     obj.rotation_mode = "QUATERNION"
     obj.rotation_quaternion = direction.to_track_quat("Z", "Y")
-    return apply_and_bind(obj, rig, bone, mat)
+    return apply_and_bind(smooth(obj), rig, bone, mat)
 
 
 def cone(name, location, radius, depth, rotation, rig, bone, mat):
     bpy.ops.mesh.primitive_cone_add(vertices=8, radius1=radius, radius2=0, depth=depth, location=location, rotation=rotation)
     obj = bpy.context.object
     obj.name = name
-    return apply_and_bind(obj, rig, bone, mat)
+    return apply_and_bind(smooth(obj), rig, bone, mat)
 
 
 def torus(name, location, major, minor, rotation, rig, bone, mat):
     bpy.ops.mesh.primitive_torus_add(major_radius=major, minor_radius=minor, major_segments=20, minor_segments=6, location=location, rotation=rotation)
     obj = bpy.context.object
     obj.name = name
-    return apply_and_bind(obj, rig, bone, mat)
+    return apply_and_bind(smooth(obj), rig, bone, mat)
 
 
 def build_humanoid(fid, cfg, rig, mats):
@@ -243,12 +259,15 @@ def build_humanoid(fid, cfg, rig, mats):
     ellipsoid("Chest_Armor", (0, 0, 1.42*s), (.3*shoulders, .17*bulk, .25), rig, "chest", mats["armor"])
     for side in (-1, 1):
         suffix = "L" if side < 0 else "R"
-        x = side * .24 * shoulders
-        ellipsoid(f"Shoulder_Armor_{suffix}", (x, 0, 1.49*s), (.14*limb, .15*limb, .13*limb), rig, f"shoulder{suffix}", mats["armor"])
-        cylinder(f"UpperArm_Body_{suffix}", (x, 0, 1.43*s), (side*.5*shoulders, 0, 1.3*s), .085*limb, rig, f"upperArm{suffix}", mats["body"])
-        ellipsoid(f"Elbow_Joint_{suffix}", (side*.52*shoulders, 0, 1.28*s), (.09*limb, .09*limb, .09*limb), rig, f"forearm{suffix}", mats["armor"])
-        cylinder(f"Forearm_Armor_{suffix}", (side*.53*shoulders, 0, 1.26*s), (side*.72*shoulders, 0, 1.08*s), .09*limb, rig, f"forearm{suffix}", mats["armor"])
-        ellipsoid(f"Hand_Skin_{suffix}", (side*.78*shoulders, -.01, 1.02*s), (.09*limb, .07*limb, .11*limb), rig, f"hand{suffix}", mats["skin"])
+        upper_start = rig_point(BONES[f"upperArm{suffix}"][0], f"upperArm{suffix}", cfg)
+        upper_end = rig_point(BONES[f"upperArm{suffix}"][1], f"upperArm{suffix}", cfg)
+        forearm_end = rig_point(BONES[f"forearm{suffix}"][1], f"forearm{suffix}", cfg)
+        hand_end = rig_point(BONES[f"hand{suffix}"][1], f"hand{suffix}", cfg)
+        ellipsoid(f"Shoulder_Armor_{suffix}", upper_start, (.14*limb, .15*limb, .13*limb), rig, f"shoulder{suffix}", mats["armor"])
+        cylinder(f"UpperArm_Body_{suffix}", upper_start, upper_end, .085*limb, rig, f"upperArm{suffix}", mats["body"])
+        ellipsoid(f"Elbow_Joint_{suffix}", upper_end, (.09*limb, .09*limb, .09*limb), rig, f"forearm{suffix}", mats["armor"])
+        cylinder(f"Forearm_Armor_{suffix}", upper_end, forearm_end, .09*limb, rig, f"forearm{suffix}", mats["armor"])
+        ellipsoid(f"Hand_Skin_{suffix}", (forearm_end + hand_end) / 2, (.09*limb, .07*limb, .11*limb), rig, f"hand{suffix}", mats["skin"])
         leg_x = side * .12 * bulk
         cylinder(f"Thigh_Armor_{suffix}", (leg_x, 0, .9*s), (side*.13*bulk, 0, .58*s), .105*limb, rig, f"thigh{suffix}", mats["body"])
         ellipsoid(f"Knee_Armor_{suffix}", (side*.13*bulk, -.035, .54*s), (.105*limb, .11*limb, .09*limb), rig, f"shin{suffix}", mats["armor"])
@@ -289,7 +308,7 @@ def add_character_details(fid, cfg, rig, m):
             for i in range(3):
                 cone(f"Shoulder_Spike_{side}_{i}", (side*(.3+i*.045)*sh, .01, (1.56-i*.025)*s), .035, .2-i*.02, (0, side*-.8, 0), rig, "shoulderL" if side < 0 else "shoulderR", m["armor"])
             for i in range(4):
-                cone(f"Hand_Claw_{side}_{i}", (side*(.79+i*.018)*sh, -.07+i*.025, 1.0*s), .014, .13, (math.pi/2, 0, side*.12), rig, "handL" if side < 0 else "handR", m["hair"])
+                cone(f"Hand_Claw_{side}_{i}", (side*(.37+i*.012)*sh, -.07+i*.018, .8*s), .014, .13, (math.pi/2, 0, side*.12), rig, "handL" if side < 0 else "handR", m["hair"])
         for i in range(4):
             cone(f"Back_Spike_{i}", (0, .14, (1.5-i*.14)*s), .045, .22-i*.025, (math.pi/2, 0, 0), rig, "chest" if i < 2 else "spine", m["armor"])
     elif fid == "titan":
@@ -299,10 +318,35 @@ def add_character_details(fid, cfg, rig, m):
         for side in (-1, 1):
             suffix = "L" if side < 0 else "R"
             box(f"Titan_Shoulder_Block_{suffix}", (side*.32*sh, 0, 1.5*s), (.2*sh, .19, .16), rig, f"shoulder{suffix}", m["armor"], .04)
-            box(f"Titan_Forearm_Block_{suffix}", (side*.63*sh, 0, 1.17*s), (.14, .14, .2), rig, f"forearm{suffix}", m["armor"], .035)
-            cylinder(f"Titan_Piston_{suffix}", (side*.23*sh, .14, 1.38*s), (side*.49*sh, .12, 1.22*s), .024, rig, f"upperArm{suffix}", m["eye"], 8)
+            box(f"Titan_Forearm_Block_{suffix}", (side*.355*sh, 0, 1.04*s), (.14, .14, .2), rig, f"forearm{suffix}", m["armor"], .035)
+            cylinder(f"Titan_Piston_{suffix}", (side*.23*sh, .14, 1.4*s), (side*.33*sh, .12, 1.2*s), .024, rig, f"upperArm{suffix}", m["eye"], 8)
         for x in (-.12, .12):
             box(f"Titan_Chest_Marking_{x}", (x, -.18, 1.55*s), (.055, .01, .018), rig, "chest", m["hair"], .002)
+
+
+def merge_surface_batches():
+    """Collapse dozens of authored pieces into one skinned draw per material."""
+    meshes = [obj for obj in bpy.context.scene.objects if obj.type == "MESH"]
+    for obj in meshes:
+        bpy.context.view_layer.objects.active = obj
+        obj.select_set(True)
+        for modifier in list(obj.modifiers):
+            if modifier.type != "ARMATURE":
+                bpy.ops.object.modifier_apply(modifier=modifier.name)
+        obj.select_set(False)
+    batches = {}
+    for obj in meshes:
+        key = obj.data.materials[0].name if obj.data.materials else "Body_Material"
+        batches.setdefault(key, []).append(obj)
+    for material_name, objects in batches.items():
+        if len(objects) < 2:
+            continue
+        bpy.ops.object.select_all(action="DESELECT")
+        for obj in objects:
+            obj.select_set(True)
+        bpy.context.view_layer.objects.active = objects[0]
+        bpy.ops.object.join()
+        objects[0].name = f"Merged_{material_name}"
 
 
 def export_fighter(fid):
@@ -312,6 +356,7 @@ def export_fighter(fid):
     rig = create_rig(cfg)
     import_human_base(fid, cfg, rig, mats["under"] if fid != "lucky" else mats["skin"])
     build_humanoid(fid, cfg, rig, mats)
+    merge_surface_batches()
     bpy.ops.object.select_all(action="SELECT")
     output = OUTPUT / f"yzx-{fid}.glb"
     bpy.ops.export_scene.gltf(

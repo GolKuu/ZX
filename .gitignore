@@ -24,7 +24,8 @@ vitest.config.js
 vitest.config.d.ts
 
 # Licensed character assets — see docs/ASSET-CCU-820-model-pipeline.md
-public/models/
+public/models/*
+!public/models/yzx-*.glb
 
 # Render-critique screenshots (scripts/shoot.mjs)
 .shots/

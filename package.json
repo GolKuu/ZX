@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "prebuild": "npm run lint && npm run typecheck && npm test && npm run assets:check",
+    "prebuild": "npm run lint && npm run typecheck && npm test && npm run assets:check && npm run models:check",
     "postbuild": "npm run bundle:check",
     "analyze": "node scripts/analyze-bundle.mjs",
     "assets:check": "node scripts/check-encoding.mjs && node scripts/check-assets.mjs && node scripts/check-sprite-quality.mjs && node scripts/check-reference-atlas-quality.mjs",

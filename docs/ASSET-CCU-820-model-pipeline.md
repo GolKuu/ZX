@@ -1,13 +1,14 @@
 # ASSET-CCU-820 — Ready-made models, our own animation
 
-**Decision:** character *meshes* are acquired, not authored. Character *motion*
-is authored, not acquired.
+**Current production decision:** the five YZX meshes are generated and rigged
+in Blender by `scripts/blender/generate_yzx_fighters.py`. Their human topology
+starts from Blender Studio's free Human Base Meshes bundle; all costumes,
+proportions, materials and the canonical rig are authored for this project.
+Character motion remains simulation-authored rather than clip-authored.
 
-This reverses the plan in `CHR-CCU-810` §6–§8, which assumed we would model and
-rig from scratch. That document remains valid as the art contract — it describes
-what a good model for this game looks like, and it is the checklist you measure
-a candidate asset against — but stages 6 and 7 are now a purchasing decision
-rather than a production one.
+`CHR-CCU-810` remains the art contract. The Blender generator now implements its
+mesh and rig stages reproducibly, while the checked-in GLBs keep production
+builds independent from a local Blender installation.
 
 **Why the motion stays ours.** A downloaded clip owns its own timeline. The
 simulation owns the timeline here (rule R4), and move lengths come from
@@ -145,9 +146,9 @@ depends on the exact silhouette and will quietly ruin it.
 2. Add the URL in `src/data/characterModels.ts`.
 3. Reload. The console reports any unresolved bones by name.
 
-`public/models/` is untracked — the assets are licensed downloads, not source.
-Add it to `.gitignore` and keep a note of where each file came from and under
-what licence.
+Third-party files in `public/models/` remain untracked. Original generated files
+matching `public/models/yzx-*.glb` are tracked so Vercel receives them. The base
+bundle comes from Blender Foundation's official Human Base Meshes download.
 
 ---
 
