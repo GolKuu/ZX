@@ -42,10 +42,10 @@ export function HomeArtwork() {
         <span>ARENA // NIGHT FRACTURE</span>
         <b>5 FIGHTERS ONLINE</b>
       </header>
-      <a className={styles.siteEntry} href="https://testiskander.vercel.app/" target="_blank" rel="noreferrer">
-        <span className={styles.siteEntryMark} aria-hidden="true">↗</span>
-        <span>PLAY OCEAN DEPTHS</span>
-      </a>
+      <Link className={styles.siteEntry} href="/play">
+        <span className={styles.siteEntryMark} aria-hidden="true">→</span>
+        <span>ENTER LIVE ARENA</span>
+      </Link>
       <div className={styles.fighters}>
         {CHARACTER_ROSTER.map((fighter, index) => (
           <Link className={styles.fighter} data-character={fighter.id} data-featured={index === 2} href="/play" key={fighter.id}>

@@ -135,7 +135,7 @@
     linear-gradient(105deg, transparent 0 58%, rgb(255 255 255 / 20%) 58.5% 60%, transparent 60.5%),
     var(--color-link-dark);
   border: 1px solid #eafcff;
-  box-shadow: 6px 6px 0 rgb(215 174 85 / 72%);
+  box-shadow: 7px 7px 0 rgb(215 174 85 / 82%), 0 0 30px rgb(134 197 211 / 16%);
   clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
   font-family: "Courier New", ui-monospace, monospace;
   font-weight: 700;
