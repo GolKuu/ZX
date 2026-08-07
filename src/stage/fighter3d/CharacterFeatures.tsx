@@ -1,200 +1,94 @@
 'use client';
 
-import { DoubleSide } from 'three';
-import { hasFeature, type CharacterBuild } from './characterBuild';
+import type { CharacterBuild } from './characterBuild';
 import type { FighterSurfaces } from './fighter3dMaterials';
 
-/**
- * The pieces that make a body into a *character*.
- *
- * The base skeleton is deliberately generic — every fighter is the same capsules
- * — because identity at fighting-game distances comes almost entirely from what
- * sticks out past the silhouette. Mim's mask, Vorgh's horns, Titan's pauldrons
- * and Lucky's coat-tails are all read before a single colour is; that is why
- * they are modelled and the costume detail is not.
- *
- * Everything here hangs off the torso joint, so it swings with the body for
- * free rather than needing its own animation.
- */
-export function CharacterFeatures({
-  build,
-  shoulder,
-  surfaces,
-}: {
-  readonly build: CharacterBuild;
-  readonly shoulder: number;
-  readonly surfaces: FighterSurfaces;
-}) {
-  return (
-    <>
-      {hasFeature(build, 'mask') ? <Mask surfaces={surfaces} /> : null}
-      {hasFeature(build, 'visor') ? <Visor surfaces={surfaces} /> : null}
-      {hasFeature(build, 'horns') ? <Horns surfaces={surfaces} /> : null}
-      {hasFeature(build, 'hair') ? <Hair surfaces={surfaces} /> : null}
-      {hasFeature(build, 'pauldrons') ? (
-        <Pauldrons shoulder={shoulder} surfaces={surfaces} />
-      ) : null}
-      {hasFeature(build, 'spikes') ? (
-        <Spikes shoulder={shoulder} surfaces={surfaces} />
-      ) : null}
-      {hasFeature(build, 'cape') ? <Cape shoulder={shoulder} surfaces={surfaces} /> : null}
-      {hasFeature(build, 'coat') ? <Coat shoulder={shoulder} surfaces={surfaces} /> : null}
-    </>
-  );
+type Props = { readonly build: CharacterBuild; readonly shoulder: number; readonly surfaces: FighterSurfaces };
+
+/** Character-only geometry: authored for silhouette first, surface detail second. */
+export function CharacterFeatures({ build, shoulder, surfaces }: Props) {
+  switch (build.id) {
+    case 'titan': return <Titan shoulder={shoulder} surfaces={surfaces} />;
+    case 'mim': return <Mim shoulder={shoulder} surfaces={surfaces} />;
+    case 'glitch': return <Glitch shoulder={shoulder} surfaces={surfaces} />;
+    case 'lucky': return <Lucky shoulder={shoulder} surfaces={surfaces} />;
+    case 'vorgh': return <Vorgh shoulder={shoulder} surfaces={surfaces} />;
+  }
 }
 
-/** MIM: a smooth bone face with two dark hollows where the eyes should be. */
-function Mask({ surfaces }: { readonly surfaces: FighterSurfaces }) {
-  return (
-    <group position={[0, 0.62, 0.07]}>
-      <mesh castShadow scale={[1, 1.2, 0.7]}>
-        <sphereGeometry args={[0.105, 14, 12]} />
-        <primitive attach="material" object={surfaces.plate} />
-      </mesh>
-      {[-0.042, 0.042].map((x) => (
-        <mesh key={x} position={[x, 0.02, 0.058]} scale={[1, 1.5, 1]}>
-          <sphereGeometry args={[0.021, 8, 6]} />
-          <primitive attach="material" object={surfaces.under} />
-        </mesh>
-      ))}
+function Titan({ shoulder, surfaces }: Omit<Props, 'build'>) {
+  return <group>
+    {[-1, 1].map(side => <group key={side} position={[shoulder * 1.03 * side, .42, 0]} rotation={[0, 0, side * -.18]}>
+      <mesh castShadow><boxGeometry args={[shoulder * .78, .2, .29]} /><primitive attach="material" object={surfaces.plate} /></mesh>
+      <mesh castShadow position={[side * .025, .08, .01]}><boxGeometry args={[shoulder * .52, .07, .31]} /><primitive attach="material" object={surfaces.trim} /></mesh>
+      <mesh position={[0, .015, .16]}><boxGeometry args={[shoulder * .48, .035, .012]} /><primitive attach="material" object={surfaces.glow} /></mesh>
+    </group>)}
+    <mesh position={[0, .31, shoulder * .82]}><cylinderGeometry args={[.095, .095, .035, 20]} /><primitive attach="material" object={surfaces.trim} /></mesh>
+    <mesh position={[0, .31, shoulder * .85]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[.058, .015, 8, 20]} /><primitive attach="material" object={surfaces.glow} /></mesh>
+    {[-1, 1].map(side => <group key={side} position={[side * shoulder * .62, .17, -.13]} rotation={[0, 0, side * .12]}>
+      <mesh castShadow><cylinderGeometry args={[.025, .025, .32, 8]} /><primitive attach="material" object={surfaces.trim} /></mesh>
+      <mesh position={[0, -.12, 0]}><sphereGeometry args={[.033, 8, 6]} /><primitive attach="material" object={surfaces.glow} /></mesh>
+    </group>)}
+    {[0, 1, 2].map(i => <mesh key={i} castShadow position={[0, .5 - i * .16, -shoulder * .88]} rotation={[1.15, 0, 0]}>
+      <coneGeometry args={[.035, .16 - i * .02, 6]} /><primitive attach="material" object={surfaces.plate} />
+    </mesh>)}
+  </group>;
+}
+
+function Mim({ shoulder, surfaces }: Omit<Props, 'build'>) {
+  return <group>
+    <group position={[0, .62, .07]}>
+      <mesh castShadow scale={[.92, 1.2, .72]}><sphereGeometry args={[.11, 18, 14]} /><primitive attach="material" object={surfaces.skin} /></mesh>
+      <mesh position={[0, .025, .075]}><boxGeometry args={[.145, .018, .018]} /><primitive attach="material" object={surfaces.glow} /></mesh>
+      <mesh castShadow position={[0, -.055, .07]} scale={[1, .4, 1]}><sphereGeometry args={[.075, 12, 8]} /><primitive attach="material" object={surfaces.plate} /></mesh>
     </group>
-  );
+    {[-1, 1].map(side => <group key={side}>
+      <mesh castShadow position={[side * shoulder * .98, .41, 0]} rotation={[0, 0, side * -.2]}><sphereGeometry args={[shoulder * .45, 12, 8, 0, Math.PI * 2, 0, Math.PI * .55]} /><primitive attach="material" object={surfaces.skin} /></mesh>
+      <mesh position={[side * shoulder * .83, .31, shoulder * .72]} rotation={[0, 0, side * .22]}><boxGeometry args={[.018, .29, .012]} /><primitive attach="material" object={surfaces.glow} /></mesh>
+      <mesh castShadow position={[side * shoulder * .46, -.17, -.09]} rotation={[.12, 0, side * .08]}><boxGeometry args={[shoulder * .72, .72, .025]} /><primitive attach="material" object={surfaces.under} /></mesh>
+    </group>)}
+    {([[-.1, .06], [-.035, .09], [.035, .09], [.1, .06]] as const).map(([x, z], i) => <mesh key={i} position={[x, .03, z]} rotation={[0, 0, x * 2]}><cylinderGeometry args={[.008, .004, .42, 6]} /><primitive attach="material" object={surfaces.glow} /></mesh>)}
+  </group>;
 }
 
-/** GLITCH: a single horizontal light band across the face. */
-function Visor({ surfaces }: { readonly surfaces: FighterSurfaces }) {
-  return (
-    <mesh position={[0, 0.635, 0.088]}>
-      <boxGeometry args={[0.15, 0.032, 0.05]} />
-      <primitive attach="material" object={surfaces.glow} />
-    </mesh>
-  );
+function Glitch({ shoulder, surfaces }: Omit<Props, 'build'>) {
+  return <group>
+    <mesh castShadow position={[0, .62, .025]} scale={[1, .92, .92]}><boxGeometry args={[.19, .19, .18]} /><primitive attach="material" object={surfaces.plate} /></mesh>
+    <mesh position={[0, .64, .123]}><boxGeometry args={[.17, .035, .018]} /><primitive attach="material" object={surfaces.glow} /></mesh>
+    {[-1, 1].map(side => <group key={side} position={[side * shoulder * 1.06, .43, 0]} rotation={[0, 0, side * -.25]}>
+      <mesh castShadow><octahedronGeometry args={[shoulder * .54, 0]} /><primitive attach="material" object={surfaces.plate} /></mesh>
+      <mesh position={[0, .02, shoulder * .42]}><boxGeometry args={[shoulder * .62, .025, .015]} /><primitive attach="material" object={surfaces.glow} /></mesh>
+    </group>)}
+    {[-1, 1].map(side => <mesh key={side} castShadow position={[side * .13, .17, -.18]} rotation={[.28, 0, side * -.18]}><boxGeometry args={[.07, .4, .025]} /><primitive attach="material" object={surfaces.trim} /></mesh>)}
+    {[0, 1, 2].map(i => <mesh key={i} position={[-.11 + i * .11, .28 - i * .055, shoulder * .79]} rotation={[0, 0, i * .35]}><boxGeometry args={[.045, .018, .012]} /><primitive attach="material" object={surfaces.glow} /></mesh>)}
+  </group>;
 }
 
-/** VORGH: a swept pair, the widest thing on his silhouette. */
-function Horns({ surfaces }: { readonly surfaces: FighterSurfaces }) {
-  return (
-    <>
-      {[-1, 1].map((side) => (
-        <mesh
-          castShadow
-          key={side}
-          position={[0.075 * side, 0.7, -0.01]}
-          rotation={[-0.4, 0, side * -0.55]}
-        >
-          <coneGeometry args={[0.032, 0.24, 6]} />
-          <primitive attach="material" object={surfaces.plate} />
-        </mesh>
-      ))}
-    </>
-  );
+function Lucky({ shoulder, surfaces }: Omit<Props, 'build'>) {
+  return <group>
+    {[-2, -1, 0, 1, 2].map(i => <mesh key={i} castShadow position={[i * .035, .71 + Math.abs(i) * .005, -.025]} rotation={[.35 + i * .04, 0, -i * .2]}><coneGeometry args={[.032, .2 - Math.abs(i) * .015, 7]} /><primitive attach="material" object={surfaces.trim} /></mesh>)}
+    {[-1, 1].map(side => <mesh key={side} position={[side * .048, .64, .104]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[.035, .006, 8, 16]} /><primitive attach="material" object={surfaces.trim} /></mesh>)}
+    <mesh position={[0, .64, .105]}><boxGeometry args={[.035, .006, .01]} /><primitive attach="material" object={surfaces.trim} /></mesh>
+    {[-1, 1].map(side => <group key={side}>
+      <mesh castShadow position={[side * shoulder * .54, .15, -.075]} rotation={[.1, 0, side * .055]}><boxGeometry args={[shoulder * .95, .91, .035]} /><primitive attach="material" object={surfaces.body} /></mesh>
+      <mesh position={[side * shoulder * .28, .31, shoulder * .74]} rotation={[0, 0, side * .43]}><boxGeometry args={[.035, .38, .025]} /><primitive attach="material" object={surfaces.trim} /></mesh>
+    </group>)}
+    {[.21, .11, .01].map(y => <mesh key={y} position={[.065, y, shoulder * .77]}><sphereGeometry args={[.015, 8, 6]} /><primitive attach="material" object={surfaces.trim} /></mesh>)}
+    <mesh position={[-.12, .05, shoulder * .78]} rotation={[0, 0, Math.PI / 4]}><boxGeometry args={[.055, .055, .012]} /><primitive attach="material" object={surfaces.glow} /></mesh>
+  </group>;
 }
 
-/** LUCKY: a swept-back crest, read as hair rather than modelled as strands. */
-function Hair({ surfaces }: { readonly surfaces: FighterSurfaces }) {
-  return (
-    <mesh castShadow position={[0, 0.69, -0.03]} rotation={[0.34, 0, 0]}>
-      <coneGeometry args={[0.1, 0.24, 7]} />
-      <primitive attach="material" object={surfaces.under} />
-    </mesh>
-  );
-}
-
-/** GLITCH and TITAN: shoulder armour, the industrial read. */
-function Pauldrons({
-  shoulder,
-  surfaces,
-}: {
-  readonly shoulder: number;
-  readonly surfaces: FighterSurfaces;
-}) {
-  return (
-    <>
-      {[-1, 1].map((side) => (
-        <mesh
-          castShadow
-          key={side}
-          position={[shoulder * 1.06 * side, 0.42, 0]}
-          receiveShadow
-          rotation={[0, 0, side * -0.24]}
-        >
-          <sphereGeometry args={[shoulder * 0.62, 10, 8, 0, Math.PI * 2, 0, Math.PI * 0.62]} />
-          <primitive attach="material" object={surfaces.plate} />
-        </mesh>
-      ))}
-    </>
-  );
-}
-
-/** VORGH and TITAN: a back ridge. Only visible in profile, which is the point. */
-function Spikes({
-  shoulder,
-  surfaces,
-}: {
-  readonly shoulder: number;
-  readonly surfaces: FighterSurfaces;
-}) {
-  return (
-    <>
-      {[0, 1, 2].map((index) => (
-        <mesh
-          castShadow
-          key={index}
-          position={[0, 0.46 - index * 0.13, -shoulder * 0.78]}
-          rotation={[0.9, 0, 0]}
-        >
-          <coneGeometry args={[0.028, 0.15 - index * 0.02, 5]} />
-          <primitive attach="material" object={surfaces.plate} />
-        </mesh>
-      ))}
-    </>
-  );
-}
-
-/** MIM: a hanging sheet. Double-sided, because it is seen from both edges. */
-function Cape({
-  shoulder,
-  surfaces,
-}: {
-  readonly shoulder: number;
-  readonly surfaces: FighterSurfaces;
-}) {
-  return (
-    <mesh position={[0, 0.14, -shoulder * 0.92]} rotation={[0.12, 0, 0]}>
-      <planeGeometry args={[shoulder * 2.1, 0.86]} />
-      <meshStandardMaterial
-        color={surfaces.under.color}
-        roughness={0.92}
-        side={DoubleSide}
-      />
-    </mesh>
-  );
-}
-
-/** LUCKY: split coat-tails, so the shape moves like cloth without simulating it. */
-function Coat({
-  shoulder,
-  surfaces,
-}: {
-  readonly shoulder: number;
-  readonly surfaces: FighterSurfaces;
-}) {
-  return (
-    <>
-      {[-1, 1].map((side) => (
-        <mesh
-          key={side}
-          position={[shoulder * 0.5 * side, -0.12, -0.04]}
-          rotation={[0.16, 0, side * 0.08]}
-        >
-          <planeGeometry args={[shoulder * 0.98, 0.72]} />
-          <meshStandardMaterial
-            color={surfaces.body.color}
-            roughness={0.88}
-            side={DoubleSide}
-          />
-        </mesh>
-      ))}
-    </>
-  );
+function Vorgh({ shoulder, surfaces }: Omit<Props, 'build'>) {
+  return <group>
+    <mesh castShadow position={[0, .58, .095]} scale={[1.15, .7, 1.45]}><sphereGeometry args={[.105, 14, 10]} /><primitive attach="material" object={surfaces.skin} /></mesh>
+    <mesh castShadow position={[0, .53, .17]} scale={[1.1, .42, 1]}><boxGeometry args={[.2, .12, .16]} /><primitive attach="material" object={surfaces.plate} /></mesh>
+    {[-1, 1].map(side => <group key={side}>
+      <mesh castShadow position={[side * .075, .7, -.01]} rotation={[-.42, 0, side * -.58]}><coneGeometry args={[.038, .28, 7]} /><primitive attach="material" object={surfaces.plate} /></mesh>
+      <mesh castShadow position={[side * shoulder, .41, 0]} scale={[1.25, .8, 1]}><sphereGeometry args={[shoulder * .48, 12, 8]} /><primitive attach="material" object={surfaces.plate} /></mesh>
+      {[0, 1, 2].map(i => <mesh key={i} castShadow position={[side * (.055 + i * .035), .49, .25]} rotation={[Math.PI / 2, 0, side * .08]}><coneGeometry args={[.012, .07, 5]} /><primitive attach="material" object={surfaces.skin} /></mesh>)}
+    </group>)}
+    {[-.1, -.035, .035, .1].map(x => <mesh key={x} position={[x, .54, .255]} rotation={[Math.PI, 0, 0]}><coneGeometry args={[.012, .065, 5]} /><primitive attach="material" object={surfaces.skin} /></mesh>)}
+    {[0, 1, 2, 3].map(i => <mesh key={i} castShadow position={[0, .49 - i * .14, -shoulder * .9]} rotation={[1.05, 0, 0]}><coneGeometry args={[.035, .2 - i * .025, 6]} /><primitive attach="material" object={surfaces.plate} /></mesh>)}
+    {[-1, 1].map(side => <mesh key={side} position={[side * .11, .21, shoulder * .78]} rotation={[0, 0, side * .28]}><boxGeometry args={[.018, .25, .015]} /><primitive attach="material" object={surfaces.glow} /></mesh>)}
+  </group>;
 }

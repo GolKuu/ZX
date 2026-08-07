@@ -20,7 +20,7 @@ import { GroundDust } from './impact/GroundDust';
 import { ImpactFlash } from './impact/ImpactFlash';
 import { ImpactShockwave } from './impact/ImpactShockwave';
 import { LazyPostEffects } from './LazyPostEffects';
-import { PhotoSpriteFighter } from './photoSprite/PhotoSpriteFighter';
+import { KombatFighter } from './fighter3d/KombatFighter';
 import { SpeedLines } from './SpeedLines';
 import { RenderDebugBridge } from './RenderDebugBridge';
 import { StageLighting } from './StageLighting';
@@ -124,8 +124,7 @@ function primitiveFighter(
   characterId: CharacterId,
   fighterId: 'p1' | 'p2',
 ) {
-  // Use the existing high-resolution 2D fighter pipeline. It reads the same
-  // authoritative combat runtime, so attacks, hit reactions, facing and
-  // knockdowns remain synchronized with the simulation.
-  return <PhotoSpriteFighter fighterId={fighterId} kind={characterId} />;
+  // The procedural rig is always available and follows the authoritative
+  // combat runtime for attacks, hit reactions, facing and knockdowns.
+  return <KombatFighter characterId={characterId} fighterId={fighterId} />;
 }

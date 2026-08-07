@@ -26,6 +26,10 @@ export interface FighterSurfaces {
   readonly plate: MeshStandardMaterial;
   /** Deep shadow parts: under-suit, cloth, hollows. */
   readonly under: MeshStandardMaterial;
+  /** Skin, ceramic shells and other non-metal hero surfaces. */
+  readonly skin: MeshStandardMaterial;
+  /** Polished costume edging and small mechanical hardware. */
+  readonly trim: MeshStandardMaterial;
   /** The character's own colour, emissive. Visors, trim, eyes. */
   readonly glow: MeshBasicMaterial;
   /** Back-faced hull that draws a dark edge around the silhouette. */
@@ -61,6 +65,20 @@ export function useFighterSurfaces(characterId: CharacterId): FighterSurfaces {
         metalness: 0.08,
         dithering: true,
       }),
+      skin: new MeshStandardMaterial({
+        color: new Color(palette.skin.lit),
+        roughness: characterId === 'mim' ? 0.22 : 0.58,
+        metalness: characterId === 'mim' ? 0.2 : 0.02,
+        dithering: true,
+      }),
+      trim: new MeshStandardMaterial({
+        color: new Color(characterId === 'lucky' ? '#d5a83f' : palette.body.lit),
+        emissive: new Color(build.accent),
+        emissiveIntensity: 0.18,
+        roughness: 0.24,
+        metalness: 0.78,
+        dithering: true,
+      }),
       glow: new MeshBasicMaterial({
         color: new Color(build.accent),
         toneMapped: false,
@@ -80,6 +98,8 @@ export function useFighterSurfaces(characterId: CharacterId): FighterSurfaces {
       surfaces.body.dispose();
       surfaces.plate.dispose();
       surfaces.under.dispose();
+      surfaces.skin.dispose();
+      surfaces.trim.dispose();
       surfaces.glow.dispose();
       surfaces.outline.dispose();
     },
