@@ -75,7 +75,12 @@
   background-position: 0 0;
   background-repeat: no-repeat;
   background-size: 400% 400%;
-  image-rendering: pixelated;
+  /* Not pixelated. The source here is a painted 4x4 character atlas, not
+     pixel art, and this element displays one cel far larger than its 256px
+     source. Nearest-neighbour on that upscale does not preserve anything --
+     it manufactures the staircase, which is precisely the "pixel art" read
+     this artwork is meant to be past. */
+  image-rendering: auto;
   filter:
     contrast(1.14)
     saturate(1.12)
@@ -105,7 +110,12 @@
   background-position: 0 0;
   background-repeat: no-repeat;
   background-size: 400% 400%;
-  image-rendering: pixelated;
+  /* Not pixelated. The source here is a painted 4x4 character atlas, not
+     pixel art, and this element displays one cel far larger than its 256px
+     source. Nearest-neighbour on that upscale does not preserve anything --
+     it manufactures the staircase, which is precisely the "pixel art" read
+     this artwork is meant to be past. */
+  image-rendering: auto;
   filter: grayscale(.45) brightness(.54) saturate(.66) drop-shadow(0 0 5px #071716);
 }
 

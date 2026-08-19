@@ -65,3 +65,27 @@ const ATTACK_SEQUENCES = {
 export function photoAttackSequence(moveId: string): readonly number[] {
   return ATTACK_SEQUENCES[photoAttackKind(moveId)];
 }
+
+/**
+ * The cels a blow actually lands on, plus the hurt reaction.
+ *
+ * These are the frames that must never be cross-faded into. A fighting game's
+ * whole sense of weight is that contact is *instantaneous*: the strike frame
+ * has to appear complete on the frame it arrives, at the same moment as the
+ * hitstop and the flash. Fading it in over even two frames means the picture
+ * softens exactly when the impact is supposed to be hardest, and the hit reads
+ * as mushy however good the rest of the timing is.
+ *
+ * Everything else -- windups, recoveries, walks, guards -- is a pose the body
+ * travels through rather than arrives at, and those blend.
+ */
+export const SNAP_FRAMES: ReadonlySet<number> = new Set([
+  LEAD_HAND_CONTACT,
+  REAR_HAND_CONTACT,
+  SWEEP_CONTACT,
+  LEAD_LEG_CONTACT,
+  REAR_LEG_CONTACT,
+  UPPERCUT_CONTACT,
+  // Hurt reaction: the same argument from the receiving end.
+  frame(1, 3),
+]);

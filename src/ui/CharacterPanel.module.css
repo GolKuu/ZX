@@ -109,7 +109,12 @@
   background-repeat: no-repeat;
   background-position: left top;
   background-size: 600% 800%;
-  image-rendering: pixelated;
+  /* Not pixelated. The source here is a painted 4x4 character atlas, not
+     pixel art, and this element displays one cel far larger than its 256px
+     source. Nearest-neighbour on that upscale does not preserve anything --
+     it manufactures the staircase, which is precisely the "pixel art" read
+     this artwork is meant to be past. */
+  image-rendering: auto;
   filter: drop-shadow(0 1cqw 1.5cqw rgb(0 0 0 / 75%));
   transform: none;
 }
@@ -231,12 +236,32 @@
   background-size: 400% 400%;
   box-shadow: none;
   filter: drop-shadow(0 1cqw 1.5cqw rgb(0 0 0 / 75%));
-  image-rendering: pixelated;
+  /* Not pixelated. The source here is a painted 4x4 character atlas, not
+     pixel art, and this element displays one cel far larger than its 256px
+     source. Nearest-neighbour on that upscale does not preserve anything --
+     it manufactures the staircase, which is precisely the "pixel art" read
+     this artwork is meant to be past. */
+  image-rendering: auto;
   transform: none;
 }
 
-.panel[data-character='mim'] .portrait i { background-image: url('/sprites/reference-fighters/mim-atlas.webp'); }
-.panel[data-character='glitch'] .portrait i { background-image: url('/sprites/reference-fighters/glitch-atlas.webp'); }
-.panel[data-character='lucky'] .portrait i { background-image: url('/sprites/reference-fighters/lucky-atlas.webp'); }
-.panel[data-character='vorgh'] .portrait i { background-image: url('/sprites/reference-fighters/vorgh-atlas.webp'); }
-.panel[data-character='titan'] .portrait i { background-image: url('/sprites/reference-fighters/titan-atlas.webp'); }
+.panel[data-character='mim'] .portrait i { background-image: image-set(
+  url('/sprites/reference-fighters/mim-atlas-hd.avif') type('image/avif'),
+  url('/sprites/reference-fighters/mim-atlas.webp') type('image/webp')
+); }
+.panel[data-character='glitch'] .portrait i { background-image: image-set(
+  url('/sprites/reference-fighters/glitch-atlas-hd.avif') type('image/avif'),
+  url('/sprites/reference-fighters/glitch-atlas.webp') type('image/webp')
+); }
+.panel[data-character='lucky'] .portrait i { background-image: image-set(
+  url('/sprites/reference-fighters/lucky-atlas-hd.avif') type('image/avif'),
+  url('/sprites/reference-fighters/lucky-atlas.webp') type('image/webp')
+); }
+.panel[data-character='vorgh'] .portrait i { background-image: image-set(
+  url('/sprites/reference-fighters/vorgh-atlas-hd.avif') type('image/avif'),
+  url('/sprites/reference-fighters/vorgh-atlas.webp') type('image/webp')
+); }
+.panel[data-character='titan'] .portrait i { background-image: image-set(
+  url('/sprites/reference-fighters/titan-atlas-hd.avif') type('image/avif'),
+  url('/sprites/reference-fighters/titan-atlas.webp') type('image/webp')
+); }

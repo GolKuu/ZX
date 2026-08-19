@@ -49,7 +49,12 @@
   background-repeat: no-repeat;
   background-size: 400% 400%;
   filter: drop-shadow(0 0.2cqw 0.2cqw #000);
-  image-rendering: pixelated;
+  /* Not pixelated. The source here is a painted 4x4 character atlas, not
+     pixel art, and this element displays one cel far larger than its 256px
+     source. Nearest-neighbour on that upscale does not preserve anything --
+     it manufactures the staircase, which is precisely the "pixel art" read
+     this artwork is meant to be past. */
+  image-rendering: auto;
 }
 
 .atlas[data-character='mim'] { background-image: url('/sprites/reference-fighters/mim-atlas.webp'); }

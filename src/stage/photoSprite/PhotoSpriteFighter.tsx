@@ -1,18 +1,17 @@
 'use client';
 
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import {
   DoubleSide,
   Group,
   LinearFilter,
+  LinearMipmapLinearFilter,
   MeshBasicMaterial,
-  Color,
   SRGBColorSpace,
   Texture,
   TextureLoader,
 } from 'three';
-import type { Material } from 'three';
 import { combatRenderFrame, readCombatFighter, readLatestHit } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
 import { useRenderStore } from '@/src/store/renderStore';
@@ -26,20 +25,40 @@ import { combatAnimationProgress } from '../combatAnimationProgress';
 import { isFalling, photoFallPose } from './photoFallAnimation';
 import { photoAttackMotion } from './photoKickAnimation';
 import { photoDashEchoOpacity, photoImpactPose } from './photoCombatMotion';
+import { photoIdleMotion } from './photoIdleMotion';
+import { updateSmear } from './photoSmear';
 import { PHOTO_COLUMNS, PHOTO_ROWS, photoFrameFor } from './photoSpriteAnimation';
+import { SNAP_FRAMES } from './photoAttackSequences';
 import { LeadAttackEffects } from './LeadAttackEffects';
 import { CharacterHeroFX } from './CharacterHeroFX';
+import { SpriteGroundShadow } from './SpriteGroundShadow';
+import {
+  applyHeroSurfaceLighting,
+  createHeroSurfaceUniforms,
+  type HeroSurfaceUniforms,
+} from '@/src/render/heroSurfaceLighting';
+import { HERO_SURFACE_PALETTES } from '@/src/render/heroSurfacePalettes';
 
 const DISPLAY_HEIGHT = 3.05;
 const GROUND = 0.91;
 const CENTER_Y = (GROUND - 0.5) * DISPLAY_HEIGHT;
-const FRAME_BLEND_SECONDS = 0.035;
+/**
+ * Cross-fade for a pose the body passes through.
+ *
+ * Longer than the 0.035s this replaces -- at 60fps that was barely two frames
+ * and read as a hard cut, so a nine-beat attack cycle strobed through nine
+ * separate drawings. Contact frames are exempt entirely; see `SNAP_FRAMES`.
+ *
+ * Bounded from above by the walk, not by the attacks. The walk cycle holds each
+ * cel for about 0.11s, so a blend much past half of that never resolves before
+ * the next change and the legs turn into a permanent double exposure.
+ */
+const FRAME_BLEND_SECONDS = 0.055;
+/** World units of head lag per unit of acceleration. */
+const BEND_PER_ACCEL = 0.0016;
+/** The bend is a lean, never a fold. */
+const MAX_BEND = 0.13;
 const SIMULATION_HZ = 60;
-const INK_OFFSETS = [
-  [-0.018, -0.018], [0, -0.022], [0.018, -0.018],
-  [-0.022, 0], [0.022, 0],
-  [-0.018, 0.018], [0, 0.022], [0.018, 0.018],
-] as const;
 
 // Presentation-only body-class scale. Simulation units and hitboxes stay
 // untouched; the screen read now separates heavyweight, agile and technical
@@ -50,14 +69,6 @@ const CHARACTER_DISPLAY_SCALE = {
   mim: 0.98,
   titan: 1.12,
   vorgh: 1.05,
-} as const;
-
-const HERO_SURFACE_ACCENTS = {
-  glitch: '#48dfff',
-  lucky: '#e8ba62',
-  mim: '#bb6dff',
-  titan: '#ff8c42',
-  vorgh: '#ff3d5e',
 } as const;
 
 interface PhotoTextures {
@@ -86,11 +97,33 @@ export function PhotoSpriteFighter({
   const defeatAt = useRef<number | null>(null);
   const seenHit = useRef(0);
   const impactAt = useRef(-1);
+  const idleWeight = useRef(0);
+  const lastIdleAt = useRef(0);
+  const lastWorld = useRef<{ x: number; y: number } | null>(null);
+  const lastVelocity = useRef({ x: 0, y: 0 });
   const impactDamage = useRef(0);
   const [textures, setTextures] = useState<PhotoTextures | null>(null);
   const graphicsPreset = useRenderStore((state) => state.graphicsPreset);
+  const anisotropy = useThree(
+    (state) => state.gl.capabilities.getMaxAnisotropy(),
+  );
   const opponentId = fighterId === 'p1' ? 'p2' : 'p1';
   const bodyScale = CHARACTER_DISPLAY_SCALE[kind];
+  // One uniform block shared by both body planes, so the cross-fade between
+  // the outgoing and incoming frame is lit identically and the blend does not
+  // flicker. `atlasSize` has to track the atlas actually loaded: the gradient
+  // taps are in texels, and a 1024px sheet sampled at 4096px spacing produces
+  // a normal derived from four texels away, which reads as a smear.
+  const [surface, setSurface] = useState<HeroSurfaceUniforms | null>(null);
+  const surfaceRef = useRef<HeroSurfaceUniforms | null>(null);
+  useEffect(() => {
+    const next = createHeroSurfaceUniforms({
+      ...HERO_SURFACE_PALETTES[kind],
+      atlasSize: graphicsPreset === 'high' ? 4096 : 1024,
+    });
+    surfaceRef.current = next;
+    setSurface(next);
+  }, [graphicsPreset, kind]);
 
   useEffect(() => {
     let disposed = false;
@@ -102,9 +135,9 @@ export function PhotoSpriteFighter({
           result.dispose();
           return;
         }
-        prepareTexture(result);
+        prepareTexture(result, anisotropy);
         const previous = result.clone();
-        prepareTexture(previous);
+        prepareTexture(previous, anisotropy);
         previous.needsUpdate = true;
         loaded = { current: result, previous };
         lastFrame.current = null;
@@ -120,9 +153,9 @@ export function PhotoSpriteFighter({
       loaded?.previous.dispose();
       setTextures(null);
     };
-  }, [graphicsPreset, kind]);
+  }, [anisotropy, graphicsPreset, kind]);
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock }, delta) => {
     const fighter = readCombatFighter(fighterId);
     const root = outer.current;
     const drawing = body.current;
@@ -140,6 +173,53 @@ export function PhotoSpriteFighter({
       bodyScale,
       1,
     );
+    // The plane is mirrored by a negative X scale, which flips the artwork but
+    // not the light. Without this the key jumps to the far side the instant a
+    // fighter turns around, and both fighters end up lit from opposite suns.
+    const heroSurface = surfaceRef.current;
+    if (heroSurface !== null) {
+      heroSurface.uFlip.value = presentation.facing >= 0 ? 1 : -1;
+
+      // Measured travel, not the move table: see `photoSmear.ts`. Taken after
+      // the root has been written for this frame, so it is the same number the
+      // player is about to see move.
+      const previous = lastWorld.current;
+      const dt = Math.max(1 / 240, delta);
+      updateSmear(heroSurface.uSmear.value, {
+        facing: presentation.facing >= 0 ? 1 : -1,
+        frozen: fighter.hitstop > 0,
+        spriteHeight: DISPLAY_HEIGHT,
+        spriteWidth: DISPLAY_HEIGHT,
+        worldVelocityX: previous === null
+          ? 0
+          : (root.position.x - previous.x) / dt,
+        worldVelocityY: previous === null
+          ? 0
+          : (root.position.y - previous.y) / dt,
+      });
+      const worldVx = previous === null ? 0 : (root.position.x - previous.x) / dt;
+      const worldVy = previous === null ? 0 : (root.position.y - previous.y) / dt;
+      // Acceleration, not velocity: a body moving at a constant speed stands
+      // upright, and only bends while it is being sped up or stopped. That is
+      // why this reads as weight rather than as a permanent lean.
+      const accelX = (worldVx - lastVelocity.current.x) / dt;
+      const accelY = (worldVy - lastVelocity.current.y) / dt;
+      lastVelocity.current = { x: worldVx, y: worldVy };
+      const bend = heroSurface.uBend.value;
+      const targetX = fighter.hitstop > 0
+        ? bend.x
+        : clampBend(-accelX * BEND_PER_ACCEL * presentation.facing);
+      const targetY = fighter.hitstop > 0
+        ? bend.y
+        : clampBend(-accelY * BEND_PER_ACCEL * 0.4);
+      // Critically damped chase: an undamped bend snaps and reads as a glitch.
+      const follow = Math.min(1, dt * 14);
+      bend.set(
+        bend.x + (targetX - bend.x) * follow,
+        bend.y + (targetY - bend.y) * follow,
+      );
+      lastWorld.current = { x: root.position.x, y: root.position.y };
+    }
 
     const shadow = contactShadow.current;
     if (shadow !== null) {
@@ -150,7 +230,9 @@ export function PhotoSpriteFighter({
       for (let index = 0; index < contactShadowMaterials.current.length; index += 1) {
         const material = contactShadowMaterials.current[index];
         if (material !== null && material !== undefined) {
-          material.opacity = (0.07 + index * 0.055) * fade;
+          // Index 2 is the projected silhouette, which carries most of the
+          // grounding and so is much denser than the occlusion pool under it.
+          material.opacity = (index === 2 ? 0.44 : 0.07 + index * 0.055) * fade;
         }
       }
     }
@@ -178,14 +260,26 @@ export function PhotoSpriteFighter({
       } else if (previousFrame !== frame) {
         setTextureFrame(textures.previous, previousFrame);
         setTextureFrame(textures.current, frame);
-        transitionAt.current = clock.elapsedTime;
+        // A strike arrives whole, on its frame. Everything else eases in.
+        if (SNAP_FRAMES.has(frame)) {
+          transitionAt.current = -1;
+          if (currentMaterial.current !== null) currentMaterial.current.opacity = 1;
+          if (previousMaterial.current !== null) previousMaterial.current.opacity = 0;
+        } else {
+          transitionAt.current = clock.elapsedTime;
+        }
       }
       lastFrame.current = frame;
       if (transitionAt.current >= 0) {
-        const blend = Math.min(
+        const linear = Math.min(
           1,
           (clock.elapsedTime - transitionAt.current) / FRAME_BLEND_SECONDS,
         );
+        // Ease out, not linear. A linear cross-fade spends half its time with
+        // both poses at half strength, which is the double-exposure look; an
+        // eased one commits to the incoming pose early and spends its tail
+        // cleaning up the outgoing one.
+        const blend = 1 - (1 - linear) * (1 - linear);
         if (currentMaterial.current !== null) currentMaterial.current.opacity = blend;
         if (previousMaterial.current !== null) previousMaterial.current.opacity = 1 - blend;
         if (blend >= 1) transitionAt.current = -1;
@@ -204,21 +298,45 @@ export function PhotoSpriteFighter({
     const reaction = falling
       ? photoImpactPose(-1, 0)
       : photoImpactPose(clock.elapsedTime - impactAt.current, impactDamage.current);
+    // True neutral: standing on the ground, not acting, not reacting, not
+    // moving. Anything else and the idle has to be out of the way, because a
+    // breath layered on top of a hit reaction reads as a second, conflicting
+    // animation. The weight is eased rather than switched, so a fighter
+    // recovering from a combo settles back into breathing instead of snapping
+    // into it on the frame the hitstun clears.
+    const neutral = !falling
+      && fighter.action === null
+      && fighter.grounded
+      && fighter.hitstun <= 0
+      && fighter.hitstop <= 0
+      && fighter.dashFrames <= 0
+      && Math.abs(fighter.velocity.x) <= 16;
+    idleWeight.current += (
+      (neutral ? 1 : 0) - idleWeight.current
+    ) * Math.min(1, 5.5 * Math.max(0, clock.elapsedTime - lastIdleAt.current));
+    lastIdleAt.current = clock.elapsedTime;
+    const idle = photoIdleMotion(
+      clock.elapsedTime,
+      kind,
+      fighterId,
+      idleWeight.current,
+    );
+
     drawing.position.set(
-      motion.x + reaction.x + fall.slide * DISPLAY_HEIGHT,
-      CENTER_Y + motion.y + reaction.y - fall.drop * DISPLAY_HEIGHT,
+      motion.x + reaction.x + idle.x + fall.slide * DISPLAY_HEIGHT,
+      CENTER_Y + motion.y + reaction.y + idle.y - fall.drop * DISPLAY_HEIGHT,
       0,
     );
     drawing.scale.set(
-      motion.scaleX * reaction.scaleX * fall.scaleX * (1 + impact),
-      motion.scaleY * reaction.scaleY * fall.scaleY * (1 - impact),
+      motion.scaleX * reaction.scaleX * fall.scaleX * idle.scaleX * (1 + impact),
+      motion.scaleY * reaction.scaleY * fall.scaleY * idle.scaleY * (1 - impact),
       1,
     );
     drawing.rotation.z = falling
       ? fall.rotation
       : fighter.hitstun > 0
       ? Math.sin(clock.elapsedTime * 42) * 0.035
-      : motion.rotation + reaction.rotation;
+      : motion.rotation + reaction.rotation + idle.rotation;
     drawing.rotation.y = falling ? 0 : motion.turnY;
     for (let index = 0; index < dashMaterials.current.length; index += 1) {
       const material = dashMaterials.current[index];
@@ -236,12 +354,18 @@ export function PhotoSpriteFighter({
       {kind === 'vorgh' ? <VorghEffects fighterId={fighterId} /> : null}
       <group ref={outer}>
         <group ref={contactShadow} position={[0, 0.035, 0.12]}>
-          {[1, 0.72, 0.46].map((scale, index) => (
+          {/* Two shadows, because a floor gets two.
+              The ellipses are the occlusion pool: the ambient light a body
+              blocks simply by being in the way, which is soft, centred under
+              the feet and pose-independent. They are the only part an ellipse
+              was ever right for, so they stay — just weaker, now that they are
+              not also pretending to be the cast shadow. */}
+          {[1, 0.62].map((scale, index) => (
             <mesh
               key={scale}
               renderOrder={-1}
               rotation-x={-Math.PI / 2}
-              scale={[0.92 * scale, 0.34 * scale, 1]}
+              scale={[0.78 * scale, 0.28 * scale, 1]}
             >
               <circleGeometry args={[1, 48]} />
               <meshBasicMaterial
@@ -255,6 +379,17 @@ export function PhotoSpriteFighter({
               />
             </mesh>
           ))}
+          {/* And the cast shadow, thrown by the key, shaped like the pose. */}
+          {textures === null ? null : (
+            <SpriteGroundShadow
+              height={DISPLAY_HEIGHT}
+              materialRef={(material) => {
+                contactShadowMaterials.current[2] = material;
+              }}
+              texture={textures.current}
+              width={DISPLAY_HEIGHT}
+            />
+          )}
         </group>
         <CharacterHeroFX fighterId={fighterId} kind={kind} />
         {kind === 'mim' ? <MimAttackEffects fighterId={fighterId} /> : null}
@@ -274,33 +409,23 @@ export function PhotoSpriteFighter({
                   width={width}
                 />
               ))}
-              {/* Eight-way ink shell: a stable silhouette pass separates the
-                  atlas from whatever is behind it without altering the source
-                  frames. Thinned right down — against a dark room a heavy black
-                  shell is a smudge, and it was swallowing the coloured rim that
-                  does the actual separating. */}
-              {INK_OFFSETS.map(([x, z], index) => (
-                <PhotoPlane
-                  key={`ink-shell-${index}`}
-                  materialRef={() => undefined}
-                  opacity={0.2}
-                  positionX={x}
-                  positionZ={-0.016 + z}
-                  texture={textures.current}
-                  tint="#03050a"
-                  toneMapped={false}
-                  width={width}
-                />
-              ))}
-              {/* Player rim. The atlas is drawn unlit, so no light in the scene
-                  can put an edge on a fighter — this plane, peeking out a few
-                  percent behind the body, *is* their rim light, and the one cue
-                  that keeps the two apart mid-combo. */}
+              {/* Player rim.
+                  This used to be nine planes: an eight-way black ink shell plus
+                  a coloured copy, each one the whole atlas nudged a few pixels.
+                  Nine hard-edged copies of an aliased silhouette is nine sets of
+                  staircase, and stacking them is what produced the chunky halo
+                  around every fighter — the single strongest "cut-out sticker"
+                  cue in the frame.
+                  The relight now grows a real rim out of the alpha gradient, so
+                  the contour is antialiased and free. What is left here is only
+                  the *player* cue — which fighter is yours — kept faint and
+                  tight, because it no longer has to do the separating on its
+                  own. Eight draw calls per fighter went with it. */}
               <PhotoPlane
                 materialRef={() => undefined}
-                opacity={0.9}
+                opacity={0.42}
                 positionZ={-0.008}
-                scale={1.032}
+                scale={1.014}
                 texture={textures.current}
                 tint={fighterId === 'p1' ? '#5ce6ff' : '#ffb03c'}
                 toneMapped={false}
@@ -310,8 +435,8 @@ export function PhotoSpriteFighter({
                 materialRef={previousMaterial}
                 positionZ={-0.002}
                 texture={textures.previous}
-                tint={kind === 'mim' || kind === 'glitch' ? '#d7dce4' : '#ffffff'}
-                heroAccent={kind}
+                tint="#ffffff"
+                surface={surface ?? undefined}
                 width={width}
               />
               <PhotoPlane
@@ -319,8 +444,8 @@ export function PhotoSpriteFighter({
                 positionZ={0}
                 texture={textures.current}
                 width={width}
-                tint={kind === 'mim' || kind === 'glitch' ? '#d7dce4' : '#ffffff'}
-                heroAccent={kind}
+                tint="#ffffff"
+                surface={surface ?? undefined}
               />
             </>
           )}
@@ -331,6 +456,10 @@ export function PhotoSpriteFighter({
   );
 }
 
+function clampBend(value: number): number {
+  return Math.max(-MAX_BEND, Math.min(MAX_BEND, value));
+}
+
 function PhotoPlane({
   materialRef,
   opacity = 1,
@@ -339,7 +468,7 @@ function PhotoPlane({
   scale = 1,
   texture,
   tint,
-  heroAccent,
+  surface,
   toneMapped = true,
   width,
 }: {
@@ -350,15 +479,25 @@ function PhotoPlane({
   readonly scale?: number;
   readonly texture: Texture;
   readonly tint: string;
-  readonly heroAccent?: 'glitch' | 'lucky' | 'mim' | 'titan' | 'vorgh';
+  /** Present on the two body planes; absent on shells, rims and dash echoes. */
+  readonly surface?: HeroSurfaceUniforms;
   readonly toneMapped?: boolean;
   readonly width: number;
 }) {
   return (
     <mesh position-x={positionX} position-z={positionZ} scale={scale}>
-      <planeGeometry args={[width, DISPLAY_HEIGHT]} />
+      {/* Subdivided only where the bend needs somewhere to happen. The ink
+          rim and the dash echoes stay a single quad: they are copies of the
+          silhouette and have no body to overlap. */}
+      <planeGeometry
+        args={surface === undefined
+          ? [width, DISPLAY_HEIGHT]
+          : [width, DISPLAY_HEIGHT, 8, 20]}
+      />
       <meshBasicMaterial
-        onBeforeCompile={heroAccent === undefined ? undefined : gradeHeroSurface(heroAccent)}
+        onBeforeCompile={
+          surface === undefined ? undefined : applyHeroSurfaceLighting(surface)
+        }
         ref={materialRef}
         alphaTest={0.05}
         color={tint}
@@ -373,50 +512,25 @@ function PhotoPlane({
   );
 }
 
-function gradeHeroSurface(
-  heroAccent: keyof typeof HERO_SURFACE_ACCENTS,
-): (shader: Parameters<Material['onBeforeCompile']>[0]) => void {
-  return (shader) => {
-    shader.uniforms.uHeroAccent = { value: new Color(HERO_SURFACE_ACCENTS[heroAccent]) };
-    shader.fragmentShader = shader.fragmentShader.replace(
-      '#include <common>',
-      'uniform vec3 uHeroAccent;\n#include <common>',
-    );
-    shader.fragmentShader = shader.fragmentShader.replace(
-      '#include <map_fragment>',
-      `#include <map_fragment>
-        // A restrained surface grade gives the atlas a directional-light
-        // read without pretending that a 2D frame is a real mesh.
-        //
-        // Exposure is up and the contrast squeeze is gone. Both were authored
-        // against a bright painted backdrop, where a fighter had to be knocked
-        // back to sit in the picture. The stage is a dark room now, and the same
-        // grade turned every character into a black silhouette with a coloured
-        // edge — the one thing a fighting game cannot afford, because the player
-        // has to be able to read their own limbs.
-        vec2 heroUv = fract(vMapUv * vec2(float(${PHOTO_COLUMNS}), float(${PHOTO_ROWS})));
-        float heroLight = 1.12 + heroUv.y * 0.24;
-        float heroRim = smoothstep(0.66, 1.0, heroUv.x) * 0.16;
-        float heroGloss = pow(max(0.0, 1.0 - abs(heroUv.x - 0.67) * 3.8), 18.0) * 0.12;
-        diffuseColor.rgb *= heroLight;
-        // Lift the deepest values before the accent goes on. A photo atlas has
-        // real black in its creases, and on this stage that black is the same
-        // value as the room behind it.
-        diffuseColor.rgb = diffuseColor.rgb * 0.9 + 0.055;
-        diffuseColor.rgb += uHeroAccent * (heroRim + heroGloss);
-      `,
-    );
-  };
-}
-
-function prepareTexture(texture: Texture): void {
+function prepareTexture(texture: Texture, anisotropy: number): void {
   texture.colorSpace = SRGBColorSpace;
-  // High mode loads a 4096px AVIF sheet (1024px per authored frame). Linear
-  // sampling keeps each frame clean at Full HD and 4K output; mipmaps stay
-  // disabled because every UV window is a deliberately selected animation cel.
+  // High mode loads a 4096px AVIF sheet, so an authored frame is 1024px and
+  // the fighter inside it is around 700px tall. On screen that fighter is
+  // roughly 400px. The atlas is therefore *minified*, not magnified — and a
+  // minified texture sampled off the base level with no mipmap is undersampled
+  // by about 1.7x, which is exactly the staircase that made these characters
+  // read as pixel art no matter how good the artwork was.
+  //
+  // Mipmaps were previously off out of a fear of cel bleed: neighbouring frames
+  // in the sheet average together at high mip levels. That is a real effect,
+  // but it needs level 4 or 5 before a neighbouring cel is within reach, and
+  // this atlas never resolves past level 1-2 at any supported window size.
+  // Anisotropic filtering keeps those low levels sharp along the vertical,
+  // which is the axis a standing fighter has all of its detail on.
   texture.magFilter = LinearFilter;
-  texture.minFilter = LinearFilter;
-  texture.generateMipmaps = false;
+  texture.minFilter = LinearMipmapLinearFilter;
+  texture.generateMipmaps = true;
+  texture.anisotropy = anisotropy;
   texture.repeat.set(1 / PHOTO_COLUMNS, 1 / PHOTO_ROWS);
 }
 

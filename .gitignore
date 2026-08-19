@@ -33,3 +33,6 @@ public/models/*
 .qa-path
 .tmp/
 .aider*
+
+# Blender bytecode from scripts/blender/*.py
+scripts/blender/__pycache__/
