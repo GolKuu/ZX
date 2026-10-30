@@ -46,10 +46,11 @@ export function PlayerStatus({ fighter }: {
           data-low={health <= 25}
           role="meter"
         >
-          <span aria-hidden="true" />
+          <span className={styles.damageTrail} aria-hidden="true" style={{ width: `${health}%` }} />
           <i style={{ width: `${health}%` }} />
           <u aria-hidden="true" />
         </div>
+        <div className={styles.vitals}><span>{Math.max(0, fighter.health)} <small>/ {fighter.maxHealth} HP</small></span><b>{health <= 25 ? 'CRITICAL' : 'VITALITY'}</b></div>
         <BurstMeter
           charges={burstCharges}
           side={fighter.side}

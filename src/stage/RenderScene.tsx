@@ -1,5 +1,7 @@
 'use client';
 
+import { Suspense } from 'react';
+import { KombatFighter } from './fighter3d/KombatFighter';
 import type {
   CharacterId,
   CharacterSelection,
@@ -127,5 +129,6 @@ function primitiveFighter(
   // Use the original high-resolution 2D fighter pipeline. It reads the same
   // authoritative combat runtime, so attacks, hit reactions, facing and
   // knockdowns remain synchronized with the simulation.
+  if (characterId === 'glitch' || characterId === 'vorgh') return <Suspense fallback={<PhotoSpriteFighter fighterId={fighterId} kind={characterId} />}><KombatFighter fighterId={fighterId} characterId={characterId} /></Suspense>;
   return <PhotoSpriteFighter fighterId={fighterId} kind={characterId} />;
 }

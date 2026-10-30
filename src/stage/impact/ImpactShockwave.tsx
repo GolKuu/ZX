@@ -8,7 +8,7 @@ import { createShockwaveMaterial } from '@/src/render/shockwaveMaterial';
 
 const POOL = 4;
 /** Seconds a ring takes to run its course. */
-const LIFETIME = 0.42;
+const LIFETIME = 0.26;
 
 interface Wave {
   bornAt: number;
@@ -67,7 +67,7 @@ export function ImpactShockwave() {
       // Roughly a shoulder-width at its smallest, never larger than a fighter
       // is tall. Anything past that reads as a stage effect rather than as
       // something one body did to another.
-      wave.size = 0.85 + weight * 1.45;
+      wave.size = 0.58 + weight * 1.05;
       wave.x = hit.x;
       wave.y = hit.y;
     }

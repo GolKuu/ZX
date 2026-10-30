@@ -128,3 +128,12 @@
     width: 9cqw;
   }
 }
+.portrait { flex-basis: 5.5cqw; width: 5.5cqw; aspect-ratio: 1; border-color: #8997a4; }
+.atlas { inset: .15cqw; background-size: 650% 650%; background-position: 1% 1%; }
+@container combat-hud (max-width:760px) { .portrait { flex-basis:7cqw; width:7cqw; } }
+
+/* Portraits authored from the same Blender shells as the combatants. */
+.atlas[data-character='glitch'] { inset:0; background-image:url('/portraits/forge/ion.png'); background-size:cover; background-position:center; }
+.atlas[data-character='vorgh'] { inset:0; background-image:url('/portraits/forge/cinder.png'); background-size:cover; background-position:center; }
+.portrait { flex-basis:6.2cqw; width:6.2cqw; aspect-ratio:1; border-color:#c4d1dc; }
+@container combat-hud (max-width:760px) { .portrait { flex-basis:7cqw; width:7cqw; } }

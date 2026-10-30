@@ -236,7 +236,7 @@ export function createArenaFloorMaterial(
 
           // A pulse walking outward keeps the disc alive between rounds.
           float pulse = smoothstep( 0.13, 0.0, abs( t - fract( uTime * 0.11 ) ) );
-          engrave += pulse * 0.16;
+          engrave += pulse * 0.035;
 
           totalEmissiveRadiance += uLine * engrave * 0.30 * glow;
 
@@ -274,7 +274,7 @@ export function createArenaFloorMaterial(
           float streak = exp( -( vArenaXz.x * vArenaXz.x ) / ( width * width ) );
           float fade   = pow( 1.0 - depth, 1.5 );
           float wobble = 0.78 + arenaNoise( vArenaXz * 3.1 + vec2( 0.0, uTime * 0.25 ) ) * 0.44;
-          totalEmissiveRadiance += uReflection * streak * fade * wobble * 0.34 * glow;
+          totalEmissiveRadiance += uReflection * streak * fade * wobble * 0.14 * glow;
 
           // Slight centre falloff. Deliberately gentle: the fighters stand in
           // the middle of this disc, and darkening the ground they occupy is

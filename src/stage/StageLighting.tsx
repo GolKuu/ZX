@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 import { MathUtils, type DirectionalLight, type PointLight } from 'three';
 import { ARENA_RADIUS } from './arena/arenaData';
+import { ForgeReflections } from './kombat/ForgeReflections';
 import { FighterRimLights } from './kombat/FighterRimLights';
 import { kombatTheme } from './kombat/kombatTheme';
 import { useRenderStore } from '@/src/store/renderStore';
@@ -52,15 +53,15 @@ export function StageLighting({ arenaId }: { readonly arenaId: ArenaId }) {
 
     // Fast decay: a flash that lingers stops reading as a blow landing and
     // starts reading as the room getting brighter.
-    impactEnergy.current = Math.max(0, impactEnergy.current - delta * 3.4);
+    impactEnergy.current = Math.max(0, impactEnergy.current - delta * 10);
     superEnergy.current = Math.max(0, superEnergy.current - delta * 1.5);
 
-    const impactPulse = MathUtils.smoothstep(0.06, 1, impactEnergy.current);
-    const superPulse = MathUtils.smoothstep(0.04, 1, superEnergy.current);
+    const impactPulse = MathUtils.smoothstep(impactEnergy.current, 0.06, 1);
+    const superPulse = MathUtils.smoothstep(superEnergy.current, 0.04, 1);
 
     const key = keyLightRef.current;
     if (key !== null) {
-      key.intensity = MathUtils.lerp(2.5, 3.5, Math.max(impactPulse, superPulse));
+      key.intensity = MathUtils.lerp(4.2, 4.7, Math.max(impactPulse, superPulse));
     }
     const impactPulseLight = impactPulseRef.current;
     if (impactPulseLight !== null) {
@@ -78,10 +79,11 @@ export function StageLighting({ arenaId }: { readonly arenaId: ArenaId }) {
 
   return (
     <>
+      <ForgeReflections />
       {/* Sky/ground bounce, not illumination. Enough that the stone's shadow
           side is a colour rather than a hole. */}
-      <hemisphereLight args={[theme.bounce, theme.stoneShadow, 0.58]} />
-      <ambientLight color={theme.bounce} intensity={0.18} />
+      <hemisphereLight args={[theme.bounce, theme.stoneShadow, 1.3]} />
+      <ambientLight color={theme.bounce} intensity={0.32} />
 
       {/* Key. High, front-left, hard: it draws the fighters' lit side and drops
           their cast shadow back and to the right across the disc.
@@ -94,7 +96,7 @@ export function StageLighting({ arenaId }: { readonly arenaId: ArenaId }) {
         ref={keyLightRef}
         castShadow
         color={theme.key}
-        intensity={2.5}
+        intensity={4.2}
         position={[-6.2, 9.4, 6.6]}
         shadow-bias={-0.0006}
         shadow-camera-bottom={-SHADOW_EXTENT}
@@ -111,7 +113,7 @@ export function StageLighting({ arenaId }: { readonly arenaId: ArenaId }) {
 
       {/* Stage-wide back rim. Catches the tops of the columns and the arcade so
           the architecture reads as edges against the sky rather than as mass. */}
-      <directionalLight color={theme.rimCool} intensity={1.35} position={[5.4, 6.2, -8.4]} />
+      <directionalLight color={theme.rimCool} intensity={2.1} position={[5.4, 6.2, -8.4]} />
       <directionalLight color={theme.rimWarm} intensity={0.85} position={[-5.8, 3.6, -7.2]} />
 
       {/* Fill from the floor, warm, very low: keeps the fighters' undersides
@@ -131,7 +133,7 @@ export function StageLighting({ arenaId }: { readonly arenaId: ArenaId }) {
         color="#b9d7ff"
         decay={2}
         distance={17}
-        intensity={1.8}
+        intensity={18}
         position={[0, 2.1, 5.6]}
       />
 

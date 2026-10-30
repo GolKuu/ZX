@@ -4,6 +4,7 @@ import { forwardRef, useImperativeHandle, useRef, type RefObject } from 'react';
 import type { Group, Material } from 'three';
 import type { CharacterBuild } from './characterBuild';
 import { CharacterFeatures } from './CharacterFeatures';
+import { ForgePart } from './ForgePart';
 import type { FighterSurfaces } from './fighter3dMaterials';
 
 export interface FighterJoints {
@@ -67,6 +68,14 @@ function Pelvis({ hip, surfaces }: { hip: number; surfaces: FighterSurfaces }) {
 }
 
 function Torso({ build, hip, shoulder, surfaces }: { build: CharacterBuild; hip: number; shoulder: number; surfaces: FighterSurfaces }) {
+  const variant = build.id === 'vorgh' ? 'cinder' : 'ion';
+  if (build.id === 'glitch' || build.id === 'vorgh') return <group scale={[build.shoulders, 1, build.bulk]}>
+    <ForgePart name={`${variant}_chest`} />
+    <ForgePart name={`${variant}_rail`} />
+    {[-1, 1].map(side => <mesh key={side} position={[side * .105, .32, .125]} rotation={[0, side * .35, 0]}>
+      <torusGeometry args={[.045, .008, 8, 24]} /><primitive attach="material" object={surfaces.glow} />
+    </mesh>)}
+  </group>;
   return <group>
     <mesh castShadow receiveShadow position={[0, .225, 0]} scale={[1, 1, build.bulk * .86]}>
       <cylinderGeometry args={[shoulder, hip * 1.08, .48, 12, 2]} /><primitive attach="material" object={surfaces.body} />
@@ -88,6 +97,12 @@ function Torso({ build, hip, shoulder, surfaces }: { build: CharacterBuild; hip:
 }
 
 function Head({ build, surfaces }: { build: CharacterBuild; surfaces: FighterSurfaces }) {
+  const variant = build.id === 'vorgh' ? 'cinder' : 'ion';
+  if (build.id === 'glitch' || build.id === 'vorgh') return <group scale={build.head}>
+    <ForgePart name={`${variant}_helmet`} />
+    <ForgePart name={`${variant}_visor`} />
+    {build.id === 'vorgh' && <><ForgePart name="cinder_horn1" /><ForgePart name="cinder_horn-1" /></>}
+  </group>;
   return <group scale={build.head}>
     <mesh castShadow position={[0, -.115, 0]}><cylinderGeometry args={[.048, .06, .12, 10]} /><primitive attach="material" object={surfaces.under} /></mesh>
     <mesh castShadow receiveShadow scale={[.88, 1.08, .88]}><dodecahedronGeometry args={[.115, 2]} /><primitive attach="material" object={surfaces.skin} /></mesh>
@@ -103,9 +118,11 @@ function Segment({ length, material, radius }: { length: number; material: Mater
 function Arm({ build, forearmRef, joint, position, radius, surfaces }: { build: CharacterBuild; forearmRef: JointRef; joint: JointRef; position: readonly [number, number, number]; radius: number; surfaces: FighterSurfaces }) {
   const heavy = build.id === 'titan' ? 1.42 : build.id === 'vorgh' ? 1.25 : 1;
   return <group position={position} ref={joint}>
+    {(build.id === 'glitch' || build.id === 'vorgh') && <ForgePart name={`${build.id === 'vorgh' ? 'cinder' : 'ion'}_shoulder`} scale={[build.limbs, 1, build.limbs]} />}
     <mesh castShadow position={[0, -.035, 0]} scale={[1.35, .72, 1.2]}><sphereGeometry args={[radius, 10, 8]} /><primitive attach="material" object={surfaces.plate} /></mesh>
     <Segment length={.25} material={surfaces.body} radius={radius} />
     <group position={[0, -.3, 0]} ref={forearmRef}>
+      {(build.id === 'glitch' || build.id === 'vorgh') && <ForgePart name={`${build.id === 'vorgh' ? 'cinder' : 'ion'}_bracer`} scale={[build.limbs, 1, build.limbs]} />}
       <mesh castShadow scale={[1.12, .7, 1.12]}><sphereGeometry args={[radius, 10, 8]} /><primitive attach="material" object={surfaces.trim} /></mesh>
       <Segment length={.23} material={surfaces.under} radius={radius * .86} />
       <mesh castShadow position={[0, -.18, .008]} scale={[1.22 * heavy, 1.45, 1.08 * heavy]}><dodecahedronGeometry args={[radius * 1.18, 1]} /><primitive attach="material" object={surfaces.plate} /></mesh>
@@ -125,6 +142,7 @@ function Leg({ build, joint, position, radius, shinRef, surfaces }: { build: Cha
     <Segment length={.33} material={surfaces.under} radius={radius} />
     <mesh castShadow position={[0, -.17, .035]} scale={[1.05, 1.5, .72]}><boxGeometry args={[radius * 1.75, .2, radius * 1.45]} /><primitive attach="material" object={surfaces.body} /></mesh>
     <group position={[0, -.4, 0]} ref={shinRef}>
+      {(build.id === 'glitch' || build.id === 'vorgh') && <ForgePart name={`${build.id === 'vorgh' ? 'cinder' : 'ion'}_greave`} scale={[build.limbs, 1, build.limbs]} />}
       <mesh castShadow position={[0, .01, .035]} scale={[1.18, .68, 1]}><sphereGeometry args={[radius, 10, 8]} /><primitive attach="material" object={surfaces.plate} /></mesh>
       <Segment length={.3} material={surfaces.under} radius={radius * .84} />
       <mesh castShadow position={[0, -.2, .025]} scale={[1, 1.6, .75]}><boxGeometry args={[radius * 1.85, .23, radius * 1.6]} /><primitive attach="material" object={surfaces.plate} /></mesh>

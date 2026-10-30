@@ -56,7 +56,7 @@ const BUILDS: Record<CharacterId, CharacterBuild> = {
   glitch: {
     id: 'glitch',
     height: 1, shoulders: 1.02, bulk: 0.95, limbs: 0.94, head: 0.94,
-    stoop: 0.06, features: ['visor', 'pauldrons'], accent: '#48dfff',
+    stoop: 0.06, features: ['visor', 'pauldrons'], accent: '#168dff',
   },
   // Gambler: long coat, long legs, light frame.
   lucky: {
@@ -67,8 +67,8 @@ const BUILDS: Record<CharacterId, CharacterBuild> = {
   // Berserker: hunched, heavy through the shoulders, long arms.
   vorgh: {
     id: 'vorgh',
-    height: 1.03, shoulders: 1.26, bulk: 1.24, limbs: 1.2, head: 0.92,
-    stoop: 0.22, features: ['horns', 'claws', 'spikes'], accent: '#ff3d5e',
+    height: 1.1, shoulders: 1.45, bulk: 1.42, limbs: 1.38, head: 0.96,
+    stoop: 0.22, features: ['horns', 'claws', 'spikes'], accent: '#ff5b0b',
   },
   // Industrial colossus: the widest thing on the stage, with a small head to
   // sell the scale.

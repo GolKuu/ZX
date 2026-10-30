@@ -94,6 +94,11 @@ function BackArcade({ surfaces }: { readonly surfaces: KombatSurfaces }) {
           <boxGeometry args={[1.6, 6.8, 1.9]} />
         </mesh>
       ))}
+      {[-7.7,-3.9,0,3.9,7.7].map(x => <group key={`arch-${x}`} position={[x,5.2,.9]}>
+        <mesh material={surfaces.stone} receiveShadow><torusGeometry args={[1.28,.19,8,40,Math.PI]} /></mesh>
+        <mesh position={[0,0,.18]}><torusGeometry args={[1.28,.025,6,40,Math.PI]} /><meshStandardMaterial color="#9a7341" metalness={.75} roughness={.32} /></mesh>
+        {[-1,1].map(side => <mesh key={side} position={[side*1.27,-1.75,0]} material={surfaces.stone} receiveShadow><boxGeometry args={[.28,3.5,.32]} /></mesh>)}
+      </group>)}
       {/* Lintel course across the top of the openings. */}
       <mesh material={surfaces.stone} position={[0, 7.3, 0]} receiveShadow>
         <boxGeometry args={[22.8, 1, 2.1]} />

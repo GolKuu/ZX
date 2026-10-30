@@ -6,6 +6,7 @@ import {
   createArenaFloorMaterial,
   type ArenaFloorMaterial,
 } from '@/src/render/arenaFloorMaterial';
+import { loadForgeTexture } from './forgeTexture';
 import { ARENA_RADIUS } from '../arena/arenaData';
 import type { KombatSurfaces } from './kombatMaterials';
 import type { KombatTheme } from './kombatTheme';
@@ -35,14 +36,18 @@ export function KombatFloor({
   readonly theme: KombatTheme;
 }) {
   const floorMaterial: ArenaFloorMaterial = useMemo(
-    () =>
-      createArenaFloorMaterial({
+    () => {
+      const material = createArenaFloorMaterial({
         base: theme.floor,
         edge: theme.floorEdge,
         line: theme.floorLine,
         radius: ARENA_RADIUS,
         reflection: theme.rimWarm,
-      }),
+      });
+      material.map = loadForgeTexture(5);
+      material.color.set('#a9b0bd');
+      return material;
+    },
     [theme],
   );
 

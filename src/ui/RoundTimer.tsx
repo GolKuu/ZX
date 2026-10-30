@@ -1,4 +1,5 @@
 import type { HudSnapshot } from '@/src/hud/types';
+import { ROUNDS_TO_WIN } from '@/src/game/matchRules';
 import styles from './RoundTimer.module.css';
 
 export function RoundTimer({ snapshot }: { readonly snapshot: HudSnapshot }) {
@@ -26,7 +27,7 @@ function RoundPips({ count, right = false }: {
 }) {
   return (
     <span data-side={right ? 'right' : 'left'}>
-      {[0, 1, 2].map((index) => <b data-won={index < count} key={index} />)}
+      {Array.from({ length: ROUNDS_TO_WIN }, (_, index) => <b data-won={index < count} key={index} />)}
     </span>
   );
 }

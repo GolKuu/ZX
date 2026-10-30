@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
+import { combatRenderFrame, readLatestBlock, readLatestHit } from '@/src/game/combatRuntime';
+import { useHudStore } from '@/src/store/hudStore';
 
 /**
  * Publishes the live renderer and scene on `window.__ccu` so the screenshot and
@@ -20,7 +22,17 @@ export function RenderDebugBridge() {
   const camera = useThree((state) => state.camera);
 
   useEffect(() => {
-    (window as unknown as { __ccu?: unknown }).__ccu = { camera, gl, scene };
+    (window as unknown as { __ccu?: unknown }).__ccu = {
+      camera, gl, scene,
+      // Read-only snapshots let runtime checks compare visible meters and poses
+      // with the authoritative combat state, without bypassing player input.
+      readCombat: () => combatRenderFrame.world,
+      readHud: () => useHudStore.getState().snapshot,
+      readContacts: () => ({
+        hits: ['p1', 'p2'].map(readLatestHit),
+        blocks: ['p1', 'p2'].map(readLatestBlock),
+      }),
+    };
     return () => {
       delete (window as unknown as { __ccu?: unknown }).__ccu;
     };

@@ -8,10 +8,13 @@ import { combatRenderFrame, readCombatFighter } from '@/src/game/combatRuntime';
 import { FIXED_SCALE } from '@/src/sim';
 import { combatAnimationProgress } from '../combatAnimationProgress';
 import { facingOpponent } from '../fighterPresentation';
+import { GlitchSpriteEffects } from '../glitch/GlitchSpriteEffects';
+import { VorghEffects } from '../vorgh/VorghEffects';
 import { CharacterHeroFX } from '../photoSprite/CharacterHeroFX';
 import { applyAttackPose } from './attackPose';
 import { attackShapeFor } from './attackShapes';
 import { characterBuild } from './characterBuild';
+import { ForgeHeroSkeleton } from './ForgeHeroSkeleton';
 import { FighterSkeleton, type FighterJoints } from './FighterSkeleton';
 import { useFighterSurfaces } from './fighter3dMaterials';
 import {
@@ -73,8 +76,11 @@ export function KombatFighter({
     // The body turns to face the opponent. A billboard could only mirror; a rig
     // can rotate, which is most of why this is worth doing at all.
     const facing = facingOpponent(fighter, readCombatFighter(opponentId));
-    root.rotation.y = facing === 1 ? 0.42 : Math.PI - 0.42;
+    // Lock orientation through the committed move: crossing cannot reverse a punch mid-swing.
+    if (fighter.action === null) root.rotation.y = facing === 1 ? 1.12 : -1.12;
 
+    // Hitstop freezes the complete presentation, including idle and reactions.
+    if (fighter.hitstop > 0) return;
     const time = clock.elapsedTime;
     const pose = neutralPose(build.stoop);
 
@@ -84,17 +90,23 @@ export function KombatFighter({
       downPose(pose, (time - downSince.current) * 5);
     } else {
       downSince.current = null;
-      posture(pose, fighter, time);
+      posture(pose, fighter, time + (fighterId === 'p2' ? 0.37 : 0));
     }
 
     applyPose(rig, pose);
   });
 
   return (
-    <group ref={outer}>
-      <CharacterHeroFX fighterId={fighterId} kind={kindOf(characterId)} />
-      <FighterSkeleton build={build} ref={joints} surfaces={surfaces} />
-    </group>
+    <>
+      {characterId === 'glitch' && <GlitchSpriteEffects fighterId={fighterId} />}
+      {characterId === 'vorgh' && <VorghEffects fighterId={fighterId} />}
+      <group ref={outer}>
+        <CharacterHeroFX fighterId={fighterId} kind={kindOf(characterId)} />
+        {characterId === 'glitch' || characterId === 'vorgh'
+          ? <ForgeHeroSkeleton build={build} ref={joints} />
+          : <FighterSkeleton build={build} ref={joints} surfaces={surfaces} />}
+      </group>
+    </>
   );
 }
 
@@ -106,6 +118,10 @@ function posture(
 ): void {
   idleBreath(pose, time);
 
+  if (fighter.hitstun > 0) {
+    hitPose(pose, Math.min(1, fighter.hitstun / 18));
+    return;
+  }
   const action = fighter.action;
   if (action !== null) {
     applyAttackPose(
@@ -115,13 +131,8 @@ function posture(
     );
     return;
   }
-  if (fighter.hitstun > 0) {
-    // Decays over the reaction so the fighter recovers into stance rather than
-    // snapping back the frame hitstun ends.
-    hitPose(pose, Math.min(1, fighter.hitstun / 18));
-    return;
-  }
   if (fighter.guarding) {
+    if (fighter.crouching) crouchPose(pose);
     guardPose(pose);
     return;
   }
@@ -130,8 +141,8 @@ function posture(
     return;
   }
   if (!fighter.grounded) {
-    pose.leftLeg.hinge -= 0.8;
-    pose.rightLeg.pitch += 0.5;
+    pose.leftLeg.hinge += 0.8;
+    pose.rightLeg.pitch -= 0.5;
     pose.leftArm.pitch -= 0.4;
     return;
   }

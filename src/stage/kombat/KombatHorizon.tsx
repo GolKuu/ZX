@@ -32,7 +32,7 @@ export function KombatHorizon({ theme }: { readonly theme: KombatTheme }) {
   const material = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: new Color(theme.stoneShadow),
+        color: new Color(theme.skyHorizon).multiplyScalar(.7),
         roughness: 1,
         metalness: 0,
         dithering: true,

@@ -49,11 +49,11 @@ const TEMPLE: KombatTheme = {
 };
 
 const STORM: KombatTheme = {
-  skyTop: '#04142a', skyHorizon: '#24658d',
+  skyTop: '#274866', skyHorizon: '#88b3d4',
   fog: '#123247', fogNear: 12, fogFar: 50,
-  stone: '#526370', stoneShadow: '#182735',
-  floor: '#172630', floorLine: '#58c4df', floorEdge: '#8067dd',
-  key: '#d8ecff', rimWarm: '#a97bff', rimCool: '#54d8ff', bounce: '#1b3348',
+  stone: '#89939c', stoneShadow: '#424c5d',
+  floor: '#454b54', floorLine: '#c6a66d', floorEdge: '#389dd2',
+  key: '#d8ecff', rimWarm: '#ffad62', rimCool: '#54d8ff', bounce: '#1b3348',
   fire: '#49b7ff', fireCore: '#d6f4ff', ember: '#7fd8ff', mist: '#4d7ea0',
   beacon: '#9fd8ff',
 };

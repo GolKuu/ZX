@@ -18,9 +18,9 @@ export function FightHud({ onPause, screen, snapshot }: FightHudProps) {
   return (
     <div className={styles.fightHud} data-dimmed={dimmed}>
       <div className={styles.topHud}>
-        <PlayerStatus fighter={snapshot.fighters[0]} />
+        <PlayerStatus key={`left-${snapshot.round}`} fighter={snapshot.fighters[0]} />
         <RoundTimer snapshot={snapshot} />
-        <PlayerStatus fighter={snapshot.fighters[1]} />
+        <PlayerStatus key={`right-${snapshot.round}`} fighter={snapshot.fighters[1]} />
       </div>
 
       <CombatReadouts snapshot={snapshot} />

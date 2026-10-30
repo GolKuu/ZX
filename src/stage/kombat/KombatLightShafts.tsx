@@ -47,7 +47,7 @@ export function KombatLightShafts({ theme }: { readonly theme: KombatTheme }) {
       new ShaderMaterial({
         uniforms: {
           uColour: { value: new Color(theme.beacon) },
-          uStrength: { value: 0.5 },
+          uStrength: { value: 0.055 },
         },
         vertexShader,
         fragmentShader,

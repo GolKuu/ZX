@@ -32,7 +32,7 @@ import { Vector2 } from 'three';
  * why it previously had to be dialled up until it looked like video noise.
  */
 export function PostEffects() {
-  const chromaticOffset = useMemo(() => new Vector2(0.0013, 0.0008), []);
+  const chromaticOffset = useMemo(() => new Vector2(0.00025, 0.00015), []);
 
   return (
     <EffectComposer multisampling={0}>
@@ -41,9 +41,9 @@ export function PostEffects() {
           A lower threshold blooms the whole frame and reads as fog on a lens,
           not as light. */}
       <Bloom
-        intensity={1.05}
+        intensity={0.45}
         luminanceSmoothing={0.32}
-        luminanceThreshold={0.62}
+        luminanceThreshold={1.05}
         mipmapBlur
         radius={0.85}
       />
@@ -54,8 +54,8 @@ export function PostEffects() {
         radialModulation
       />
 
-      <HueSaturation hue={0} saturation={0.12} />
-      <BrightnessContrast brightness={0.015} contrast={0.1} />
+      <HueSaturation hue={0} saturation={0.025} />
+      <BrightnessContrast brightness={0.015} contrast={0.025} />
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
 
       {/* Post-tone-map, and far weaker than it was.
@@ -65,8 +65,8 @@ export function PostEffects() {
           gradients on the floor and sky so they band into steps instead of
           rolling off. A few percent does that, and the tone curve is no longer
           eating most of it. */}
-      <Noise blendFunction={BlendFunction.OVERLAY} opacity={0.045} premultiply />
-      <Vignette darkness={0.3} eskil={false} offset={0.34} />
+      <Noise blendFunction={BlendFunction.OVERLAY} opacity={0.012} premultiply />
+      <Vignette darkness={0.18} eskil={false} offset={0.34} />
       <SMAA />
     </EffectComposer>
   );

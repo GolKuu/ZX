@@ -16,8 +16,8 @@ import type { KombatTheme } from './kombatTheme';
  * disc so nothing ever burns in front of a fighter.
  */
 const BRAZIERS = [
-  { x: -8.5, z: -3.2 },
-  { x: 8.5, z: -3.2 },
+  { x: -5.7, z: -5.2 },
+  { x: 5.7, z: -5.2 },
   { x: -12.4, z: -8.6 },
   { x: 12.4, z: -8.6 },
 ] as const;

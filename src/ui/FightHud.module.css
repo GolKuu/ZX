@@ -64,3 +64,11 @@
     transition: none;
   }
 }
+.topHud { grid-template-columns: minmax(0,1fr) 8.5cqw minmax(0,1fr); padding-top: 1.6cqw; gap: 1cqw; }
+.pauseButton { top: 9.6cqw; }
+@container combat-hud (max-width:760px) { .topHud { grid-template-columns:minmax(0,1fr) 11cqw minmax(0,1fr); } .pauseButton { top:13cqw; } }
+
+/* Pass two: angular fighting-game chrome with room for the stage. */
+.topHud { grid-template-columns: minmax(0,1fr) 9.5cqw minmax(0,1fr); padding: 1.1cqw 1.3cqw 0; gap: .9cqw; }
+.pauseButton { top: 10.2cqw; opacity: .65; }
+@container combat-hud (max-width:760px) { .topHud { grid-template-columns:minmax(0,1fr) 11cqw minmax(0,1fr); padding-top:2cqw; } .pauseButton { top:14.2cqw; } }

@@ -28,9 +28,9 @@ export type AttackShape =
  */
 function envelope(progress: number) {
   const p = Math.max(0, Math.min(1, progress));
-  const chamber = Math.sin(Math.min(1, p / 0.3) * Math.PI * 0.5)
-    * (1 - smoothstep(0.3, 0.48, p));
-  const contact = smoothstep(0.28, 0.48, p) * (1 - smoothstep(0.62, 0.9, p));
+  const chamber = Math.sin(Math.min(1, p / 0.22) * Math.PI * 0.5)
+    * (1 - smoothstep(0.22, 0.34, p));
+  const contact = smoothstep(0.24, 0.34, p) * (1 - smoothstep(0.58, 0.94, p));
   const follow = smoothstep(0.5, 0.68, p) * (1 - smoothstep(0.76, 1, p));
   return { p, chamber, contact, follow };
 }
@@ -41,6 +41,39 @@ function smoothstep(edge0: number, edge1: number, value: number): number {
 }
 
 export function applyAttackPose(
+  pose: Pose,
+  shape: AttackShape,
+  progress: number,
+): void {
+  // Startup/return must meet the same live stance. Constant offsets in authored
+  // sweeps and slams otherwise teleport the hips and arms on the last frame.
+  const weight = smoothstep(0, 0.1, progress)
+    * (1 - smoothstep(0.88, 1, progress));
+  if (weight >= 1) {
+    applyStrikePose(pose, shape, progress);
+    return;
+  }
+  const base = {
+    ...pose,
+    leftArm: { ...pose.leftArm }, rightArm: { ...pose.rightArm },
+    leftLeg: { ...pose.leftLeg }, rightLeg: { ...pose.rightLeg },
+  };
+  applyStrikePose(pose, shape, progress);
+  for (const key of [
+    'rootY', 'rootRoll', 'hipsY', 'hipsYaw', 'hipsRoll',
+    'torsoPitch', 'torsoRoll', 'torsoYaw', 'headPitch', 'headYaw',
+  ] as const) pose[key] = base[key] + (pose[key] - base[key]) * weight;
+  // Equivalent full turns stay equivalent when easing back into stance.
+  const yaw = pose.rootYaw - base.rootYaw;
+  pose.rootYaw = base.rootYaw + Math.atan2(Math.sin(yaw), Math.cos(yaw)) * weight;
+  for (const name of ['leftArm', 'rightArm', 'leftLeg', 'rightLeg'] as const) {
+    for (const key of ['pitch', 'spread', 'hinge', 'yaw'] as const) {
+      pose[name][key] = base[name][key] + (pose[name][key] - base[name][key]) * weight;
+    }
+  }
+}
+
+function applyStrikePose(
   pose: Pose,
   shape: AttackShape,
   progress: number,
@@ -60,9 +93,11 @@ export function applyAttackPose(
   pose.hipsRoll += contact * 0.06;
 
   if (shape === 'jab' || shape === 'straight') {
-    const reach = shape === 'jab' ? 1 : 1.25;
-    pose.rightArm.pitch = -1.2 - chamber * 0.42 - contact * 1.15 * reach;
-    pose.rightArm.hinge = -2.15 * chamber - 1.2 * follow - 0.05 * contact;
+    const reach = shape === 'jab' ? 1 : 1.12;
+    // The active-frame hand travels horizontally at chest height, not overhead.
+    pose.rightArm.pitch = -1.02 + chamber * .25 - contact * .50 * reach;
+    pose.rightArm.hinge = -1.48 - chamber * .35 + contact * 1.40;
+    pose.rightArm.spread = .16 * (1 - contact);
     pose.rightArm.yaw = chamber * 0.42 - contact * 0.28;
     pose.leftArm.pitch -= contact * 0.2;
     pose.leftArm.hinge -= contact * 0.25;
@@ -73,7 +108,7 @@ export function applyAttackPose(
   }
   if (shape === 'hook') {
     pose.rightArm.spread = 0.3 + chamber * 0.9 + contact * 0.5;
-    pose.rightArm.pitch = -1.6 - chamber * 0.3 - contact * 0.4;
+    pose.rightArm.pitch = -1.02 - chamber * 0.12 - contact * .45;
     pose.rightArm.hinge = -1.6;
     pose.rightArm.yaw = -0.65 * chamber + 1.05 * contact;
     pose.hipsYaw -= contact * 0.22;
@@ -96,8 +131,8 @@ export function applyAttackPose(
     pose.torsoPitch += 0.3;
     pose.rightLeg.pitch = 0.3 + chamber * 0.5 - contact * 1.5;
     pose.rightLeg.spread = contact * 1.15;
-    pose.rightLeg.hinge = -1.4 * chamber - 0.1;
-    pose.leftLeg.hinge = -1.1;
+    pose.rightLeg.hinge = 1.4 * chamber + 0.1;
+    pose.leftLeg.hinge = 1.1;
     pose.hipsYaw += chamber * 0.35 - contact * 1.05;
     pose.torsoYaw -= pose.hipsYaw * 0.45;
     pose.leftArm.spread += contact * 0.55;
@@ -106,7 +141,7 @@ export function applyAttackPose(
   if (shape === 'highKick') {
     pose.rootRoll -= contact * 0.24;
     pose.rightLeg.pitch = 0.2 + chamber * 0.7 - contact * 2.5;
-    pose.rightLeg.hinge = -2 * chamber + contact * 0.2;
+    pose.rightLeg.hinge = 2 * chamber + .15 * (1 - contact);
     pose.rightLeg.spread = contact * 0.4;
     pose.torsoPitch -= contact * 0.34;
     pose.hipsYaw -= contact * 0.48;
@@ -116,8 +151,8 @@ export function applyAttackPose(
     return;
   }
   if (shape === 'frontKick') {
-    pose.rightLeg.pitch = chamber * 1.1 - contact * 1.7;
-    pose.rightLeg.hinge = -2.2 * chamber + contact * 0.15;
+    pose.rightLeg.pitch = -chamber * .9 - contact * 1.7;
+    pose.rightLeg.hinge = 1.9 * chamber + .1 * (1 - contact);
     pose.torsoPitch += contact * 0.22;
     pose.hipsY -= contact * 0.08;
     pose.hipsRoll -= contact * 0.1;
@@ -148,7 +183,10 @@ function applySpin(pose: Pose, p: number, contact: number): void {
   // Ease out of the turn only in the last fifth, so the hit lands mid-rotation.
   const turn = p < 0.8 ? p / 0.8 : 1;
   const eased = turn * turn * (3 - 2 * turn);
-  pose.rootYaw += eased * Math.PI * 3;
+  // The aerial strike rotates 540 degrees; the planting step completes the
+  // remaining half-turn so returning to neutral cannot pop through 180 degrees.
+  const plant = smoothstep(0.8, 1, p);
+  pose.rootYaw += eased * Math.PI * 3 + plant * Math.PI;
   pose.hipsYaw += Math.sin(p * Math.PI * 2) * 0.32;
   pose.torsoYaw -= Math.sin(p * Math.PI * 2) * 0.2;
 
@@ -173,7 +211,7 @@ function applySpin(pose: Pose, p: number, contact: number): void {
   const extend = Math.sin(Math.min(1, Math.max(0, (p - 0.2) / 0.6)) * Math.PI);
   pose.rightLeg.pitch = 0.2 - extend * 1.85;
   pose.rightLeg.spread = extend * 0.75;
-  pose.rightLeg.hinge = -0.15 - (1 - extend) * 1.2;
+  pose.rightLeg.hinge = 0.15 + (1 - extend) * 1.2;
   pose.leftLeg.pitch = 0.15 + hop * 0.5;
-  pose.leftLeg.hinge = -0.3 - hop * 1.5;
+  pose.leftLeg.hinge = 0.3 + hop * 1.5;
 }

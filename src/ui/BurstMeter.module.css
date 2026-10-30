@@ -66,3 +66,15 @@
     height: 1.25cqw;
   }
 }
+.burst { padding: .25cqw .5cqw; background: none; gap: .5cqw; clip-path: none; }
+.burst[data-side="right"] { clip-path: none; }
+.burst b { color: #aab7c8; font-size: .58cqw; font-style: normal; letter-spacing: .12em; }
+.burst i { width: 1.1cqw; height: .35cqw; border-color: #6b7b8d; }
+.burst[data-ultimate="true"] { box-shadow: none; }
+.burst[data-ultimate="true"] b { color: #ff9e8c; }
+
+.burst { padding:.2cqw .55cqw .4cqw; gap:.55cqw; background:linear-gradient(100deg,#080d16e6,transparent); clip-path:polygon(2% 0,100% 0,92% 100%,0 100%); }
+.burst[data-side="right"] { background:linear-gradient(260deg,#080d16e6,transparent); }
+.burst b { color:#f3f5f9; font-size:.72cqw; font-style:italic; letter-spacing:.06em; }
+.burst i { width:1.4cqw; height:.6cqw; border-color:#7f8d9b; background:#080c14; }
+@container combat-hud (max-width:760px) { .burst b { font-size:1.2cqw; } .burst i { width:1.8cqw; height:.8cqw; } }

@@ -57,18 +57,18 @@ export function neutralPose(stoop: number): Pose {
     headYaw: -0.04,
     // Hands up, elbows in: a guard, not a T-pose. The lead arm is carried
     // lower so the two read as different arms from the front.
-    leftArm: limb(-0.5, 0.34, -1.05),
-    rightArm: limb(-0.85, 0.26, -1.35),
-    leftLeg: limb(0.12, 0.12, -0.22),
-    rightLeg: limb(-0.14, 0.14, -0.3),
+    leftArm: limb(-0.82, 0.20, -1.55),
+    rightArm: limb(-1.02, 0.16, -1.48),
+    leftLeg: limb(-0.22, 0.23, 0.36),
+    rightLeg: limb(0.18, 0.20, 0.28),
   };
 }
 
 export function idleBreath(pose: Pose, time: number): void {
   const breath = Math.sin(time * 2.3);
-  pose.rootY += breath * 0.012;
+  pose.rootY += breath * 0.005;
   pose.torsoPitch += breath * 0.02;
-  pose.torsoYaw += breath * 0.012;
+  pose.torsoYaw += breath * 0.005;
   pose.headPitch -= breath * 0.015;
   pose.leftArm.pitch += breath * 0.04;
   pose.rightArm.pitch += breath * 0.03;
@@ -78,14 +78,14 @@ export function walkPose(pose: Pose, time: number, speed: number): void {
   const phase = time * 8.6 * speed;
   const stride = Math.sin(phase);
   const counter = Math.sin(phase + Math.PI);
-  pose.rootY += Math.abs(Math.sin(phase)) * 0.035;
+  pose.rootY += Math.abs(Math.sin(phase)) * 0.012;
   pose.hipsY -= Math.abs(Math.sin(phase)) * 0.02;
-  pose.leftLeg.pitch += stride * 0.5;
-  pose.leftLeg.hinge -= Math.max(0, -stride) * 0.7;
-  pose.rightLeg.pitch += counter * 0.5;
-  pose.rightLeg.hinge -= Math.max(0, -counter) * 0.7;
-  pose.leftArm.pitch += counter * 0.32;
-  pose.rightArm.pitch += stride * 0.32;
+  pose.leftLeg.pitch += stride * 0.32;
+  pose.leftLeg.hinge += Math.max(0, -stride) * 0.7;
+  pose.rightLeg.pitch += counter * 0.32;
+  pose.rightLeg.hinge += Math.max(0, -counter) * 0.7;
+  pose.leftArm.pitch += counter * 0.10;
+  pose.rightArm.pitch += stride * 0.10;
   pose.torsoRoll += stride * 0.05;
   pose.hipsYaw += stride * 0.08;
   pose.torsoYaw -= stride * 0.07;
@@ -95,10 +95,10 @@ export function crouchPose(pose: Pose): void {
   pose.hipsY -= 0.3;
   pose.torsoPitch += 0.34;
   pose.hipsRoll += 0.05;
-  pose.leftLeg.pitch += 0.62;
-  pose.leftLeg.hinge -= 1.3;
-  pose.rightLeg.pitch += 0.62;
-  pose.rightLeg.hinge -= 1.3;
+  pose.leftLeg.pitch -= 0.62;
+  pose.leftLeg.hinge += 1.3;
+  pose.rightLeg.pitch -= 0.62;
+  pose.rightLeg.hinge += 1.3;
   pose.leftArm.pitch -= 0.2;
 }
 
@@ -106,10 +106,10 @@ export function guardPose(pose: Pose): void {
   pose.torsoPitch += 0.14;
   pose.torsoRoll += 0.18;
   pose.torsoYaw -= 0.22;
-  pose.leftArm.pitch = -1.5;
+  pose.leftArm.pitch = -0.8;
   pose.leftArm.hinge = -1.9;
-  pose.rightArm.pitch = -1.35;
-  pose.rightArm.hinge = -2;
+  pose.rightArm.pitch = -0.95;
+  pose.rightArm.hinge = -1.85;
   pose.headPitch += 0.12;
 }
 

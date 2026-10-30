@@ -26,7 +26,7 @@ export function KombatBackdropCore({ theme }: { readonly theme: KombatTheme }) {
       blending: AdditiveBlending,
       color: new Color(theme.beacon),
       depthWrite: false,
-      opacity: 0.15,
+      opacity: 0.045,
       toneMapped: false,
       transparent: true,
     });

@@ -13,7 +13,7 @@ export function BurstMeter({ charges, side, ultimateReady = false }: {
       data-side={side}
       data-ultimate={ultimateReady}
     >
-      <b>{ultimateReady ? 'Burst · Ult' : 'Burst'}</b>
+      <b>{ultimateReady ? 'ULTIMATE READY' : 'SUPER STOCK'}</b>
       <span>
         {Array.from({ length: SUPER_METER_STOCKS }, (_unused, index) => (
           <i data-active={index < charges} key={index} />

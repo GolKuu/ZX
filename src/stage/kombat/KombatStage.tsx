@@ -2,6 +2,8 @@
 
 import type { ArenaId } from '@/src/data/arenas';
 import { useRenderStore } from '@/src/store/renderStore';
+import { ForgeArchitecture } from './ForgeArchitecture';
+import { ForgeAltar } from './ForgeAltar';
 import { KombatBraziers } from './KombatBraziers';
 import { KombatBackdropCore } from './KombatBackdropCore';
 import { KombatColonnade } from './KombatColonnade';
@@ -39,6 +41,8 @@ export function KombatStage({ arenaId }: { readonly arenaId: ArenaId }) {
       <KombatSky theme={theme} />
       <KombatHorizon theme={theme} />
       <KombatBackdropCore theme={theme} />
+      <ForgeAltar />
+      <ForgeArchitecture surfaces={surfaces} />
       <KombatColonnade surfaces={surfaces} />
       <KombatTerrace surfaces={surfaces} />
       <KombatFloor surfaces={surfaces} theme={theme} />

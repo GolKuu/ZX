@@ -36,3 +36,4 @@ public/models/*
 
 # Blender bytecode from scripts/blender/*.py
 scripts/blender/__pycache__/
+.dream-loop/

@@ -18,6 +18,9 @@ import styles from './PlayOverlay.module.css';
 export function PlayOverlay() {
   const screen = useHudStore((state) => state.screen);
   const mobileMode = useHudStore((state) => state.mobileMode);
+  const debugTools = process.env.NODE_ENV !== 'production'
+    && typeof window !== 'undefined'
+    && new URLSearchParams(window.location.search).get('debug') === '1';
 
   return (
     <div className={styles.overlay}>
@@ -34,7 +37,7 @@ export function PlayOverlay() {
           <MobileControls visible={mobileMode} />
         </>
       )}
-      {process.env.NODE_ENV !== 'production' && screen !== 'story-scene' && <DevelopmentTools />}
+      {debugTools && screen !== 'story-scene' && <DevelopmentTools />}
     </div>
   );
 }

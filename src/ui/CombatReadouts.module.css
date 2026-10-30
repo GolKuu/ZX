@@ -176,3 +176,44 @@
     width: 25cqw;
   }
 }
+/* Three true stocks. Each cell fills continuously from the authoritative meter. */
+.energy { --accent: #f2ce70; bottom: 2.5cqw; left: 3cqw; padding: .8cqw 1cqw; background: linear-gradient(110deg,#07101ae6,#07101a88); border-top: 1px solid #9baabd66; border-bottom: 1px solid #ffffff14; border-radius: 3px; gap: 1cqw; }
+.energy[data-side="right"] { --accent: #67deee; right: 3cqw; }
+.energy > strong { font-size: 3.1cqw; line-height: 1; }
+.energy > div { width: 21cqw; gap: .4cqw; }
+.energy .energyLabel { display: flex; justify-content: space-between; align-items: baseline; }
+.energyLabel b { font-size: .62cqw; color: #c7d0dc; letter-spacing: .2em; font-style: normal; }
+.energyLabel em { color: var(--accent); font: 700 .75cqw monospace; font-variant-numeric: tabular-nums; }
+.energy > div > .segments { display: flex; gap: .3cqw; height: 1.25cqw; border: 0; background: none; overflow: visible; clip-path: none; }
+.energy .segments > span { position: relative; flex: 1; overflow: hidden; border: 1px solid #71809288; background: linear-gradient(#182435,#070c15); transform: skew(-12deg); }
+.energy .segments > span[data-full="true"] { border-color: var(--accent); box-shadow: 0 0 .65cqw color-mix(in srgb,var(--accent) 28%,transparent); }
+.energy .segments i { background: linear-gradient(#efffff,var(--accent) 30%,var(--accent-deep)); transition: width 100ms linear; }
+.energy span::after { display: none; }
+.energy .readyLabel { color: #a0adbe; font-size: .6cqw; letter-spacing: .13em; font-style: normal; }
+.energy[data-ready="true"] .readyLabel { color: var(--accent); }
+.energy[data-ultimate="true"] { animation: none; border-top-color: #ff725d; }
+.energy[data-ultimate="true"] .readyLabel { color: #ff9d86; }
+.energy[data-side="right"] .segments { flex-direction: row-reverse; }
+@container combat-hud (max-width: 760px) {
+ .energy { bottom: 17cqw; }
+ .energy > div { width: 25cqw; }
+ .energy > div > .segments { height: 2cqw; }
+ .energy .readyLabel,.energyLabel b,.energyLabel em { font-size: 1.2cqw; }
+ .energy > strong { font-size: 4cqw; }
+}
+@media (prefers-reduced-motion: reduce) { .energy .segments i { transition: none; } }
+
+/* Real meter values and three authored stocks, framed like the target's lower rails. */
+.energy { bottom:2.4cqw; padding:0; gap:.75cqw; border:0; border-radius:0; background:none; --accent:#ffda18; --accent-deep:#d29b00; }
+.energy[data-side="right"] { --accent:#18d2ef; --accent-deep:#007fa9; }
+.energy > strong { font-size:4.4cqw; font-style:italic; line-height:.9; }
+.energy > div { width:20cqw; gap:.28cqw; }
+.energy .energyLabel { order:2; padding-inline:.2cqw; }
+.energyLabel b { color:#fff; font-size:.8cqw; font-style:italic; letter-spacing:.08em; }
+.energyLabel em { font-size:.65cqw; }
+.energy > div > .segments { height:1.8cqw; gap:.18cqw; padding:.18cqw .28cqw; background:linear-gradient(#8b9aa6,#1d2a37 12%,#04080e 80%,#6c7882); clip-path:polygon(3% 0,100% 0,97% 100%,0 100%); }
+.energy .segments > span { border:1px solid #68778788; transform:skew(-12deg); background:linear-gradient(#14202e,#03070d); }
+.energy .readyLabel { order:3; font-size:.57cqw; color:#c8d0d9; text-shadow:0 1px 3px #000; }
+.energy[data-side="right"] > div > .segments { clip-path:polygon(0 0,97% 0,100% 100%,3% 100%); }
+.energy[data-ultimate="true"] { border:0; }
+@container combat-hud (max-width:760px) { .energy { bottom:17cqw; } .energy > div { width:25cqw; } .energy > strong { font-size:5cqw; } .energy > div > .segments { height:2.4cqw; } .energyLabel b,.energyLabel em,.energy .readyLabel { font-size:1.1cqw; } }
