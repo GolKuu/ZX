@@ -1,0 +1,13 @@
+{
+  "clips": [
+    { "file": "ion-fight-idle.json", "variant": "ion", "state": "idle" },
+    { "file": "ion-walk-forward.json", "variant": "ion", "state": "walk" },
+    { "file": "ion-first-jab.json", "variant": "ion", "state": "glitch.phase-jab", "strike": [0.705882, 0.823529] },
+    { "file": "ion-front-sweep.json", "variant": "ion", "state": "glitch.low-vector-sweep", "strike": [0.461538, 0.519231] },
+    { "file": "ion-front-sweep.json", "variant": "ion", "state": "glitch.sweep", "strike": [0.461538, 0.519231] },
+    { "file": "cinder-fight-idle.json", "variant": "cinder", "state": "idle" },
+    { "file": "cinder-walk-forward.json", "variant": "cinder", "state": "walk" },
+    { "file": "cinder-first-jab.json", "variant": "cinder", "state": "vorgh.normal.predator-rake", "strike": [0.705882, 0.823529] },
+    { "file": "cinder-front-sweep.json", "variant": "cinder", "state": "vorgh.normal.hunting-sweep", "strike": [0.461538, 0.519231] }
+  ]
+}

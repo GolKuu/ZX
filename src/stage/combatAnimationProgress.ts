@@ -1,39 +1,15 @@
-import { KADE_MOVES } from '@/src/data/combat-moves';
-import { MIM_MOVES } from '@/src/data/mim-moves';
-import { MIM_SUPER_MOVES } from '@/src/data/mim-super-moves';
-import { TAUNT_MOVES } from '@/src/data/taunt-move';
-import { GLITCH_MOVES } from '@/src/data/glitch-combat-moves';
-import { GLITCH_SUPER_MOVES } from '@/src/data/glitch-super-moves';
-import {
-  LUCKY_MOVES,
-  LUCKY_SPECIAL_MOVES,
-  LUCKY_SUPER_MOVES,
-} from '@/src/data/lucky';
-import { TITAN_ALL_MOVES } from '@/src/data/titan';
-import { totalMoveFrames } from '@/src/sim';
+import { ALL_COMBAT_MOVES } from '../data/allMoves.js';
+import { totalMoveFrames } from '../sim/index.js';
 import {
   spriteAttackBeat,
   spriteAttackFrame,
-} from './sprite2d/spriteAttackTimeline';
+} from './sprite2d/spriteAttackTimeline.js';
 
 const WINDUP_END = 0.34;
 const ACTIVE_END = 0.58;
 const FALLBACK_FRAMES = 32;
 
-const MOVES_BY_ID = new Map(
-  [
-    ...KADE_MOVES,
-    ...MIM_MOVES,
-    ...MIM_SUPER_MOVES,
-    ...TAUNT_MOVES,
-    ...GLITCH_MOVES,
-    ...GLITCH_SUPER_MOVES,
-    ...LUCKY_MOVES,
-    ...LUCKY_SPECIAL_MOVES,
-    ...LUCKY_SUPER_MOVES,
-    ...TITAN_ALL_MOVES,
-  ].map((move) => [move.id, move]),
-);
+const MOVES_BY_ID = new Map(ALL_COMBAT_MOVES.map(move => [move.id, move]));
 
 /**
  * Whether this frame is the one the player reads as the strike.

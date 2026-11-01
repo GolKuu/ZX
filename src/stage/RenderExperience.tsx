@@ -26,7 +26,7 @@ export function RenderExperience() {
         <RenderCanvas arenaId={arenaId} fighterSelection={fighterSelection} />
       </div>
       <PlayOverlay />
-      {screen !== 'story-scene' && <ProgressionNotifications />}
+      {screen !== 'story-scene' && screen !== 'fight' && <ProgressionNotifications />}
     </main>
   );
 }

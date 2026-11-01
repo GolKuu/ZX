@@ -59,6 +59,7 @@
     "src/input/mimCommands.ts",
     "src/stage/model/humanoidBones.ts",
     "src/stage/fighterPresentation.ts",
+    "src/stage/combatAnimationProgress.ts",
     "src/stage/vorgh/vorghAnimationData.ts",
     "src/stage/vorgh/VorghAnimationController.ts",
     "src/stage/vorgh/vorghPose.ts",

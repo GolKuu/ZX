@@ -1,12 +1,15 @@
-"""Author pass-two articulated hero shells. Local Y-up coordinates become Blender Z-up.
+"""Author pass-three layered hero armor. Local Y-up coordinates become Blender Z-up.
 Run with Blender --background --python scripts/blender/build_forge_heroes.py.
 This produces assets only; it does not render or validate the game.
 """
 from pathlib import Path
 import math
+import sys
 import bpy
 from mathutils import Vector
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from forge_hero_detail import enhance
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.context.preferences.filepaths.save_version = 0
 
@@ -17,11 +20,11 @@ def material(name, color, metal, rough, emission=0):
         p.inputs[key].default_value = value
     return m
 
-steel = material('Ion midnight titanium', (.055,.105,.19), .86,.25)
-edge = material('Machined silver bevels', (.32,.4,.5), .9,.25)
+steel = material('Ion midnight titanium', (.018,.038,.075), .78,.29)
+edge = material('Machined silver bevels', (.18,.23,.30), .82,.32)
 black = material('Graphite flex joints', (.018,.025,.035), .35,.6)
 blue = material('Cobalt ion channels', (.005,.28,1), .5,.22, 4)
-rock = material('Obsidian volcanic plates', (.10,.045,.025), .5,.38)
+rock = material('Obsidian volcanic plates', (.035,.019,.016), .24,.64)
 ember = material('Exposed molten core', (1,.10,.003), .2,.3, 3.5)
 brass = material('Cinder edge metal', (.27,.12,.055), .75,.3)
 parts=[]
@@ -63,6 +66,8 @@ def rail(name, points, radius, mat):
     obj=bpy.data.objects.new(name,cu); bpy.context.collection.objects.link(obj); obj.data.materials.append(mat); parts.append(obj)
 
 def finish(name):
+    variant, piece = name.split('_', 1)
+    enhance(piece, variant, shell, loft, rail, plate, trim, glow, black, parts)
     bpy.ops.object.select_all(action='DESELECT')
     for obj in parts:
         obj.select_set(True); bpy.context.view_layer.objects.active=obj
@@ -76,7 +81,7 @@ def finish(name):
 for variant,plate,trim,glow in [('ion',steel,edge,blue),('cinder',rock,brass,ember)]:
     demon=variant=='cinder'
     # Complete continuous core behind the separately articulated extremities.
-    loft('core',[(-.08,.115,.085,0,0),(.08,.14,.095,0,0),(.25,.18,.12,0,0),(.39,.235,.13,0,0),(.48,.16,.09,0,0),(.56,.055,.055,0,0)],black)
+    loft('core',[(-.08,.115,.085,0,0),(.08,.14,.095,0,0),(.25,.18,.12,0,0),(.39,.235,.13,0,0),(.48,.16,.09,0,0),(.65,.055,.055,0,0)],black)
     for side in [-1,1]:
         shell('pectoral',(side*.108,.365,.075),(.116,.19,.075),plate)
         rail('clavicle',[(side*.02,.455,.115),(side*.13,.45,.133),(side*.22,.38,.105)],.006,glow)
@@ -132,7 +137,7 @@ for variant,plate,trim,glow in [('ion',steel,edge,blue),('cinder',rock,brass,emb
         shell('finger',((i-1.5)*.033,-.335,.07),(.017,.075,.025),trim if not demon else plate)
         if demon: loft('claw',[(-.35,.012,.014,(i-1.5)*.034,.085),(-.405,.008,.009,(i-1.5)*.034,.12),(-.42,.001,.001,(i-1.5)*.034,.14)],trim,8)
     finish(variant+'_forearm')
-    shell('thigh core',(0,-.18,0),(.09,.38,.09),black)
+    shell('thigh core',(0,-.18,0),(.09,.45,.09),black)
     shell('cuisses',(0,-.18,.04),(.095,.30,.075),plate)
     rail('thigh channel',[(-.065,-.05,.085),(-.075,-.23,.095),(-.045,-.31,.085)],.005,glow)
     finish(variant+'_thigh')

@@ -21,8 +21,8 @@ export function ForgeHeroPart({ name }: { readonly name: string }) {
           material.envMapIntensity = 1.2;
           if (material.name.startsWith('Obsidian')) {
             material.map = loadForgeTexture(2);
-            material.color.set('#69534b');
-            material.roughness = .42;
+            // Keep the authored dark basalt response; the stage map supplies grain only.
+            material.roughness = .64;
           }
         }
         return material;

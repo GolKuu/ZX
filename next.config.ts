@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   webpack(config) {
+    // The postprocessing barrel imports N8AO even when no AO pass is mounted.
+    // Its package omits sideEffects metadata; allow unused AO code to drop.
+    config.module.rules.push({
+      test: /node_modules[\\/]n8ao[\\/]dist[\\/]N8AO\.js$/,
+      sideEffects: false,
+    });
     config.resolve.extensionAlias = {
       ...config.resolve.extensionAlias,
       '.js': ['.ts', '.tsx', '.js'],

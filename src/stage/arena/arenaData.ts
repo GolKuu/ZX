@@ -2,6 +2,7 @@
 // tracking camera. Gameplay boundaries use the same radius minus the fighter
 // pushbox margin (see combatSetup.ts).
 export const ARENA_RADIUS = 7.2;
+export const ARENA_FLOOR_Y = .024;
 
 export interface ArenaDebris {
   readonly position: readonly [number, number, number];

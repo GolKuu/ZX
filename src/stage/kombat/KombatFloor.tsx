@@ -7,7 +7,7 @@ import {
   type ArenaFloorMaterial,
 } from '@/src/render/arenaFloorMaterial';
 import { loadForgeTexture } from './forgeTexture';
-import { ARENA_RADIUS } from '../arena/arenaData';
+import { ARENA_FLOOR_Y, ARENA_RADIUS } from '../arena/arenaData';
 import type { KombatSurfaces } from './kombatMaterials';
 import type { KombatTheme } from './kombatTheme';
 
@@ -114,7 +114,7 @@ export function KombatFloor({
 
       <mesh
         material={floorMaterial}
-        position={[0, 0.024, 0]}
+        position={[0, ARENA_FLOOR_Y, 0]}
         receiveShadow
         rotation-x={-Math.PI / 2}
       >

@@ -24,7 +24,7 @@ export const ForgeHeroSkeleton = forwardRef<FighterJoints, { readonly build: Cha
   const shoulder = .205 * build.shoulders;
   const hip = .115 * build.limbs;
   const part = (piece: string) => <ForgeHeroPart name={`${variant}_${piece}`} />;
-  return <group ref={root} scale={build.height * 1.52}>
+  return <group name={`forge-${variant}`} ref={root} scale={build.height * 1.52}>
     <group ref={hips} position={[0,.86,0]}>
       <group scale={[build.limbs,1,build.bulk]}>{part('pelvis')}</group>
       <group ref={torso} position={[0,.16,0]}>
